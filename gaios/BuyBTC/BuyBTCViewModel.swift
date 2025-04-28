@@ -35,7 +35,8 @@ class BuyBTCViewModel {
     var wm: WalletManager { WalletManager.current! }
     var swapInfo: SwapInfo?
     var backupCardCellModel = [AlertCardCellModel]()
-    var tiers = Tiers(min: 100, mid: 300, max: 800)
+    var currency: String?
+    var tiers: Tiers?
     var hideBalance = false
     var showNoQuotes: Bool {
         false
@@ -44,9 +45,6 @@ class BuyBTCViewModel {
         accounts.count > 1
     }
     var countryCode: String { Locale.current.regionCode ?? "US"
-    }
-    var fiatCurrency: String {
-        "USD"
     }
     var accountCellModels: [AccountCellModel] {
         var list = [AccountCellModel]()
@@ -68,13 +66,18 @@ class BuyBTCViewModel {
             accountCellModels: accountCellModels,
             hideBalance: hideBalance)
     }
-    init(account: WalletItem, accounts: [WalletItem], hideBalance: Bool = false) {
+    init(account: WalletItem,
+         accounts: [WalletItem],
+         currency: String?,
+         hideBalance: Bool = false) {
         self.account = account
         self.asset = account.gdkNetwork.getFeeAsset()
         self.meld = Meld.init(isSandboxEnvironment: WalletManager.current?.testnet ?? false)
         self.inputDenomination = WalletManager.current?.prominentSession?.settings?.denomination ?? .Sats
         self.accounts = accounts
         self.hideBalance = hideBalance
+        self.currency = currency
+        self.loadTiers()
     }
 
     var isJade: Bool { wm.account.isJade }
@@ -104,5 +107,47 @@ class BuyBTCViewModel {
         let hash = abs(name.hashValue)
         let hue = CGFloat(hash % 360) / 360.0
         return UIColor(hue: hue, saturation: 0.8, brightness: 0.9, alpha: 1.0)
+    }
+    func loadTiers() {
+        if let config: Any = AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigBuyDefaultValues) {
+            let json = try? JSONSerialization.data(withJSONObject: config, options: .fragmentsAllowed)
+            let buyTiers = try? JSONDecoder().decode(BuyTiers.self, from: json ?? Data())
+            if let currency = self.currency, let tiers = buyTiers {
+                for (key, val) in tiers.buy_default_values {
+                    if key.uppercased() == currency.uppercased() {
+                        if val.count == 3 {
+                            self.tiers = Tiers(min: Double(val[0]), mid: Double(val[1]), max: Double(val[2]))
+                            break
+                        }
+                    }
+                }
+            }
+        }
+    }
+    func widget(quote: MeldQuoteItem, amountStr: String) async throws -> String {
+
+//        guard let balance = Balance.fromSatoshi(satoshi ?? 0, assetId: asset), let fiat = balance.fiat else {
+//            throw GaError.GenericError("Invalid amount")
+//        }
+        let address = try await account.session?.getReceiveAddress(subaccount: account.pointer)
+        guard let address = address?.address else {
+           throw GaError.GenericError("Invalid address")
+        }
+        let sessionParams = MeldSessionParams(
+            serviceProvider: quote.serviceProvider,
+            countryCode: countryCode,
+            destinationCurrencyCode: "BTC",
+            lockFields: ["destinationCurrencyCode",
+                         "walletAddress",
+                         "sourceCurrencyCode"],
+            paymentMethodType: "CARD",
+            // redirectUrl: "",
+            sourceAmount: amountStr,
+            sourceCurrencyCode: currency ?? "",
+            walletAddress: address)
+        let params = MeldWidgetParams(
+            sessionData: sessionParams,
+            sessionType: MeldTransactionType.BUY.rawValue)
+        return try await meld.widget(params)
     }
 }

@@ -120,14 +120,12 @@ extension MoreActionsViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         if let cell = tableView.dequeueReusableCell(withIdentifier: MoreActionsCell.identifier, for: indexPath) as? MoreActionsCell {
             cell.configure(model: viewModel.actions[indexPath.row]) { [weak self] in
                 self?.dismiss(indexPath)
             }
             cell.selectionStyle = .none
             return cell
-            
         }
         return UITableViewCell()
     }

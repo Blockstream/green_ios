@@ -54,7 +54,10 @@ extension TabViewController {
         let storyboard = UIStoryboard(name: "BuyBTCFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "BuyBTCViewController") as? BuyBTCViewController {
             if let accounts = walletModel.wm?.bitcoinSubaccounts, let account = walletModel.wm?.bitcoinSubaccounts.first {
-                vc.viewModel = BuyBTCViewModel(account: account, accounts: accounts, hideBalance: walletModel.hideBalance)
+                vc.viewModel = BuyBTCViewModel(account: account,
+                                               accounts: accounts,
+                                               currency: walletModel.currency,
+                                               hideBalance: walletModel.hideBalance)
                 navigationController?.pushViewController(vc, animated: true)
             }
         }

@@ -61,6 +61,7 @@
 		34145FEC2DBB954E00F725E0 /* MoreActionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34145FEB2DBB954600F725E0 /* MoreActionsViewModel.swift */; };
 		34145FEE2DBB961E00F725E0 /* MoreActionsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34145FED2DBB961E00F725E0 /* MoreActionsCell.xib */; };
 		34145FF02DBB962500F725E0 /* MoreActionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34145FEF2DBB962300F725E0 /* MoreActionsCell.swift */; };
+		34145FF22DBF776C00F725E0 /* BuyTiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34145FF12DBF775B00F725E0 /* BuyTiers.swift */; };
 		3415862129EE80AC005002D9 /* WOSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3415862029EE80AC005002D9 /* WOSetupViewController.swift */; };
 		3415862329EE9A29005002D9 /* WOLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3415862229EE9A29005002D9 /* WOLoginViewController.swift */; };
 		3415CB042A67BD0100B66882 /* AddressAuth.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3415CB032A67BD0100B66882 /* AddressAuth.storyboard */; };
@@ -1015,6 +1016,7 @@
 		34145FEB2DBB954600F725E0 /* MoreActionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreActionsViewModel.swift; sourceTree = "<group>"; };
 		34145FED2DBB961E00F725E0 /* MoreActionsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MoreActionsCell.xib; sourceTree = "<group>"; };
 		34145FEF2DBB962300F725E0 /* MoreActionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreActionsCell.swift; sourceTree = "<group>"; };
+		34145FF12DBF775B00F725E0 /* BuyTiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyTiers.swift; sourceTree = "<group>"; };
 		3415862029EE80AC005002D9 /* WOSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOSetupViewController.swift; sourceTree = "<group>"; };
 		3415862229EE9A29005002D9 /* WOLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOLoginViewController.swift; sourceTree = "<group>"; };
 		3415CB032A67BD0100B66882 /* AddressAuth.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddressAuth.storyboard; sourceTree = "<group>"; };
@@ -2853,6 +2855,7 @@
 				34145FCE2DBA3EC800F725E0 /* SelectProvider */,
 				348402092DB8E78500A91C65 /* BuyBTCViewController.swift */,
 				3484020D2DB8E7C400A91C65 /* BuyBTCViewModel.swift */,
+				34145FF12DBF775B00F725E0 /* BuyTiers.swift */,
 				3484020B2DB8E7B200A91C65 /* BuyBTCFlow.storyboard */,
 			);
 			path = BuyBTC;
@@ -5059,6 +5062,7 @@
 				6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */,
 				343BC9522AA8772600F0FEE5 /* DrawerAnimationManager.swift in Sources */,
 				3499655F29E5962D0092B5BD /* DialogEditViewController.swift in Sources */,
+				34145FF22DBF776C00F725E0 /* BuyTiers.swift in Sources */,
 				34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */,
 				81BAD32D289BD66900FF0F54 /* AccountNavigator.swift in Sources */,
 				346EB2862BE8BB480043139F /* SendSuccessViewController.swift in Sources */,

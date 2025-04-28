@@ -1,6 +1,7 @@
 import Foundation
 import core
 import greenaddress
+import gdk
 
 enum MeldTransactionType: String {
     case BUY
@@ -34,7 +35,7 @@ struct MeldSessionParams: Codable {
     let destinationCurrencyCode: String
     let lockFields: [String]
     let paymentMethodType: String
-    //let redirectUrl: String
+    // let redirectUrl: String
     let sourceAmount: String
     let sourceCurrencyCode: String
     let walletAddress: String
@@ -103,4 +104,10 @@ struct Meld {
         return data
     }
 
+}
+extension MeldQuoteItem {
+    func btc() -> String? {
+        let amount = Int64(destinationAmount * 100_000_000)
+        return Balance.fromSatoshi(amount, assetId: "btc")?.toText()
+    }
 }

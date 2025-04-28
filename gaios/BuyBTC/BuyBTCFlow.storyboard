@@ -323,6 +323,9 @@
                                         <state key="normal" title="btn_next" image="ic_buy_button">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
+                                        <connections>
+                                            <action selector="btnNext:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="W0a-lz-LcD"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -365,6 +368,7 @@
                         <outlet property="lblSection2" destination="1li-Fp-j0n" id="qha-TE-A0N"/>
                         <outlet property="lblSection3" destination="hYn-Ys-8uc" id="eFg-xu-RJe"/>
                         <outlet property="providerStack" destination="znH-TJ-Ghs" id="cap-Ur-NUj"/>
+                        <outlet property="tiersView" destination="hut-7G-VVz" id="fpf-gn-4mX"/>
                         <outlet property="viewLoading" destination="KLR-Kr-7e5" id="byc-61-vwf"/>
                         <outlet property="viewNoQuotes" destination="uBe-Rr-QIz" id="rqU-6M-jOc"/>
                         <outlet property="viewProvider" destination="wra-Cr-6kK" id="0oz-6w-vVf"/>
@@ -595,7 +599,7 @@
                                                                 <rect key="frame" x="0.0" y="0.0" width="393" height="68.666666666666671"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QEs-5T-m64">
-                                                                        <rect key="frame" x="20" y="22.000000000000057" width="353" height="21.666666666666671"/>
+                                                                        <rect key="frame" x="20" y="22" width="353" height="21.666666666666671"/>
                                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <nil key="highlightedColor"/>

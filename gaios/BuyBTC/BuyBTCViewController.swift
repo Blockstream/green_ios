@@ -29,6 +29,7 @@ class BuyBTCViewController: KeyboardViewController {
     @IBOutlet weak var amountTextField: UITextField!
     @IBOutlet weak var lblFiat: UILabel!
     @IBOutlet weak var lblDenom: UILabel!
+    @IBOutlet weak var tiersView: UIView!
     @IBOutlet weak var btnTier1: UIButton!
     @IBOutlet weak var btnTier2: UIButton!
     @IBOutlet weak var btnTier3: UIButton!
@@ -114,12 +115,12 @@ class BuyBTCViewController: KeyboardViewController {
         viewProvider.isHidden = viewModel.showNoQuotes
         viewNoQuotes.isHidden = !viewModel.showNoQuotes
         accountStack.isHidden = !viewModel.showAccountSwitch
-        lblFiat.text = viewModel.fiatCurrency
+        lblFiat.text = viewModel.currency ?? ""
         tiersState()
         btnNext.setStyle(self.quotes.count == 0 ? .primaryDisabled : .primary)
         lblIconProvider.text = "PR"
         providerStack.isHidden = false
-        lblDenom.alpha = 1.0
+        lblDenom.alpha = 0.0
         viewProvider.isHidden = true
         viewNoQuotes.isHidden = true
         viewLoading.isHidden = true
@@ -128,9 +129,9 @@ class BuyBTCViewController: KeyboardViewController {
         case .loading:
             viewLoading.isHidden = false
             denomLoader.isHidden = false
-            lblDenom.alpha = 0.0
         case .valid:
             viewProvider.isHidden = false
+            lblDenom.alpha = 1.0
         case .noquote:
             viewNoQuotes.isHidden = false
         case .hidden:
@@ -144,25 +145,31 @@ class BuyBTCViewController: KeyboardViewController {
             let initials = viewModel.getInitials(from: pName)
             lblIconProvider.text = initials
             bgIconProvider.backgroundColor = viewModel.colorFromProviderName(pName)
+            lblDenom.text = "≈ \(quotes[selectedIndex].btc() ?? "")"
         }
         btnAccount.setTitle(viewModel.account.localizedName, for: .normal)
     }
     func tiersState() {
-        btnTier1.setTitle(viewModel.tiers.minStr, for: .normal)
-        btnTier2.setTitle(viewModel.tiers.midStr, for: .normal)
-        btnTier3.setTitle(viewModel.tiers.maxStr, for: .normal)
+        guard let tiers = viewModel.tiers else {
+            tiersView.isHidden = true
+            return
+        }
+        tiersView.isHidden = false
+        btnTier1.setTitle(tiers.minStr, for: .normal)
+        btnTier2.setTitle(tiers.midStr, for: .normal)
+        btnTier3.setTitle(tiers.maxStr, for: .normal)
         [btnTier1, btnTier2, btnTier3].forEach {
             $0?.backgroundColor = UIColor.gGrayPanel()
         }
         let color = UIColor.gWarnCardBgBlue()
         if let amount = Double(amountTextField.text ?? "") {
-            if amount == viewModel.tiers.min {
+            if amount == tiers.min {
                 btnTier1?.backgroundColor = color
             }
-            if amount == viewModel.tiers.mid {
+            if amount == tiers.mid {
                 btnTier2?.backgroundColor = color
             }
-            if amount == viewModel.tiers.max {
+            if amount == tiers.max {
                 btnTier3?.backgroundColor = color
             }
         }
@@ -234,20 +241,46 @@ class BuyBTCViewController: KeyboardViewController {
             UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
         }
     }
+    func selectProvider(_ quote: MeldQuoteItem) {
+        guard let amountStr = amountTextField.text else { return }
+        Task { [weak self] in
+            await self?.widget(quote: quote, amountStr: amountStr)
+        }
+    }
+    private func widget(quote: MeldQuoteItem, amountStr: String) async {
+        let task = Task.detached { [weak self] in
+            return try await self?.viewModel.widget(quote: quote, amountStr: amountStr)
+        }
+        let result = await task.result
+        switch result {
+        case .success(let url):
+            proceedWithWidget(url: url)
+        case .failure(let error):
+            handleError(error)
+        }
+    }
+    private func handleError(_ error: Error) {
+        showError(error.description()?.localized ?? error.localizedDescription)
+    }
+    func proceedWithWidget(url: String?) {
+        AnalyticsManager.shared.buyRedirect(account: self.viewModel.wm.account)
+        SafeNavigationManager.shared.navigate(url, exitApp: false)
+    }
     @IBAction func btnTier1(_ sender: Any) {
-        amountTextField.text = viewModel.tiers.minStr
+        amountTextField.text = viewModel.tiers?.minStr
         triggerTextChange()
     }
     @IBAction func btnTier2(_ sender: Any) {
-        amountTextField.text = viewModel.tiers.midStr
+        amountTextField.text = viewModel.tiers?.midStr
         triggerTextChange()
     }
     @IBAction func btnTier3(_ sender: Any) {
-        amountTextField.text = viewModel.tiers.maxStr
+        amountTextField.text = viewModel.tiers?.maxStr
         triggerTextChange()
     }
     @IBAction func btnAmountClean(_ sender: Any) {
         amountTextField.text = ""
+        loadQuotes()
         reload()
     }
     @IBAction func btnProvider(_ sender: Any) {
@@ -262,13 +295,17 @@ class BuyBTCViewController: KeyboardViewController {
         }
     }
     @IBAction func btnAccount(_ sender: Any) {
-
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAccountsViewController") as? DialogAccountsViewController {
             vc.viewModel = viewModel.dialogAccountsModel
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        }
+    }
+    @IBAction func btnNext(_ sender: Any) {
+        if quotes.count != 0 {
+            selectProvider(quotes[selectedIndex])
         }
     }
 }

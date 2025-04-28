@@ -5,6 +5,7 @@ public extension AnalyticsManager {
     static let countlyRemoteConfigAssets = "liquid_assets"
     static let countlyRemoteConfigPromos = "promos"
     static let countlyRemoteConfigFeatureOnOffRamps = "feature_on_off_ramps"
+    static let countlyRemoteConfigBuyDefaultValues = "buy_default_values"
 
     static let strNetworks = "wallet_networks"
     static let strNetwork = "account_network"
