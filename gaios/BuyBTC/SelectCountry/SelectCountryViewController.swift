@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 protocol SelectCountryViewControllerDelegate: AnyObject {
-    func didSelectIndexPath(_ indexPath: IndexPath)
+    func didSelectCountry(_ country: Country)
 }
 
 enum SelectCountrySection: CaseIterable {
@@ -106,7 +106,7 @@ class SelectCountryViewController: UIViewController {
         }, completion: { _ in
             self.dismiss(animated: false, completion: nil)
             if let indexPath = indexPath {
-                self.delegate?.didSelectIndexPath(indexPath)
+                self.delegate?.didSelectCountry(self.viewModel.countries[indexPath.row])
             }
         })
     }
@@ -160,4 +160,3 @@ extension SelectCountryViewController: UITableViewDelegate, UITableViewDataSourc
         return nil
     }
 }
-

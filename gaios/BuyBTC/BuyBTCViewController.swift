@@ -378,12 +378,16 @@ extension BuyBTCViewController: SelectProviderViewControllerDelegate {
 }
 extension BuyBTCViewController: DialogAccountsViewControllerDelegate {
     func didSelectAccount(_ walletItem: gdk.WalletItem?) {
-        print("TO DO UPDATE ACCOUNT")
+        if let walletItem {
+            viewModel.account = walletItem
+            reload()
+        }
     }
 }
 extension BuyBTCViewController: SelectCountryViewControllerDelegate {
-    func didSelectIndexPath(_ indexPath: IndexPath) {
-        print("TO DO UPDATE COUNTRY")
+    func didSelectCountry(_ country: Country) {
+        viewModel.countryCode = country.code.uppercased()
+        loadNavigationBtns()
     }
 }
 extension BuyBTCViewController: MoreActionsViewControllerDelegate {

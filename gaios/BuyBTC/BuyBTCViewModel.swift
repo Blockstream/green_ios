@@ -38,13 +38,12 @@ class BuyBTCViewModel {
     var currency: String?
     var tiers: Tiers?
     var hideBalance = false
+    var countryCode = Locale.current.regionCode ?? "US"
     var showNoQuotes: Bool {
         false
     }
     var showAccountSwitch: Bool {
         accounts.count > 1
-    }
-    var countryCode: String { Locale.current.regionCode ?? "US"
     }
     var accountCellModels: [AccountCellModel] {
         var list = [AccountCellModel]()
@@ -88,7 +87,7 @@ class BuyBTCViewModel {
             destinationCurrencyCode: "BTC",
             countryCode: countryCode,
             sourceAmount: amountStr,
-            sourceCurrencyCode: "USD",
+            sourceCurrencyCode: currency ?? "USD",
             paymentMethodType: "CARD")
         return try await meld.quote(params)
     }
@@ -113,13 +112,8 @@ class BuyBTCViewModel {
             let json = try? JSONSerialization.data(withJSONObject: config, options: .fragmentsAllowed)
             let buyTiers = try? JSONDecoder().decode(BuyTiers.self, from: json ?? Data())
             if let currency = self.currency, let tiers = buyTiers {
-                for (key, val) in tiers.buy_default_values {
-                    if key.uppercased() == currency.uppercased() {
-                        if val.count == 3 {
-                            self.tiers = Tiers(min: Double(val[0]), mid: Double(val[1]), max: Double(val[2]))
-                            break
-                        }
-                    }
+                for (key, val) in tiers.buy_default_values where (key.uppercased() == currency.uppercased() && val.count == 3) {
+                    self.tiers = Tiers(min: Double(val[0]), mid: Double(val[1]), max: Double(val[2]))
                 }
             }
         }
@@ -143,7 +137,7 @@ class BuyBTCViewModel {
             paymentMethodType: "CARD",
             // redirectUrl: "",
             sourceAmount: amountStr,
-            sourceCurrencyCode: currency ?? "",
+            sourceCurrencyCode: currency ?? "USD",
             walletAddress: address)
         let params = MeldWidgetParams(
             sessionData: sessionParams,
