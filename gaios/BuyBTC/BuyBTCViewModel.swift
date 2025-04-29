@@ -45,6 +45,7 @@ class BuyBTCViewModel {
     var showAccountSwitch: Bool {
         accounts.count > 1
     }
+    var address: Address?
     var accountCellModels: [AccountCellModel] {
         var list = [AccountCellModel]()
         for subaccount in accounts {
@@ -78,9 +79,7 @@ class BuyBTCViewModel {
         self.currency = currency
         self.loadTiers()
     }
-
     var isJade: Bool { wm.account.isJade }
-
     func quote(_ amountStr: String) async throws -> [MeldQuoteItem] {
 
         let params = MeldQuoteParams(
@@ -119,12 +118,7 @@ class BuyBTCViewModel {
         }
     }
     func widget(quote: MeldQuoteItem, amountStr: String) async throws -> String {
-
-//        guard let balance = Balance.fromSatoshi(satoshi ?? 0, assetId: asset), let fiat = balance.fiat else {
-//            throw GaError.GenericError("Invalid amount")
-//        }
-        let address = try await account.session?.getReceiveAddress(subaccount: account.pointer)
-        guard let address = address?.address else {
+        guard let addressStr = address?.address else {
            throw GaError.GenericError("Invalid address")
         }
         let sessionParams = MeldSessionParams(
@@ -138,10 +132,23 @@ class BuyBTCViewModel {
             // redirectUrl: "",
             sourceAmount: amountStr,
             sourceCurrencyCode: currency ?? "USD",
-            walletAddress: address)
+            walletAddress: addressStr)
         let params = MeldWidgetParams(
             sessionData: sessionParams,
             sessionType: MeldTransactionType.BUY.rawValue)
         return try await meld.widget(params)
+    }
+    func verifyOnDeviceViewModel() -> VerifyOnDeviceViewModel? {
+        guard let addressStr = address?.address else { return nil }
+        return VerifyOnDeviceViewModel(isLedger: false,
+                                       address: addressStr,
+                                       isRedeposit: false,
+                                       isDismissible: false)
+    }
+    func validateHW() async throws -> Bool {
+        guard let address else {
+            throw GaError.GenericError("Invalid address".localized)
+        }
+        return try await BleHwManager.shared.validateAddress(account: account, address: address)
     }
 }

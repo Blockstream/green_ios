@@ -58,6 +58,8 @@ class BuyBTCViewController: KeyboardViewController {
     var quotes = [MeldQuoteItem]()
     var selectedIndex = 0
     var providerState: ProviderState = .hidden
+    weak var verifyOnDeviceViewController: VerifyOnDeviceViewController?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setContent()
@@ -65,6 +67,7 @@ class BuyBTCViewController: KeyboardViewController {
         loadNavigationBtns()
         amountTextField.addTarget(self, action: #selector(BuyBTCViewController.textFieldDidChange(_:)),
                                   for: .editingChanged)
+        loadAddress()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -138,8 +141,7 @@ class BuyBTCViewController: KeyboardViewController {
         btnLeftBackup.setTitle("Backup Now".localized, for: .normal)
         btnRightBackup.isHidden = true
         iconWarnBackup.image = UIImage(named: "ic_card_warn")
-        
-        if BackupHelper.shared.needsBackup(walletId: viewModel.wm.account.id) && BackupHelper.shared.isDismissed(walletId: viewModel.wm.account.id, position: .buy) == false  {
+        if BackupHelper.shared.needsBackup(walletId: viewModel.wm.account.id) && BackupHelper.shared.isDismissed(walletId: viewModel.wm.account.id, position: .buy) == false {
             bgBackup.isHidden = false
         } else {
             bgBackup.isHidden = true
@@ -211,8 +213,7 @@ class BuyBTCViewController: KeyboardViewController {
     }
     func loadNavigationBtns() {
         var items = [UIBarButtonItem]()
-        // TODO: remove not "!"
-        if !viewModel.isJade {
+        if viewModel.isJade {
             let verifyAddressBtn = UIButton(type: .system)
             verifyAddressBtn.setImage(UIImage(named: "ic_buy_circle_dots"), for: .normal)
             verifyAddressBtn.addTarget(self, action: #selector(onMoreActions), for: .touchUpInside)
@@ -232,7 +233,14 @@ class BuyBTCViewController: KeyboardViewController {
             await self?.load()
         }
     }
-
+    func loadAddress() {
+        viewModel.address = nil
+        Task {
+            if let address = try? await viewModel.account.session?.getReceiveAddress(subaccount: viewModel.account.pointer) {
+                viewModel.address = address
+            }
+        }
+    }
     private func load() async {
         guard let amountStr = amountTextField.text else { return }
         let task = Task.detached { [weak self] in
@@ -303,6 +311,35 @@ class BuyBTCViewController: KeyboardViewController {
     func proceedWithWidget(url: String?) {
         AnalyticsManager.shared.buyRedirect(account: self.viewModel.wm.account)
         SafeNavigationManager.shared.navigate(url, exitApp: false)
+    }
+    func verifySingleAddress() async throws {
+        if let vm = viewModel.verifyOnDeviceViewModel() {
+            await presentVerifyOnDeviceViewController(viewModel: vm)
+        }
+        do {
+            let res = try await viewModel.validateHW()
+            if res == false {
+                throw TransactionError.invalid(localizedDescription: "id_the_addresses_dont_match")
+            }
+            await dismissVerifyOnDeviceViewController()
+        } catch {
+            await dismissVerifyOnDeviceViewController()
+            throw TransactionError.invalid(localizedDescription: "id_the_addresses_dont_match")
+        }
+    }
+    @MainActor
+    func dismissVerifyOnDeviceViewController() async {
+        await verifyOnDeviceViewController?.dismissAsync(animated: true)
+    }
+    @MainActor
+    func presentVerifyOnDeviceViewController(viewModel: VerifyOnDeviceViewModel) async {
+        let storyboard = UIStoryboard(name: "VerifyOnDevice", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "VerifyOnDeviceViewController") as? VerifyOnDeviceViewController {
+            vc.viewModel = viewModel
+            verifyOnDeviceViewController = vc
+            vc.modalPresentationStyle = .overFullScreen
+            await presentAsync(vc, animated: false)
+        }
     }
     @IBAction func btnTier1(_ sender: Any) {
         amountTextField.text = viewModel.tiers?.minStr
@@ -383,6 +420,7 @@ extension BuyBTCViewController: DialogAccountsViewControllerDelegate {
     func didSelectAccount(_ walletItem: gdk.WalletItem?) {
         if let walletItem {
             viewModel.account = walletItem
+            loadAddress()
             reload()
         }
     }
@@ -396,7 +434,16 @@ extension BuyBTCViewController: SelectCountryViewControllerDelegate {
 extension BuyBTCViewController: MoreActionsViewControllerDelegate {
     func didSelectAction(_ indexPath: IndexPath) {
         if indexPath.row == 0 {
-            // open dialog verify address
+            Task {
+                do {
+                    try await verifySingleAddress()
+                    await MainActor.run {
+                        DropAlert().success(message: "id_the_address_is_valid".localized)
+                    }
+                } catch {
+                    DropAlert().error(message: error.description()?.localized ?? "")
+                }
+            }
         }
     }
 }
