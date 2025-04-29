@@ -5,7 +5,7 @@ class SelectCountryViewModel {
 
     var title = "Billing"
     var hint = "Please select your correct billing location to complete the checkout successfully."
-    var countries = Country.all()
+    var countries = Country.allMeld()
     init() {
     }
 }

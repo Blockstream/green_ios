@@ -38,7 +38,7 @@ class BuyBTCViewModel {
     var currency: String?
     var tiers: Tiers?
     var hideBalance = false
-    var countryCode = Locale.current.regionCode ?? "US"
+    var countryCode = (Locale.current.regionCode ?? "US").uppercased()
     var showNoQuotes: Bool {
         false
     }

@@ -1,3 +1,4 @@
+import UIKit
 struct Country {
     let code: String
     let name: String
@@ -11,7 +12,11 @@ struct Country {
         self.name = name
         self.dialCode = dialCode
     }
-
+    static func allMeld() -> [Country] {
+        return all().filter {
+            UIImage(named: $0.code.uppercased() + "-flag") != nil
+        }
+    }
     static func all() -> [Country] {
 
         return [
