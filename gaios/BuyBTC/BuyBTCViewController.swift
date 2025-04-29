@@ -278,8 +278,11 @@ class BuyBTCViewController: KeyboardViewController {
     }
     func selectProvider(_ quote: MeldQuoteItem) {
         guard let amountStr = amountTextField.text else { return }
+        view.endEditing(true)
+        startLoader(message: "")
         Task { [weak self] in
             await self?.widget(quote: quote, amountStr: amountStr)
+            self?.stopLoader()
         }
     }
     private func widget(quote: MeldQuoteItem, amountStr: String) async {
@@ -343,7 +346,7 @@ class BuyBTCViewController: KeyboardViewController {
             selectProvider(quotes[selectedIndex])
         }
     }
-    
+
     @IBAction func btnBackup(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController") as? RecoveryCreateViewController {
