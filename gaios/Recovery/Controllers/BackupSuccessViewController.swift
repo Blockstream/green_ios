@@ -24,11 +24,11 @@ class BackupSuccessViewController: UIViewController {
     }
     @IBAction func btnNext(_ sender: Any) {
         let originReceive = navigationController?.viewControllers.filter { $0 is ReceiveViewController }.first
-        let originBuy = navigationController?.viewControllers.filter { $0 is BuyViewController }.first
+        let originBuy = navigationController?.viewControllers.filter { $0 is BuyBTCViewController }.first
         if originReceive != nil {
             navigationController?.popToViewController(ofClass: ReceiveViewController.self)
         } else if originBuy != nil {
-            navigationController?.popToViewController(ofClass: BuyViewController.self)
+            navigationController?.popToViewController(ofClass: BuyBTCViewController.self)
         } else {
             navigationController?.popToRootViewController(animated: true)
         }

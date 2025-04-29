@@ -44,6 +44,15 @@ class BuyBTCViewController: KeyboardViewController {
     @IBOutlet weak var viewLoading: UIView!
     @IBOutlet weak var denomLoader: UIActivityIndicatorView!
 
+    @IBOutlet weak var bgBackup: UIView!
+    @IBOutlet weak var lblTitleBackup: UILabel!
+    @IBOutlet weak var lblHintBackup: UILabel!
+    @IBOutlet weak var btnRightBackup: UIButton!
+    @IBOutlet weak var btnLeftBackup: UIButton!
+    @IBOutlet weak var btnsContainerBackup: UIStackView!
+    @IBOutlet weak var iconWarnBackup: UIImageView!
+    @IBOutlet weak var btnDismissBackup: UIButton!
+
     @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     var viewModel: BuyBTCViewModel!
     var quotes = [MeldQuoteItem]()
@@ -51,19 +60,20 @@ class BuyBTCViewController: KeyboardViewController {
     var providerState: ProviderState = .hidden
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setContent()
         setStyle()
         loadNavigationBtns()
         amountTextField.addTarget(self, action: #selector(BuyBTCViewController.textFieldDidChange(_:)),
                                   for: .editingChanged)
-        reload()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // always nag even after dismiss
+        BackupHelper.shared.cleanDismissedCache(walletId: viewModel.wm.account.id, position: .buy)
+        reload()
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
             self.amountTextField.becomeFirstResponder()
         }
@@ -111,6 +121,30 @@ class BuyBTCViewController: KeyboardViewController {
         bgIconProvider.cornerRadius = 15.0
         lblIconProvider.setStyle(.txtBold)
     }
+    func setBackupCard() {
+        bgBackup.layer.cornerRadius = 5.0
+        bgBackup.borderWidth = 1
+        bgBackup.backgroundColor = UIColor.gWarnCardBg()
+        bgBackup.borderColor = UIColor.gWarnCardBorder()
+        [btnLeftBackup, btnRightBackup].forEach {
+            $0?.setStyle(.outlinedWhite)
+        }
+        btnLeftBackup.backgroundColor = .white
+        btnLeftBackup.setTitleColor(UIColor.gBlackBg(), for: .normal)
+        lblTitleBackup.setStyle(.txtBigger)
+        lblHintBackup.setStyle(.txtCard)
+        lblTitleBackup.text = "Back Up Your Wallet Now".localized
+        lblHintBackup.text = "Don't lose access to your funds.".localized
+        btnLeftBackup.setTitle("Backup Now".localized, for: .normal)
+        btnRightBackup.isHidden = true
+        iconWarnBackup.image = UIImage(named: "ic_card_warn")
+        
+        if BackupHelper.shared.needsBackup(walletId: viewModel.wm.account.id) && BackupHelper.shared.isDismissed(walletId: viewModel.wm.account.id, position: .buy) == false  {
+            bgBackup.isHidden = false
+        } else {
+            bgBackup.isHidden = true
+        }
+    }
     func reload() {
         viewProvider.isHidden = viewModel.showNoQuotes
         viewNoQuotes.isHidden = !viewModel.showNoQuotes
@@ -148,6 +182,7 @@ class BuyBTCViewController: KeyboardViewController {
             lblDenom.text = "≈ \(quotes[selectedIndex].btc() ?? "")"
         }
         btnAccount.setTitle(viewModel.account.localizedName, for: .normal)
+        setBackupCard()
     }
     func tiersState() {
         guard let tiers = viewModel.tiers else {
@@ -307,6 +342,17 @@ class BuyBTCViewController: KeyboardViewController {
         if quotes.count != 0 {
             selectProvider(quotes[selectedIndex])
         }
+    }
+    
+    @IBAction func btnBackup(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController") as? RecoveryCreateViewController {
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    @IBAction func btnBackupAlertDismiss(_ sender: Any) {
+        BackupHelper.shared.addToDismissed(walletId: viewModel.wm.account.id, position: .buy)
+        bgBackup.isHidden = true
     }
 }
 extension BuyBTCViewController {
