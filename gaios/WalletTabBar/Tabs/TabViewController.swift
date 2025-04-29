@@ -55,7 +55,8 @@ extension TabViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "BuyBTCViewController") as? BuyBTCViewController {
             if var accounts = walletModel.wm?.bitcoinSubaccounts, let account = walletModel.wm?.bitcoinSubaccounts.first {
                 if let lightningSubaccount = walletModel.wm?.lightningSubaccount {
-                    accounts.append(lightningSubaccount)
+                    // RE-Enable once validation is ready
+                    // accounts.append(lightningSubaccount)
                 }
                 vc.viewModel = BuyBTCViewModel(account: account,
                                                accounts: accounts,
