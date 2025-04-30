@@ -88,13 +88,20 @@ class WalletTabBarViewController: UITabBarController {
     }
 
     @objc func settingsBtnTapped(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogGroupListViewController") as? DialogGroupListViewController {
-            vc.delegate = self
-            vc.viewModel = DialogGroupListViewModel(title: "Wallet Preferences".localized, type: .walletPrefs, dataSource: WalletPrefs.getGroupItems())
-            vc.modalPresentationStyle = .overFullScreen
-            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+
+        let alert = UIAlertController(title: "Settings will be available in the next beta release.", message: "", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "id_ok".localized, style: .default) { _ in })
+        DispatchQueue.main.async {
+            UIApplication.shared.delegate?.window??.rootViewController?.present(alert, animated: true, completion: nil)
         }
+
+//        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+//        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogGroupListViewController") as? DialogGroupListViewController {
+//            vc.delegate = self
+//            vc.viewModel = DialogGroupListViewModel(title: "Wallet Preferences".localized, type: .walletPrefs, dataSource: WalletPrefs.getGroupItems())
+//            vc.modalPresentationStyle = .overFullScreen
+//            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+//        }
     }
 
     func setTabBar() {
