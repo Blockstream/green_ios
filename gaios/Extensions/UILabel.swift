@@ -19,7 +19,7 @@ enum LabelStyle {
 }
 
 extension UILabel {
-    
+
     func setStyle(_ type: LabelStyle) {
         switch type {
         case .title:
@@ -38,7 +38,7 @@ extension UILabel {
             textColor = .white
             font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         case .txt:
-            textColor = .white.withAlphaComponent(0.6)
+            textColor = .white
             font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
         case .txtBold:
             textColor = .white

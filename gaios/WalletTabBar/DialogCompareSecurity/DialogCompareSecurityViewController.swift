@@ -38,6 +38,7 @@ class DialogCompareSecurityViewController: UIViewController {
     @IBOutlet weak var lblInfo3: UILabel!
     @IBOutlet weak var btnCta1: UIButton!
     @IBOutlet weak var btnCta2: UIButton!
+    @IBOutlet weak var ilSecLevel: UIImageView!
 
     var state = State.mobile
 
@@ -108,6 +109,7 @@ class DialogCompareSecurityViewController: UIViewController {
             btnCta2.isEnabled = false
             icon.isHidden = false
             iconPlus.isHidden = true
+            ilSecLevel.image = UIImage(named: "il_sec_lev_mobile")
         case .hardware:
             lblHint1.text = "Hardware".localized
             lblHint2.text = "Security Level: 2".localized
@@ -121,6 +123,7 @@ class DialogCompareSecurityViewController: UIViewController {
             btnCta2.isEnabled = true
             icon.isHidden = true
             iconPlus.isHidden = false
+            ilSecLevel.image = UIImage(named: "il_sec_lev_hardware")
         }
     }
 
