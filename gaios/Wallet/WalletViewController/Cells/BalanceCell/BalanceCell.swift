@@ -29,7 +29,7 @@ class BalanceCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        lblBalanceTitle.text = "id_total_balance".localized
+        lblBalanceTitle.text = "Total Bitcoin Balance".localized
         btnExchange.setImage(UIImage(named: "ic_coins_exchange")?.maskWithColor(color: .white.withAlphaComponent(0.4)), for: .normal)
         lblLoadingAssets.text = "id_loading_assets".localized
         [lblBalanceTitle, lblBalanceFiat].forEach { $0?.setStyle(.txtSectionHeader) }
@@ -100,7 +100,7 @@ class BalanceCell: UITableViewCell {
         model == nil ? loader.startAnimating() : loader.stopAnimating()
         btnExchangeAlign.constant = model == nil ? 0 : -8
         lblBalanceValue.isHidden = model == nil
-        lblBalanceFiat.isHidden = model == nil
+        lblBalanceFiat.isHidden = true // model == nil
         if hideBalance {
             lblBalanceValue.attributedText = Common.obfuscate(color: .white, size: 24, length: 5)
             lblBalanceFiat.attributedText = Common.obfuscate(color: .gray, size: 12, length: 5)
