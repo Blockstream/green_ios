@@ -81,11 +81,11 @@ class BuyBTCViewModel {
     }
     var isJade: Bool { wm.account.isJade }
     func quote(_ amountStr: String) async throws -> [MeldQuoteItem] {
-
+        let amt = amountStr.replacingOccurrences(of: ",", with: ".")
         let params = MeldQuoteParams(
             destinationCurrencyCode: "BTC",
             countryCode: countryCode,
-            sourceAmount: amountStr,
+            sourceAmount: amt,
             sourceCurrencyCode: currency ?? "USD",
             paymentMethodType: "CARD")
         return try await meld.quote(params)
@@ -118,6 +118,7 @@ class BuyBTCViewModel {
         }
     }
     func widget(quote: MeldQuoteItem, amountStr: String) async throws -> String {
+        let amt = amountStr.replacingOccurrences(of: ",", with: ".")
         guard let addressStr = address?.address else {
            throw GaError.GenericError("Invalid address")
         }
@@ -130,7 +131,7 @@ class BuyBTCViewModel {
                          "sourceCurrencyCode"],
             paymentMethodType: "CARD",
             // redirectUrl: "",
-            sourceAmount: amountStr,
+            sourceAmount: amt,
             sourceCurrencyCode: currency ?? "USD",
             walletAddress: addressStr)
         let params = MeldWidgetParams(
