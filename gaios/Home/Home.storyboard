@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_logo_blockstream" translatesAutoresizingMaskIntoConstraints="NO" id="xqN-bP-Poi">
-                                <rect key="frame" x="25" y="122" width="155" height="34.5"/>
+                                <rect key="frame" x="25" y="122" width="156" height="35"/>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="aed-43-hVZ">
                                 <rect key="frame" x="0.0" y="192" width="414" height="574"/>
@@ -698,14 +698,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_big" translatesAutoresizingMaskIntoConstraints="NO" id="28b-fk-hhg">
-                                <rect key="frame" x="162" y="400" width="90" height="110"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_logo_blockstream" translatesAutoresizingMaskIntoConstraints="NO" id="28b-fk-hhg">
+                                <rect key="frame" x="83" y="427" width="248" height="56"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="28b-fk-hhg" secondAttribute="height" multiplier="156:35" id="tP5-fc-AKn"/>
+                                </constraints>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="uMx-0z-1KD"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="28b-fk-hhg" firstAttribute="centerX" secondItem="uMx-0z-1KD" secondAttribute="centerX" id="SNT-4w-BXj"/>
+                            <constraint firstItem="28b-fk-hhg" firstAttribute="width" secondItem="z6s-Af-dZa" secondAttribute="width" multiplier="0.6" id="eKl-vE-CX7"/>
                             <constraint firstItem="28b-fk-hhg" firstAttribute="centerY" secondItem="uMx-0z-1KD" secondAttribute="centerY" id="vbj-Kj-t1T"/>
                         </constraints>
                     </view>
@@ -723,7 +727,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalCompressionResistancePriority="749" image="ic_logo_blockstream" translatesAutoresizingMaskIntoConstraints="NO" id="7S5-nF-fE9">
-                                <rect key="frame" x="129.5" y="102" width="155" height="34"/>
+                                <rect key="frame" x="129" y="102" width="156" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="34" id="uFZ-ug-CdU"/>
                                 </constraints>
@@ -845,12 +849,11 @@
         <image name="erase" width="25" height="25"/>
         <image name="ic_alert_warn" width="30" height="27"/>
         <image name="ic_dialog_sweep_wallet" width="24" height="24"/>
-        <image name="ic_logo_blockstream" width="155" height="34.5"/>
+        <image name="ic_logo_blockstream" width="156" height="35"/>
         <image name="ic_passphrase" width="9.3333330154418945" height="9.3333330154418945"/>
         <image name="ic_wallet_disclose" width="7.5" height="11.5"/>
         <image name="ic_x_circle" width="20" height="20"/>
         <image name="login_faceid" width="96.5" height="96"/>
-        <image name="logo_big" width="90" height="110"/>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

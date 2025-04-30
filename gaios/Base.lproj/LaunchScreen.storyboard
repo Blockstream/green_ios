@@ -17,14 +17,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_big" translatesAutoresizingMaskIntoConstraints="NO" id="Ilm-jS-8oU">
-                                <rect key="frame" x="142.5" y="288.5" width="90" height="110"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_logo_blockstream" translatesAutoresizingMaskIntoConstraints="NO" id="Ilm-jS-8oU">
+                                <rect key="frame" x="75" y="318.5" width="225" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="Ilm-jS-8oU" secondAttribute="height" multiplier="156:35" id="c4M-kQ-aq8"/>
+                                </constraints>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="Ilm-jS-8oU" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="01I-L6-IQh"/>
+                            <constraint firstItem="Ilm-jS-8oU" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="0.6" id="6mR-aH-f5H"/>
                             <constraint firstItem="Ilm-jS-8oU" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="HI8-la-PN9"/>
                         </constraints>
                     </view>
@@ -35,7 +39,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="logo_big" width="90" height="110"/>
+        <image name="ic_logo_blockstream" width="156" height="35"/>
         <namedColor name="gBlackBg">
             <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
