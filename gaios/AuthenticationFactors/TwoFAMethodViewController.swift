@@ -70,7 +70,7 @@ class TwoFAMethodViewController: UIViewController {
         }
         btns.forEach {
             $0.isUserInteractionEnabled = false
-            $0.backgroundColor = UIColor.gGreenMatrix()
+            $0.backgroundColor = UIColor.gAccent()
             $0.cornerRadius = 4.0
         }
         [cardSms, cardCall, cardEmail, cardGauth].forEach {

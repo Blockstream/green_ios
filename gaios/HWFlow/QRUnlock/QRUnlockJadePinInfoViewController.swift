@@ -42,7 +42,7 @@ class QRUnlockJadePinInfoViewController: UIViewController {
 
     func loadNavigationBtns() {
         let helpBtn = UIButton(type: .system)
-        helpBtn.setImage(UIImage(named: "ic_help")?.maskWithColor(color: UIColor.gGreenMatrix()), for: .normal)
+        helpBtn.setImage(UIImage(named: "ic_help")?.maskWithColor(color: UIColor.gAccent()), for: .normal)
         helpBtn.addTarget(self, action: #selector(setupBtnTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: helpBtn)
     }

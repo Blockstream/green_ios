@@ -211,7 +211,7 @@ class TxDetailsViewModel {
         }
         if (transaction.isLightning) {} else {
             models.append(
-                TxDetailsActionCellModel(icon: UIImage(named: "ic_tx_action_explorer")!.maskWithColor(color: UIColor.gGreenMatrix()),
+                TxDetailsActionCellModel(icon: UIImage(named: "ic_tx_action_explorer")!.maskWithColor(color: UIColor.gAccent()),
                                          title: "id_view_in_explorer".localized,
                                          action: .explorer)
             )
@@ -234,7 +234,7 @@ class TxDetailsViewModel {
 
         if transaction.isLightning && transaction.isRefundableSwap ?? false {
             models.append(
-                TxDetailsActionCellModel(icon: UIImage(named: "ic_tx_action_revert")!.maskWithColor(color: UIColor.gGreenMatrix()),
+                TxDetailsActionCellModel(icon: UIImage(named: "ic_tx_action_revert")!.maskWithColor(color: UIColor.gAccent()),
                                          title: "id_initiate_refund".localized,
                                          action: .refund)
             )

@@ -114,7 +114,7 @@ class SetPhoneViewController: KeyboardViewController {
             .font: UIFont.systemFont(ofSize: 14.0, weight: .regular)
         ]
         let gAttr: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.gGreenMatrix(),
+            .foregroundColor: UIColor.gAccent(),
             .font: UIFont.systemFont(ofSize: 14.0, weight: .bold)
         ]
         let attrStr = NSMutableAttributedString(string: strIAgree)

@@ -104,7 +104,7 @@ class QRUnlockJadeViewController: UIViewController {
         lblNavTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         lblStep.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        lblStep.textColor = UIColor.gGreenMatrix()
+        lblStep.textColor = UIColor.gAccent()
         btnNext.setStyle(.primary)
         lblUserHelpTitle.setStyle(.subTitle)
         lblUserHelpHint.setStyle(.txtCard)

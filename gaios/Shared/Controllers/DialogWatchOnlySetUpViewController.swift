@@ -80,7 +80,7 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
     }
 
     func updateSecureBtn() {
-        let img = passwordField.isSecureTextEntry == true ? UIImage(named: "ic_eye")!.maskWithColor(color: UIColor.customMatrixGreen()) : UIImage(named: "ic_hide")!.maskWithColor(color: UIColor.customMatrixGreen())
+        let img = passwordField.isSecureTextEntry == true ? UIImage(named: "ic_eye")!.maskWithColor(color: UIColor.gAccent()) : UIImage(named: "ic_hide")!.maskWithColor(color: UIColor.gAccent())
         btnSecure.setImage(img, for: .normal)
     }
 

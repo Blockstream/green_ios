@@ -86,7 +86,7 @@ class LTExportJadeViewController: UIViewController {
         subtitleLabel.setStyle(.title)
         descriptionLabel.setStyle(.txtCard)
         nextButton.setStyle(.primary)
-        btnLearnMore.setTitleColor(UIColor.customMatrixGreen(), for: .normal)
+        btnLearnMore.setTitleColor(UIColor.gAccent(), for: .normal)
         btnQREnlarge.setStyle(.qrEnlarge)
     }
 

@@ -32,7 +32,7 @@ class ArcView: UIView {
         context.addArc(center: CGPoint(x: c.x, y: c.y), radius: radius, startAngle: 0, endAngle: 2.0*CGFloat.pi, clockwise: false)
         context.strokePath()
 
-        context.setStrokeColor(UIColor.customMatrixGreen().cgColor)
+        context.setStrokeColor(UIColor.gAccent().cgColor)
 
         context.beginPath()
         context.addArc(center: CGPoint(x: c.x, y: c.y), radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: false)

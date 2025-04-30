@@ -63,7 +63,7 @@ class AddressAuthViewController: KeyboardViewController {
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
         settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        settingsBtn.tintColor = UIColor.gGreenMatrix()
+        settingsBtn.tintColor = UIColor.gAccent()
         settingsBtn.setTitle("Export".localized, for: .normal)
         settingsBtn.addTarget(self, action: #selector(exportBtnTapped), for: .touchUpInside)
         // navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)

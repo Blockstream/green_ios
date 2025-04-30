@@ -13,7 +13,7 @@ class ActionsSheetCell: UITableViewCell {
         bg.cornerRadius = 5.0
         bg.backgroundColor = UIColor.gGrayElement()
         btnDisclose.isUserInteractionEnabled = false
-        btnDisclose.backgroundColor = UIColor.gGreenMatrix()
+        btnDisclose.backgroundColor = UIColor.gAccent()
         btnDisclose.cornerRadius = 4.0
         lblTitle.setStyle(.txtBigger)
         lblHint.setStyle(.txtCard)

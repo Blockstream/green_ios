@@ -243,7 +243,7 @@ class TxDetailsStatusCell: UITableViewCell {
         case "verified":
             iconSpv.isHidden = false
             iconSpv.image = UIImage(named: "ic_spv_check")
-            iconSpv.tintColor = UIColor.gGreenMatrix()
+            iconSpv.tintColor = UIColor.gAccent()
         case "in_progress":
             iconSpv.isHidden = false
             iconSpv.image = UIImage(named: "ic_spv_progress")
@@ -264,7 +264,7 @@ class TxDetailsStatusCell: UITableViewCell {
 
         switch transaction.spvVerified {
         case "verified":
-            lblSpv.textColor = UIColor.customMatrixGreen()
+            lblSpv.textColor = UIColor.gAccent()
             lblSpv.text = "id_verified".localized
         case "not_verified":
             lblSpv.textColor = .red

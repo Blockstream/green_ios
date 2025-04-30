@@ -21,6 +21,6 @@ class GreenPickerCell: UITableViewCell {
                    isSelected: Bool) {
         lblTitle.text = model.title
         lblHint.text = model.hint
-        lblTitle.textColor = isSelected ? UIColor.gGreenMatrix() : .white
+        lblTitle.textColor = isSelected ? UIColor.gAccent() : .white
     }
 }

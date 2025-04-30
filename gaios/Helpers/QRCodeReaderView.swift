@@ -272,7 +272,7 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
             print(barCodeObject)
             let qrCodeFrame = barCodeObject.bounds
             DispatchQueue.main.async {
-                self.activeFrameView.borderColor = UIColor.gGreenMatrix()
+                self.activeFrameView.borderColor = UIColor.gAccent()
                 self.activeFrameView.frame = CGRect(x: qrCodeFrame.origin.x - 3, y: qrCodeFrame.origin.y - 3, width: qrCodeFrame.width + 6, height: qrCodeFrame.height + 6)
             }
         } else {

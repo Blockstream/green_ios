@@ -27,7 +27,7 @@ class SystemMessageViewController: UIViewController {
 
     func reload() {
         let accept = confirmBtn.isEnabled
-        acceptCheck.backgroundColor = accept ? UIColor.customMatrixGreen() : UIColor.clear
+        acceptCheck.backgroundColor = accept ? UIColor.gAccent() : UIColor.clear
         acceptCheck.setImage(accept ? UIImage(named: "check") : nil, for: UIControl.State.normal)
         acceptCheck.tintColor = UIColor.white
         acceptCheck.layer.borderWidth = 1.0

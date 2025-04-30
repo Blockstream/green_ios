@@ -23,7 +23,7 @@ class PolicyCell: UITableViewCell {
         // Initialization code
         bg.cornerRadius = 5.0
         btnDisclose.isUserInteractionEnabled = false
-        btnDisclose.backgroundColor = UIColor.gGreenMatrix()
+        btnDisclose.backgroundColor = UIColor.gAccent()
         btnDisclose.cornerRadius = 4.0
         bgType.cornerRadius = bgType.frame.size.height / 2.0
         bgTypeDesc.cornerRadius = bgType.frame.size.height / 2.0

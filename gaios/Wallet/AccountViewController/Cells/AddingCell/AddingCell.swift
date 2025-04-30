@@ -11,7 +11,7 @@ class AddingCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         bg.cornerRadius = 5.0
-        icShield.image = icShield.image?.maskWithColor(color: UIColor.gGreenMatrix())
+        icShield.image = icShield.image?.maskWithColor(color: UIColor.gAccent())
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

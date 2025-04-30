@@ -105,7 +105,7 @@ class DialogCustomFeeViewController: KeyboardViewController {
     func updateUI() {
         if feeTextField.text?.count ?? 0 > 0 {
             btnSave.isEnabled = true
-            btnSave.backgroundColor = UIColor.customMatrixGreen()
+            btnSave.backgroundColor = UIColor.gAccent()
             btnSave.setTitleColor(.white, for: .normal)
         } else {
             btnSave.isEnabled = false

@@ -12,7 +12,7 @@ class DiscloseCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         bg.cornerRadius = 5.0
-        btnDisclose.backgroundColor = UIColor.gGreenMatrix()
+        btnDisclose.backgroundColor = UIColor.gAccent()
         btnDisclose.cornerRadius = 4.0
     }
 

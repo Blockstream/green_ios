@@ -47,7 +47,7 @@ extension MnemonicCell: UITextFieldDelegate {
     }
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        wordText.layer.borderColor = UIColor.customMatrixGreen().cgColor
+        wordText.layer.borderColor = UIColor.gAccent().cgColor
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {

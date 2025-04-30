@@ -39,7 +39,7 @@ class LTAuthViewController: UIViewController {
         lblInfo.setStyle(.txtCard)
         btnAuth.setStyle(.primary)
         hintFrame.borderWidth = 1.0
-        hintFrame.borderColor = UIColor.gGreenMatrix()
+        hintFrame.borderColor = UIColor.gAccent()
     }
 
     override func viewDidLayoutSubviews() {

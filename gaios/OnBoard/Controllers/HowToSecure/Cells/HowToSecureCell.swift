@@ -26,7 +26,7 @@ class HowToSecureCell: UITableViewCell {
         bg.borderWidth = 1.0
         bg.borderColor = .white.withAlphaComponent(0.1)
         btnDisclose.isUserInteractionEnabled = false
-        btnDisclose.backgroundColor = UIColor.gGreenMatrix()
+        btnDisclose.backgroundColor = UIColor.gAccent()
         btnDisclose.cornerRadius = 4.0
         lblTitle.setStyle(.subTitle)
         lblTxt.setStyle(.txtCard)

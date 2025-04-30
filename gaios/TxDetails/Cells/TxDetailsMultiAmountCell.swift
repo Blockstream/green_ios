@@ -24,7 +24,7 @@ class TxDetailsMultiAmountCell: UITableViewCell {
         lblAmount.setStyle(.subTitle)
         lblFiat.setStyle(.txtCard)
         lblAsset.setStyle(.txt)
-        lblAsset.textColor = UIColor.gGreenMatrix()
+        lblAsset.textColor = UIColor.gAccent()
     }
 
     func configure(model: TxDetailsAmountCellModel,
@@ -44,7 +44,7 @@ class TxDetailsMultiAmountCell: UITableViewCell {
             lblFiat.isHidden = model.id != model.tx.feeAsset
             if model.hideBalance {
                 lblAmount.attributedText = Common.obfuscate(color: .white, size: 14, length: 5)
-                lblAsset.attributedText = Common.obfuscate(color: UIColor.gGreenMatrix(), size: 10, length: 3)
+                lblAsset.attributedText = Common.obfuscate(color: UIColor.gAccent(), size: 10, length: 3)
                 lblFiat.attributedText =  Common.obfuscate(color: .white, size: 10, length: 5)
             }
         }

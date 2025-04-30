@@ -222,7 +222,7 @@ class SendAmountViewController: KeyboardViewController {
             if btnSendAllPressed {
                 btnSendall.setStyle(.underline(txt: "id_send_all".localized, color: UIColor.gW40()))
             } else {
-                btnSendall.setStyle(.underline(txt: "id_send_all".localized, color: UIColor.gGreenMatrix()))
+                btnSendall.setStyle(.underline(txt: "id_send_all".localized, color: UIColor.gAccent()))
             }
         }
     }
@@ -241,11 +241,11 @@ class SendAmountViewController: KeyboardViewController {
         [lblAvailable, lblFiat, lblFeeTitle, lblNtwFee, lblTime, lblConversion].forEach {
             $0?.setStyle(.txtCard)
         }
-        btnSendall.setStyle(.underline(txt: "id_send_all".localized, color: UIColor.gGreenMatrix()))
+        btnSendall.setStyle(.underline(txt: "id_send_all".localized, color: UIColor.gAccent()))
         btnDenomination.setStyle(.inline)
         btnDenomination.setTitleColor(.white, for: .normal)
         btnDenomination.titleLabel?.font = UIFont.systemFont(ofSize: 13.0, weight: .medium)
-        btnChangeSpeed.setStyle(.underline(txt: "id_change_speed".localized, color: UIColor.gGreenMatrix()))
+        btnChangeSpeed.setStyle(.underline(txt: "id_change_speed".localized, color: UIColor.gAccent()))
         [lblSumTotalKey, lblSumTotalValue].forEach {
             $0?.setStyle(.txtBigger)
         }

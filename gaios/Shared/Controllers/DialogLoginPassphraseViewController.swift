@@ -60,7 +60,7 @@ class DialogLoginPassphraseViewController: KeyboardViewController {
         fieldPassphrase.setLeftPaddingPoints(10.0)
         fieldPassphrase.setRightPaddingPoints(10.0)
         cardView.setStyle(.bottomsheet)
-        btnLearn.setTitleColor(UIColor.customMatrixGreen(), for: .normal)
+        btnLearn.setTitleColor(UIColor.gAccent(), for: .normal)
     }
 
     override func viewDidAppear(_ animated: Bool) {

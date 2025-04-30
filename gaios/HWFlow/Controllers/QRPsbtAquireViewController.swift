@@ -51,10 +51,10 @@ class QRPsbtAquireViewController: UIViewController {
         btnBack.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblNavTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblStep.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        lblStep.textColor = UIColor.gGreenMatrix()
+        lblStep.textColor = UIColor.gAccent()
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         lblHint.setStyle(.txtCard)
-        btnTrouble.setImage(UIImage(named: "ic_help")?.maskWithColor(color: UIColor.gGreenMatrix()), for: .normal)
+        btnTrouble.setImage(UIImage(named: "ic_help")?.maskWithColor(color: UIColor.gAccent()), for: .normal)
         qrScanView.layer.masksToBounds = true
         qrScanView.borderWidth = 10.0
         qrScanView.borderColor = UIColor.gGrayCamera()

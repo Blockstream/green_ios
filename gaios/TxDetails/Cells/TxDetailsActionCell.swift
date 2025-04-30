@@ -14,14 +14,14 @@ class TxDetailsActionCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         lblTitle.setStyle(.txtSmallerBold)
-        lblTitle.textColor = UIColor.gGreenMatrix()
-        hintView.backgroundColor = UIColor.gGreenMatrix()
+        lblTitle.textColor = UIColor.gAccent()
+        hintView.backgroundColor = UIColor.gAccent()
         hintView.layer.cornerRadius = hintView.frame.size.height / 2.0
         lblHint.setStyle(.txtSmallerBold)
     }
 
     func configure(model: TxDetailsActionCellModel, isLast: Bool) {
-        self.icon.image = model.icon
+        self.icon.image = model.icon.maskWithColor(color: UIColor.gAccent())
         self.lblTitle.text = model.title
         hintView.isHidden = model.action != .speedUp
         lblHint.text = "id_increase_fee".localized

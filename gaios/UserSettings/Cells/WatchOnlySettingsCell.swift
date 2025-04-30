@@ -54,8 +54,8 @@ class WatchOnlySinglesigSettingsCell: UITableViewCell {
         lblTitle.textColor = .white
         lblHint.textColor = UIColor.customGrayLight()
         bg.layer.cornerRadius = 5.0
-        btnCopy.setImage(UIImage(named: "ic_copy_new")?.maskWithColor(color: UIColor.gGreenMatrix()), for: .normal)
-        btnQR.setImage(UIImage(named: "qr")?.maskWithColor(color: UIColor.gGreenMatrix()), for: .normal)
+        btnCopy.setImage(UIImage(named: "ic_copy_new")?.maskWithColor(color: UIColor.gAccent()), for: .normal)
+        btnQR.setImage(UIImage(named: "qr")?.maskWithColor(color: UIColor.gAccent()), for: .normal)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

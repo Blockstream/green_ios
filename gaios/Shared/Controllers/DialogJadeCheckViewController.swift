@@ -33,7 +33,7 @@ class DialogJadeCheckViewController: UIViewController {
     func setContent() {
         lblVerify.text = "id_check_device".localized
         lblAddress.text = message
-        icArrow.image = UIImage(named: "ic_hww_arrow")!.maskWithColor(color: UIColor.customMatrixGreen())
+        icArrow.image = UIImage(named: "ic_hww_arrow")!.maskWithColor(color: UIColor.gAccent())
     }
 
     func setStyle() {

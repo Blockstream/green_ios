@@ -15,7 +15,7 @@ class AssetExpandableView: UIView {
         open: Bool) {
         if open {
             bg.borderWidth = 2.0
-            bg.borderColor = UIColor.gGreenMatrix()
+            bg.borderColor = UIColor.gAccent()
             bg.layer.cornerRadius = 5
             bg.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         } else {

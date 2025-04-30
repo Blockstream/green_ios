@@ -61,7 +61,7 @@ class SendFeeCell: UITableViewCell {
             noFundsView.isHidden = false
         } else {
             bg.backgroundColor = .clear
-            btnDisclose.backgroundColor = UIColor.gGreenMatrix()
+            btnDisclose.backgroundColor = UIColor.gAccent()
             btnDisclose.alpha = 1.0
             noFundsView.isHidden = true
         }

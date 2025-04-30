@@ -205,14 +205,14 @@ class AmountCell: UITableViewCell {
                 lblToReceiveHint.isHidden = model.hideSubamount
                 lblToReceiveHint.text = model.subamountText
                 if model.showMessage {
-                    bg.borderColor = UIColor.gGreenMatrix()
-                    infoPanel.backgroundColor = UIColor.gGreenMatrix()
+                    bg.borderColor = UIColor.gAccent()
+                    infoPanel.backgroundColor = UIColor.gAccent()
                     lblInfo.text = model.message(.valid) ?? ""
                 }
             }
         case .validFunding:
-            bg.borderColor = UIColor.gGreenMatrix()
-            infoPanel.backgroundColor = UIColor.gGreenMatrix().withAlphaComponent(1.0)
+            bg.borderColor = UIColor.gAccent()
+            infoPanel.backgroundColor = UIColor.gAccent().withAlphaComponent(1.0)
             let amount = model.openChannelFee
             lblInfo.text = String(format: "id_a_set_up_funding_fee_of_s_s".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
             lblInfo.isHidden = false

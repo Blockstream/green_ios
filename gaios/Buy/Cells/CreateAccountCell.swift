@@ -6,7 +6,7 @@ class CreateAccountCell: UITableViewCell {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var nextButton: UIButton!
     var onTap: (() -> Void)?
-    
+
     class var identifier: String { return String(describing: self) }
 
     override func awakeFromNib() {
@@ -14,7 +14,7 @@ class CreateAccountCell: UITableViewCell {
         // Initialization code
         bgView.cornerRadius = 5.0
         nextButton.isUserInteractionEnabled = false
-        nextButton.backgroundColor = UIColor.gGreenMatrix()
+        nextButton.backgroundColor = UIColor.gAccent()
         nextButton.cornerRadius = 4.0
     }
 
@@ -26,7 +26,7 @@ class CreateAccountCell: UITableViewCell {
         titleLabel.text = "id_create_new_account".localized
         self.onTap = onTap
     }
-    
+
     @IBAction func didTap(_ sender: Any) {
         self.onTap?()
     }

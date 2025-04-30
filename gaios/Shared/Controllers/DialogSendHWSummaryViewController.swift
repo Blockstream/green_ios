@@ -52,7 +52,7 @@ class DialogSendHWSummaryViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = "id_confirm_on_your_device".localized
-        icArrow.image = UIImage(named: "ic_hww_arrow")!.maskWithColor(color: UIColor.customMatrixGreen())
+        icArrow.image = UIImage(named: "ic_hww_arrow")!.maskWithColor(color: UIColor.gAccent())
 
         if let transaction = transaction, let addressee = transaction.addressees.first {
 

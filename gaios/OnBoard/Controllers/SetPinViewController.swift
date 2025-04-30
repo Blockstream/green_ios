@@ -15,36 +15,33 @@ enum PinFlow {
 }
 
 class SetPinViewController: UIViewController {
-    
+
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-    
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet var keyButton: [UIButton]?
     @IBOutlet var pinLabel: [UILabel]?
     @IBOutlet weak var btnNext: UIButton!
-    
     private var pinCodeToVerify = ""
     private var pinCode = ""
     private var actionPin = ActionPin.set
-    
     var pinFlow = PinFlow.create
     var viewModel: OnboardViewModel!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setContent()
         setStyle()
         customBack()
         setActions()
-        
+
         view.accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.view
         keyButton![0].accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.btn1
         keyButton![1].accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.btn2
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.nextBtn
-        
+
         if actionPin == .set {
             switch self.pinFlow {
             case .settings:
@@ -56,7 +53,7 @@ class SetPinViewController: UIViewController {
             }
         }
     }
-    
+
     func customBack() {
         let view = UIView()
         let button = UIButton(type: .system)
@@ -70,36 +67,34 @@ class SetPinViewController: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: view)
         navigationItem.hidesBackButton = true
     }
-    
+
     @objc func back(sender: UIBarButtonItem) {
         navigationController?.popViewController(animated: true)
     }
-    
+
     func setContent() {
         title = ""
-        
+
         switch actionPin {
         case .set:
             lblTitle.text = "id_set_a_pin".localized
         case .verify:
             lblTitle.text = "id_verify_your_pin".localized
         }
-        
+
         lblHint.text = "id_youll_need_your_pin_to_log_in".localized
         btnNext.setTitle("id_continue".localized, for: .normal)
     }
-    
+
     func setStyle() {
         btnNext.cornerRadius = 4.0
     }
-    
-    func setActions() {
-        
-    }
-    
+
+    func setActions() {}
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         pinCode = ""
         cancelButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         deleteButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
@@ -108,28 +103,27 @@ class SetPinViewController: UIViewController {
         }
         reload()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
-        
         cancelButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         deleteButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         for button in keyButton!.enumerated() {
             button.element.removeTarget(self, action: #selector(keyClick(sender:)), for: .touchUpInside)
         }
     }
-    
+
     @objc func keyClick(sender: UIButton) {
-        
+
         if pinCode.count == 6 { return }
-        
+
         pinCode += (sender.titleLabel?.text)!
         reload()
         guard pinCode.count == 6 else {
             return
         }
-        
+
         switch actionPin {
         case .set:
             moveToNext()
@@ -137,7 +131,7 @@ class SetPinViewController: UIViewController {
             verifyPins()
         }
     }
-    
+
     func verifyPins() {
         if pinCode == pinCodeToVerify {
             nextSetEnabled(true)
@@ -146,7 +140,7 @@ class SetPinViewController: UIViewController {
             navigationController?.popViewController(animated: true)
         }
     }
-    
+
     func reload() {
         pinLabel?.enumerated().forEach {(index, label) in
             if index < pinCode.count {
@@ -162,13 +156,11 @@ class SetPinViewController: UIViewController {
             nextSetEnabled(pinCode.count == 6 && (pinCode == pinCodeToVerify))
         }
     }
-    
+
     func nextSetEnabled(_ isEnabled: Bool) {
-        btnNext.backgroundColor = ( isEnabled ? UIColor.gAccent() : UIColor.customBtnOff())
-        btnNext.isEnabled = isEnabled
-        btnNext.setTitleColor(( isEnabled ? UIColor.white : UIColor.customGrayLight()), for: .normal)
+        btnNext.setStyle(isEnabled ? .primary : .primaryDisabled)
     }
-    
+
     @objc func click(sender: UIButton) {
         if sender == deleteButton {
             if pinCode.count > 0 {
@@ -179,7 +171,7 @@ class SetPinViewController: UIViewController {
         }
         reload()
     }
-    
+
     func moveToNext() {
         switch actionPin {
         case .set:
@@ -198,11 +190,11 @@ class SetPinViewController: UIViewController {
             }
         }
     }
-    
+
     @IBAction func btnNext(_ sender: Any) {
         moveToNext()
     }
-    
+
     fileprivate func setPin(_ pin: String) async {
         let pinFlow = self.pinFlow
         let task = Task.detached { [weak self] in

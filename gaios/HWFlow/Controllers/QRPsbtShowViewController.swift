@@ -66,13 +66,13 @@ class QRPsbtShowViewController: UIViewController {
         lblNavTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         btnTrouble.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblStep.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        lblStep.textColor = UIColor.gGreenMatrix()
+        lblStep.textColor = UIColor.gAccent()
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         lblHint.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
         lblHint.textColor = .black
         btnVerify.setStyle(.outlinedBlack)
         btnNext.setStyle(.primary)
-        btnTrouble.setImage(UIImage(named: "ic_help")?.maskWithColor(color: UIColor.gGreenMatrix()), for: .normal)
+        btnTrouble.setImage(UIImage(named: "ic_help")?.maskWithColor(color: UIColor.gAccent()), for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {

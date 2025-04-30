@@ -27,7 +27,7 @@ class DialogInputDenominationCell: UITableViewCell {
                    isSelected: Bool) {
         lblTitle.text = self.symbol(denomination, network)
         icon.isHidden = isSelected == false
-        lblTitle.textColor = isSelected ? UIColor.gGreenMatrix() : .white
+        lblTitle.textColor = isSelected ? UIColor.gAccent() : .white
         var hint = ""
         guard let balance = balance else {
             lblHint.text = ""

@@ -22,6 +22,6 @@ class DialogDenominationCell: UITableViewCell {
     func configure(title: String, isSelected: Bool) {
         lblTitle.text = title
         icon.isHidden = isSelected == false
-        lblTitle.textColor = isSelected ? UIColor.gGreenMatrix() : .white
+        lblTitle.textColor = isSelected ? UIColor.gAccent() : .white
     }
 }

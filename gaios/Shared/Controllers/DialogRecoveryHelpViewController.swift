@@ -43,7 +43,7 @@ class DialogRecoveryHelpViewController: KeyboardViewController {
         cardView.setStyle(.bottomsheet)
 
         btnHelpCenter.cornerRadius = 4.0
-        btnHelpCenter.backgroundColor = UIColor.customMatrixGreen()
+        btnHelpCenter.backgroundColor = UIColor.gAccent()
         btnHelpCenter.setTitleColor(.white, for: .normal)
     }
 

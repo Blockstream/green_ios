@@ -52,8 +52,8 @@ class DialogRegistryFailViewController: UIViewController {
         btnContinue.isEnabled = isOn
 
         if isOn {
-            btnContinue.setTitleColor(UIColor.customMatrixGreen(), for: .normal)
-            btnContinue.borderColor = UIColor.customMatrixGreen()
+            btnContinue.setTitleColor(UIColor.gAccent(), for: .normal)
+            btnContinue.borderColor = UIColor.gAccent()
         } else {
             btnContinue.setTitleColor(UIColor.customGrayLight(), for: .normal)
             btnContinue.borderColor = UIColor.customGrayLight()

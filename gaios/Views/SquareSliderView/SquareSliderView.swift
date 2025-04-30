@@ -93,7 +93,7 @@ class SquareSliderView: UIView {
         let iconView = UIImageView(frame: CGRect(x: offset, y: offset, width: fH - (2 * offset), height: fH - (2 * offset)))
         iconView.image = UIImage(named: "ic_square_slider")
 
-        self.slideThumb.backgroundColor = UIColor.customMatrixGreen()
+        self.slideThumb.backgroundColor = UIColor.gAccent()
         self.slideThumb.addSubview(iconView)
         self.addSubview(self.slideThumb)
     }
@@ -110,6 +110,6 @@ class SquareSliderView: UIView {
 
     func isActive(_ isActive: Bool) {
         isUserInteractionEnabled = isActive
-        self.slideThumb.backgroundColor = isActive ? UIColor.gGreenMatrix() : UIColor.gW40()
+        self.slideThumb.backgroundColor = isActive ? UIColor.gAccent() : UIColor.gW40()
     }
 }

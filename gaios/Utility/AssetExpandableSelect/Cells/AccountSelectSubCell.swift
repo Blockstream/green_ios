@@ -18,7 +18,7 @@ class AccountSelectSubCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         btnDisclose.isUserInteractionEnabled = false
-        btnDisclose.backgroundColor = UIColor.gGreenMatrix()
+        btnDisclose.backgroundColor = UIColor.gAccent()
         btnDisclose.cornerRadius = 4.0
     }
 

@@ -17,7 +17,7 @@ class DialogInputDenominationFooter: UIView {
         lblHint.setStyle(.txtCard)
         lblTitle.text = title
         icon.isHidden = isSelected == false
-        lblTitle.textColor = isSelected ? UIColor.gGreenMatrix() : .white
+        lblTitle.textColor = isSelected ? UIColor.gAccent() : .white
         lblHint.text = hint
         self.onTap = onTap
     }

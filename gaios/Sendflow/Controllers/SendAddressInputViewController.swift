@@ -66,6 +66,7 @@ class SendAddressInputViewController: KeyboardViewController {
         lblInvalid.text = "id_invalid_address".localized
         btnQR.setTitle("id_scan_qr_code".localized, for: .normal)
         btnPaste.setTitle("id_paste".localized, for: .normal)
+        btnPaste.setImage(UIImage(named: "ic_clipboard")?.maskWithColor(color: UIColor.gBlackBg()), for: .normal)
         btnPasteSmall.setTitle("id_paste".localized, for: .normal)
         btnNext.setTitle("id_next".localized, for: .normal)
         if viewModel.txType == .sweep {

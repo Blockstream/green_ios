@@ -116,13 +116,13 @@ class SetupJadeViewController: HWFlowBaseViewController {
         switch idx {
         case 0:
             lblStep1Hint.isHidden = false
-            infoBox1.borderColor = UIColor.gGreenMatrix()
+            infoBox1.borderColor = UIColor.gAccent()
         case 1:
             lblStep2Hint.isHidden = false
-            infoBox2.borderColor = UIColor.gGreenMatrix()
+            infoBox2.borderColor = UIColor.gAccent()
         case 2:
             lblStep3Hint.isHidden = false
-            infoBox3.borderColor = UIColor.gGreenMatrix()
+            infoBox3.borderColor = UIColor.gAccent()
         default:
             break
         }
@@ -132,7 +132,7 @@ class SetupJadeViewController: HWFlowBaseViewController {
         // Troubleshoot
         let settingsBtn = UIButton(type: .system)
         settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        settingsBtn.tintColor = UIColor.gGreenMatrix()
+        settingsBtn.tintColor = UIColor.gAccent()
         settingsBtn.setTitle("id_troubleshoot".localized, for: .normal)
         settingsBtn.addTarget(self, action: #selector(troubleshootBtnTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
@@ -146,7 +146,7 @@ class SetupJadeViewController: HWFlowBaseViewController {
         }
         [lblStep1Number, lblStep2Number, lblStep3Number].forEach {
             $0?.font = UIFont.systemFont(ofSize: 12.0, weight: .black)
-            $0?.textColor = UIColor.gGreenMatrix()
+            $0?.textColor = UIColor.gAccent()
         }
         [lblStep1Title, lblStep2Title, lblStep3Title].forEach {
             $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
