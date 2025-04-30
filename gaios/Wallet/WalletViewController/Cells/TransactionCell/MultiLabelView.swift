@@ -25,9 +25,9 @@ class MultiLabelView: UIView {
                 $0?.font = .boldSystemFont(ofSize: 14)
             }
             lblLeft.textColor = .white
-            lblRight.textColor = UIColor.gGreenMatrix()
+            lblRight.textColor = UIColor.gAccent()
             if model.hideBalance ?? false {
-                lblRight.attributedText = Common.obfuscate(color: UIColor.gGreenMatrix(),
+                lblRight.attributedText = Common.obfuscate(color: UIColor.gAccent(),
                                                            size: 12, length: 5)
             }
         case .amountOut:
@@ -76,7 +76,7 @@ class MultiLabelView: UIView {
             lblLeft.textColor = .white
             lblRight.textColor = UIColor.gRedFluo()
             if model.hideBalance ?? false {
-                lblRight.attributedText = Common.obfuscate(color: UIColor.gGreenMatrix(),
+                lblRight.attributedText = Common.obfuscate(color: UIColor.gAccent(),
                                                            size: 12, length: 5)
             }
         }

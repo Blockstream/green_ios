@@ -73,9 +73,9 @@ class WalletViewModel {
     func getAssetId() -> String {
         let lSubs: [WalletItem] = subaccounts.filter { $0.gdkNetwork.liquid == true }
         if lSubs.count == subaccounts.count && lSubs.count > 0 {
-            return lSubs.first?.gdkNetwork.mainnet ?? true ? Balance.lbtc : Balance.ltest
+            return lSubs.first?.gdkNetwork.mainnet ?? true ? AssetInfo.lbtcId : AssetInfo.ltestId
         } else {
-            return "btc"
+            return AssetInfo.btcId
         }
     }
 

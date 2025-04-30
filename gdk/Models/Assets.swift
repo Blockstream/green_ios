@@ -52,5 +52,6 @@ public struct AssetInfo: Codable, Equatable {
     public static var testId = "btc"
     public static var lbtcId = GdkNetworks.shared.liquidSS.getFeeAsset()
     public static var ltestId = GdkNetworks.shared.testnetLiquidSS.getFeeAsset()
-    public static var baseIds = [btcId, testId, lbtcId, ltestId]
+    public static var lightningId = "lightning"
+    public static var baseIds = [btcId, testId, lbtcId, ltestId, lightningId]
 }

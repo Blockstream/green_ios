@@ -23,7 +23,8 @@ public class AssetsManager {
                      AssetInfo.ltestId: AssetInfo.ltest]
         } else {
             infos = [AssetInfo.btcId: AssetInfo.btc,
-                     AssetInfo.lbtcId: AssetInfo.lbtc]
+                     AssetInfo.lbtcId: AssetInfo.lbtc,
+                     AssetInfo.lightningId: AssetInfo.lightning]
         }
     }
 
@@ -40,7 +41,7 @@ public class AssetsManager {
     }
 
     private func getInfo(for key: String, provider: AssetsProvider) -> AssetInfo? {
-        let main = [AssetInfo.btc, AssetInfo.lbtc, AssetInfo.test, AssetInfo.ltest].filter { $0.assetId == key }.first
+        let main = [AssetInfo.btc, AssetInfo.lbtc, AssetInfo.test, AssetInfo.ltest, AssetInfo.lightning].filter { $0.assetId == key }.first
         if let main = main {
             return main
         }
@@ -56,6 +57,8 @@ public class AssetsManager {
     private func getImage(for key: String, provider: AssetsProvider) -> UIImage? {
         if [AssetInfo.btcId, AssetInfo.testId].contains(key) {
             return UIImage(named: testnet ? "ntw_testnet" : "ntw_btc")
+        } else if AssetInfo.lightningId == key {
+            return UIImage(named: "lightning_btc" )
         }
         if !icons.keys.contains(key) {
             getAsset(for: key, provider: provider)

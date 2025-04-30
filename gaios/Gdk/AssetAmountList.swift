@@ -29,8 +29,7 @@ class AssetAmountList {
     }
 
     func satoshi() -> Int64 {
-        let baseIds = [AssetInfo.btcId, AssetInfo.testId, AssetInfo.lbtcId, AssetInfo.ltestId]
-        return amounts.filter { baseIds.contains($0.0) }.map { $0.1 }.reduce(0, { (res, partial) in res + partial })
+        amounts.filter { AssetInfo.baseIds.contains($0.0) }.map { $0.1 }.reduce(0, { (res, partial) in res + partial })
     }
 
     func sortAssets(lhs: String, rhs: String) -> Bool {

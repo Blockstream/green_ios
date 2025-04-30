@@ -36,7 +36,7 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
 
     // Get the asset used to pay transaction fees
     public func getFeeAsset() -> String {
-        return self.liquid ? self.policyAsset ?? "" : "btc"
+        return self.policyAsset ?? AssetInfo.btcId
     }
 
     public var electrum: Bool {
@@ -90,6 +90,7 @@ public struct GdkNetworks {
                                            mainnet: true,
                                            development: false,
                                            txExplorerUrl: bitcoinSS.txExplorerUrl,
+                                           policyAsset: AssetInfo.lightningId,
                                            serverType: "breez")
     public lazy var testnetLightning = GdkNetwork(name: NetworkSecurityCase.testnetLightning.name(),
                                                   network: NetworkSecurityCase.testnetLightning.network,
@@ -97,6 +98,7 @@ public struct GdkNetworks {
                                                   mainnet: false,
                                                   development: false,
                                                   txExplorerUrl: testnetSS.txExplorerUrl,
+                                                  policyAsset: AssetInfo.lightningId,
                                                   serverType: "breez")
 
     public mutating func get(networkType: NetworkSecurityCase) -> GdkNetwork {

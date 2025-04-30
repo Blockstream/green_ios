@@ -34,5 +34,12 @@ extension AssetInfo {
                          name: "Liquid Testnet",
                          precision: denom.digits,
                          ticker: DenominationType.denominationsLTEST[denom])
-        }
+    }
+    public static var lightning: AssetInfo {
+        let denom = WalletManager.current?.prominentSession?.settings?.denomination ?? .BTC
+        return AssetInfo(assetId: lightningId,
+                         name: "Bitcoin (Lightning)",
+                         precision: denom.digits,
+                         ticker: DenominationType.denominationsBTC[denom])
+    }
 }

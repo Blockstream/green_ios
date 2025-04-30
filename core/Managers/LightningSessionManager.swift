@@ -150,7 +150,7 @@ public class LightningSessionManager: SessionManager {
 
     public override func getBalance(subaccount: UInt32, numConfs: Int) async throws -> [String: Int64] {
         let sats = lightBridge?.balance()
-        let balance = [gdkNetwork.getFeeAsset(): Int64(sats ?? 0)]
+        let balance = [AssetInfo.lightningId: Int64(sats ?? 0)]
         return balance
     }
 
@@ -341,7 +341,7 @@ public class LightningSessionManager: SessionManager {
             }
         }
         txs = txs.sorted().reversed()
-        txs = Array(txs.suffix(from: first).prefix(count))
+        txs = Array(txs.suffix(from: min(first, txs.count)).prefix(count))
         return Transactions(list: txs)
     }
 

@@ -73,7 +73,7 @@ extension Transaction {
         tx.createdAtTs = payment.paymentTime * 1000000
         tx.feeRate = 0
         tx.type = payment.paymentType == .received ? .incoming : .outgoing
-        tx.amounts = ["btc": payment.amountSatoshi]
+        tx.amounts = [AssetInfo.lightningId: payment.amountSatoshi]
         tx.isLightningSwap = false
         tx.isPendingCloseChannel = payment.paymentType == PaymentType.closedChannel && payment.status == PaymentStatus.pending
 
@@ -129,7 +129,7 @@ extension Transaction {
         tx.createdAtTs = swapInfo.createdAt * 1_000_000
         tx.hash = swapInfo.refundTxIds.first
         tx.type = .mixed
-        tx.amounts = ["btc": amount]
+        tx.amounts = [AssetInfo.lightningId: amount]
         tx.inputs = [TransactionInputOutput(address: swapInfo.bitcoinAddress, satoshi: amount)]
         tx.outputs = []
         tx.isLightningSwap = true
@@ -154,7 +154,7 @@ extension Transaction {
         tx.type = .mixed
         tx.inputs = [TransactionInputOutput.init(address: swapInfo.claimPubkey, satoshi: amount)]
         tx.outputs = []
-        tx.amounts = ["btc": amount]
+        tx.amounts = [AssetInfo.lightningId: amount]
         tx.isLightningSwap = true
         tx.isInProgressSwap = swapInfo.status == .inProgress
         tx.isRefundableSwap = isRefundableSwap

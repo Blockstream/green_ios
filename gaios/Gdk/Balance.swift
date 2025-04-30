@@ -5,14 +5,12 @@ import core
 extension Balance {
 
     static var session: SessionManager? { WalletManager.current?.prominentSession }
-    static var lbtc: String { AssetInfo.lbtcId }
-    static var ltest: String { AssetInfo.ltestId }
 
     static func isBtc(_ assetId: String?) -> Bool {
         if assetId == nil {
             return true
         }
-        return [AssetInfo.btcId, AssetInfo.lbtcId, AssetInfo.testId, AssetInfo.ltestId].contains(assetId ?? "")
+        return AssetInfo.baseIds.contains(assetId ?? "")
     }
     static func getAsset(_ assetId: String) -> AssetInfo? {
         return WalletManager.current?.info(for: assetId)
@@ -23,19 +21,23 @@ extension Balance {
             // avoid blocking gdk mutex
             return nil
         }
-        if var res = try? session?.convertAmount(input: details) {
-            res["asset_info"] = details["asset_info"]
-            res["asset_id"] = details["asset_id"]
-            if let data = try? JSONSerialization.data(withJSONObject: res, options: []),
-               var balance = try? JSONDecoder().decode(Balance.self, from: data) {
-                if let assetInfo = balance.assetInfo,
-                   let value = res[assetInfo.assetId] as? String {
-                    balance.asset = [assetInfo.assetId: value]
-                }
-                return balance
-            }
+        // convert
+        guard var res = try? session?.convertAmount(input: details) else {
+            return nil
         }
-        return nil
+        // normalize outputs
+        res["asset_info"] = details["asset_info"]
+        res["asset_id"] = details["asset_id"]
+        if res.keys.contains(AssetInfo.lightningId) {
+            res[AssetInfo.lightningId] = details["btc"]
+        }
+        // serialize balance
+        var balance = Balance.from(res) as? Balance
+        if let assetId = balance?.assetInfo?.assetId,
+            let value = res[assetId] as? String {
+            balance?.asset = [assetId: value]
+        }
+        return balance
     }
 
     static func fromFiat(_ fiat: String) -> Balance? {
@@ -83,7 +85,7 @@ extension Balance {
 
     func toFiat() -> (String, String) {
         let mainnet = AccountsRepository.shared.current?.gdkNetwork.mainnet
-        if let asset = assetInfo, !["btc", Balance.lbtc, Balance.ltest].contains(asset.assetId) {
+        if let asset = assetInfo, !AssetInfo.baseIds.contains(asset.assetId) {
             return ("", "")
         } else {
             return (fiat?.localeFormattedString(2) ?? "n/a", mainnet ?? true ? fiatCurrency : "FIAT")
@@ -96,8 +98,9 @@ extension Balance {
         let value = res![denomination.rawValue] as? String
         let network: NetworkSecurityCase = {
             switch assetId {
-            case Balance.lbtc: return .liquidSS
-            case Balance.ltest: return .testnetLiquidSS
+            case AssetInfo.lbtcId: return .liquidSS
+            case AssetInfo.ltestId: return .testnetLiquidSS
+            case AssetInfo.lightningId: return .lightning
             default: return Balance.session?.gdkNetwork.mainnet ?? true ? .bitcoinSS : .testnetSS
             }
         }()
@@ -142,8 +145,9 @@ extension Balance {
             let value = res![inputDenomination.rawValue] as? String
             let network: NetworkSecurityCase = {
                 switch assetId {
-                case Balance.lbtc: return .liquidSS
-                case Balance.ltest: return .testnetLiquidSS
+                case AssetInfo.lbtcId: return .liquidSS
+                case AssetInfo.ltestId: return .testnetLiquidSS
+                case AssetInfo.lightningId: return .lightning
                 default: return Balance.session?.gdkNetwork.mainnet ?? true ? .bitcoinSS : .testnetSS
                 }
             }()
