@@ -9,7 +9,7 @@ class Api {
     func fetch(currency: String) async throws {
         self.currency = currency
         self.priceCache = nil
-        let url = URL(string: "https://green-btc-chart.blockstream.com/api/v1/bitcoin/prices/full?currency=\(currency)")!
+        let url = URL(string: "https://green-btc-chart.blockstream.com/api/v1/bitcoin/prices?currency=\(currency)")!
         let request = URLRequest(url: url)
 
         let sessionConfig = URLSessionConfiguration.default

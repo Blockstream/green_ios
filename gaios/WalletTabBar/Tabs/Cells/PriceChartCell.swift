@@ -102,30 +102,24 @@ class PriceChartCell: UITableViewCell {
         iconGain.image = UIImage()
 
         if let model = model?.priceChartModel {
-            if timeFrame == .day {
-                // API returns last 2 days of hourly prices
-                list = model.dayData
-                list = list.suffix(24)
-            } else {
-                list = model.fullData
                 switch timeFrame {
+                case .day:
+                    list = model.dayData
                 case .week:
-                    list = list.suffix(7)
+                    list = model.monthData.suffix(7 * 24)
                 case .month:
-                    list = list.suffix(30)
+                    list = model.monthData.suffix(30 * 24)
                 case .year:
-                    list = list.suffix(365)
-                // case .ytd:
-                    // break
+                    list = model.fullData.suffix(365)
                 case .all:
-                    list = list.suffix(365 * 5)
+                    list = model.fullData.suffix(365 * 5)
                 default:
                     break
                 }
-            }
 
-            lblQuote.text = "\(String(format: "%.2f", list.last?.value ?? 0.0)) \(model.currency)".uppercased()
-            if let last = list.last?.value, let first = list.first?.value, first > 0 {
+        // Use the most recent price in the daily model for percentage change calculations
+            lblQuote.text = "\(String(format: "%.2f", model.dayData.last?.value ?? 0.0)) \(model.currency)".uppercased()
+            if let last = model.dayData.last?.value, let first = list.first?.value, first > 0 {
                 let ratio = ((last / first) - 1) * 100
                 let sign = ratio > 0 ? "+" : ""
                 lblGain.text = "\(sign)\(String(format: "%.2f", ratio))%"
@@ -154,7 +148,7 @@ class PriceChartCell: UITableViewCell {
         set1.fill = LinearGradientFill(gradient: gradient, angle: 90)
         set1.drawFilledEnabled = true
         set1.drawCirclesEnabled = false
-        set1.lineWidth = 2
+        set1.lineWidth = 1
         set1.setColor(UIColor.gAccent())
         set1.drawValuesEnabled = false
         set1.mode = .cubicBezier
