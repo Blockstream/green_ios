@@ -93,9 +93,9 @@ class EditProtectionViewController: UIViewController {
             Task { [weak self] in
                 switch protectionAction {
                 case .enable:
-                    await self?.changeBiometricAuthentication(enable: false)
-                case .disable:
                     await self?.changeBiometricAuthentication(enable: true)
+                case .disable:
+                    await self?.changeBiometricAuthentication(enable: false)
                 case .change:
                     break
                 }
@@ -106,23 +106,23 @@ class EditProtectionViewController: UIViewController {
     func changeBiometricAuthentication(enable: Bool) async {
         if !enable && !(WalletManager.current?.account.hasManualPin ?? false) {
             showAlert(
-                title: "id_biometrics_authentication".localized,
-                message: "Please enable PIN authentication before disabling" + (protectionType == .faceID ? "Face ID" : "Touch ID"))
+                title: (protectionType == .faceID ? "Face ID" : "Touch ID"),
+                message: "Enable PIN before disabling " + (protectionType == .faceID ? "Face ID" : "Touch ID"))
             return
         }
         let task = Task.detached { [weak self] in
             if enable {
-                try await self?.disableBiometricAuthentication()
-            } else {
                 try await self?.enableBiometricAuthentication()
+            } else {
+                try await self?.disableBiometricAuthentication()
             }
         }
         switch await task.result {
         case .success:
             if enable {
-                DropAlert().success(message: "id_biometric_login_is_disabled".localized)
-            } else {
                 DropAlert().success(message: "id_biometric_login_is_enabled".localized)
+            } else {
+                DropAlert().success(message: "id_biometric_login_is_disabled".localized)
             }
             navigationController?.popViewController(animated: true)
         case .failure(let err):
