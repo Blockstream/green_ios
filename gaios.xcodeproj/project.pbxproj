@@ -793,7 +793,6 @@
 		81F8AC572BC5A4A4002E384D /* ConfirmTransactionTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8AC562BC5A4A4002E384D /* ConfirmTransactionTask.swift */; };
 		81F8AC592BC5A4F4002E384D /* TaskProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8AC582BC5A4F4002E384D /* TaskProtocol.swift */; };
 		81FBCB4E2B012DA8006BFE97 /* LTExportJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FBCB4D2B012DA8006BFE97 /* LTExportJadeViewController.swift */; };
-		81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE672423EB1D22001B2E48 /* ContainerViewController.swift */; };
 		FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7522374F1A0035F95A /* UIButton.swift */; };
 		FF29CA7822374F8D0035F95A /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7722374F8D0035F95A /* UILabel.swift */; };
 /* End PBXBuildFile section */
@@ -1772,7 +1771,6 @@
 		81F8AC562BC5A4A4002E384D /* ConfirmTransactionTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmTransactionTask.swift; sourceTree = "<group>"; };
 		81F8AC582BC5A4F4002E384D /* TaskProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskProtocol.swift; sourceTree = "<group>"; };
 		81FBCB4D2B012DA8006BFE97 /* LTExportJadeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTExportJadeViewController.swift; sourceTree = "<group>"; };
-		81FE672423EB1D22001B2E48 /* ContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
 		88A86540174AD367FC26E586 /* libPods-gaiosTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-gaiosTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF29CA7122374E8B0035F95A /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		FF29CA7522374F1A0035F95A /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
@@ -4075,7 +4073,6 @@
 				3447553129098D7000B9C1AF /* WalletViewController */,
 				81ACC4B0227337F3004B1E92 /* Wallet.storyboard */,
 				81A3B5442244B2790091B6BC /* Views */,
-				81FE672423EB1D22001B2E48 /* ContainerViewController.swift */,
 				3403BDAB2630282600118C64 /* Learn2faViewController.swift */,
 				34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */,
 				81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */,
@@ -5021,7 +5018,6 @@
 				81E56A6C2C2476950012A5A3 /* QRUnlockJadeViewModel.swift in Sources */,
 				3457F4B82923A72900EF33B5 /* WalletPrefs.swift in Sources */,
 				3415CB072A67BDEE00B66882 /* AddressAuthViewController.swift in Sources */,
-				81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */,
 				34FAB33C2D9BF73000317454 /* SecurityLevelCell.swift in Sources */,
 				34CD34912C7D98CF00018824 /* VerifyOnDeviceViewController.swift in Sources */,
 				345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */,

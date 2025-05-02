@@ -106,72 +106,6 @@ class GetStartedOnBoardViewController: UIViewController {
         SafeNavigationManager.shared.navigate(url)
     }
 
-//    func next() {
-//        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-//
-//        switch OnBoardManager.shared.flowType {
-//        case .add:
-//            Task { await self.create() }
-//        case .restore:
-//            if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
-//                navigationController?.pushViewController(vc, animated: true)
-//            }
-//        case .watchonly:
-//            break
-//        }
-//    }
-
-//    func createWallet() async throws -> WalletManager {
-//        let account = try await createAccount()
-//        _ = try await createCredentials(account: account)
-//        // let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials,  for: account.keychain)
-//        let pinData = try AuthenticationTypeHandler.getPinData(method: .AuthKeyBiometric, for: account.keychain)
-//        let credentials = Credentials(mnemonic: pinData.plaintextBiometric, pinData: pinData)
-//        let wallet = WalletsRepository.shared.getOrAdd(for: account)
-//        try await wallet.create(credentials)
-//        return wallet
-//    }
-//
-//    func createAccount() async throws -> Account {
-//        let testnet = OnBoardManager.shared.chainType == .testnet ? true : false
-//        let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
-//        let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
-//        return Account(name: name, network: mainNetwork)
-//    }
-
-//    func createCredentials(account: Account) async throws -> Credentials {
-//        let mnemonic = try generateMnemonic12()
-//        let credentials = Credentials(mnemonic: mnemonic)
-//        // try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoBioCredentials, credentials: credentials, for: account.keychain)
-//        let PinData = PinData(encryptedData: "", pinIdentifier: UUID().uuidString, salt: "", encryptedBiometric: nil, plaintextBiometric: nil)
-//        try? AuthenticationTypeHandler.setPinData(method: .AuthKeyBiometric, pinData: PinData, extraData: mnemonic, for: account.keychain)
-//        return credentials
-//    }
-
-//    func create() async {
-//        startLoader()
-//        let task = Task.detached { [weak self] in
-//            try await self?.createWallet()
-//        }
-//        switch await task.result {
-//        case .success:
-//            stopLoader()
-//            let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-//            if let vc = storyboard.instantiateViewController(withIdentifier: "Container") as? ContainerViewController {
-//                vc.walletModel = WalletModel()
-//                vc.walletModel?.isFirstLoad = true
-//                let appDelegate = UIApplication.shared.delegate
-//                appDelegate?.window??.rootViewController = vc
-//            }
-//        case .failure:
-//            stopLoader()
-//            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-//            if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardAppAccessViewController") as? OnBoardAppAccessViewController {
-//                navigationController?.pushViewController(vc, animated: true)
-//            }
-//        }
-//    }
-
     func tryNext(_ action: ActionToButton) {
         if AnalyticsManager.shared.consent == .notDetermined {
             actionToButton = action
@@ -199,26 +133,8 @@ class GetStartedOnBoardViewController: UIViewController {
                 AnalyticsManager.shared.hwwWallet()
             }
             return
-//        case .restore:
-//            OnBoardManager.shared.flowType = .restore
         }
-//        let testnetAvailable = AppSettings.shared.testnet
-//        if testnetAvailable {
-//            selectNetwork()
-//        } else {
-//            next()
-//        }
     }
-
-//    func selectNetwork() {
-//        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-//        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
-//            vc.delegate = self
-//            vc.viewModel = DialogListViewModel(title: "id_select_network".localized, type: .networkPrefs, items: NetworkPrefs.getItems())
-//            vc.modalPresentationStyle = .overFullScreen
-//            present(vc, animated: false, completion: nil)
-//        }
-//    }
 
     @IBAction func btnGetStarted(_ sender: Any) {
         tryNext(.getStarted)

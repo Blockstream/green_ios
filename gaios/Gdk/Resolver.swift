@@ -106,13 +106,8 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
                     vc.phoneCall = true
                     vc.network = network
                     vc.isSmsBackup = true
-
-                    if let controller = UIApplication.topViewController() as? ContainerViewController {
-                        if let nav = controller.nv.presentedViewController as? UINavigationController {
-                            nav.pushViewController(vc, animated: true)
-                        } else {
-                            controller.nv.pushViewController(vc, animated: true)
-                        }
+                    if let controller = UIApplication.topViewController() as? WalletTabBarViewController {
+                        controller.navigationController?.pushViewController(vc, animated: true)
                     }
                 }
             }

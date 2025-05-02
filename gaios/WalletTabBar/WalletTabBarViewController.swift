@@ -15,15 +15,6 @@ class WalletTabBarViewController: UITabBarController {
     let tabSecurityVC = WalletTab.tabSecurityVC()
     let tabSettingsVC = WalletTab.tabSettingsVC()
 
-    init(walletModel: WalletModel) {
-        self.walletModel = walletModel
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setTabBar()
