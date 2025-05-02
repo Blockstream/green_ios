@@ -160,23 +160,31 @@ class BiometricLoginViewController: UIViewController {
         case LoginError.walletNotFound:
             let msg = "id_wallet_not_found"
             DropAlert().error(message: msg.localized)
-            showReportError(account: account, wallet: nil, prettyError: msg, screenName: "Login")
+            showReportError(msg: msg)
         case GaError.NotAuthorizedError(_):
             AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: "id_not_authorized")
         case TwoFactorCallError.failure(let msg):
             if msg.contains("id_connection_failed") {
                 DropAlert().error(message: msg.localized)
             } else {
-                showReportError(account: account, wallet: nil, prettyError: msg, screenName: "Login")
                 DropAlert().error(message: msg.localized)
+                showReportError(msg: msg)
             }
             AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
         default:
             let msg = "id_login_failed"
-            showReportError(account: account, wallet: nil, prettyError: msg, screenName: "Login")
             DropAlert().error(message: msg.localized)
+            showReportError(msg: msg)
             AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
         }
+    }
+    func showReportError(msg: String) {
+        let request = ZendeskErrorRequest(
+            error: msg,
+            network: viewModel.account.networkType,
+            paymentHash: nil,
+            screenName: "Login")
+        presentContactUsViewController(request: request)
     }
 
     func onBioAuthError(_ message: String) {
@@ -256,10 +264,6 @@ extension BiometricLoginViewController: DrawerNetworkSelectionDelegate {
 }
 extension BiometricLoginViewController: DialogAboutViewControllerDelegate {
     func openContactUs() {
-        let storyboard = UIStoryboard(name: "HelpCenter", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
-            vc.request = ZendeskErrorRequest(shareLogs: true)
-            navigationController?.pushViewController(vc, animated: true)
-        }
+        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
     }
 }

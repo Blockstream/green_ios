@@ -127,6 +127,7 @@ class EditProtectionViewController: UIViewController {
             navigationController?.popViewController(animated: true)
         case .failure(let err):
             DropAlert().success(message: err.description()?.localized ?? "id_operation_failure")
+            presentContactUsViewController(request: ZendeskErrorRequest(error: err.description()?.localized))
         }
     }
 
@@ -152,6 +153,6 @@ class EditProtectionViewController: UIViewController {
     }
 
     func disableBiometricAuthentication() async throws {
-        try? WalletManager.current?.account.removeBioKeychainData()
+        try WalletManager.current?.account.removeBioKeychainData()
     }
 }

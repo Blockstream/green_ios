@@ -32,7 +32,7 @@ class LoginViewController: UIViewController {
     
     let menuButton = UIButton(type: .system)
     var viewModel: LoginViewModel!
-
+    
     private var account: Account { viewModel.account }
     private var remoteAlert: RemoteAlert?
     private var pinCode = ""
@@ -42,10 +42,10 @@ class LoginViewController: UIViewController {
             emergencyButton.isHidden = !emergencyRestore
         }
     }
-
+    
     @IBOutlet weak var passphraseView: UIStackView!
     @IBOutlet weak var lblPassphrase: UILabel!
-
+    
     var bip39passphare: String? {
         didSet {
             passphraseView.isHidden = bip39passphare?.isEmpty ?? true
@@ -111,7 +111,7 @@ class LoginViewController: UIViewController {
         connectionSettingsButton.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.settingsBtn
         AnalyticsManager.shared.recordView(.login, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
     }
-
+    
     func setNavigation() {
         navigationItem.title = account.name
         navigationItem.setHidesBackButton(true, animated: false)
@@ -128,7 +128,7 @@ class LoginViewController: UIViewController {
         menuButton.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
     }
-
+    
     func setRemoteAlert() {
         alertCard.isHidden = true
         self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .login, networks: [account.networkType]).first
@@ -187,7 +187,7 @@ class LoginViewController: UIViewController {
         reload()
         autologin(passphrase: nil)
     }
-
+    
     func autologin(passphrase: String?) {
         if account.askEphemeral ?? false {
             Task { [weak self] in
@@ -207,23 +207,23 @@ class LoginViewController: UIViewController {
             }
         }
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
     }
-
+    
     @objc func menuButtonTapped(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
-
+            
             vc.viewModel = DialogListViewModel(title: "More Options", type: .loginPrefs, items: LoginPrefs.getItems(isWatchOnly: false))
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
     }
-
+    
     @objc func progressTor(_ notification: NSNotification) {
         if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
            let tor = try? JSONDecoder().decode(TorNotification.self, from: json) {
@@ -236,7 +236,7 @@ class LoginViewController: UIViewController {
             }
         }
     }
-
+    
     @objc func updateNetwork(_ notification: NSNotification) {
         if let dict = notification.userInfo as? [String: Any],
            let connection = Connection.from(dict) as? Connection,
@@ -246,7 +246,7 @@ class LoginViewController: UIViewController {
             }
         }
     }
-
+    
     @MainActor
     fileprivate func decryptMnemonic(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) async {
         self.startLoader(message: "id_logging_in".localized)
@@ -262,7 +262,7 @@ class LoginViewController: UIViewController {
             failure(error: error, enableFailingCounter: false)
         }
     }
-
+    
     @MainActor
     fileprivate func successDecrypt(_ credentials: Credentials) {
         self.stopLoader()
@@ -274,7 +274,7 @@ class LoginViewController: UIViewController {
         self.pinCode = ""
         self.reloadPin()
     }
-
+    
     @MainActor
     fileprivate func login(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) async {
         AnalyticsManager.shared.loginWalletStart()
@@ -297,18 +297,18 @@ class LoginViewController: UIViewController {
             failure(error: error, enableFailingCounter: true)
         }
     }
-
+    
     @MainActor
     func success(withPIN: Bool) {
         self.startLoader(message: "id_loading_wallet".localized)
         AnalyticsManager.shared.loginWalletEnd(account: account,
                                                loginType: withPIN ? .pin : .biometrics)
         AnalyticsManager.shared.activeWalletStart()
-
+        
         BackupHelper.shared.cleanDismissedCache(walletId: account.id)
         AccountNavigator.goLogged(accountId: account.id)
     }
-
+    
     @MainActor
     func failure(error: Error, enableFailingCounter: Bool) {
         self.stopLoader()
@@ -327,7 +327,7 @@ class LoginViewController: UIViewController {
         case LoginError.walletNotFound:
             let msg = "id_wallet_not_found"
             DropAlert().error(message: msg.localized)
-            showReportError(account: account, wallet: nil, prettyError: msg, screenName: "Login")
+            showReportError(msg: msg)
         case GaError.NotAuthorizedError(_):
             self.wrongPin()
             AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: "id_not_authorized")
@@ -339,19 +339,29 @@ class LoginViewController: UIViewController {
                     wrongPin()
                 }
             } else {
-                showReportError(account: account, wallet: nil, prettyError: msg, screenName: "Login")
                 DropAlert().error(message: msg.localized)
+                showReportError(msg: msg)
             }
             AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
         default:
             let msg = "id_login_failed"
-            showReportError(account: account, wallet: nil, prettyError: msg, screenName: "Login")
+            showReportError(msg: msg)
             DropAlert().error(message: msg.localized)
             AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
         }
         self.pinCode = ""
         self.reloadPin()
     }
+
+    func showReportError(msg: String) {
+        let request = ZendeskErrorRequest(
+            error: msg,
+            network: viewModel.account.networkType,
+            paymentHash: nil,
+            screenName: "Login")
+        presentContactUsViewController(request: request)
+    }
+
 
     @IBAction func emergencyClick(_ sender: Any) {
         emergencyRestore = false

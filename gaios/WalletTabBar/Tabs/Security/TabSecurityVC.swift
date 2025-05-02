@@ -195,16 +195,7 @@ class TabSecurityVC: TabViewController {
             network: .bitcoinSS,
             shareLogs: true,
             screenName: "FailedGenuineCheck")
-        if AppSettings.shared.gdkSettings?.tor ?? false {
-            self.showOpenSupportUrl(request)
-            return
-        }
-        if let vc = UIStoryboard(name: "HelpCenter", bundle: nil)
-            .instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
-            vc.request = request
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: true, completion: nil)
-        }
+        presentContactUsViewController(request: request)
     }
 }
 

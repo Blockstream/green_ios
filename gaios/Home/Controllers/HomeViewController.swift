@@ -489,10 +489,6 @@ extension HomeViewController: PromoManagerDelegate {
 
 extension HomeViewController: DialogAboutViewControllerDelegate {
     func openContactUs() {
-        let storyboard = UIStoryboard(name: "HelpCenter", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
-            vc.request = ZendeskErrorRequest(shareLogs: true)
-            navigationController?.pushViewController(vc, animated: true)
-        }
+        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
     }
 }

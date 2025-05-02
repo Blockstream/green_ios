@@ -53,47 +53,19 @@ extension UIViewController {
     }
 
     @MainActor
-    func showReportError(account: Account?, wallet: WalletItem?, prettyError: String, screenName: String, paymentHash: String? = nil) {
-        let request = ZendeskErrorRequest(
-            error: prettyError,
-            network: wallet?.networkType ?? .bitcoinSS,
-            paymentHash: paymentHash,
-            screenName: screenName)
-        let alert = UIAlertController(
-            title: "id_error".localized,
-            message: prettyError.localized,
-            preferredStyle: .alert)
+    func presentContactUsViewController(request: ZendeskErrorRequest) {
         if AppSettings.shared.gdkSettings?.tor ?? false {
-            alert.addAction(UIAlertAction(title: "Contact Support".localized, style: .default) { _ in
-                self.showOpenSupportUrl(request)
-            })
-        } else {
-            alert.addAction(UIAlertAction(title: "id_report".localized, style: .default) { _ in
-                if let vc = UIStoryboard(name: "HelpCenter", bundle: nil)
-                    .instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
-                    vc.request = request
-                    vc.modalPresentationStyle = .overFullScreen
-                    self.present(vc, animated: true, completion: nil)
-                }
-            })
+            self.showOpenSupportUrl(request)
+            return
         }
-        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in })
-        present(alert, animated: true)
+        if let vc = UIStoryboard(name: "HelpCenter", bundle: nil)
+            .instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
+            vc.request = request
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: true, completion: nil)
+        }
     }
 }
-
-extension UIViewController {
-    func hideKeyboardWhenTappedAround() {
-        let tap = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboardTappedAround))
-        tap.cancelsTouchesInView = false
-        view.addGestureRecognizer(tap)
-    }
-
-    @objc func dismissKeyboardTappedAround() {
-        view.endEditing(true)
-    }
-}
-
 @nonobjc extension UIViewController {
     func add(_ child: UIViewController, frame: CGRect? = nil) {
         addChild(child)

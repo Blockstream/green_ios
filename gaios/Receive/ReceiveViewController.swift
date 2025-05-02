@@ -223,12 +223,12 @@ class ReceiveViewController: KeyboardViewController {
             showError("id_there_is_already_a_swap_in".localized)
             return
         }
-        showReportError(
-            account: AccountsRepository.shared.current,
-            wallet: self.viewModel.account,
-            prettyError: msg.localized,
-            screenName: "Receive",
-            paymentHash: nil)
+        let request = ZendeskErrorRequest(
+            error: msg.localized,
+            network: viewModel.account.networkType,
+            paymentHash: nil,
+            screenName: "Receive")
+        presentContactUsViewController(request: request)
     }
 
     @MainActor

@@ -215,14 +215,6 @@ class WalletTabBarViewController: UITabBarController {
         updateTabs([.home, .transact])
     }
 
-    func showContactSupport() {
-        let storyboard = UIStoryboard(name: "HelpCenter", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
-            vc.request = ZendeskErrorRequest(shareLogs: true)
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
     func userLogout() {
         // userWillLogout = true
 //        self.presentedViewController?.dismiss(animated: true, completion: {
@@ -360,11 +352,7 @@ extension WalletTabBarViewController: DrawerNetworkSelectionDelegate {
 }
 extension WalletTabBarViewController: DialogAboutViewControllerDelegate {
     func openContactUs() {
-        let storyboard = UIStoryboard(name: "HelpCenter", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
-            vc.request = ZendeskErrorRequest(shareLogs: true)
-            navigationController?.pushViewController(vc, animated: true)
-        }
+        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
     }
 }
 extension WalletTabBarViewController: DialogGroupListViewControllerDelegate {
@@ -390,7 +378,7 @@ extension WalletTabBarViewController: DialogGroupListViewControllerDelegate {
 //                    showArchived()
                     break
                 case .contact:
-                    showContactSupport()
+                    presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
                 }
             }
         }
