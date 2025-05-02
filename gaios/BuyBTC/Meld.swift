@@ -99,7 +99,7 @@ struct Meld {
         request.setValue("application/json", forHTTPHeaderField: "content-type")
         request.httpMethod = "POST"
         request.httpBody = data
-        request.timeoutInterval = 30
+        request.timeoutInterval = 10
         let (data, _) = try await URLSession.shared.data(for: request)
         return data
     }

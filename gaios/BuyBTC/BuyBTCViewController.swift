@@ -172,6 +172,7 @@ class BuyBTCViewController: KeyboardViewController {
             viewNoQuotes.isHidden = false
         case .hidden:
             providerStack.isHidden = true
+            btnNext.setStyle(.primaryDisabled)
         }
         if quotes.count != 0 {
             let pName = quotes[selectedIndex].serviceProvider
@@ -243,6 +244,13 @@ class BuyBTCViewController: KeyboardViewController {
     }
     private func load() async {
         guard let amountStr = amountTextField.text else { return }
+        if amountStr.isEmpty {
+            providerState = .hidden
+            quotes = []
+            selectedIndex = 0
+            reload()
+            return
+        }
         let task = Task.detached { [weak self] in
             return try await self?.viewModel.quote(amountStr)
         }
