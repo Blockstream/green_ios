@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -26,23 +26,23 @@
                                 <rect key="frame" x="0.0" y="0.0" width="292" height="72"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ntw_btc" translatesAutoresizingMaskIntoConstraints="NO" id="6KD-U5-CRP">
-                                        <rect key="frame" x="24" y="21" width="30" height="30"/>
+                                        <rect key="frame" x="24" y="24" width="24" height="24"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="30" id="xa7-uF-YkU"/>
-                                            <constraint firstAttribute="height" constant="30" id="z9h-sV-saN"/>
+                                            <constraint firstAttribute="width" constant="24" id="xa7-uF-YkU"/>
+                                            <constraint firstAttribute="height" constant="24" id="z9h-sV-saN"/>
                                         </constraints>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_asset" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tcM-yi-pEY">
-                                        <rect key="frame" x="70" y="27.666666666666664" width="59.666666666666657" height="17"/>
+                                        <rect key="frame" x="64" y="27.666666666666664" width="59.666666666666657" height="17"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="l7n-EK-LF6">
-                                        <rect key="frame" x="149.66666666666666" y="20" width="118.33333333333334" height="32"/>
+                                        <rect key="frame" x="143.66666666666666" y="20" width="124.33333333333334" height="32"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="3pC-xi-e4f">
-                                                <rect key="frame" x="47.333333333333343" y="0.0" width="71" height="15"/>
+                                                <rect key="frame" x="53.333333333333343" y="0.0" width="71" height="15"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" horizontalCompressionResistancePriority="751" text="lbl_gain" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hcb-fg-JwK">
                                                         <rect key="frame" x="0.0" y="0.0" width="52" height="15"/>
@@ -60,7 +60,7 @@
                                                 </subviews>
                                             </stackView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" horizontalCompressionResistancePriority="751" text="lbl_quote" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bjc-Pa-ccr">
-                                                <rect key="frame" x="56.333333333333343" y="18" width="62" height="14"/>
+                                                <rect key="frame" x="62.333333333333343" y="18" width="62" height="14"/>
                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
@@ -242,7 +242,7 @@
     </objects>
     <resources>
         <image name="ic_chart_up" width="15" height="10"/>
-        <image name="ntw_btc" width="60" height="61"/>
+        <image name="ntw_btc" width="24" height="24"/>
         <namedColor name="gBlackBg">
             <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

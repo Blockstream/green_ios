@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -22,29 +22,29 @@
                         <rect key="frame" x="25" y="5" width="304" height="92"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ntw_btc" translatesAutoresizingMaskIntoConstraints="NO" id="kYV-l5-c29">
-                                <rect key="frame" x="24" y="31" width="30" height="30"/>
+                                <rect key="frame" x="24" y="34" width="24" height="24"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="2Ng-04-KO3"/>
-                                    <constraint firstAttribute="width" constant="30" id="Cv4-YB-p2b"/>
+                                    <constraint firstAttribute="height" constant="24" id="2Ng-04-KO3"/>
+                                    <constraint firstAttribute="width" constant="24" id="Cv4-YB-p2b"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_asset" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tiD-WM-kgf">
-                                <rect key="frame" x="70" y="37.666666666666664" width="59.666666666666657" height="17"/>
+                                <rect key="frame" x="64" y="37.666666666666664" width="59.666666666666657" height="17"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="LJi-RA-Q5K">
-                                <rect key="frame" x="149.66666666666663" y="16" width="134.33333333333337" height="60"/>
+                                <rect key="frame" x="143.66666666666663" y="16" width="140.33333333333337" height="60"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" horizontalCompressionResistancePriority="751" text="lbl_balance_1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9XV-wS-qIW">
-                                        <rect key="frame" x="44.999999999999993" y="0.0" width="89.333333333333314" height="42.666666666666664"/>
+                                        <rect key="frame" x="50.999999999999993" y="0.0" width="89.333333333333314" height="42.666666666666664"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="lbl_balance_2" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ePb-14-cf5">
-                                        <rect key="frame" x="55.333333333333343" y="45.666666666666671" width="79" height="14.333333333333336"/>
+                                        <rect key="frame" x="61.333333333333343" y="45.666666666666671" width="79" height="14.333333333333336"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                         <color key="textColor" white="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
@@ -86,7 +86,7 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="ntw_btc" width="60" height="61"/>
+        <image name="ntw_btc" width="24" height="24"/>
         <namedColor name="gBlackBg">
             <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
