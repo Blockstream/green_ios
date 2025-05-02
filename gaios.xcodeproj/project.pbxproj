@@ -287,9 +287,6 @@
 		3472798D2CD3788F00A272D2 /* Promo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472798C2CD3788F00A272D2 /* Promo.swift */; };
 		3472798F2CD3888600A272D2 /* DebugPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472798E2CD3888600A272D2 /* DebugPrefs.swift */; };
 		3472C39B2B27278F00811453 /* BrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472C39A2B27278F00811453 /* BrowserViewController.swift */; };
-		34742D332CE491080064F327 /* BuyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34742D322CE491080064F327 /* BuyViewController.swift */; };
-		34742D352CE491180064F327 /* BuyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34742D342CE491180064F327 /* BuyViewModel.swift */; };
-		34742D372CE4923B0064F327 /* BuyFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34742D362CE4923B0064F327 /* BuyFlow.storyboard */; };
 		34742D3C2CE4AB400064F327 /* AssetToBuyCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34742D3B2CE4AB400064F327 /* AssetToBuyCell.xib */; };
 		34742D3E2CE4AB670064F327 /* AssetToBuyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34742D3D2CE4AB670064F327 /* AssetToBuyCell.swift */; };
 		34742D402CE4ABA30064F327 /* AssetToBuyCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34742D3F2CE4ABA30064F327 /* AssetToBuyCellModel.swift */; };
@@ -565,7 +562,6 @@
 		8150EE212BB72C4000E70A12 /* greenlight_device_key.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8150EE1A2BB721B700E70A12 /* greenlight_device_key.txt */; };
 		8150EE222BB72C5400E70A12 /* greenlight_device_cert.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8150EE1E2BB727EE00E70A12 /* greenlight_device_cert.txt */; };
 		8152772729F9B52F00853EA1 /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8152772629F9B52F00853EA1 /* UIApplication.swift */; };
-		815312FB2D81E5EE00A63E63 /* QuoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815312FA2D81E5E800A63E63 /* QuoteViewController.swift */; };
 		8153AD292CECB7600030CE8F /* Meld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8153AD282CECB75B0030CE8F /* Meld.swift */; };
 		8153AD2B2CEF21FA0030CE8F /* CreateAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8153AD2A2CEF21F60030CE8F /* CreateAccountCell.swift */; };
 		8153AD2D2CEF24880030CE8F /* CreateAccountCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8153AD2C2CEF24880030CE8F /* CreateAccountCell.xib */; };
@@ -1227,9 +1223,6 @@
 		3472798C2CD3788F00A272D2 /* Promo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promo.swift; sourceTree = "<group>"; };
 		3472798E2CD3888600A272D2 /* DebugPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugPrefs.swift; sourceTree = "<group>"; };
 		3472C39A2B27278F00811453 /* BrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserViewController.swift; sourceTree = "<group>"; };
-		34742D322CE491080064F327 /* BuyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyViewController.swift; sourceTree = "<group>"; };
-		34742D342CE491180064F327 /* BuyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyViewModel.swift; sourceTree = "<group>"; };
-		34742D362CE4923B0064F327 /* BuyFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = BuyFlow.storyboard; sourceTree = "<group>"; };
 		34742D3B2CE4AB400064F327 /* AssetToBuyCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AssetToBuyCell.xib; sourceTree = "<group>"; };
 		34742D3D2CE4AB670064F327 /* AssetToBuyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetToBuyCell.swift; sourceTree = "<group>"; };
 		34742D3F2CE4ABA30064F327 /* AssetToBuyCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetToBuyCellModel.swift; sourceTree = "<group>"; };
@@ -1526,7 +1519,6 @@
 		8150EE1A2BB721B700E70A12 /* greenlight_device_key.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = greenlight_device_key.txt; sourceTree = "<group>"; };
 		8150EE1E2BB727EE00E70A12 /* greenlight_device_cert.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = greenlight_device_cert.txt; sourceTree = "<group>"; };
 		8152772629F9B52F00853EA1 /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
-		815312FA2D81E5E800A63E63 /* QuoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteViewController.swift; sourceTree = "<group>"; };
 		8153AD282CECB75B0030CE8F /* Meld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meld.swift; sourceTree = "<group>"; };
 		8153AD2A2CEF21F60030CE8F /* CreateAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountCell.swift; sourceTree = "<group>"; };
 		8153AD2C2CEF24880030CE8F /* CreateAccountCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CreateAccountCell.xib; sourceTree = "<group>"; };
@@ -2672,19 +2664,6 @@
 			path = Browser;
 			sourceTree = "<group>";
 		};
-		34742D2F2CE490C50064F327 /* Buy */ = {
-			isa = PBXGroup;
-			children = (
-				34742D3A2CE4AB0B0064F327 /* Cells */,
-				8153AD282CECB75B0030CE8F /* Meld.swift */,
-				34742D342CE491180064F327 /* BuyViewModel.swift */,
-				34742D322CE491080064F327 /* BuyViewController.swift */,
-				815312FA2D81E5E800A63E63 /* QuoteViewController.swift */,
-				34742D362CE4923B0064F327 /* BuyFlow.storyboard */,
-			);
-			path = Buy;
-			sourceTree = "<group>";
-		};
 		34742D3A2CE4AB0B0064F327 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -2761,6 +2740,7 @@
 		348402082DB8E72700A91C65 /* BuyBTC */ = {
 			isa = PBXGroup;
 			children = (
+				34742D3A2CE4AB0B0064F327 /* Cells */,
 				34145FE82DBB948900F725E0 /* MoreActions */,
 				34145FDA2DBB70D600F725E0 /* SelectCountry */,
 				34145FCE2DBA3EC800F725E0 /* SelectProvider */,
@@ -2768,6 +2748,7 @@
 				3484020D2DB8E7C400A91C65 /* BuyBTCViewModel.swift */,
 				34145FF12DBF775B00F725E0 /* BuyTiers.swift */,
 				3484020B2DB8E7B200A91C65 /* BuyBTCFlow.storyboard */,
+				8153AD282CECB75B0030CE8F /* Meld.swift */,
 			);
 			path = BuyBTC;
 			sourceTree = "<group>";
@@ -3478,7 +3459,6 @@
 				3420470D291B913E00EDE945 /* Utility */,
 				344D57C32D71A9EB009725A3 /* WalletTabBar */,
 				348402082DB8E72700A91C65 /* BuyBTC */,
-				34742D2F2CE490C50064F327 /* Buy */,
 				81A3B53F2244AE9A0091B6BC /* Wallet */,
 				34128F9C27391A99002E19F5 /* Receive */,
 				6D56C76D235E162A00E4F990 /* Accounts */,
@@ -4522,7 +4502,6 @@
 				3407F5D12A49C28A005EF8E1 /* Illustration Lightning Transaction.riv in Resources */,
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
 				34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */,
-				34742D372CE4923B0064F327 /* BuyFlow.storyboard in Resources */,
 				209632642D8420C700FC716D /* QuoteCell.xib in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
 				340ACC8A2D4B72E200CEB4F7 /* jadeplus_3.riv in Resources */,
@@ -4825,7 +4804,6 @@
 				34A883B92BAB0144004A1826 /* TxDetailsMoreInfoViewController.swift in Sources */,
 				34742D402CE4ABA30064F327 /* AssetToBuyCellModel.swift in Sources */,
 				34D761362A38501F00DE57F5 /* DenominationExchangeViewController.swift in Sources */,
-				34742D352CE491180064F327 /* BuyViewModel.swift in Sources */,
 				346752EB291E316E00256132 /* ReceiveViewModel.swift in Sources */,
 				812DBDBC29724F69002992D6 /* WatchOnlySettingsViewController.swift in Sources */,
 				8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */,
@@ -5073,7 +5051,6 @@
 				343FDF592D01CF5600EF59CC /* AmountCell.swift in Sources */,
 				81E56A6B2C2476950012A5A3 /* QRUnlockJadeViewController.swift in Sources */,
 				34389B632A9754260023DAC3 /* RedeemPrefs.swift in Sources */,
-				815312FB2D81E5EE00A63E63 /* QuoteViewController.swift in Sources */,
 				3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */,
 				346EB2782BE8BB3A0043139F /* SendFeeCell.swift in Sources */,
 				344D57C52D71AA48009725A3 /* WalletTabBarViewController.swift in Sources */,
@@ -5098,7 +5075,6 @@
 				34B0D0052CE2553100A90080 /* ActionsSheetViewModel.swift in Sources */,
 				3423C6DE27BFDC4B001D9E2C /* AccountCreateRecoveryKeyViewController.swift in Sources */,
 				3497936B25F8B18C0029ECB1 /* SetPinViewController.swift in Sources */,
-				34742D332CE491080064F327 /* BuyViewController.swift in Sources */,
 				344915E92A0CE24700D35818 /* ReceiveAssetCell.swift in Sources */,
 				3483D09B29FBDB0B00C85106 /* LTInfoCellModel.swift in Sources */,
 				34610C592B86442E005157C8 /* MasterKeyViewController.swift in Sources */,
