@@ -9,14 +9,17 @@ enum BrowserAction {
 class BrowserViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     @IBOutlet weak var btnClose: UIButton!
     @IBOutlet weak var layoutView: UIView!
+    @IBOutlet weak var lblTitle: UILabel!
     private var webView: WKWebView?
 
     var url: URL?
     var onClose: (() -> Void)?
-
+    var titleStr: String?
     override func viewDidLoad() {
         super.viewDidLoad()
         view.alpha = 0.0
+        lblTitle.setStyle(.titleDialog)
+        lblTitle.text = titleStr ?? ""
     }
 
     deinit {

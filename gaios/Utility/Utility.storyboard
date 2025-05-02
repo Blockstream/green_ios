@@ -619,7 +619,7 @@
                                                                                 </constraints>
                                                                             </view>
                                                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="F1G-l1-9Ag">
-                                                                                <rect key="frame" x="0.0" y="52" width="393" height="523.33333333333326"/>
+                                                                                <rect key="frame" x="0.0" y="52.000000000000057" width="393" height="523.33333333333348"/>
                                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <connections>
                                                                                     <outlet property="dataSource" destination="pnX-Bd-wI6" id="WXX-qy-nuM"/>
@@ -745,6 +745,12 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cKR-Vg-r3b">
                                         <rect key="frame" x="0.0" y="0.0" width="393" height="64"/>
                                         <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hmD-44-LFv">
+                                                <rect key="frame" x="60" y="21.333333333333329" width="273" height="21.666666666666671"/>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WYZ-5T-OGZ">
                                                 <rect key="frame" x="339" y="10" width="44" height="44"/>
                                                 <constraints>
@@ -762,6 +768,9 @@
                                         </subviews>
                                         <color key="backgroundColor" name="gBlackBg"/>
                                         <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="hmD-44-LFv" secondAttribute="trailing" constant="60" id="LNe-oW-LtL"/>
+                                            <constraint firstItem="hmD-44-LFv" firstAttribute="centerY" secondItem="cKR-Vg-r3b" secondAttribute="centerY" id="RQX-Xf-iWi"/>
+                                            <constraint firstItem="hmD-44-LFv" firstAttribute="leading" secondItem="cKR-Vg-r3b" secondAttribute="leading" constant="60" id="TuO-9N-VlX"/>
                                             <constraint firstAttribute="trailing" secondItem="WYZ-5T-OGZ" secondAttribute="trailing" constant="10" id="aYS-14-OaB"/>
                                             <constraint firstItem="WYZ-5T-OGZ" firstAttribute="centerY" secondItem="cKR-Vg-r3b" secondAttribute="centerY" id="g5n-kL-Bia"/>
                                             <constraint firstAttribute="height" constant="64" id="jSH-uy-uvu"/>
@@ -796,6 +805,7 @@
                     <connections>
                         <outlet property="btnClose" destination="WYZ-5T-OGZ" id="uVU-Sg-Nc3"/>
                         <outlet property="layoutView" destination="qiB-cC-ENb" id="aGi-C3-jUs"/>
+                        <outlet property="lblTitle" destination="hmD-44-LFv" id="O86-0s-ohr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Pjl-Hu-bzE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -860,7 +870,7 @@
                                                                                 <nil key="highlightedColor"/>
                                                                             </label>
                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JlP-dt-L4H">
-                                                                                <rect key="frame" x="36" y="231.66666666666669" width="321" height="19.333333333333343"/>
+                                                                                <rect key="frame" x="36" y="231.66666666666663" width="321" height="19.333333333333343"/>
                                                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <nil key="highlightedColor"/>
@@ -1173,13 +1183,13 @@
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gBlackBg">
-            <color red="0.074509803921568626" green="0.082352941176470587" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGrayBtn">
             <color red="0.17647058823529413" green="0.18431372549019609" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGrayCard">
-            <color red="0.10588235294117647" green="0.12549019607843137" blue="0.16470588235294117" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.094117647058823528" green="0.094117647058823528" blue="0.094117647058823528" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGreenMatrix">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

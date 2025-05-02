@@ -6,20 +6,20 @@ class SafeNavigationManager {
 
     static let shared = SafeNavigationManager()
 
-    public func navigate(_ urlString: String?, exitApp: Bool = false) {
+    public func navigate(_ urlString: String?, exitApp: Bool = false, title: String? = nil) {
         guard let urlString = urlString, let url = URL(string: urlString) else {
             return
         }
-        confirm(url, exitApp: exitApp)
+        confirm(url, exitApp: exitApp, title: title)
     }
 
     public func navigate(_ url: URL, exitApp: Bool = false) {
         confirm(url, exitApp: exitApp)
     }
 
-    private func confirm(_ url: URL, exitApp: Bool) {
+    private func confirm(_ url: URL, exitApp: Bool, title: String? = nil) {
         guard GdkSettings.read()?.tor ?? false else {
-            browse(url, exitApp: exitApp)
+            browse(url, exitApp: exitApp, title: title)
             return
         }
 
@@ -37,7 +37,7 @@ class SafeNavigationManager {
 
                 switch action {
                 case .authorize:
-                    self?.browse(url, exitApp: exitApp)
+                    self?.browse(url, exitApp: exitApp, title: title)
                 case .cancel:
                     break
                 case .copy:
@@ -51,7 +51,7 @@ class SafeNavigationManager {
         appDelegate?.navigateWindow?.makeKeyAndVisible()
     }
 
-    private func browse(_ url: URL, exitApp: Bool) {
+    private func browse(_ url: URL, exitApp: Bool, title: String? = nil) {
 
         if exitApp == true {
             if UIApplication.shared.canOpenURL(url) {
@@ -67,6 +67,7 @@ class SafeNavigationManager {
                 .instantiateViewController(
                     withIdentifier: "BrowserViewController") as? BrowserViewController {
                 vc.url = url
+                vc.titleStr = title
                 vc.onClose = { () in
                     appDelegate?.navigateWindow = nil
                 }

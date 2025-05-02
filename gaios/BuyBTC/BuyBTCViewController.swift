@@ -97,9 +97,9 @@ class BuyBTCViewController: KeyboardViewController {
     func setContent() {
         title = "Buy BTC".localized
         lblSection1.text = "Amount".localized
-        lblSection2.text = "Provider".localized
+        lblSection2.text = "Exchange".localized
         lblSection3.text = "Account".localized
-        btnNext.setTitle("Buy Bitcoin", for: .normal)
+        btnNext.setTitle("Buy Bitcoin".localized, for: .normal)
         lblNoQuotes.text = "No quotes available for this amount".localized
     }
     func setStyle() {
@@ -295,7 +295,7 @@ class BuyBTCViewController: KeyboardViewController {
     func selectProvider(_ quote: MeldQuoteItem) {
         guard let amountStr = amountTextField.text else { return }
         view.endEditing(true)
-        startLoader(message: "")
+        startLoader(message: String(format: "Connecting to %@", quote.serviceProvider))
         Task { [weak self] in
             await self?.widget(quote: quote, amountStr: amountStr)
             self?.stopLoader()
@@ -308,7 +308,7 @@ class BuyBTCViewController: KeyboardViewController {
         let result = await task.result
         switch result {
         case .success(let url):
-            proceedWithWidget(url: url)
+            proceedWithWidget(url: url, quote: quote)
         case .failure(let error):
             handleError(error)
         }
@@ -316,9 +316,9 @@ class BuyBTCViewController: KeyboardViewController {
     private func handleError(_ error: Error) {
         showError(error.description()?.localized ?? error.localizedDescription)
     }
-    func proceedWithWidget(url: String?) {
+    func proceedWithWidget(url: String?, quote: MeldQuoteItem) {
         AnalyticsManager.shared.buyRedirect(account: self.viewModel.wm.account)
-        SafeNavigationManager.shared.navigate(url, exitApp: false)
+        SafeNavigationManager.shared.navigate(url, exitApp: false, title: quote.serviceProvider)
     }
     func verifySingleAddress() async throws {
         if let vm = viewModel.verifyOnDeviceViewModel() {
