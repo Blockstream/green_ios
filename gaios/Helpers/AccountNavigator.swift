@@ -40,10 +40,12 @@ class AccountNavigator {
         let account = AccountsRepository.shared.get(for: accountId)!
         AccountsRepository.shared.current = account
         let walletModel = WalletModel()
+        let nv = UINavigationController()
         if let vc: WalletTabBarViewController = instantiateViewController(storyboard: "WalletTab", identifier: "WalletTabBarViewController") {
             vc.walletModel = walletModel
             vc.walletModel?.isFirstLoad = isFirstLoad
-            changeRoot(root: vc)
+            nv.setViewControllers([vc], animated: true)
+            changeRoot(root: nv)
         }
     }
 

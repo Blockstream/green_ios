@@ -288,7 +288,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                 await MainActor.run {
                     self.stopLoader()
                     DropAlert().success(message: "id_new_account_created".localized)
-                    navigationController?.popToViewController(ofClass: WalletViewController.self, animated: true)
+                    navigationController?.popToRootViewController(animated: true)
                     if let wallet = wallet {
                         delegate?.didCreatedWallet(wallet)
                     }

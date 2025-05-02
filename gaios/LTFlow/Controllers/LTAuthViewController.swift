@@ -82,12 +82,7 @@ class LTAuthViewController: UIViewController {
 
     @MainActor
     func next() {
-        let avc = navigationController?.viewControllers.filter { $0 is AccountViewController }.first
-        if avc != nil {
-            navigationController?.popToViewController(ofClass: AccountViewController.self)
-        } else {
-            navigationController?.popToViewController(ofClass: WalletViewController.self)
-        }
+        navigationController?.popToRootViewController(animated: true)
     }
 }
 

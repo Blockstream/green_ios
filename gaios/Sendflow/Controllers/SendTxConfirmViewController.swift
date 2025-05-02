@@ -661,12 +661,7 @@ extension SendTxConfirmViewController: SendFeeInfoViewControllerDelegate {
 extension SendTxConfirmViewController: AlertViewControllerDelegate {
     @MainActor
     func onAlertOk() {
-        let avc = navigationController?.viewControllers.filter { $0 is AccountViewController }.first
-        if avc != nil {
-            navigationController?.popToViewController(ofClass: AccountViewController.self)
-        } else {
-            navigationController?.popToViewController(ofClass: WalletViewController.self)
-        }
+        navigationController?.popToViewController(ofClass: WalletTabBarViewController.self)
     }
 }
 extension SendTxConfirmViewController: QRUnlockJadeViewControllerDelegate {

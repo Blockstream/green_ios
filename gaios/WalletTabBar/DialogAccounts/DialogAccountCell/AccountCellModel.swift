@@ -5,12 +5,11 @@ import gdk
 struct AccountCellModel {
     var account: WalletItem
     var satoshi: Int64?
+    var assetId: String?
     var name: String { account.localizedName }
     var lblType: String { account.type.path.uppercased() }
     var hasTxs: Bool { account.hasTxs }
     var networkType: NetworkSecurityCase { account.networkType }
-    var assetId: String? = nil
-
     var balanceStr: String? {
         let assetId = assetId ?? account.gdkNetwork.getFeeAsset()
         if let satoshi = satoshi, let converted = Balance.fromSatoshi(satoshi, assetId: assetId) {
@@ -28,3 +27,4 @@ struct AccountCellModel {
         return nil
     }
 }
+
