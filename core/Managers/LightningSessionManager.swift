@@ -88,7 +88,7 @@ public class LightningSessionManager: SessionManager {
         let walletId = try walletIdentifier(credentials: params)
         let walletHashId = walletId!.walletHashId
         let res = LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? "")
-        let restore = LightningRepository.shared.get(for: walletHashId) != nil
+        let restore = LightningRepository.shared.get(for: walletHashId) == nil
         lightBridge = initLightningBridge(params, eventListener: self)
         do {
             logger.info("lightning connectToGreenlight with \(restore)")
