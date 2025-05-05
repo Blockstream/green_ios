@@ -41,10 +41,6 @@ class WalletTabBarViewController: UITabBarController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        view.alpha = 0
-        UIView.animate(withDuration: 1.0) {
-            self.view.alpha = 1
-        }
         navigationController?.isNavigationBarHidden = true
         if walletModel.isFirstLoad, let view = UIApplication.shared.delegate?.window??.rootViewController?.view {
             walletModel.isFirstLoad = false
