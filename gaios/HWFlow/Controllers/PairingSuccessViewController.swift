@@ -20,8 +20,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     var rememberIsOn = !AppSettings.shared.rememberHWIsOff
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        mash.isHidden = true
+
         setContent()
         setStyle()
         if bleHwManager.type == .Jade {

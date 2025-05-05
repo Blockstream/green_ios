@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -28,9 +28,6 @@
                         <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rCJ-3n-6KM">
                             <rect key="frame" x="44" y="288" width="326" height="320"/>
                             <subviews>
-                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.59999999999999998" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_mash" translatesAutoresizingMaskIntoConstraints="NO" id="CiI-SW-D2M">
-                                    <rect key="frame" x="-100" y="0.0" width="426" height="520"/>
-                                </imageView>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mjQ-HR-J10">
                                     <rect key="frame" x="58" y="30" width="210" height="210"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -58,14 +55,10 @@
                             <constraints>
                                 <constraint firstAttribute="trailing" secondItem="5Ha-eL-thk" secondAttribute="trailing" constant="36" id="0aV-hK-P1x"/>
                                 <constraint firstItem="6N4-4c-rfw" firstAttribute="centerX" secondItem="rCJ-3n-6KM" secondAttribute="centerX" id="2dJ-f2-jrb"/>
-                                <constraint firstItem="CiI-SW-D2M" firstAttribute="leading" secondItem="rCJ-3n-6KM" secondAttribute="leading" constant="-100" id="4yp-WD-x9h"/>
-                                <constraint firstAttribute="bottom" secondItem="CiI-SW-D2M" secondAttribute="bottom" constant="-200" id="61b-WJ-Wxd"/>
                                 <constraint firstItem="6N4-4c-rfw" firstAttribute="top" secondItem="rCJ-3n-6KM" secondAttribute="top" constant="100" id="AUJ-rx-TKn"/>
                                 <constraint firstItem="mjQ-HR-J10" firstAttribute="centerX" secondItem="rCJ-3n-6KM" secondAttribute="centerX" id="Cc9-25-udP"/>
                                 <constraint firstItem="5Ha-eL-thk" firstAttribute="leading" secondItem="rCJ-3n-6KM" secondAttribute="leading" constant="36" id="FWm-D0-6zu"/>
                                 <constraint firstItem="5Ha-eL-thk" firstAttribute="top" secondItem="6N4-4c-rfw" secondAttribute="bottom" constant="50" id="VQW-nP-JfK"/>
-                                <constraint firstItem="CiI-SW-D2M" firstAttribute="top" secondItem="rCJ-3n-6KM" secondAttribute="top" id="czR-v4-lCC"/>
-                                <constraint firstAttribute="trailing" secondItem="CiI-SW-D2M" secondAttribute="trailing" id="lBw-Up-hIM"/>
                                 <constraint firstItem="mjQ-HR-J10" firstAttribute="top" secondItem="rCJ-3n-6KM" secondAttribute="top" constant="30" id="nFb-ya-vSq"/>
                                 <constraint firstAttribute="bottom" secondItem="5Ha-eL-thk" secondAttribute="bottom" constant="80" id="t0g-xx-YiH"/>
                             </constraints>
@@ -91,9 +84,8 @@
         </view>
     </objects>
     <resources>
-        <image name="il_mash" width="375" height="384"/>
         <namedColor name="gBlackBg">
-            <color red="0.074509803921568626" green="0.082352941176470587" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

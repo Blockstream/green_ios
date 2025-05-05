@@ -3,7 +3,7 @@ import UIKit
 
 class SelectProviderViewModel {
 
-    var title = "Change Provider".localized
+    var title = "Change Exchange".localized
     var quotes = [MeldQuoteItem]()
 
     init(quotes: [MeldQuoteItem]) {

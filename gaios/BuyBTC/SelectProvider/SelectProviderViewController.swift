@@ -29,7 +29,7 @@ class SelectProviderViewController: UIViewController {
     }
 
     func setContent() {
-        title = "Change Provider".localized
+        title = viewModel.title
     }
 
     func setStyle() {
