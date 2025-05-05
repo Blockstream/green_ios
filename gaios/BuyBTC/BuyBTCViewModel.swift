@@ -38,7 +38,6 @@ class BuyBTCViewModel {
     var currency: String?
     var tiers: Tiers?
     var hideBalance = false
-    var countryCode = (Locale.current.regionCode ?? "US").uppercased()
     var showNoQuotes: Bool {
         false
     }
@@ -84,7 +83,7 @@ class BuyBTCViewModel {
         let amt = amountStr.replacingOccurrences(of: ",", with: ".")
         let params = MeldQuoteParams(
             destinationCurrencyCode: "BTC",
-            countryCode: countryCode,
+            countryCode: countryCode(),
             sourceAmount: amt,
             sourceCurrencyCode: currency ?? "USD",
             paymentMethodType: "CARD")
@@ -124,7 +123,7 @@ class BuyBTCViewModel {
         }
         let sessionParams = MeldSessionParams(
             serviceProvider: quote.serviceProvider,
-            countryCode: countryCode,
+            countryCode: countryCode(),
             destinationCurrencyCode: "BTC",
             lockFields: ["destinationCurrencyCode",
                          "walletAddress",
@@ -151,5 +150,15 @@ class BuyBTCViewModel {
             throw GaError.GenericError("Invalid address".localized)
         }
         return try await BleHwManager.shared.validateAddress(account: account, address: address)
+    }
+    func countryCode() -> String {
+        if let cCode = UserDefaults.standard.string(forKey: AppStorageConstants.buyCountyCodeUserSelected.rawValue) {
+            return cCode.uppercased()
+        } else {
+            return (Locale.current.regionCode ?? "US").uppercased()
+        }
+    }
+    func persistCountry(_ cCode: String) {
+        UserDefaults.standard.setValue(cCode, forKey: AppStorageConstants.buyCountyCodeUserSelected.rawValue)
     }
 }

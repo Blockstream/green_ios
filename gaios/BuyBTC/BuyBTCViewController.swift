@@ -224,7 +224,7 @@ class BuyBTCViewController: KeyboardViewController {
         countryBtn.contentEdgeInsets = UIEdgeInsets(top: 4.0, left: 4.0, bottom: 4.0, right: 4.0)
         countryBtn.setBackgroundImage(UIImage(named: "ic_buy_circle_empty"), for: .normal)
         countryBtn.addTarget(self, action: #selector(onCountry), for: .touchUpInside)
-        countryBtn.setTitle(viewModel.countryCode, for: .normal)
+        countryBtn.setTitle(viewModel.countryCode(), for: .normal)
         countryBtn.titleLabel?.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         items.append(UIBarButtonItem(customView: countryBtn))
         navigationItem.rightBarButtonItems = items
@@ -435,7 +435,7 @@ extension BuyBTCViewController: DialogAccountsViewControllerDelegate {
 }
 extension BuyBTCViewController: SelectCountryViewControllerDelegate {
     func didSelectCountry(_ country: Country) {
-        viewModel.countryCode = country.code.uppercased()
+        viewModel.persistCountry(country.code)
         loadNavigationBtns()
     }
 }
