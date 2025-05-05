@@ -16,7 +16,6 @@ class TabHomeVC: TabViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        walletModel.reloadBackupCards()
         tableView?.reloadData()
     }
 
@@ -34,7 +33,8 @@ class TabHomeVC: TabViewController {
 
     @objc func pull(_ sender: UIRefreshControl? = nil) {
         Task.detached { [weak self] in
-            await self?.walletTab.reload(discovery: false, chartUpdate: true)
+            await self?.walletTab.reload(discovery: false)
+            await self?.walletTab.reloadChart()
             await MainActor.run { [weak self] in
                 self?.tableView?.refreshControl?.endRefreshing()
             }
@@ -50,12 +50,6 @@ class TabHomeVC: TabViewController {
                 tableView?.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
             }
         }
-//        if sections.contains(TabHomeVC.account) {
-//            tableView.selectRow(at: IndexPath(row: sIdx, section: WalletSection.account.rawValue), animated: false, scrollPosition: .none)
-//        }
-//        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-//            self.tableView.refreshControl?.endRefreshing()
-//        }
     }
 
     func buy() {
@@ -270,14 +264,17 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .chart:
             if let cell = tableView.dequeueReusableCell(withIdentifier: PriceChartCell.identifier, for: indexPath) as? PriceChartCell {
-
-                cell.configure(PriceChartCellModel(priceChartModel: Api.shared.priceCache,
-                                                   currency: Api.shared.currency,
-                                                   isReloading: walletTab.isReloading), timeFrame: timeFrame, onBuy: {[weak self] in
-                    self?.buy()
-                }, onNewFrame: {[weak self] timeFrame in
-                    self?.timeFrame = timeFrame
-                })
+                cell.configure(
+                    PriceChartCellModel(
+                        priceChartModel: Api.shared.priceCache,
+                        currency: Api.shared.currency,
+                        isReloading: Api.shared.priceCache == nil),
+                    timeFrame: timeFrame,
+                    onBuy: {[weak self] in
+                        self?.buy()
+                    }, onNewFrame: {[weak self] timeFrame in
+                        self?.timeFrame = timeFrame
+                    })
                 cell.selectionStyle = .none
                 return cell
             }

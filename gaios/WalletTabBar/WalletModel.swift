@@ -187,7 +187,7 @@ class WalletModel {
         return nil
     }
 
-    func reloadPromoCards() async {
+    func reloadPromoCards() {
         promoCardCellModel = subaccounts.count == 0 ? [] : PromoManager.shared.promoCellModels(.homeTab)
     }
 

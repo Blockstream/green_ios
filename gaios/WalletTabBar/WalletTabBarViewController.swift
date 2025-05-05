@@ -22,19 +22,29 @@ class WalletTabBarViewController: UITabBarController {
         walletModel.registerNotifications()
         Task.detached { [weak self] in
             // refresh tabs content on load
-            await self?.reload(discovery: false, chartUpdate: false) }
+            await self?.reload(discovery: false)
+        }
     }
 
     func setupNotifications() {
-        EventType.allCases.forEach {
-            let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
-                                                                  object: nil,
-                                                                  queue: .main,
-                                                                  using: { [weak self] notification in
-                if let eventType = EventType(rawValue: notification.name.rawValue) {
-                    self?.handleEvent(eventType, details: notification.userInfo ?? [:])
-                }
+        let observer = NotificationCenter.default.addObserver(
+            forName: UIApplication.willEnterForegroundNotification,
+            object: UIApplication.shared,
+            queue: .main,
+            using: { [weak self] _ in
+                self?.handleForegroundEvent()
             })
+        notificationObservers.append(observer)
+        EventType.allCases.forEach {
+            let observer = NotificationCenter.default.addObserver(
+                forName: NSNotification.Name(rawValue: $0.rawValue),
+                object: nil,
+                queue: .main,
+                using: { [weak self] notification in
+                    if let eventType = EventType(rawValue: notification.name.rawValue) {
+                        self?.handleEvent(eventType, details: notification.userInfo ?? [:])
+                    }
+                })
             notificationObservers.append(observer)
         }
     }
@@ -60,6 +70,11 @@ class WalletTabBarViewController: UITabBarController {
         walletModel.reloadBalances()
         walletModel.reloadTransactions()
         updateTabs([.home, .transact])
+        Task.detached { [weak self] in
+            // refresh tabs content on load
+            await self?.reloadChart()
+            await self?.updateTabs([.home])
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -136,15 +151,31 @@ class WalletTabBarViewController: UITabBarController {
         }
     }
 
+    func handleForegroundEvent() {
+        Task.detached { [weak self] in
+            await self?.reloadChart()
+            await self?.updateTabs([.home])
+        }
+    }
+
     func handleEvent(_ eventType: EventType, details: [AnyHashable: Any]) {
         switch eventType {
         case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed:
-            Task.detached { [weak self] in await self?.reload(discovery: false, chartUpdate: false) }
+            Task.detached { [weak self] in
+                await self?.reload(discovery: false)
+            }
         case .Block:
             if walletModel.existPendingTransaction() {
-                Task.detached { [weak self] in await self?.reload(discovery: false, chartUpdate: false) }
+                Task.detached { [weak self] in
+                    await self?.reload(discovery: false)
+                }
             }
-        case .AssetsUpdated, .Network, .Settings, .Ticker, .TwoFactorReset:
+        case .Settings:
+            Task.detached { [weak self] in
+                await self?.reloadChart()
+                await self?.updateTabs([.home])
+            }
+        case .AssetsUpdated, .Network, .Ticker, .TwoFactorReset:
             walletModel.reloadBalances()
             walletModel.reloadTransactions()
             updateTabs([.home, .transact])
@@ -153,7 +184,7 @@ class WalletTabBarViewController: UITabBarController {
         }
     }
 
-    func reload(discovery: Bool, chartUpdate: Bool) async {
+    func reload(discovery: Bool) async {
         if walletModel.paused {
             return
         }
@@ -167,21 +198,27 @@ class WalletTabBarViewController: UITabBarController {
         _ = try? await walletModel.fetchTransactions(reset: true)
         walletModel.reloadTransactions()
         updateTabs([.home, .transact])
-        if chartUpdate || Api.shared.currency != walletModel.currency?.lowercased() {
-            try? await refreshChart()
-        }
-        await walletModel.reloadPromoCards()
+        walletModel.reloadPromoCards()
         walletModel.reloadBackupCards()
 
         isReloading = false
         self.updateTabs([.home, .transact])
     }
 
-    func refreshChart() async throws {
-        try? await Api.shared.fetch(currency: (walletModel.currency ?? "USD").lowercased())
-        if Api.shared.priceCache == nil {
+    func reloadChart() async {
+        logger.error("chart: before")
+        let currency = walletModel.currency ?? "USD"
+        do {
+            try await Api.shared.fetch(currency: currency.lowercased())
+        } catch {
+            logger.error("chart: Failed to fetch price for \(currency): \(error)")
+            return
+        }
+        if let price = Api.shared.priceCache, let error = price.error {
+            logger.error("chart: Failed to fetch price for \(currency): \(error)")
             try? await Api.shared.fetch(currency: "USD".lowercased())
         }
+        logger.error("chart: \(Api.shared.priceCache?.dayData.last?.value ?? 0.0)")
     }
 
     @MainActor

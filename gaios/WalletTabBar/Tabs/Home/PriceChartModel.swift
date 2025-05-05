@@ -6,6 +6,7 @@ struct ChartPoint {
 }
 
 struct PriceChartModel: Codable {
+    var error: String?
     var currency: String
     var last_refresh: String
     var prices_full: [[Double]]
