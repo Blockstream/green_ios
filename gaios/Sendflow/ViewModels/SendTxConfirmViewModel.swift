@@ -123,7 +123,7 @@ class SendTxConfirmViewModel {
         wm?.account.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && !importSignedPsbt
     }
     func needConnectHw() -> Bool {
-        (wm?.account.isHW ?? false) && (!BleHwManager.shared.isConnected() || !BleHwManager.shared.isLogged())
+        wm?.account.isHW ?? false
     }
     func needExportPsbt() -> Bool {
         wm?.account.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && signedPsbt == nil

@@ -436,11 +436,7 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     @IBAction func btnVerify(_ sender: Any) {
-        if BleHwManager.shared.isConnected() && BleHwManager.shared.isLogged() {
-            logged()
-        } else {
-            presentConnectViewController()
-        }
+        presentConnectViewController()
     }
 
     func verifyAddress() async {

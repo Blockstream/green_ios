@@ -458,11 +458,7 @@ extension BuyBTCViewController: SelectCountryViewControllerDelegate {
 extension BuyBTCViewController: MoreActionsViewControllerDelegate {
     func didSelectAction(_ indexPath: IndexPath) {
         if indexPath.row == 0 {
-            if BleHwManager.shared.isConnected() && BleHwManager.shared.isLogged() {
-                logged()
-            } else {
-                presentConnectViewController()
-            }
+            presentConnectViewController()
         }
     }
 }

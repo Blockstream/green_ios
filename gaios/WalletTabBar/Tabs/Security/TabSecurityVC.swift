@@ -113,11 +113,7 @@ class TabSecurityVC: TabViewController {
                 }
             }
         }
-        if BleHwManager.shared.isConnected() && BleHwManager.shared.isLogged() {
-            connected()
-        } else {
-            presentConnectViewController(authentication: false)
-        }
+        presentConnectViewController(authentication: false)
     }
     func onFwUpdate() {
         completion = {
@@ -127,11 +123,7 @@ class TabSecurityVC: TabViewController {
                 self?.stopLoader()
             }
         }
-        if BleHwManager.shared.isConnected() && BleHwManager.shared.isLogged() {
-            connected()
-        } else {
-            presentConnectViewController(authentication: false)
-        }
+        presentConnectViewController(authentication: false)
     }
     func checkFirmware() async {
         let task = Task.detached {
