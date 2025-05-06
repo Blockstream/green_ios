@@ -5,6 +5,7 @@ import greenaddress
 import core
 import BreezSDK
 import lightning
+import hw
 
 enum ProviderState {
     case loading
@@ -68,9 +69,6 @@ class BuyBTCViewController: KeyboardViewController {
         amountTextField.addTarget(self, action: #selector(BuyBTCViewController.textFieldDidChange(_:)),
                                   for: .editingChanged)
         loadAddress()
-    }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -301,6 +299,15 @@ class BuyBTCViewController: KeyboardViewController {
             self?.stopLoader()
         }
     }
+    @MainActor
+    func presentConnectViewController() {
+        let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "HWDialogConnectViewController") as? HWDialogConnectViewController {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
     private func widget(quote: MeldQuoteItem, amountStr: String) async {
         let task = Task.detached { [weak self] in
             return try await self?.viewModel.widget(quote: quote, amountStr: amountStr)
@@ -320,19 +327,28 @@ class BuyBTCViewController: KeyboardViewController {
         AnalyticsManager.shared.buyRedirect(account: self.viewModel.wm.account)
         SafeNavigationManager.shared.navigate(url, exitApp: false, title: quote.serviceProvider)
     }
-    func verifySingleAddress() async throws {
+    func verifySingleAddress() async {
+        AnalyticsManager.shared.verifyAddressJade(account: AccountsRepository.shared.current, walletItem: viewModel.account)
         if let vm = viewModel.verifyOnDeviceViewModel() {
-            await presentVerifyOnDeviceViewController(viewModel: vm)
+            presentVerifyOnDeviceViewController(viewModel: vm)
         }
-        do {
-            let res = try await viewModel.validateHW()
-            if res == false {
-                throw TransactionError.invalid(localizedDescription: "id_the_addresses_dont_match")
+        let task = Task.detached { [weak self] in
+            try await self?.viewModel.validateHW()
+        }
+        switch await task.result {
+        case .success(let success):
+            verifyOnDeviceViewController?.dismiss()
+            switch success {
+            case .some(true):
+                DropAlert().success(message: "id_the_address_is_valid".localized)
+            case .none:
+                DropAlert().error(message: "id_operation_failure".localized)
+            case .some(false):
+                DropAlert().error(message: "id_the_addresses_dont_match".localized)
             }
-            await dismissVerifyOnDeviceViewController()
-        } catch {
-            await dismissVerifyOnDeviceViewController()
-            throw TransactionError.invalid(localizedDescription: "id_the_addresses_dont_match")
+        case .failure(let error):
+            verifyOnDeviceViewController?.dismiss()
+            DropAlert().error(message: error.description()?.localized ?? "")
         }
     }
     @MainActor
@@ -340,13 +356,13 @@ class BuyBTCViewController: KeyboardViewController {
         await verifyOnDeviceViewController?.dismissAsync(animated: true)
     }
     @MainActor
-    func presentVerifyOnDeviceViewController(viewModel: HWDialogVerifyOnDeviceViewModel) async {
-        let storyboard = UIStoryboard(name: "VerifyOnDevice", bundle: nil)
+    func presentVerifyOnDeviceViewController(viewModel: HWDialogVerifyOnDeviceViewModel) {
+        let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "HWDialogVerifyOnDeviceViewController") as? HWDialogVerifyOnDeviceViewController {
             vc.viewModel = viewModel
             verifyOnDeviceViewController = vc
             vc.modalPresentationStyle = .overFullScreen
-            await presentAsync(vc, animated: false)
+            present(vc, animated: false, completion: nil)
         }
     }
     @IBAction func btnTier1(_ sender: Any) {
@@ -442,16 +458,30 @@ extension BuyBTCViewController: SelectCountryViewControllerDelegate {
 extension BuyBTCViewController: MoreActionsViewControllerDelegate {
     func didSelectAction(_ indexPath: IndexPath) {
         if indexPath.row == 0 {
-            Task {
-                do {
-                    try await verifySingleAddress()
-                    await MainActor.run {
-                        DropAlert().success(message: "id_the_address_is_valid".localized)
-                    }
-                } catch {
-                    DropAlert().error(message: error.description()?.localized ?? "")
-                }
+            if BleHwManager.shared.isConnected() && BleHwManager.shared.isLogged() {
+                logged()
+            } else {
+                presentConnectViewController()
             }
         }
+    }
+}
+
+extension BuyBTCViewController: HWDialogConnectViewControllerDelegate {
+    func connected() {
+    }
+
+    func logged() {
+        Task { [weak self] in
+            await self?.verifySingleAddress()
+        }
+    }
+
+    func cancel() {
+        showError(HWError.Abort("id_cancel"))
+    }
+
+    func failure(err: Error) {
+        showError(err)
     }
 }
