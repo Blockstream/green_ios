@@ -16,15 +16,17 @@ public class AssetsManager {
     private let qos = DispatchQueue(label: "AssetsManagerDispatchQueue", qos: .userInteractive)
     private var updatedAt: TimeInterval?
 
-    public init(testnet: Bool) {
+    public init(testnet: Bool, lightning: Bool) {
         self.testnet = testnet
         if testnet {
             infos = [AssetInfo.testId: AssetInfo.test,
                      AssetInfo.ltestId: AssetInfo.ltest]
         } else {
             infos = [AssetInfo.btcId: AssetInfo.btc,
-                     AssetInfo.lbtcId: AssetInfo.lbtc,
-                     AssetInfo.lightningId: AssetInfo.lightning]
+                     AssetInfo.lbtcId: AssetInfo.lbtc]
+            if lightning {
+                infos[AssetInfo.lightningId] = AssetInfo.lightning
+            }
         }
     }
 

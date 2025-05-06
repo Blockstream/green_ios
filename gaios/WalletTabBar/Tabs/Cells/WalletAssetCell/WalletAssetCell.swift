@@ -10,6 +10,8 @@ class WalletAssetCell: UITableViewCell {
 
     class var identifier: String { return String(describing: self) }
 
+    var onTap: (() -> Void)?
+
     override func awakeFromNib() {
         super.awakeFromNib()
         bg.setStyle(CardStyle.defaultStyle)
@@ -20,14 +22,18 @@ class WalletAssetCell: UITableViewCell {
         lblBalance2.setStyle(.txtCard)
     }
 
-    func configure(model: WalletAssetCellModel, hideBalance: Bool) {
+    func configure(model: WalletAssetCellModel, onTap: (() -> Void)?) {
         self.lblAsset.text = model.asset?.name ?? model.asset?.assetId
-        self.lblBalance1.text = model.value ?? ""
-        self.lblBalance2.text = model.fiat ?? " - "
-        if hideBalance == true {
+        self.lblBalance1.text = model.hidden ? "" : (model.value ?? "")
+        self.lblBalance2.text = model.hidden ? "" : (model.fiat ?? " - ")
+        if model.masked {
             self.lblBalance1.attributedText = Common.obfuscate(color: UIColor.gGreenMatrix(), size: 14, length: 5)
             self.lblBalance2.attributedText = Common.obfuscate(color: .lightGray, size: 12, length: 5)
         }
         self.imgView?.image = model.icon
+        self.onTap = onTap
+    }
+    @IBAction func tap(_ sender: Any) {
+        onTap?()
     }
 }

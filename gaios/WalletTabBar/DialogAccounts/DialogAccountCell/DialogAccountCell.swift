@@ -57,12 +57,8 @@ class DialogAccountCell: UITableViewCell {
             lblFiat.attributedText = Common.obfuscate(color: UIColor.gGrayTxt(), size: 12, length: 5)
             lblAmount.attributedText = Common.obfuscate(color: .white, size: 16, length: 5)
         } else {
-            if let fiat = model.fiatStr {
-                lblFiat.text = fiat
-            }
-            if let balance = model.balanceStr {
-                lblAmount.text = balance
-            }
+            lblFiat.text = model.fiatStr ?? ""
+            lblAmount.text = model.balanceStr ?? ""
         }
         reloadAmounts(model)
     }

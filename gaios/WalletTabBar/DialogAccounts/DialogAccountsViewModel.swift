@@ -1,27 +1,41 @@
 import Foundation
 import UIKit
 import gdk
+import core
 
 class DialogAccountsViewModel {
 
     var title: String
     var hint: String
     var isSelectable: Bool
-    var seetInfo: AssetInfo?
-    var accountCellModels: [AccountCellModel]
+    var assetId: String?
+    var accounts: [WalletItem]
     var hideBalance: Bool
 
     init(title: String,
          hint: String,
          isSelectable: Bool,
-         assetInfo: AssetInfo?,
-         accountCellModels: [AccountCellModel],
+         assetId: String?,
+         accounts: [WalletItem],
          hideBalance: Bool) {
         self.title = title
         self.hint = hint
         self.isSelectable = isSelectable
-        self.accountCellModels = accountCellModels
+        self.accounts = accounts
         self.hideBalance = hideBalance
-        self.seetInfo = assetInfo
+        self.assetId = assetId
+    }
+
+    var accountCellModels: [AccountCellModel] {
+        var list = [AccountCellModel]()
+        for account in accounts {
+            let satohi = assetId == nil ? nil : account.satoshi?[assetId!]
+            list += [
+                AccountCellModel(
+                    account: account,
+                    satoshi: satohi,
+                    assetId: assetId)]
+        }
+        return list
     }
 }

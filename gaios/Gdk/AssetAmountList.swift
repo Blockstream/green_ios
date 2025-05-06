@@ -35,6 +35,8 @@ class AssetAmountList {
     func sortAssets(lhs: String, rhs: String) -> Bool {
         if [AssetInfo.btcId, AssetInfo.testId].contains(lhs) { return true }
         if [AssetInfo.btcId, AssetInfo.testId].contains(rhs) { return false }
+        if [AssetInfo.lightningId].contains(lhs) { return true }
+        if [AssetInfo.lightningId].contains(rhs) { return false }
         if [AssetInfo.lbtcId, AssetInfo.ltestId].contains(lhs) { return true }
         if [AssetInfo.lbtcId, AssetInfo.ltestId].contains(rhs) { return false }
         let lhsImage = hasImages[lhs] ?? false

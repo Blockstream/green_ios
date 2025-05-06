@@ -113,12 +113,9 @@ public class WalletManager {
     public init(account: Account, prominentNetwork: NetworkSecurityCase?) {
         self.mainnet = prominentNetwork?.gdkNetwork.mainnet ?? true
         self.prominentNetwork = prominentNetwork ?? .bitcoinSS
-        self.registry = AssetsManager(testnet: !mainnet)
+        self.registry = AssetsManager(testnet: !mainnet, lightning: AppSettings.shared.experimental)
         self.account = account
-        if account.isDerivedLightning {
-            addSession(for: prominentNetwork ?? .bitcoinSS)
-            addLightningSession(for: .lightning)
-        } else if mainnet {
+        if mainnet {
             addSession(for: .bitcoinSS)
             addSession(for: .liquidSS)
             addSession(for: .bitcoinMS)

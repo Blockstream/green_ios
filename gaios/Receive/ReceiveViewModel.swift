@@ -18,6 +18,7 @@ class ReceiveViewModel {
     var accounts: [WalletItem]
     var asset: String
     var satoshi: Int64?
+    var anyAsset: AnyAssetType?
     var isFiat: Bool = false
     var account: WalletItem
     var type: ReceiveType
@@ -134,10 +135,6 @@ class ReceiveViewModel {
         return LTNoteCellModel(note: description ?? "id_note".localized)
     }
 
-    var assetCellModel: ReceiveAssetCellModel {
-        return ReceiveAssetCellModel(assetId: asset, account: account)
-    }
-
     var text: String? {
         switch type {
         case .bolt11:
@@ -186,34 +183,12 @@ class ReceiveViewModel {
     }
 
     func getAssetSelectViewModel() -> AssetSelectViewModel {
-        let isLiquid = account.gdkNetwork.liquid
-        let showAmp = accounts.filter { $0.type == .amp }.count > 0
-        let showLiquid = accounts.filter { $0.gdkNetwork.liquid }.count > 0
-        let showBtc = accounts.filter { !$0.gdkNetwork.liquid }.count > 0
-        let assets = WalletManager.current?.registry.all
-            .filter {
-                (showAmp && $0.amp ?? false) ||
-                (showLiquid && $0.assetId != AssetInfo.btcId) ||
-                (showBtc && $0.assetId == AssetInfo.btcId)
-            }
-        let list = AssetAmountList.from(assetIds: assets?.map { $0.assetId } ?? [])
-
-        // TODO: handle amp case
-        return AssetSelectViewModel(assets: list,
-                                    enableAnyLiquidAsset: isLiquid,
-                                    enableAnyAmpAsset: isLiquid)
-    }
-
-    func getAssetExpandableSelectViewModel() -> AssetExpandableSelectViewModel {
-        let isWO = AccountsRepository.shared.current?.isWatchonly ?? false
-        let isLiquid = account.gdkNetwork.liquid
-        let hideLiquid = isWO && !isLiquid
-        let hideBtc = isWO && isLiquid
-        return AssetExpandableSelectViewModel(
-            enableAnyLiquidAsset: !hideLiquid,
-            enableAnyAmpAsset: !hideLiquid,
-            hideLiquid: hideLiquid,
-            hideBtc: hideBtc)
+        let assetIds = WalletManager.current?.registry.all.map { $0.assetId }
+        let list = AssetAmountList.from(assetIds: assetIds ?? [])
+        return AssetSelectViewModel(
+            assets: list,
+            enableAnyLiquidAsset: true,
+            enableAnyAmpAsset: true)
     }
 
     func dialogInputDenominationViewModel() -> DialogInputDenominationViewModel {
@@ -246,5 +221,59 @@ class ReceiveViewModel {
             cards.append(.backup)
         }
         self.backupCardCellModel = cards.map { AlertCardCellModel(type: $0) }
+    }
+    func hasSubaccountAmp() -> Bool {
+        !wm.subaccounts.filter({ $0.type == .amp }).isEmpty
+    }
+    func createSubaccountAmp() async throws {
+        guard let session = wm.liquidMultisigSession else {
+            throw GaError.GenericError("Invalid session".localized)
+        }
+        try await session.connect()
+        if !session.logged {
+            if let device = wm.hwDevice {
+                try await session.register(credentials: nil, hw: device)
+                _ = try await session.loginUser(credentials: nil, hw: device)
+            } else {
+                let credentials = try await wm.prominentSession?.getCredentials(password: "")
+                try await session.register(credentials: credentials, hw: nil)
+                _ = try await session.loginUser(credentials: credentials, hw: nil)
+            }
+        }
+        _ = try await session.createSubaccount(CreateSubaccountParams(name: "", type: .amp))
+        _ = try await session.updateSubaccount(UpdateSubaccountParams(subaccount: 0, hidden: false))
+        _ = try await wm.subaccounts()
+    }
+    func getLightningSubaccounts() -> [WalletItem] {
+        wm.subaccounts.filter { !$0.hidden && $0.networkType.lightning }
+    }
+    func getBitcoinSubaccounts() -> [WalletItem] {
+        wm.subaccounts.filter { !$0.hidden && !$0.networkType.liquid && !$0.networkType.lightning }
+    }
+    func getLiquidSubaccounts() -> [WalletItem] {
+        wm.subaccounts.filter { !$0.hidden && $0.networkType.liquid }
+    }
+    func getLiquidAmpSubaccounts() -> [WalletItem] {
+        wm.subaccounts.filter { !$0.hidden && $0.networkType.liquid && $0.type == .amp }
+    }
+
+    func dialogAccountsModel() -> DialogAccountsViewModel {
+        return DialogAccountsViewModel(
+            title: "Account Selector",
+            hint: "Select the desired account you want to receive your funds.".localized,
+            isSelectable: true,
+            assetId: asset,
+            accounts: accounts,
+            hideBalance: hideBalance)
+    }
+
+    var hideBalance: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
+        }
+    }
+
+    var walletAssetCellModel: WalletAssetCellModel {
+        WalletAssetCellModel(assetId: asset, satoshi: 0, masked: hideBalance, hidden: true)
     }
 }

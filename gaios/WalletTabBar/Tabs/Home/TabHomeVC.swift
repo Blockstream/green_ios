@@ -258,7 +258,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .assets:
             if let cell = tableView.dequeueReusableCell(withIdentifier: WalletAssetCell.identifier, for: indexPath) as? WalletAssetCell {
-                cell.configure(model: walletModel.walletAssetCellModels[indexPath.row], hideBalance: walletModel.hideBalance)
+                cell.configure(model: walletModel.walletAssetCellModels[indexPath.row], onTap: { self.didSelectAssetRowAt(indexPath: indexPath)})
                 cell.selectionStyle = .none
                 return cell
             }
@@ -380,21 +380,16 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
         }
     }
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch TabHomeSection(rawValue: indexPath.section) {
-        case .assets:
-            let model = walletModel.walletAssetCellModels[indexPath.row]
-            let dialogModel = DialogAccountsViewModel(
-                title: WalletManager.current?.info(for: model.assetId).name ?? "",
-                hint: "Your Bitcoin total balance is the sum of the balances across these accounts.".localized,
-                isSelectable: false,
-                assetInfo: WalletManager.current?.info(for: model.assetId),
-                accountCellModels: walletModel.accountCellModelsBy(model.assetId),
-                hideBalance: walletModel.hideBalance)
-            accountsScreen(model: dialogModel)
-        default:
-            break
-        }
+    func didSelectAssetRowAt(indexPath: IndexPath) {
+        let model = walletModel.walletAssetCellModels[indexPath.row]
+        let dialogModel = DialogAccountsViewModel(
+            title: WalletManager.current?.info(for: model.assetId).name ?? "",
+            hint: "Your Bitcoin total balance is the sum of the balances across these accounts.".localized,
+            isSelectable: false,
+            assetId: model.assetId,
+            accounts: walletModel.accountsBy(model.assetId),
+            hideBalance: walletModel.hideBalance)
+        accountsScreen(model: dialogModel)
     }
 }
 extension TabHomeVC {

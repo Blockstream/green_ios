@@ -44,7 +44,7 @@ class WalletModel {
     var walletAssetCellModels: [WalletAssetCellModel] {
         return cachedBalance?
             .nonZeroAmounts()
-            .compactMap { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) } ?? []
+            .compactMap { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1, masked: hideBalance, hidden: false) } ?? []
     }
 
     var remoteAlert: RemoteAlert?
@@ -348,16 +348,8 @@ class WalletModel {
         return false
     }
 
-    func accountCellModelsBy(_ assetId: String?) -> [AccountCellModel] {
-        var accountCellModels = [AccountCellModel]()
-        for subaccount in subaccounts {
-            let assetId = assetId ?? subaccount.gdkNetwork.policyAsset ?? "btc"
-            if subaccount.hasAsset(assetId) {
-                let satoshi = subaccount.satoshi?[assetId] ?? 0
-                accountCellModels += [AccountCellModel(account: subaccount, satoshi: satoshi, assetId: assetId)]
-            }
-        }
-        return accountCellModels
+    func accountsBy(_ assetId: String?) -> [WalletItem] {
+        subaccounts.filter({ $0.satoshi?.keys.contains(assetId ?? $0.gdkNetwork.policyAsset ?? AssetInfo.btcId) ?? false })
     }
 
     func rotateBalanceDisplayMode() async throws {

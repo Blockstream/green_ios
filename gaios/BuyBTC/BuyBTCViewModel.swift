@@ -45,24 +45,13 @@ class BuyBTCViewModel {
         accounts.count > 1
     }
     var address: Address?
-    var accountCellModels: [AccountCellModel] {
-        var list = [AccountCellModel]()
-        for subaccount in accounts {
-            let assetId = "btc"
-            if subaccount.hasAsset(assetId) {
-                let satoshi = subaccount.satoshi?[assetId] ?? 0
-                list += [AccountCellModel(account: subaccount, satoshi: satoshi, assetId: assetId)]
-            }
-        }
-        return list
-    }
     var dialogAccountsModel: DialogAccountsViewModel {
         return DialogAccountsViewModel(
             title: "Account Selector",
             hint: "Select the desired account you want to receive your bitcoin.".localized,
             isSelectable: true,
-            assetInfo: WalletManager.current?.info(for: "btc"),
-            accountCellModels: accountCellModels,
+            assetId: AssetInfo.btcId,
+            accounts: accounts,
             hideBalance: hideBalance)
     }
     init(account: WalletItem,
