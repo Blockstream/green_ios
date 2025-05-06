@@ -1,19 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "globe-hemisphere-west-thin 1.png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "filename" : "globe-hemisphere-west-thin 1@2x.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "globe-hemisphere-west-thin 1@3x.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "qr-code-thin 1.pdf",
+      "idiom" : "universal"
     }
   ],
   "info" : {

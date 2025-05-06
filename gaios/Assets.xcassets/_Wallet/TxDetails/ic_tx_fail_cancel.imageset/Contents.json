@@ -1,19 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "Cancel.png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "filename" : "Cancel@2x.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "Cancel@3x.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "close.pdf",
+      "idiom" : "universal"
     }
   ],
   "info" : {

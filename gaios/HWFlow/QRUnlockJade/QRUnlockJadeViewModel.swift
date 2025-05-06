@@ -54,13 +54,13 @@ class QRUnlockJadeViewModel {
     func icon() -> UIImage {
         switch scope {
         case .oracle:
-            return UIImage(named: "ic_qr_scan_square")!
+            return UIImage(named: "ic_qr_scan_square")!.maskWithColor(color: UIColor.gAccent())
         case .handshakeInit:
-            return UIImage(named: "ic_qr_scan_square")!
+            return UIImage(named: "ic_qr_scan_square")!.maskWithColor(color: UIColor.gAccent())
         case .handshakeInitReply:
-            return UIImage(named: "ic_qr_scan_shield")!
+            return UIImage(named: "ic_qr_scan_shield")!.maskWithColor(color: UIColor.gAccent())
         case .xpub:
-            return UIImage(named: "ic_qr_scan_square")!
+            return UIImage(named: "ic_qr_scan_square")!.maskWithColor(color: UIColor.gAccent())
         }
     }
 

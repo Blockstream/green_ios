@@ -1,19 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "Group 513625.png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "filename" : "Group 513625@2x.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "Group 513625@3x.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "Authenticator misaligned.pdf",
+      "idiom" : "universal"
     }
   ],
   "info" : {

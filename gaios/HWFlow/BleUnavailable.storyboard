@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -30,14 +30,8 @@
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ymo-T6-AHj">
                                                 <rect key="frame" x="24" y="17" width="272" height="514"/>
                                                 <subviews>
-                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_ble_unavailable_bg" translatesAutoresizingMaskIntoConstraints="NO" id="oNe-eY-31S">
-                                                        <rect key="frame" x="10" y="20" width="252" height="252"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="width" secondItem="oNe-eY-31S" secondAttribute="height" multiplier="1:1" id="e7g-Uh-gTB"/>
-                                                        </constraints>
-                                                    </imageView>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_ble_unavailable" translatesAutoresizingMaskIntoConstraints="NO" id="0Yb-yV-QVH">
-                                                        <rect key="frame" x="10" y="20" width="252" height="252"/>
+                                                        <rect key="frame" x="50" y="50" width="172" height="172"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" secondItem="0Yb-yV-QVH" secondAttribute="height" multiplier="1:1" id="5OY-al-7W9"/>
                                                             <constraint firstAttribute="width" secondItem="0Yb-yV-QVH" secondAttribute="height" multiplier="1:1" id="sHL-Lt-g4W"/>
@@ -96,20 +90,16 @@
                                                 </subviews>
                                                 <color key="backgroundColor" name="gBlackBg"/>
                                                 <constraints>
+                                                    <constraint firstItem="fG3-lh-Yve" firstAttribute="top" secondItem="0Yb-yV-QVH" secondAttribute="bottom" constant="50" id="14J-gi-5tz"/>
                                                     <constraint firstAttribute="bottom" secondItem="pag-Yd-brc" secondAttribute="bottom" constant="30" id="2Ao-H8-Crz"/>
                                                     <constraint firstItem="fG3-lh-Yve" firstAttribute="leading" secondItem="ymo-T6-AHj" secondAttribute="leading" constant="36" id="9zh-8r-EYl"/>
-                                                    <constraint firstItem="fG3-lh-Yve" firstAttribute="top" secondItem="oNe-eY-31S" secondAttribute="bottom" id="GJf-Z2-ZMt"/>
-                                                    <constraint firstItem="0Yb-yV-QVH" firstAttribute="centerY" secondItem="oNe-eY-31S" secondAttribute="centerY" id="Ndr-Id-2h4"/>
-                                                    <constraint firstItem="oNe-eY-31S" firstAttribute="top" secondItem="ymo-T6-AHj" secondAttribute="top" constant="20" id="QRe-e3-md0"/>
-                                                    <constraint firstItem="0Yb-yV-QVH" firstAttribute="centerX" secondItem="oNe-eY-31S" secondAttribute="centerX" id="Wsg-K0-6Qu"/>
                                                     <constraint firstAttribute="trailing" secondItem="pag-Yd-brc" secondAttribute="trailing" constant="25" id="X3d-nT-F6B"/>
-                                                    <constraint firstAttribute="trailing" secondItem="oNe-eY-31S" secondAttribute="trailing" constant="10" id="XVg-c1-93e"/>
                                                     <constraint firstItem="pag-Yd-brc" firstAttribute="top" secondItem="fG3-lh-Yve" secondAttribute="bottom" constant="40" id="Xg1-nQ-rnM"/>
-                                                    <constraint firstItem="0Yb-yV-QVH" firstAttribute="width" secondItem="oNe-eY-31S" secondAttribute="width" id="le8-dJ-OyZ"/>
+                                                    <constraint firstItem="0Yb-yV-QVH" firstAttribute="leading" secondItem="ymo-T6-AHj" secondAttribute="leading" constant="50" id="ewk-1P-gWS"/>
+                                                    <constraint firstAttribute="trailing" secondItem="0Yb-yV-QVH" secondAttribute="trailing" constant="50" id="mmy-sb-2YH"/>
                                                     <constraint firstAttribute="trailing" secondItem="fG3-lh-Yve" secondAttribute="trailing" constant="36" id="s65-hp-dMg"/>
                                                     <constraint firstItem="pag-Yd-brc" firstAttribute="leading" secondItem="ymo-T6-AHj" secondAttribute="leading" constant="25" id="uyW-bf-0lU"/>
-                                                    <constraint firstItem="0Yb-yV-QVH" firstAttribute="height" secondItem="oNe-eY-31S" secondAttribute="height" id="vew-ej-znx"/>
-                                                    <constraint firstItem="oNe-eY-31S" firstAttribute="leading" secondItem="ymo-T6-AHj" secondAttribute="leading" constant="10" id="xdM-rv-5na"/>
+                                                    <constraint firstItem="0Yb-yV-QVH" firstAttribute="top" secondItem="ymo-T6-AHj" secondAttribute="top" constant="50" id="wii-RA-Jdn"/>
                                                 </constraints>
                                             </view>
                                         </subviews>
@@ -163,10 +153,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="il_ble_unavailable" width="290.66665649414062" height="290.66665649414062"/>
-        <image name="il_ble_unavailable_bg" width="290.66665649414062" height="290.66665649414062"/>
+        <image name="il_ble_unavailable" width="306" height="306"/>
         <namedColor name="gBlackBg">
-            <color red="0.074509803921568626" green="0.082352941176470587" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

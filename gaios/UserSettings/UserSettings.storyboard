@@ -851,10 +851,10 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="364" height="449"/>
                                                         <subviews>
                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_2fa_empty_state" translatesAutoresizingMaskIntoConstraints="NO" id="VCZ-wL-fhT">
-                                                                <rect key="frame" x="32" y="0.0" width="300" height="280"/>
+                                                                <rect key="frame" x="32" y="0.0" width="300" height="220"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="width" constant="300" id="3Mp-MG-uPd"/>
-                                                                    <constraint firstAttribute="height" constant="280" id="V0F-xu-W0j"/>
+                                                                    <constraint firstAttribute="height" constant="220" id="V0F-xu-W0j"/>
                                                                 </constraints>
                                                             </imageView>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="lbl_empty state_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iVa-DI-hCo">
@@ -1979,7 +1979,7 @@
     </scenes>
     <resources>
         <image name="arrow_right" width="25" height="25"/>
-        <image name="ic_2fa_empty_state" width="312" height="312"/>
+        <image name="ic_2fa_empty_state" width="440" height="440"/>
         <image name="ic_copy_new" width="16.5" height="16.5"/>
         <image name="ic_manual_backup" width="36.5" height="33.5"/>
         <image name="ic_passphrase" width="9.3333330154418945" height="9.3333330154418945"/>

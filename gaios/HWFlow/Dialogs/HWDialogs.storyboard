@@ -197,9 +197,6 @@
                                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <nil key="highlightedColor"/>
                                                                             </label>
-                                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_check_addr_bg" translatesAutoresizingMaskIntoConstraints="NO" id="tXC-6P-PHo">
-                                                                                <rect key="frame" x="41.5" y="76" width="331" height="200"/>
-                                                                            </imageView>
                                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_jade_select_v1" translatesAutoresizingMaskIntoConstraints="NO" id="w1c-hF-E00">
                                                                                 <rect key="frame" x="0.0" y="76" width="414" height="200"/>
                                                                                 <constraints>
@@ -269,10 +266,7 @@
                                                                             <constraint firstItem="SSf-Ky-y4Y" firstAttribute="leading" secondItem="E5z-gy-vs6" secondAttribute="leading" constant="25" id="6VI-rf-KQy"/>
                                                                             <constraint firstItem="w1c-hF-E00" firstAttribute="centerX" secondItem="E5z-gy-vs6" secondAttribute="centerX" id="HG3-U2-0Gu"/>
                                                                             <constraint firstItem="bkY-67-MJ3" firstAttribute="leading" secondItem="E5z-gy-vs6" secondAttribute="leading" constant="25" id="JoJ-QF-jRb"/>
-                                                                            <constraint firstItem="tXC-6P-PHo" firstAttribute="bottom" secondItem="w1c-hF-E00" secondAttribute="bottom" id="MOc-XZ-XDM"/>
-                                                                            <constraint firstItem="tXC-6P-PHo" firstAttribute="top" secondItem="w1c-hF-E00" secondAttribute="top" id="P49-Gv-rtd"/>
                                                                             <constraint firstAttribute="trailing" secondItem="w1c-hF-E00" secondAttribute="trailing" id="RpI-UT-X5b"/>
-                                                                            <constraint firstItem="tXC-6P-PHo" firstAttribute="centerX" secondItem="E5z-gy-vs6" secondAttribute="centerX" id="T3f-Si-n1b"/>
                                                                             <constraint firstAttribute="trailing" secondItem="V7y-K5-dta" secondAttribute="trailing" constant="20" id="d4T-xZ-Q31"/>
                                                                             <constraint firstItem="V7y-K5-dta" firstAttribute="leading" secondItem="E5z-gy-vs6" secondAttribute="leading" constant="20" id="fuZ-W5-SRC"/>
                                                                             <constraint firstItem="SSf-Ky-y4Y" firstAttribute="top" secondItem="w1c-hF-E00" secondAttribute="bottom" id="heu-MQ-aE4"/>
@@ -380,7 +374,6 @@
         <image name="cancel" width="14" height="14"/>
         <image name="ic_copy_new" width="16.5" height="16.5"/>
         <image name="ic_hww_arrow" width="60" height="60"/>
-        <image name="il_check_addr_bg" width="331.33334350585938" height="184"/>
         <image name="il_jade_load_v1" width="197" height="111"/>
         <image name="il_jade_select_v1" width="880" height="880"/>
         <namedColor name="customModalBlueDark">

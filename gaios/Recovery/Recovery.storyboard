@@ -352,11 +352,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_backup_success" translatesAutoresizingMaskIntoConstraints="NO" id="3f6-iA-ENz">
-                                <rect key="frame" x="153" y="98" width="108" height="95"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_tx_success_check" translatesAutoresizingMaskIntoConstraints="NO" id="3f6-iA-ENz">
+                                <rect key="frame" x="127" y="98" width="160" height="160"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="160" id="vXm-bV-L6y"/>
+                                    <constraint firstAttribute="width" constant="160" id="vzw-Hj-arC"/>
+                                </constraints>
                             </imageView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="zAX-ji-vOE">
-                                <rect key="frame" x="25" y="223" width="364" height="49"/>
+                                <rect key="frame" x="25" y="288" width="364" height="49"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="20" translatesAutoresizingMaskIntoConstraints="NO" id="6nP-LE-jBN">
                                         <rect key="frame" x="0.0" y="0.0" width="364" height="19.5"/>
@@ -373,7 +377,7 @@
                                 </subviews>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3wC-hn-BDT" userLabel="Next">
-                                <rect key="frame" x="25" y="322" width="364" height="50"/>
+                                <rect key="frame" x="25" y="387" width="364" height="50"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="c35-fr-Gll"/>
@@ -415,8 +419,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="ic_backup_success" width="108" height="95"/>
         <image name="ic_info_home" width="24" height="24"/>
+        <image name="ic_tx_success_check" width="306" height="306"/>
         <namedColor name="customTitaniumDark">
             <color red="0.070588235294117646" green="0.086274509803921567" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

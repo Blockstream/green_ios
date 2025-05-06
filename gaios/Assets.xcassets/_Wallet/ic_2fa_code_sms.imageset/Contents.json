@@ -1,17 +1,8 @@
 {
   "images" : [
     {
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "SMS@3x copia.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "Chat Round.pdf",
+      "idiom" : "universal"
     }
   ],
   "info" : {
