@@ -476,6 +476,7 @@ class SendTxConfirmViewController: UIViewController {
                 }
             })
         case .failure(let err):
+            stopLoader()
             squareSliderView.reset()
             dismiss(animated: true, completion: {
                 self.presentSendFailViewController(err)
