@@ -82,7 +82,11 @@ class DrawerNetworkSelectionViewController: UIViewController {
     }
 
     func goAccount(account: Account) {
-        delegate?.didSelectAccount(account: account)
+        if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
+            AccountNavigator.goLogged(accountId: account.id)
+        } else {
+            AccountNavigator.goLogin(accountId: account.id)
+        }
     }
 
     func onTap(_ indexPath: IndexPath) {
