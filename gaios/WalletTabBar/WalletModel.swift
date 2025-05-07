@@ -90,30 +90,26 @@ class WalletModel {
 
     func fetchBalances(discovery: Bool) async throws {
         let subaccounts = try await wm?.subaccounts(discovery)
-        let balances = try await wm?.balances(subaccounts: subaccounts ?? [])
-        self.cachedBalance = AssetAmountList(balances ?? [:])
+        if let balances = try await wm?.balances(subaccounts: subaccounts ?? []) {
+            cachedBalance = AssetAmountList(balances)
+        }
     }
 
     func reloadBalances() {
-        guard let satoshi = cachedBalance?.satoshi(),
-                let cachedBalance = self.cachedBalance else {
-            balanceCellModel = nil
-            return
+        if let cachedBalance = self.cachedBalance {
+            balanceCellModel = BalanceCellModel(satoshi: cachedBalance.satoshi(),
+                                                cachedBalance: cachedBalance,
+                                                mode: self.balanceDisplayMode,
+                                                assetId: self.getAssetId())
         }
-        balanceCellModel = BalanceCellModel(satoshi: satoshi,
-                                            cachedBalance: cachedBalance,
-                                            mode: self.balanceDisplayMode,
-                                            assetId: self.getAssetId())
     }
 
     func existPendingTransaction() -> Bool {
         let list = cachedTransactions
             .flatMap({$0.value })
             .flatMap({$0.list})
-        for tx in list {
-            if tx.blockHeight == 0 {
+        for tx in list where tx.blockHeight == 0 {
                 return true
-            }
         }
         return false
     }
