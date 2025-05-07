@@ -19,7 +19,7 @@ enum ChartTimeFrame {
 //        case .ytd:
 //            return "YTD".localized
         case .all:
-            return "ALL".localized
+            return "5Y".localized
         }
     }
 }
