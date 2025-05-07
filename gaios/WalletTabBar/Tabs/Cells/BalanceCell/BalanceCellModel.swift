@@ -54,11 +54,13 @@ class BalanceCellModel {
                 valueToFiat = "0 \(balance.1)"
             }
         }
-
+        if valueToFiat.starts(with: "n/a") || valueToFiat == "" || valueToFiat == "--" {
+            valueToFiat = valueToDenom
+        }
         switch mode {
-        case .denom:
-            return (valueToDenom, valueToFiat)
         case .fiat:
+            return (valueToDenom, valueToFiat)
+        case .denom:
             return (valueToFiat, valueToDenom)
         }
     }
