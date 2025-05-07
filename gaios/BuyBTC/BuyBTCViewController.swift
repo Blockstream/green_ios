@@ -179,7 +179,7 @@ class BuyBTCViewController: KeyboardViewController {
             let initials = viewModel.getInitials(from: pName)
             lblIconProvider.text = initials
             bgIconProvider.backgroundColor = viewModel.colorFromProviderName(pName)
-            lblDenom.text = "≈ \(quotes[selectedIndex].btc() ?? "")"
+            lblDenom.text = "\(quotes[selectedIndex].destinationAmount) BTC"
         }
         btnAccount.setTitle(viewModel.account.localizedName, for: .normal)
         setBackupCard()
