@@ -19,10 +19,12 @@
 		09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B322165EB3A009BABFE /* SetGauthViewController.swift */; };
 		09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */; };
 		098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */; };
+		201BF8922DCFA4AD003A9383 /* MeldTransactionTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 201BF8912DCFA4AD003A9383 /* MeldTransactionTask.swift */; };
 		20516D042693969B00BA1F4C /* DialogWalletRename.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20516D032693969B00BA1F4C /* DialogWalletRename.swift */; };
 		20516D062698A2C600BA1F4C /* EditWalletUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20516D052698A2C600BA1F4C /* EditWalletUITests.swift */; };
 		209632632D8420C700FC716D /* QuoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 209632612D8420C700FC716D /* QuoteCell.swift */; };
 		209632642D8420C700FC716D /* QuoteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 209632622D8420C700FC716D /* QuoteCell.xib */; };
+		2096C07B2DCFB22E000E3E0F /* MeldTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2096C07A2DCFB22E000E3E0F /* MeldTypes.swift */; };
 		20E15EE22625AC6300DB8F43 /* MnemonicAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E15EE12625AC6300DB8F43 /* MnemonicAuthViewController.swift */; };
 		3403BDAC2630282600118C64 /* Learn2faViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403BDAB2630282600118C64 /* Learn2faViewController.swift */; };
 		3407F5CD2A49BBC3005EF8E1 /* LTConfirmingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3407F5CC2A49BBC3005EF8E1 /* LTConfirmingViewController.swift */; };
@@ -936,6 +938,7 @@
 		098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageGenerator.swift; sourceTree = "<group>"; };
 		0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationTypeHandler.swift; sourceTree = "<group>"; };
 		09DA612520E73A2300C3EA03 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		201BF8912DCFA4AD003A9383 /* MeldTransactionTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeldTransactionTask.swift; sourceTree = "<group>"; };
 		20516D032693969B00BA1F4C /* DialogWalletRename.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletRename.swift; sourceTree = "<group>"; };
 		20516D052698A2C600BA1F4C /* EditWalletUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditWalletUITests.swift; sourceTree = "<group>"; };
 		206D7A37252F3108002429BB /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -944,6 +947,7 @@
 		207C121823303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		209632612D8420C700FC716D /* QuoteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteCell.swift; sourceTree = "<group>"; };
 		209632622D8420C700FC716D /* QuoteCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = QuoteCell.xib; sourceTree = "<group>"; };
+		2096C07A2DCFB22E000E3E0F /* MeldTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeldTypes.swift; sourceTree = "<group>"; };
 		20E15EE12625AC6300DB8F43 /* MnemonicAuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicAuthViewController.swift; sourceTree = "<group>"; };
 		30E4BBC6544671082AABADC5 /* Pods_gaios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3403BDAB2630282600118C64 /* Learn2faViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Learn2faViewController.swift; sourceTree = "<group>"; };
@@ -3701,6 +3705,8 @@
 		8177EDB12B6C743B00C2271C /* Tasks */ = {
 			isa = PBXGroup;
 			children = (
+				2096C07A2DCFB22E000E3E0F /* MeldTypes.swift */,
+				201BF8912DCFA4AD003A9383 /* MeldTransactionTask.swift */,
 				8177ED482B6C567100C2271C /* PaymentReceiverTask.swift */,
 				8180B2482D2D742A008FFFD0 /* SwapUpdateTask.swift */,
 				81F8AC562BC5A4A4002E384D /* ConfirmTransactionTask.swift */,
@@ -5190,11 +5196,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				8177EDB02B6C742700C2271C /* PaymentReceiverTask.swift in Sources */,
+				2096C07B2DCFB22E000E3E0F /* MeldTypes.swift in Sources */,
 				81F8AC552BC56F5D002E384D /* NotificationService.swift in Sources */,
 				81F8AC572BC5A4A4002E384D /* ConfirmTransactionTask.swift in Sources */,
 				816E9BD82BC48011008DBFA7 /* BreezSDKConnector.swift in Sources */,
 				8180B2492D2D742A008FFFD0 /* SwapUpdateTask.swift in Sources */,
 				81F8AC592BC5A4F4002E384D /* TaskProtocol.swift in Sources */,
+				201BF8922DCFA4AD003A9383 /* MeldTransactionTask.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

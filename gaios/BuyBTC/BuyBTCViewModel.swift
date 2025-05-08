@@ -60,7 +60,7 @@ class BuyBTCViewModel {
          hideBalance: Bool = false) {
         self.account = account
         self.asset = account.gdkNetwork.getFeeAsset()
-        self.meld = Meld.init(isSandboxEnvironment: WalletManager.current?.testnet ?? false)
+        self.meld = Meld()
         self.inputDenomination = WalletManager.current?.prominentSession?.settings?.denomination ?? .Sats
         self.accounts = accounts
         self.hideBalance = hideBalance
@@ -124,7 +124,8 @@ class BuyBTCViewModel {
             walletAddress: addressStr)
         let params = MeldWidgetParams(
             sessionData: sessionParams,
-            sessionType: MeldTransactionType.BUY.rawValue)
+            sessionType: MeldTransactionType.BUY.rawValue,
+            externalCustomerId: wm.account.xpubHashId ?? "")
         return try await meld.widget(params)
     }
     func verifyOnDeviceViewModel() -> HWDialogVerifyOnDeviceViewModel? {
@@ -149,5 +150,14 @@ class BuyBTCViewModel {
     }
     func persistCountry(_ cCode: String) {
         UserDefaults.standard.setValue(cCode, forKey: AppStorageConstants.buyCountyCodeUserSelected.rawValue)
+    }
+    func hasPendingTransactions() async throws -> Bool {
+        guard let xpub = wm.account.xpubHashId else {
+            return false
+        }
+        let hasPendingTx =  try await meld.getPendingTransactions(xpub: xpub).count > 0
+        // enable fetching txs based on meld reply
+        Meld.enableFetchingTxs(xpub: xpub, enable: hasPendingTx)
+        return hasPendingTx
     }
 }

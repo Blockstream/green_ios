@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import WebKit
+import core
 
 enum BrowserAction {
     case close
@@ -36,6 +37,7 @@ class BrowserViewController: UIViewController, WKNavigationDelegate, WKUIDelegat
             if let webView = webView {
                 self.layoutView.addSubview(webView)
             }
+            logger.info("BrowserViewController url: \(url)")
             webView?.load(URLRequest(url: url))
         }
         UIView.animate(withDuration: 0.3) {
@@ -64,9 +66,9 @@ class BrowserViewController: UIViewController, WKNavigationDelegate, WKUIDelegat
     }
 
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        if navigationAction.targetFrame == nil {
-            webView.load(URLRequest(url: navigationAction.request.url!))
-            //UIApplication.shared.open(navigationAction.request.url!, options: [:])
+        if navigationAction.targetFrame == nil, let url = url {
+            logger.info("BrowserViewController url: \(url)")
+            webView.load(URLRequest(url: url))
         }
         return nil
     }

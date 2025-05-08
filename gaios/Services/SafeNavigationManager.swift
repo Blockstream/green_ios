@@ -6,20 +6,20 @@ class SafeNavigationManager {
 
     static let shared = SafeNavigationManager()
 
-    public func navigate(_ urlString: String?, exitApp: Bool = false, title: String? = nil) {
+    public func navigate(_ urlString: String?, exitApp: Bool = false, title: String? = nil, completion: (()->())? = nil) {
         guard let urlString = urlString, let url = URL(string: urlString) else {
             return
         }
-        confirm(url, exitApp: exitApp, title: title)
+        confirm(url, exitApp: exitApp, title: title, completion: completion)
     }
 
     public func navigate(_ url: URL, exitApp: Bool = false) {
         confirm(url, exitApp: exitApp)
     }
 
-    private func confirm(_ url: URL, exitApp: Bool, title: String? = nil) {
+    private func confirm(_ url: URL, exitApp: Bool, title: String? = nil, completion: (()->())? = nil) {
         guard GdkSettings.read()?.tor ?? false else {
-            browse(url, exitApp: exitApp, title: title)
+            browse(url, exitApp: exitApp, title: title, completion: completion)
             return
         }
 
@@ -37,7 +37,7 @@ class SafeNavigationManager {
 
                 switch action {
                 case .authorize:
-                    self?.browse(url, exitApp: exitApp, title: title)
+                    self?.browse(url, exitApp: exitApp, title: title, completion: completion)
                 case .cancel:
                     break
                 case .copy:
@@ -51,7 +51,7 @@ class SafeNavigationManager {
         appDelegate?.navigateWindow?.makeKeyAndVisible()
     }
 
-    private func browse(_ url: URL, exitApp: Bool, title: String? = nil) {
+    private func browse(_ url: URL, exitApp: Bool, title: String? = nil, completion: (()->())? = nil) {
 
         if exitApp == true {
             if UIApplication.shared.canOpenURL(url) {
@@ -70,6 +70,7 @@ class SafeNavigationManager {
                 vc.titleStr = title
                 vc.onClose = { () in
                     appDelegate?.navigateWindow = nil
+                    completion?()
                 }
                 appDelegate?.navigateWindow?.rootViewController = vc
             }

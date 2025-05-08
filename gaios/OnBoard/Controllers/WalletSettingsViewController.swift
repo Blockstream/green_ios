@@ -95,7 +95,12 @@ class WalletSettingsViewController: KeyboardViewController {
 
     @IBOutlet weak var lblElectrumTls: UILabel!
     @IBOutlet weak var switchElectrumTls: UISwitch!
-
+    
+    @IBOutlet weak var cardMeld: UIView!
+    @IBOutlet weak var switchMeld: UISwitch!
+    @IBOutlet weak var lblMeldTitle: UILabel!
+    @IBOutlet weak var lblMeldSubtitle: UILabel!
+    
     weak var delegate: WalletSettingsViewControllerDelegate?
 
     override func viewDidLoad() {
@@ -160,6 +165,8 @@ class WalletSettingsViewController: KeyboardViewController {
         lblMultiTitle.text = "id_multi_server_validation".localized
         lblMultiHint.text = "id_double_check_spv_with_other".localized
         lblDescElectrumGapLimit.text = "id_number_of_consecutive_empty".localized
+        lblMeldTitle.text = "Meld"
+        lblMeldSubtitle.text = "Enable meld sandbox"
         btnCancel.setTitle("id_cancel".localized, for: .normal)
         btnSave.setTitle("id_save".localized, for: .normal)
         fieldSPVbtcServer.placeholder = GdkSettings.btcElectrumSrvDefaultEndPoint
@@ -185,6 +192,7 @@ class WalletSettingsViewController: KeyboardViewController {
         btnLang.backgroundColor = UIColor.gAccent()
         btnLang.cornerRadius = 4.0
         cardMulti.isHidden = !Bundle.main.dev
+        cardMeld.isHidden = !Bundle.main.dev
     }
 
     @objc func donePressed() {
@@ -227,7 +235,7 @@ class WalletSettingsViewController: KeyboardViewController {
         }
         switchPSPVPersonalNode(switchPSPVPersonalNode)
         switchProxyChange(switchProxy)
-
+        switchMeld.setOn(Meld.isSandboxEnvironment, animated: true)
     }
 
     override func keyboardWillShow(notification: Notification) {
@@ -310,6 +318,7 @@ class WalletSettingsViewController: KeyboardViewController {
         AppSettings.shared.experimental = switchExperimental.isOn
         AppSettings.shared.rememberHWIsOff = !switchRememberHW.isOn
         AppSettings.shared.gdkSettings = newSettings
+        Meld.isSandboxEnvironment = switchMeld.isOn
 
         switch AnalyticsManager.shared.consent { // current value
         case .authorized:

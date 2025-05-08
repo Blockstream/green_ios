@@ -91,12 +91,17 @@ public class LightningSessionManager: SessionManager {
         let restore = LightningRepository.shared.get(for: walletHashId) == nil
         lightBridge = initLightningBridge(params, eventListener: self)
         do {
-            logger.info("lightning connectToGreenlight with \(restore)")
+            logger.info("lightning loginUser \(credentials.toDict()?.description ?? "") \(restore)")
             try await connectToGreenlight(credentials: params, checkCredentials: restore)
             isRestoredNode = restore
         } catch {
-            logger.info("lightning connectToGreenlight")
-            try await connectToGreenlight(credentials: params)
+            do {
+                logger.info("lightning loginUser \(credentials.toDict()?.description ?? "")")
+                try await connectToGreenlight(credentials: params)
+            } catch {
+                logger.info("lightning loginUser failed \(error.description())")
+                throw error
+            }
         }
         if let greenlightCredentials = lightBridge?.appGreenlightCredentials {
             LightningRepository.shared.upsert(for: walletHashId, credentials: greenlightCredentials)
@@ -106,10 +111,10 @@ public class LightningSessionManager: SessionManager {
         return res
     }
 
-    public func registerNotification(token: String, xpubHashId: String) {
+    public func registerNotification(token: String, xpubHashId: String) async throws {
         if let notificationService = Bundle.main.notificationService {
             logger.info("register notification token \(token, privacy: .public) with xpubHashId \(xpubHashId, privacy: .public) at \(notificationService, privacy: .public)")
-            try? lightBridge?.breezSdk?.registerWebhook(webhookUrl: "\(notificationService)/api/v1/notify?platform=\("ios")&token=\(token)&app_data=\(xpubHashId)")
+            try lightBridge?.breezSdk?.registerWebhook(webhookUrl: "\(notificationService)/api/v1/notify?platform=\("ios")&token=\(token)&app_data=\(xpubHashId)")
         }
     }
 

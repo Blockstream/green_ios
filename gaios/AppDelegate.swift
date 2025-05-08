@@ -3,6 +3,7 @@ import gdk
 import UserNotifications
 import core
 import AVFoundation
+import FirebaseMessaging
 
 func getAppDelegate() -> AppDelegate? {
     return UIApplication.shared.delegate as? AppDelegate
@@ -147,5 +148,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func resolve2faOff() {
         resolve2faWindow?.removeFromSuperview()
         resolve2faWindow = nil
+    }
+
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().apnsToken = deviceToken
+        AppNotifications.shared.didRegisterForRemoteNotifications(deviceToken: deviceToken)
     }
 }

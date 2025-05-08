@@ -14,7 +14,7 @@ class ConfirmTransactionTask: TaskProtocol {
     internal var contentHandler: ((UNNotificationContent) -> Void)?
     internal var bestAttemptContent: UNMutableNotificationContent?
     internal var dismiss: (() -> Void)?
-    internal var bitcoinAddress: String? = nil
+    internal var bitcoinAddress: String?
 
     var TAG: String { return String(describing: self) }
     let SWAP_TX_CONFIRMED_NOTIFICATION_FAILURE_TITLE = "Open the app to complete swap"
@@ -56,7 +56,7 @@ class ConfirmTransactionTask: TaskProtocol {
         }
     }
 
-    func start(breezSDK: BlockingBreezServices) throws {
+    func start(breezSDK: BlockingBreezServices) async throws {
         do {
             let addressTxsConfirmedRequest = try JSONDecoder().decode(AddressTxsConfirmedRequest.self, from: self.payload.data(using: .utf8)!)
             bitcoinAddress = addressTxsConfirmedRequest.address

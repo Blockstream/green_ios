@@ -75,11 +75,11 @@ extension BreezSDK.ReceiveOnchainError {
 extension BreezSDK.ConnectError {
     public func description() -> String? {
         switch self {
-        case .Generic(message: let message):
+        case .Generic(let message):
             return message.errorMessage ?? message
-        case .RestoreOnly(message: let message):
+        case .RestoreOnly(let message):
             return message.errorMessage ?? message
-        case .ServiceConnectivity(message: let message):
+        case .ServiceConnectivity(let message):
             return message.errorMessage ?? message
         }
     }

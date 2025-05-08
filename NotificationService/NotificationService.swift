@@ -1,6 +1,5 @@
 import Foundation
 import UserNotifications
-import os.log
 import BreezSDK
 import core
 
@@ -40,58 +39,102 @@ public enum NotificationError: Error {
 
 class NotificationService: UNNotificationServiceExtension {
 
-    private var contentHandler: ((UNNotificationContent) -> Void)? = nil
-    private var bestAttemptContent: UNMutableNotificationContent? = nil
-    private var currentTask: TaskProtocol? = nil
+    private var contentHandler: ((UNNotificationContent) -> Void)?
+    private var bestAttemptContent: UNMutableNotificationContent?
+    private var currentTask: TaskProtocol?
     private var breezSDKConnector = BreezSDKConnector()
     private var TAG: String { return String(describing: self) }
 
     override func didReceive(
         _ request: UNNotificationRequest,
-        withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
-            logger.info("\(self.TAG, privacy: .public): Notification received: \(self.bestAttemptContent?.userInfo.description ?? "", privacy: .public)")
+        withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void)
+    {
+        logger.info("\(self.TAG, privacy: .public): Notification received: \(self.bestAttemptContent?.userInfo.description ?? "", privacy: .public)")
         self.contentHandler = contentHandler
         self.bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         let userInfo = bestAttemptContent?.userInfo
-        guard let notification = LightningNotification.from(userInfo ?? [:]) as? LightningNotification else {
+        if let lightningNotification = LightningNotification.from(userInfo ?? [:]) as? LightningNotification {
+            Task.detached(priority: .high) { @MainActor [weak self] in
+                await self?.didReceiveLightning(lightningNotification)
+            }
+        } else if let meldNotification = MeldEvent.from(userInfo ?? [:]) as? MeldEvent {
+            Task.detached(priority: .high) { @MainActor [weak self] in
+                await self?.didReceiveMeld(meldNotification)
+            }
+        } else {
             logger.info("\(self.TAG, privacy: .public): Invalid notification")
             if let content = bestAttemptContent {
                 contentHandler(content)
             }
             return
         }
-        if let currentTask = self.getTaskFromNotification(notification: notification) {
-            self.currentTask = currentTask
-            Task.detached(priority: .high) { @MainActor [weak self] in
-                let TAG = self?.TAG ?? ""
-                do {
-                    guard let xpub = notification.appData else {
-                        logger.error("\(TAG, privacy: .public): Invalid xpub: \(self?.bestAttemptContent?.userInfo.description ?? "", privacy: .public)")
-                        throw NotificationError.InvalidNotification
-                    }
-                    logger.info("\(TAG, privacy: .public): xpub: \(xpub, privacy: .public)")
-                    guard let lightningAccount = self?.getLightningAccount(xpub: xpub) else {
-                        guard let account = self?.getAccount(xpub: xpub) else {
-                            logger.error("\(TAG, privacy: .public): Wallet not found")
-                            return
-                        }
-                        logger.error("\(TAG, privacy: .public): Wallet not lightning found: \(account.name, privacy: .public)")
-                        currentTask.onShutdown()
-                        return
-                    }
-                    logger.info("\(TAG, privacy: .public): Using lightning wallet \(lightningAccount.name, privacy: .public)")
-                    logger.info("\(TAG, privacy: .public): Breez SDK is not connected, connecting....")
-                    let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: lightningAccount.keychain)
-                    if let breezSdk = try await self?.breezSDKConnector.register(credentials: credentials, listener: currentTask) {
-                        logger.info("\(TAG, privacy: .public): Breez SDK connected successfully")
-                        try currentTask.start(breezSDK: breezSdk)
-                    }
-                } catch {
-                    logger.error("\(TAG, privacy: .public): Breez SDK connection failed \(error.description() ?? "", privacy: .public)")
-                    self?.currentTask?.onShutdown()
-                    self?.shutdown()
-                }
+    }
+
+    func didReceiveMeld(_ notification: MeldEvent) async {
+        let currentTask = MeldTransactionTask(
+            event: notification,
+            logger: logger,
+            contentHandler: contentHandler,
+            bestAttemptContent: bestAttemptContent,
+            dismiss: shutdown
+        )
+        guard let externalCustomerId = notification.payload.externalCustomerId else {
+            logger.error("\(self.TAG, privacy: .public): Missing externalCustomerId in Meld transaction payload")
+            currentTask.onShutdown()
+            shutdown()
+            return
+        }
+        guard let _ = getAccount(xpub: externalCustomerId) else {
+            logger.error("\(self.TAG, privacy: .public): Wallet not found")
+            currentTask.onShutdown()
+            shutdown()
+            return
+        }
+        let task = Task { try await currentTask.start() }
+        switch await task.result {
+        case .success:
+            logger.info("\(self.TAG, privacy: .public): MeldTransactionTask starts successfully")
+        case .failure(let err):
+            logger.error("\(self.TAG, privacy: .public): MeldTransactionTask fails with \(err.description() ?? "", privacy: .public)")
+            currentTask.onShutdown()
+            shutdown()
+        }
+    }
+
+    func didReceiveLightning(_ notification: LightningNotification) async {
+        let currentTask = self.getTaskFromNotification(notification: notification)
+        guard let currentTask = currentTask else { return }
+        self.currentTask = currentTask
+        guard let xpub = notification.appData else {
+            logger.error("\(self.TAG, privacy: .public): Invalid xpub: \(self.bestAttemptContent?.userInfo.description ?? "", privacy: .public)")
+            currentTask.onShutdown()
+            shutdown()
+            return
+        }
+        logger.info("\(self.TAG, privacy: .public): xpub: \(xpub, privacy: .public)")
+        guard let lightningAccount = getLightningAccount(xpub: xpub) else {
+            logger.error("\(self.TAG, privacy: .public): Wallet not lightning found")
+            currentTask.onShutdown()
+            shutdown()
+            return
+        }
+        logger.info("\(self.TAG, privacy: .public): Using lightning wallet \(lightningAccount.name, privacy: .public)")
+        let task = Task { [weak self] in
+            logger.info("\(self?.TAG ?? "", privacy: .public): Breez SDK is not connected, connecting....")
+            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: lightningAccount.keychain)
+            let breezSdk = try await self?.breezSDKConnector.register(credentials: credentials, listener: currentTask)
+            logger.info("\(self?.TAG ?? "", privacy: .public): Breez SDK connected successfully")
+            if let breezSdk = breezSdk {
+                try await currentTask.start(breezSDK: breezSdk)
             }
+        }
+        switch await task.result {
+        case .success:
+            logger.info("\(self.TAG, privacy: .public): MeldTransactionTask starts successfully")
+        case .failure(let err):
+            logger.error("\(self.TAG, privacy: .public): Breez SDK connection failed \(err.description() ?? "", privacy: .public)")
+            currentTask.onShutdown()
+            shutdown()
         }
     }
 
@@ -111,7 +154,7 @@ class NotificationService: UNNotificationServiceExtension {
     }
 
     func getTaskFromNotification(notification: LightningNotification) -> TaskProtocol? {
-        switch(notification.notificationType) {
+        switch notification.notificationType {
         case .addressTxsConfirmed:
             logger.info("\(self.TAG, privacy: .public): creating task for tx received")
             return ConfirmTransactionTask(payload: notification.notificationPayload ?? "", logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, dismiss: self.shutdown )

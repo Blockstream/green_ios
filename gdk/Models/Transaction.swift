@@ -433,6 +433,11 @@ public struct Transaction: Comparable {
         set { details["isRefundableSwap"] = newValue }
     }
 
+    public var isMeldPayment: Bool? {
+        get { return get("isMeldPayment") }
+        set { details["isMeldPayment"] = newValue }
+    }
+
     public var txType: TxType {
         if privateKey != nil {
             return .sweep

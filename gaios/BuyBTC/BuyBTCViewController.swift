@@ -18,7 +18,7 @@ class BuyBTCViewController: KeyboardViewController {
     @IBOutlet weak var amountStack: UIStackView!
     @IBOutlet weak var providerStack: UIStackView!
     @IBOutlet weak var accountStack: UIStackView!
-
+    
     @IBOutlet weak var lblSection1: UILabel!
     @IBOutlet weak var lblSection2: UILabel!
     @IBOutlet weak var lblSection3: UILabel!
@@ -79,6 +79,7 @@ class BuyBTCViewController: KeyboardViewController {
             self.amountTextField.becomeFirstResponder()
         }
     }
+    
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
@@ -325,7 +326,18 @@ class BuyBTCViewController: KeyboardViewController {
     }
     func proceedWithWidget(url: String?, quote: MeldQuoteItem) {
         AnalyticsManager.shared.buyRedirect(account: self.viewModel.wm.account)
-        SafeNavigationManager.shared.navigate(url, exitApp: false, title: quote.serviceProvider)
+        SafeNavigationManager.shared.navigate(url, exitApp: false, title: quote.serviceProvider) {
+            // completion
+            Task { [weak self] in
+                let res = try? await self?.viewModel.hasPendingTransactions()
+                if res == true {
+                    await MainActor.run {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, userInfo: nil)
+                        _ = self?.navigationController?.popViewController(animated: true)
+                    }
+                }
+            }
+        }
     }
     func verifySingleAddress() async {
         AnalyticsManager.shared.verifyAddressJade(account: AccountsRepository.shared.current, walletItem: viewModel.account)

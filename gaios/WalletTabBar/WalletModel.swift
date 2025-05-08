@@ -27,6 +27,7 @@ class WalletModel {
     /// Cached data
     var cachedTransactions = [Int: [Transactions]]()
     var cachedBalance: AssetAmountList?
+    var cachedMeldTransactions = [Transaction]()
 
     /// if no accounts show the layer
     var welcomeLayerVisibility: (() -> Void)?
@@ -119,12 +120,24 @@ class WalletModel {
             return
         }
         fetchingTxs = true
+        // get gdk/lightning transactions
         let txs = try await wm.pagedTransactions(subaccounts: wm.subaccounts, of: reset ? 0 : pages)
         for (account, pagetxs) in txs {
             if reset {
                 cachedTransactions[account] = [pagetxs]
             } else {
                 cachedTransactions[account] = (cachedTransactions[account] ?? []) + [pagetxs]
+            }
+        }
+        // get meld transactions
+        if let xpub = wm.account.xpubHashId, Meld.needFetchingTxs(xpub: xpub) && reset {
+            let meld = Meld()
+            let meldTxs = try? await meld.getPendingTransactions(xpub: xpub)
+            if let meldTxs = meldTxs {
+                Meld.enableFetchingTxs(xpub: xpub, enable: !meldTxs.isEmpty)
+                self.cachedMeldTransactions = meldTxs.map({ Transaction($0.details, subaccount: wm.bitcoinSubaccounts.first?.hashValue) })
+                logger.info("cachedMeldTransactions")
+                logger.info("\(self.cachedMeldTransactions.debugDescription)")
             }
         }
         fetchingTxs = false
@@ -135,12 +148,13 @@ class WalletModel {
     }
 
     func reloadTransactions() {
-        let list = cachedTransactions
-            .flatMap({$0.value })
+        let txs = cachedTransactions
+            .flatMap({$0.value})
             .flatMap({$0.list})
+        let list = Array(txs + cachedMeldTransactions)
             .sorted(by: >)
             .prefix(pages * 30)
-        txCellModels = Array(list)
+        txCellModels = list
             .map { tx in
                 let blockHeight = tx.isLiquid ? wm?.liquidBlockHeight() : wm?.bitcoinBlockHeight()
                 return TransactionCellModel(tx: tx, blockHeight: blockHeight ?? 0)
@@ -308,20 +322,17 @@ class WalletModel {
     }
 
     func registerNotifications() {
-        guard let lightningSession = self.wm?.lightningSession,
-              lightningSession.logged else {
+        guard let token = UserDefaults(suiteName: Bundle.main.appGroup)?.string(forKey: "token"),
+              let wm = wm,
+              let xpubHashId = wm.account.xpubHashId else {
             return
         }
         AppNotifications.shared.requestRemoteNotificationPermissions(application: UIApplication.shared) {
-            Task.detached(priority: .background) { [weak self] in
-                let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
-                if let token = defaults?.string(forKey: "token"),
-                   let xpubHashId = self?.wm?.account.xpubHashId {
-                    lightningSession.registerNotification(token: token, xpubHashId: xpubHashId)
-                    if lightningSession.lightBridge?.lspInformation == nil {
-                        _ = lightningSession.lightBridge?.updateLspInformation()
-                    }
-                }
+            Task.detached(priority: .background) {
+                let meld = Meld()
+                try? await meld.registerToken(fcmToken: token, externalCustomerId: xpubHashId)
+                try? await wm.lightningSession?.registerNotification(token: token, xpubHashId: xpubHashId)
+                _ = wm.lightningSession?.lightBridge?.updateLspInformation()
             }
         }
     }

@@ -52,9 +52,6 @@ class TabTransactVC: TabViewController {
         }
     }
 
-    func txDetail(_ tx: Transaction) {
-        txScreen(tx)
-    }
     func receive() {
         receiveScreen(walletModel)
     }
@@ -66,7 +63,9 @@ class TabTransactVC: TabViewController {
     }
     func onTxTap(_ indexPath: IndexPath) {
         let tx = walletModel.txCellModels[indexPath.row].tx
-        if tx.isLightningSwap ?? false {
+        if tx.isMeldPayment ?? false {
+            // nothing
+        } else if tx.isLightningSwap ?? false {
             if tx.isInProgressSwap ?? false {
                 DropAlert().warning(message: "id_swap_is_in_progress".localized)
             } else {

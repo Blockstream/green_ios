@@ -17,6 +17,11 @@ class AppNotifications: NSObject {
             FirebaseApp.configure(options: options!)
         }
         Messaging.messaging().delegate = self
+        // Request permissions first
+        requestRemoteNotificationPermissions(application: UIApplication.shared)
+    }
+
+    func didRegisterForRemoteNotifications(deviceToken: Data) {
     }
 
     func requestRemoteNotificationPermissions(application: UIApplication, completion: (() -> Void)? = nil) {
@@ -29,9 +34,11 @@ class AppNotifications: NSObject {
                 return
             }
             logger.info("Granter permission for push notifications")
-            completion?()
+            DispatchQueue.main.async {
+                application.registerForRemoteNotifications()
+                completion?()
+            }
         }
-        application.registerForRemoteNotifications()
     }
 }
 
@@ -45,23 +52,32 @@ extension AppNotifications: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         // User TAP on local/remote notification
         let content = response.notification.request.content.userInfo
-        guard let xpub = content["app_data"] as? String else {
-            return
+        logger.info("userNotificationCenter didReceive \(content.description)")
+        // For lightning notification
+        let appData = content["app_data"] as? String
+        // For meld notification
+        let payload = content["payload"] as? String
+        let txPayload = try? JSONDecoder().decode(MeldTransactionPayload.self, from: Data((payload ?? "").utf8))
+        // Open Screen
+        if let xpub = appData ?? txPayload?.externalCustomerId,
+           let account = getAccount(xpub: xpub) {
+            if let wm = WalletsRepository.shared.get(for: account), wm.logged {
+                AccountNavigator.goLogged(accountId: account.id)
+            } else {
+                AccountNavigator.goLogin(accountId: account.id)
+            }
         }
-        guard let account = getAccount(xpub: xpub) else {
-            return
-        }
-        if let wm = WalletsRepository.shared.get(for: account), wm.logged {
-            AccountNavigator.goLogged(accountId: account.id)
-        } else {
-            AccountNavigator.goLogin(accountId: account.id)
-        }
-         ()
+        // tell the app that we have finished processing the user’s action / response
+        completionHandler()
     }
 
     // Delivers a notification to an app running in the foreground.
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([])
+        let content = notification.request.content.userInfo
+        logger.info("userNotificationCenter willPresent \(content.description)")
+        let notification = NSNotification.Name(rawValue: EventType.Transaction.rawValue)
+        NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
+        completionHandler([.sound, .banner])
     }
 
     func getAccount(xpub: String) -> Account? {

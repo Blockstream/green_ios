@@ -20,7 +20,7 @@ class TransactionCellModel {
 
     private let wm = WalletManager.current
     var assetAmountList: AssetAmountList {
-        get async { await AssetAmountList(amounts) }
+        get { AssetAmountList(amounts) }
     }
 
     init(tx: Transaction, blockHeight: UInt32) {
@@ -49,7 +49,11 @@ class TransactionCellModel {
     }
 
     func statusUI() -> PendingStateUI {
-        if tx.isLightningSwap ?? false {
+        if tx.isMeldPayment ?? false {
+            return PendingStateUI(style: .pending,
+                                  label: "Processing payment".localized,
+                                  progress: nil)
+        } else if tx.isLightningSwap ?? false {
             if tx.isInProgressSwap ?? false {
                 return PendingStateUI(style: .swapInProgress,
                                       label: "id_in_progress".localized,

@@ -28,7 +28,7 @@ class SwapUpdateTask: TaskProtocol {
         self.dismiss = dismiss
     }
 
-    func start(breezSDK: BlockingBreezServices) throws {
+    func start(breezSDK: BlockingBreezServices) async throws {
         do {
             let request = try JSONDecoder().decode(SwapUpdateTaskNotificationRequest.self, from: self.payload.data(using: .utf8)!)
             logger.info("\(self.TAG, privacy: .public): id \(request.id, privacy: .public), status: \(request.status, privacy: .public)")

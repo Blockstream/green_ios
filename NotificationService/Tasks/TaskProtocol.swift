@@ -9,7 +9,7 @@ public protocol TaskProtocol: EventListener {
     var bestAttemptContent: UNMutableNotificationContent? { get set }
     var dismiss: (() -> Void)? { get set }
 
-    func start(breezSDK: BlockingBreezServices) throws
+    func start(breezSDK: BlockingBreezServices) async throws
     func onShutdown()
 }
 

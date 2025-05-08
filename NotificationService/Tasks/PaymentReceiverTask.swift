@@ -18,7 +18,7 @@ class PaymentReceiverTask: TaskProtocol {
     internal var bestAttemptContent: UNMutableNotificationContent?
     internal var dismiss: (() -> Void)?
     private var logger: Logger
-    private var receivedPayment: Payment? = nil
+    private var receivedPayment: Payment?
 
     init(payload: String, logger: Logger, contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil, dismiss: (() -> Void)? = nil) {
         self.payload = payload
@@ -28,7 +28,7 @@ class PaymentReceiverTask: TaskProtocol {
         self.dismiss = dismiss
     }
 
-    func start(breezSDK: BlockingBreezServices) throws {
+    func start(breezSDK: BlockingBreezServices) async throws {
         do {
             let request = try JSONDecoder().decode(ReceivePaymentNotificationRequest.self, from: self.payload.data(using: .utf8)!)
             let existingPayment = try breezSDK.paymentByHash(hash: request.payment_hash)

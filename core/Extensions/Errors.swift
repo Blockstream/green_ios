@@ -56,11 +56,11 @@ extension Error {
                 return "Not Authorized Error"
             case GaError.GenericError(let txt):
                 return txt ?? "id_operation_failure"
-            case .ReconnectError(_):
+            case .ReconnectError:
                 return "Reconnect Error"
-            case .SessionLost(_):
+            case .SessionLost:
                 return "Session Error"
-            case .TimeoutError(_):
+            case .TimeoutError:
                 return "Timeout Error"
             }
         }
@@ -83,28 +83,28 @@ extension Error {
             }
         }
         if let breezError = self as? BreezSDK.SdkError {
-            return breezError.description()
+            return breezError.description() ?? "Sdk error"
         }
         if let breezError = self as? BreezSDK.SendOnchainError {
-            return breezError.description()
+            return breezError.description() ?? "Send onchain error"
         }
         if let breezError = self as? BreezSDK.SendPaymentError {
-            return breezError.description()
+            return breezError.description() ?? "Send payment error"
         }
         if let breezError = self as? BreezSDK.ReceiveOnchainError {
-            return breezError.description()
+            return breezError.description() ?? "Receive onchain error"
         }
         if let breezError = self as? BreezSDK.ReceivePaymentError {
-            return breezError.description()
+            return breezError.description() ?? "Receive payment error"
         }
         if let breezError = self as? BreezSDK.LnUrlPayError {
-            return breezError.description()
+            return breezError.description() ?? "id_operation_failure"
         }
         if let breezError = self as? BreezSDK.LnUrlAuthError {
-            return breezError.description()
+            return breezError.description() ?? "LN url auth error"
         }
         if let breezError = self as? BreezSDK.ConnectError {
-            return breezError.description()
+            return breezError.description() ?? "Connection error"
         }
         return "id_operation_failure"
     }
