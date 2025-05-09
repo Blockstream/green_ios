@@ -27,7 +27,7 @@ class WalletAssetCell: UITableViewCell {
         self.lblBalance1.text = model.hidden ? "" : (model.value ?? "")
         self.lblBalance2.text = model.hidden ? "" : (model.fiat ?? " - ")
         if model.masked {
-            self.lblBalance1.attributedText = Common.obfuscate(color: UIColor.gGreenMatrix(), size: 14, length: 5)
+            self.lblBalance1.attributedText = Common.obfuscate(color: UIColor.gAccent(), size: 14, length: 5)
             self.lblBalance2.attributedText = Common.obfuscate(color: .lightGray, size: 12, length: 5)
         }
         self.imgView?.image = model.icon

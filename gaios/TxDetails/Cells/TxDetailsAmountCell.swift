@@ -22,7 +22,7 @@ class TxDetailsAmountCell: UITableViewCell {
         lblAmount.setStyle(.subTitle)
         lblFiat.setStyle(.txtCard)
         lblAsset.setStyle(.txt)
-        lblAsset.textColor = UIColor.gGreenMatrix()
+        lblAsset.textColor = UIColor.gAccent()
     }
 
     func configure(model: TxDetailsAmountCellModel,

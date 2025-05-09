@@ -79,7 +79,7 @@ class HWDialogConnectViewController: UIViewController {
     func setContent() {
         lblTitle.text = AccountsRepository.shared.current?.name
         lblSubtitle.text = ""
-        icArrow.image = UIImage(named: "ic_hww_arrow")!.maskWithColor(color: UIColor.customMatrixGreen())
+        icArrow.image = UIImage(named: "ic_hww_arrow")!.maskWithColor(color: UIColor.gAccent())
         if viewModel?.isJade ?? true {
             let isV2 = BleHwManager.shared.jade?.version?.boardType == .v2
             icWallet.image = JadeAsset.img(.load, isV2 ? .v2 : .v1)
