@@ -89,8 +89,8 @@ class HWDialogConnectViewController: UIViewController {
     }
 
     func setStyle() {
-        lblTitle.setStyle(.title)
-        lblSubtitle.setStyle(.txt)
+        lblTitle.setStyle(.subTitle)
+        lblSubtitle.setStyle(.txtCard)
         cardView.setStyle(.bottomsheet)
     }
 
