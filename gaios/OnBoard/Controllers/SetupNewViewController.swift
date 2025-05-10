@@ -118,12 +118,16 @@ class SetupNewViewController: UIViewController {
                 AccountsRepository.shared.current = account
                 AccountNavigator.goLogged(accountId: account.id, isFirstLoad: true)
             }
-        case .failure:
+        case .failure(let err):
             stopLoader()
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardAppAccessViewController") as? OnBoardAppAccessViewController {
-                navigationController?.pushViewController(vc, animated: true)
+            if let err = err as? AuthenticationTypeHandler.AuthError {
+                let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+                if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardAppAccessViewController") as? OnBoardAppAccessViewController {
+                    navigationController?.pushViewController(vc, animated: true)
+                    return
+                }
             }
+            showError(err.description().localized)
         }
     }
 
