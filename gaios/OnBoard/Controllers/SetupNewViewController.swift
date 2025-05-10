@@ -20,16 +20,10 @@ class SetupNewViewController: UIViewController {
     }
     @IBOutlet weak var fadeView: UIView!
     @IBOutlet weak var lblTitle: UILabel!
-    @IBOutlet weak var segmentedControl: UISegmentedControl!
-    @IBOutlet weak var icon: UIImageView!
-    @IBOutlet weak var iconPlus: UIImageView!
-    @IBOutlet weak var lblHint1: UILabel!
-    @IBOutlet weak var lblHint2: UILabel!
-    @IBOutlet weak var lblInfo1: UILabel!
-    @IBOutlet weak var lblInfo2: UILabel!
-    @IBOutlet weak var lblInfo3: UILabel!
     @IBOutlet weak var btnCta1: UIButton!
     @IBOutlet weak var btnCta2: UIButton!
+    @IBOutlet weak var animateView: UIView!
+    @IBOutlet weak var lblSubtitle: UILabel!
 
     var state = State.mobile
     var viewModel = OnboardViewModel()
@@ -38,6 +32,7 @@ class SetupNewViewController: UIViewController {
         super.viewDidLoad()
         setContent()
         setStyle()
+        loadNavigationBtns()
     }
 
     @objc func back(sender: UIBarButtonItem) {
@@ -45,43 +40,36 @@ class SetupNewViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Setup a New Wallet".localized
-        segmentedControl .setTitle("Mobile".localized, forSegmentAt: 0)
-        segmentedControl .setTitle("Hardware".localized, forSegmentAt: 1)
-        switch state {
-        case .mobile:
-            lblHint1.text = "Security Level: 1".localized
-            lblHint2.text = "Mobile".localized
-            lblInfo1.text = "Ideal for small amounts of bitcoin".localized
-            lblInfo2.text = "Convenient spending".localized
-            lblInfo3.text = "Keys stored on mobile device".localized
-            btnCta1.setTitle("Setup Mobile Wallet".localized, for: .normal)
-            btnCta2.setStyle(.underline(txt: "Restore from backup".localized, color: UIColor.gAccent()))
-            icon.isHidden = false
-            iconPlus.isHidden = true
-        case .hardware:
-            lblHint1.text = "Security Level: 2".localized
-            lblHint2.text = "Hardware".localized
-            lblInfo1.text = "Ideal for long-term bitcoin storage".localized
-            lblInfo2.text = "Mitigates common attacks risks".localized
-            lblInfo3.text = "Keys stored on specialized device".localized
-            btnCta1.setTitle("Setup Hardware Wallet".localized, for: .normal)
-            btnCta2.setStyle(.underline(txt: "Don’t have one? Buy a Jade".localized, color: UIColor.gAccent()))
-            icon.isHidden = true
-            iconPlus.isHidden = false
-        }
+        lblTitle.text = ""
+        lblSubtitle.text = "Create a new wallet to begin your bitcoin journey."
+        btnCta1.setTitle("Setup Mobile Wallet".localized, for: .normal)
+        btnCta2.setStyle(.underline(txt: "Restore from backup".localized, color: UIColor.gAccent()))
+        //btnCta1.setTitle("Setup Hardware Wallet".localized, for: .normal)
+        //btnCta2.setStyle(.underline(txt: "Don’t have one? Buy a Jade".localized, color: UIColor.gAccent()))
+        let riveView = RiveModel.animationWallet.createRiveView()
+        animateView.addSubview(riveView)
+        riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
     }
 
     func setStyle() {
-        lblTitle.setStyle(.subTitle)
-        lblHint1.setStyle(.txtCard)
-        lblHint2.setStyle(.title)
-        lblHint2.font = UIFont.systemFont(ofSize: 28, weight: .medium)
-        lblInfo1.setStyle(.txt)
-        lblInfo2.setStyle(.txt)
-        lblInfo3.setStyle(.txt)
         btnCta1.setStyle(.primary)
-        segmentedControl.setStyle(SegmentedStyle.defaultStyle)
+        lblSubtitle.font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
+        lblSubtitle.textColor = UIColor.gGrayTxt()
+    }
+
+    func loadNavigationBtns() {
+        let settingsBtn = UIButton(type: .system)
+        settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+        settingsBtn.setImage(UIImage(named: "ic_nav_disclose"), for: .normal)
+        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+    }
+
+    @objc func settingsBtnTapped() {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     func updateState() {
@@ -165,18 +153,6 @@ class SetupNewViewController: UIViewController {
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
-    }
-
-    @IBAction func segmentedControl(_ sender: Any) {
-        switch segmentedControl.selectedSegmentIndex {
-        case 0:
-            state = .mobile
-        case 1:
-            state = .hardware
-        default:
-            break
-        }
-        updateState()
     }
 
     @IBAction func btnCta1(_ sender: Any) {
