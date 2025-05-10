@@ -114,7 +114,7 @@ class EditProtectionViewController: UIViewController {
             if enable {
                 try await self?.enableBiometricAuthentication()
             } else {
-                try await self?.disableBiometricAuthentication()
+                await self?.disableBiometricAuthentication()
             }
         }
         switch await task.result {
@@ -126,8 +126,7 @@ class EditProtectionViewController: UIViewController {
             }
             navigationController?.popViewController(animated: true)
         case .failure(let err):
-            DropAlert().success(message: err.description()?.localized ?? "id_operation_failure")
-            presentContactUsViewController(request: ZendeskErrorRequest(error: err.description()?.localized))
+            DropAlert().error(message: err.description()?.localized ?? "id_operation_failure")
         }
     }
 
@@ -149,10 +148,12 @@ class EditProtectionViewController: UIViewController {
                 return
             }
         }
-        throw LoginError.failed("")
     }
 
-    func disableBiometricAuthentication() async throws {
-        try WalletManager.current?.account.removeBioKeychainData()
+    func disableBiometricAuthentication() async {
+        guard let keychain = WalletManager.current?.account.keychain else { return }
+        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyBiometric, for: keychain)
+        try? AuthenticationTypeHandler.removePrivateKey(forNetwork: keychain)
+        UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey\(keychain)")
     }
 }
