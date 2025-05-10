@@ -277,8 +277,8 @@ class TxDetailsViewController: UIViewController {
                 presentSendAmountViewController(createTx: createTx, tx: tx)
             } catch {
                 stopAnimating()
-                let error = error.description()?.localized
-                showError(error ?? "")
+                let error = error.description().localized
+                showError(error)
             }
         }
     }

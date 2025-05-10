@@ -345,7 +345,7 @@ class SendAddressInputViewController: KeyboardViewController {
                     }
                 } catch {
                     stopLoader()
-                    showError(error.description()?.localized ?? "id_operation_failure".localized)
+                    showError(error.description().localized)
                 }
             }
         }

@@ -126,7 +126,7 @@ class EditProtectionViewController: UIViewController {
             }
             navigationController?.popViewController(animated: true)
         case .failure(let err):
-            DropAlert().error(message: err.description()?.localized ?? "id_operation_failure")
+            DropAlert().error(message: err.description().localized)
         }
     }
 

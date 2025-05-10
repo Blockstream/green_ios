@@ -44,7 +44,7 @@ class SendFailViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = "id_transaction_failed".localized
-        errorTextView.text = error.description()?.localized
+        errorTextView.text = error.description().localized
         btnAgain.setTitle("id_try_again".localized, for: .normal)
         btnSupport.setTitle("Contact Support".localized, for: .normal)
     }
@@ -86,7 +86,7 @@ class SendFailViewController: UIViewController {
         }
     }
     @IBAction func btnCopy(_ sender: Any) {
-        UIPasteboard.general.string = error.description()?.localized
+        UIPasteboard.general.string = error.description().localized
         DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }

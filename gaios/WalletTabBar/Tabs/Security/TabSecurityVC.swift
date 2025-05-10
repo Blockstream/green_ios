@@ -141,7 +141,7 @@ class TabSecurityVC: TabViewController {
             case .some(HWError.NoNewFirmwareFound(_)):
                 DropAlert().success(message: "Firmware up to date")
             default:
-                DropAlert().error(message: err.description()?.localized ?? "id_operation_failure")
+                DropAlert().error(message: err.description().localized)
             }
         }
     }
@@ -183,7 +183,7 @@ class TabSecurityVC: TabViewController {
     @MainActor
     func presentDialogErrorViewController(error: Error) {
         let request = ZendeskErrorRequest(
-            error: error.description()?.localized ?? "",
+            error: error.description().localized,
             network: .bitcoinSS,
             shareLogs: true,
             screenName: "FailedGenuineCheck")
@@ -222,7 +222,7 @@ extension TabSecurityVC: UpdateFirmwareViewControllerDelegate {
             }
         case .failure(let err):
             stopLoader()
-            showError(err.description()?.localized ?? "id_operation_failure".localized)
+            showError(err.description().localized)
         }
     }
 
@@ -458,7 +458,7 @@ extension TabSecurityVC: GenuineCheckEndViewControllerDelegate {
         case .support:
             presentDialogErrorViewController(error: HWError.Abort(""))
         case .error(let err):
-            let message = err?.description()?.localized
+            let message = err?.description().localized
             showError(message ?? "id_operation_failure".localized)
         }
     }

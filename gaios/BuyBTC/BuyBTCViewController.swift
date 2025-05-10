@@ -321,7 +321,7 @@ class BuyBTCViewController: KeyboardViewController {
         }
     }
     private func handleError(_ error: Error) {
-        showError(error.description()?.localized ?? error.localizedDescription)
+        showError(error.description().localized)
     }
     func proceedWithWidget(url: String?, quote: MeldQuoteItem) {
         AnalyticsManager.shared.buyRedirect(account: self.viewModel.wm.account)
@@ -348,7 +348,7 @@ class BuyBTCViewController: KeyboardViewController {
             }
         case .failure(let error):
             verifyOnDeviceViewController?.dismiss()
-            DropAlert().error(message: error.description()?.localized ?? "")
+            DropAlert().error(message: error.description().localized)
         }
     }
     @MainActor

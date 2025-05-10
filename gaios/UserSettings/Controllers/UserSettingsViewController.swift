@@ -399,7 +399,7 @@ extension UserSettingsViewController: GenuineCheckEndViewControllerDelegate {
         case .support:
             presentDialogErrorViewController(error: HWError.Abort(""))
         case .error(let err):
-            let message = err?.description()?.localized
+            let message = err?.description().localized
             showError(message ?? "id_operation_failure".localized)
         }
     }
@@ -407,7 +407,7 @@ extension UserSettingsViewController: GenuineCheckEndViewControllerDelegate {
     @MainActor
     func presentDialogErrorViewController(error: Error) {
         let request = ZendeskErrorRequest(
-            error: error.description()?.localized ?? "",
+            error: error.description().localized,
             network: .bitcoinSS,
             shareLogs: true,
             screenName: "FailedGenuineCheck")

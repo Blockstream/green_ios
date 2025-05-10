@@ -7,7 +7,7 @@ import lightning
 
 extension Error {
 
-    public func description() -> String? {
+    public func description() -> String {
         if let authError = self as? AuthenticationTypeHandler.AuthError {
             return authError.localizedDescription
         }
@@ -69,7 +69,7 @@ extension Error {
             case TwoFactorCallError.cancel(let txt),
                 TwoFactorCallError.failure(let txt):
                 if txt.isEmpty {
-                    return nil
+                    return "id_operation_failure"
                 }
                 return txt
             }
@@ -106,6 +106,6 @@ extension Error {
         if let breezError = self as? BreezSDK.ConnectError {
             return breezError.description()
         }
-        return nil
+        return "id_operation_failure"
     }
 }

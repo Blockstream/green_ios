@@ -195,7 +195,7 @@ class SendTxConfirmViewController: UIViewController {
                     DropAlert().success(message: "id_the_address_is_valid".localized)
                 }
             } catch {
-                DropAlert().error(message: error.description()?.localized ?? "")
+                DropAlert().error(message: error.description().localized)
             }
         }
     }
@@ -430,7 +430,7 @@ class SendTxConfirmViewController: UIViewController {
             } catch {
                 stopLoader()
                 squareSliderView.reset()
-                DropAlert().error(message: error.description()?.localized ?? "id_operation_failure".localized)
+                DropAlert().error(message: error.description().localized)
             }
         }
     }
@@ -636,7 +636,7 @@ extension SendTxConfirmViewController: SendFailViewControllerDelegate {
     @MainActor
     func presentDialogErrorViewController(error: Error, paymentHash: String?) {
         let request = ZendeskErrorRequest(
-            error: error.description()?.localized ?? "",
+            error: error.description().localized,
             network: viewModel.subaccount?.networkType ?? .bitcoinSS,
             paymentHash: paymentHash,
             shareLogs: true,

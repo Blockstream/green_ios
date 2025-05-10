@@ -211,7 +211,6 @@ extension PairingSuccessViewController: GenuineCheckEndViewControllerDelegate {
         case .support:
             presentDialogErrorViewController(error: HWError.Abort(""))
         case .error(let err):
-            break
             if let err = err as? HWError {
                 switch err {
                 case HWError.Disconnected(_):
@@ -222,15 +221,14 @@ extension PairingSuccessViewController: GenuineCheckEndViewControllerDelegate {
                     break
                 }
             }
-            let message = err?.description()?.localized
-            showError(message ?? "id_operation_failure".localized)
+            showError(err?.description().localized ?? "id_operation_failure".localized)
         }
     }
 
     @MainActor
     func presentDialogErrorViewController(error: Error) {
         let request = ZendeskErrorRequest(
-            error: error.description()?.localized ?? "",
+            error: error.description().localized,
             network: .bitcoinSS,
             shareLogs: true,
             screenName: "FailedGenuineCheck")

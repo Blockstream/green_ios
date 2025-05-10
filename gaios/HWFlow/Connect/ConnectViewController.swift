@@ -265,7 +265,7 @@ class ConnectViewController: HWFlowBaseViewController {
             case .Disconnected(let error), .InvalidResponse(let error):
                 DropAlert().error(message: error.localized)
             default:
-                DropAlert().error(message: error.description()?.localized ?? "id_login_failed".localized)
+                DropAlert().error(message: error.description().localized)
             }
         }
     }

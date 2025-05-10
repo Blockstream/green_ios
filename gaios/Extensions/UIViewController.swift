@@ -32,11 +32,8 @@ extension UIViewController {
     }
     @MainActor
     func showError(_ err: Error) {
-        guard let msg = err.description() else {
-            return
-        }
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: "id_error".localized, message: msg.localized, preferredStyle: .alert)
+            let alert = UIAlertController(title: "id_error".localized, message: err.description().localized, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "id_continue".localized, style: .cancel) { _ in })
             self.present(alert, animated: true, completion: nil)
         }

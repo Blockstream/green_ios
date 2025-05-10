@@ -219,9 +219,7 @@ class ReceiveViewController: KeyboardViewController {
 
     @MainActor
     func error(_ err: Error) {
-         guard let msg = err.description() else {
-            return
-        }
+         let msg = err.description()
         if msg.contains("Swap in progress") {
             showError("id_there_is_already_a_swap_in".localized)
             return
@@ -460,7 +458,7 @@ class ReceiveViewController: KeyboardViewController {
             }
         case .failure(let error):
             verifyOnDeviceViewController?.dismiss()
-            DropAlert().error(message: error.description()?.localized ?? "")
+            DropAlert().error(message: error.description().localized)
         }
     }
 
@@ -502,7 +500,7 @@ extension ReceiveViewController: AssetSelectViewControllerDelegate {
             completition?()
         case .failure(let err):
             stopAnimating()
-            showError(err.description()?.localized ?? "id_operation_failure".localized)
+            showError(err.description().localized)
         }
     }
     func didSelectAnyAsset(_ type: AnyAssetType) {

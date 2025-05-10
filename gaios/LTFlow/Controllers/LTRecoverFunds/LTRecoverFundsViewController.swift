@@ -221,7 +221,7 @@ class LTRecoverFundsViewController: KeyboardViewController {
     @MainActor
     func presentDialogErrorViewController(error: Error, paymentHash: String?) {
         let request = ZendeskErrorRequest(
-            error: error.description()?.localized ?? "",
+            error: error.description().localized,
             network: viewModel.wallet?.networkType ?? .bitcoinSS,
             paymentHash: paymentHash,
             shareLogs: true,
