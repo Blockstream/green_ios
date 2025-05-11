@@ -27,9 +27,8 @@ class Loader: UIView {
         tag = Loader.tag
         translatesAutoresizingMaskIntoConstraints = false
         setup()
-        rectangle.cornerRadius = 5.0
-        rectangle.borderWidth = 1.0
-        rectangle.borderColor = UIColor.white.withAlphaComponent(0.1)
+        lblHint.setStyle(.txtBigger)
+        rectangle.backgroundColor = UIColor.gBlackBg().withAlphaComponent(0.8)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -53,10 +52,8 @@ class Loader: UIView {
                 .constraint(equalTo: self.loaderPlaceholder.centerXAnchor),
             loadingIndicator.centerYAnchor
                 .constraint(equalTo: self.loaderPlaceholder.centerYAnchor),
-            loadingIndicator.widthAnchor
-                .constraint(equalToConstant: self.loaderPlaceholder.frame.width),
-            loadingIndicator.heightAnchor
-                .constraint(equalTo: self.loadingIndicator.widthAnchor)
+            loadingIndicator.widthAnchor.constraint(equalToConstant: 24),
+            loadingIndicator.heightAnchor.constraint(equalToConstant: 24)
         ])
 
         if !isRive {

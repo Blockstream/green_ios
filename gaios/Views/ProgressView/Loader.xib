@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
-        <capability name="Named colors" minToolsVersion="9.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -26,10 +25,10 @@
                     <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                     <subviews>
                         <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rCJ-3n-6KM">
-                            <rect key="frame" x="44" y="288" width="326" height="320"/>
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mjQ-HR-J10">
-                                    <rect key="frame" x="58" y="30" width="210" height="210"/>
+                                    <rect key="frame" x="102" y="343" width="210" height="210"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="210" id="0Vh-9X-WVk"/>
@@ -37,38 +36,40 @@
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6N4-4c-rfw">
-                                    <rect key="frame" x="118" y="100" width="90" height="90"/>
+                                    <rect key="frame" x="195" y="436" width="24" height="24"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
-                                        <constraint firstAttribute="width" constant="90" id="DcC-dg-gbf"/>
-                                        <constraint firstAttribute="height" constant="90" id="HoC-HU-zCc"/>
+                                        <constraint firstAttribute="width" constant="24" id="DcC-dg-gbf"/>
+                                        <constraint firstAttribute="height" constant="24" id="HoC-HU-zCc"/>
                                     </constraints>
                                 </view>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Ha-eL-thk">
-                                    <rect key="frame" x="36" y="240" width="254" height="0.0"/>
+                                    <rect key="frame" x="36" y="476" width="342" height="0.0"/>
                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
-                            <color key="backgroundColor" name="gBlackBg"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstAttribute="trailing" secondItem="5Ha-eL-thk" secondAttribute="trailing" constant="36" id="0aV-hK-P1x"/>
                                 <constraint firstItem="6N4-4c-rfw" firstAttribute="centerX" secondItem="rCJ-3n-6KM" secondAttribute="centerX" id="2dJ-f2-jrb"/>
-                                <constraint firstItem="6N4-4c-rfw" firstAttribute="top" secondItem="rCJ-3n-6KM" secondAttribute="top" constant="100" id="AUJ-rx-TKn"/>
                                 <constraint firstItem="mjQ-HR-J10" firstAttribute="centerX" secondItem="rCJ-3n-6KM" secondAttribute="centerX" id="Cc9-25-udP"/>
+                                <constraint firstItem="5Ha-eL-thk" firstAttribute="top" secondItem="6N4-4c-rfw" secondAttribute="bottom" constant="16" id="CqS-Pt-poK"/>
                                 <constraint firstItem="5Ha-eL-thk" firstAttribute="leading" secondItem="rCJ-3n-6KM" secondAttribute="leading" constant="36" id="FWm-D0-6zu"/>
-                                <constraint firstItem="5Ha-eL-thk" firstAttribute="top" secondItem="6N4-4c-rfw" secondAttribute="bottom" constant="50" id="VQW-nP-JfK"/>
-                                <constraint firstItem="mjQ-HR-J10" firstAttribute="top" secondItem="rCJ-3n-6KM" secondAttribute="top" constant="30" id="nFb-ya-vSq"/>
-                                <constraint firstAttribute="bottom" secondItem="5Ha-eL-thk" secondAttribute="bottom" constant="80" id="t0g-xx-YiH"/>
+                                <constraint firstItem="6N4-4c-rfw" firstAttribute="centerY" secondItem="rCJ-3n-6KM" secondAttribute="centerY" id="fVt-gt-WVP"/>
+                                <constraint firstItem="5Ha-eL-thk" firstAttribute="top" secondItem="mjQ-HR-J10" secondAttribute="bottom" priority="100" constant="16" id="iNN-pb-bbL"/>
+                                <constraint firstItem="mjQ-HR-J10" firstAttribute="centerY" secondItem="rCJ-3n-6KM" secondAttribute="centerY" id="z4U-Bz-LCZ"/>
                             </constraints>
                         </view>
                     </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.79766569108761332" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstItem="rCJ-3n-6KM" firstAttribute="leading" secondItem="tn4-hX-RYH" secondAttribute="leading" constant="44" id="L8l-TP-daU"/>
+                        <constraint firstAttribute="bottom" secondItem="rCJ-3n-6KM" secondAttribute="bottom" id="6xN-8g-AeT"/>
+                        <constraint firstItem="rCJ-3n-6KM" firstAttribute="leading" secondItem="tn4-hX-RYH" secondAttribute="leading" id="L8l-TP-daU"/>
                         <constraint firstItem="rCJ-3n-6KM" firstAttribute="centerY" secondItem="tn4-hX-RYH" secondAttribute="centerY" id="P2w-ef-dw6"/>
-                        <constraint firstAttribute="trailing" secondItem="rCJ-3n-6KM" secondAttribute="trailing" constant="44" id="eEr-Uj-p2C"/>
+                        <constraint firstAttribute="trailing" secondItem="rCJ-3n-6KM" secondAttribute="trailing" id="eEr-Uj-p2C"/>
+                        <constraint firstItem="rCJ-3n-6KM" firstAttribute="top" secondItem="tn4-hX-RYH" secondAttribute="top" id="kCl-9r-ye3"/>
                     </constraints>
                 </view>
             </subviews>
@@ -83,9 +84,4 @@
             <point key="canvasLocation" x="137.68115942028987" y="153.34821428571428"/>
         </view>
     </objects>
-    <resources>
-        <namedColor name="gBlackBg">
-            <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-    </resources>
 </document>
