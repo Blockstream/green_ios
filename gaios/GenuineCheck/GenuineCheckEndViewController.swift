@@ -14,11 +14,11 @@ protocol GenuineCheckEndViewControllerDelegate: AnyObject {
 }
 
 class GenuineCheckEndViewController: UIViewController {
-    
+
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var iconState: UIImageView!
-    
+
     @IBOutlet weak var btnDiy: UIButton!
     @IBOutlet weak var btnSupport: UIButton!
     @IBOutlet weak var btnContinue: UIButton!
@@ -27,10 +27,11 @@ class GenuineCheckEndViewController: UIViewController {
     @IBOutlet weak var lblInfo: UILabel!
     @IBOutlet weak var progressView: ProgressView!
     @IBOutlet weak var imageJade: UIImageView!
-    
+    private var activeToken, resignToken: NSObjectProtocol?
+
     var model: GenuineCheckEndViewModel!
     weak var delegate: GenuineCheckEndViewControllerDelegate?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
@@ -41,7 +42,7 @@ class GenuineCheckEndViewController: UIViewController {
             await self?.run()
         }
     }
-    
+
     func reload() {
         lblTitle.text = model.title
         lblHint.text = model.hint
@@ -71,21 +72,39 @@ class GenuineCheckEndViewController: UIViewController {
             break
         }
     }
-    
+
     deinit {
         print("Deinit")
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
+        resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let token = activeToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = resignToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         progressView.isAnimating = true
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        progressView.isAnimating = false
+    func applicationDidBecomeActive(_ notification: Notification) {
+        progressView.isAnimating = true
     }
-    
+
+    func applicationWillResignActive(_ notification: Notification) {
+    }
+
     func setContent() {
         lblTitle.text = model.title
         lblHint.text = model.hint
@@ -96,7 +115,7 @@ class GenuineCheckEndViewController: UIViewController {
         btnCancel.setTitle(model.btnCancel, for: .normal)
         btnRetry.setTitle(model.btnRetry, for: .normal)
     }
-    
+
     func setStyle() {
         lblTitle.setStyle(.title)
         lblHint.setStyle(.txt)
@@ -110,13 +129,13 @@ class GenuineCheckEndViewController: UIViewController {
         }
         progressView.isAnimating = true
     }
-    
+
     func dismiss(_ action: GenuineCheckEndAction) {
         self.dismiss(animated: true) {
             self.delegate?.onTap(action)
         }
     }
-    
+
     @IBAction func btnDiy(_ sender: Any) {
         dismiss(.diy)
     }
@@ -132,7 +151,7 @@ class GenuineCheckEndViewController: UIViewController {
     @IBAction func btnRetry(_ sender: Any) {
         dismiss(.retry)
     }
-    
+
     func run() async {
         await model.run()
         reload()
