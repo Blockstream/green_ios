@@ -31,11 +31,6 @@
 		3407F5D62A4AD034005EF8E1 /* LTErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3407F5D52A4AD034005EF8E1 /* LTErrorViewController.swift */; };
 		340A5F5428E339E0003D56B1 /* SafeNavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340A5F5328E339E0003D56B1 /* SafeNavigationManager.swift */; };
 		340A5F5628E33F51003D56B1 /* DialogSafeNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340A5F5528E33F51003D56B1 /* DialogSafeNavigationViewController.swift */; };
-		340ACC8A2D4B72E200CEB4F7 /* jadeplus_3.riv in Resources */ = {isa = PBXBuildFile; fileRef = 340ACC872D4B72E200CEB4F7 /* jadeplus_3.riv */; };
-		340ACC8B2D4B72E200CEB4F7 /* jadeplus_1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 340ACC852D4B72E200CEB4F7 /* jadeplus_1.riv */; };
-		340ACC8C2D4B72E200CEB4F7 /* jadeplus_rejected.riv in Resources */ = {isa = PBXBuildFile; fileRef = 340ACC892D4B72E200CEB4F7 /* jadeplus_rejected.riv */; };
-		340ACC8D2D4B72E200CEB4F7 /* jadeplus_electricity.riv in Resources */ = {isa = PBXBuildFile; fileRef = 340ACC882D4B72E200CEB4F7 /* jadeplus_electricity.riv */; };
-		340ACC8E2D4B72E200CEB4F7 /* jadeplus_2.riv in Resources */ = {isa = PBXBuildFile; fileRef = 340ACC862D4B72E200CEB4F7 /* jadeplus_2.riv */; };
 		340EF8D828B3718D001AE87B /* WalletListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340EF8D628B3718D001AE87B /* WalletListCell.swift */; };
 		340EF8D928B3718D001AE87B /* WalletListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 340EF8D728B3718D001AE87B /* WalletListCell.xib */; };
 		340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340F07EF2620A6BB0065A986 /* DialogRecoveryHelpViewController.swift */; };
@@ -228,6 +223,21 @@
 		345A7E1129ED7A2F00526CE5 /* WODetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345A7E1029ED7A2F00526CE5 /* WODetailsViewController.swift */; };
 		345ADE052D3E560D00E7A20F /* HelpCenter.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345ADE042D3E560D00E7A20F /* HelpCenter.storyboard */; };
 		345ADE072D3E566800E7A20F /* ContactUsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345ADE062D3E566800E7A20F /* ContactUsViewController.swift */; };
+		345B28D12DCE54040075860A /* Illustration Rocket.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28D02DCE54040075860A /* Illustration Rocket.riv */; };
+		345B28D32DD1D6C30075860A /* animation_01_jade_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28D22DD1D6C30075860A /* animation_01_jade_v1.riv */; };
+		345B28D52DD1D74B0075860A /* animation_02_jade_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28D42DD1D74B0075860A /* animation_02_jade_v1.riv */; };
+		345B28D72DD1D79E0075860A /* animation_03_jade_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28D62DD1D79E0075860A /* animation_03_jade_v1.riv */; };
+		345B28D92DD1DAAE0075860A /* animation_04_jade_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28D82DD1DAAE0075860A /* animation_04_jade_v1.riv */; };
+		345B28DB2DD1DB1D0075860A /* jadeplus_2.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28DA2DD1DB1D0075860A /* jadeplus_2.riv */; };
+		345B28DD2DD1E37D0075860A /* Illustration Account Archived.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28DC2DD1E37D0075860A /* Illustration Account Archived.riv */; };
+		345B28DF2DD1E3F90075860A /* Illustration Checklist.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28DE2DD1E3F90075860A /* Illustration Checklist.riv */; };
+		345B28E12DD1E4610075860A /* Illustration Checkmark.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28E02DD1E4610075860A /* Illustration Checkmark.riv */; };
+		345B28E32DD1E5830075860A /* Illustration Envelope.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28E22DD1E5830075860A /* Illustration Envelope.riv */; };
+		345B28E52DD1E6BB0075860A /* Illustration Recovery Phrase.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28E42DD1E6BB0075860A /* Illustration Recovery Phrase.riv */; };
+		345B28E72DD1E7090075860A /* Illustration Stars Success.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28E62DD1E7090075860A /* Illustration Stars Success.riv */; };
+		345B28E92DD1E7600075860A /* Illustration Wallet.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28E82DD1E7600075860A /* Illustration Wallet.riv */; };
+		345B28EB2DD1E7BF0075860A /* jadeplus_1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28EA2DD1E7BF0075860A /* jadeplus_1.riv */; };
+		345B28ED2DD1EB340075860A /* jadeplus_3.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28EC2DD1EB340075860A /* jadeplus_3.riv */; };
 		345E1A82261EE6CD00A1D934 /* DrawerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */; };
 		345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */; };
 		345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */; };
@@ -290,7 +300,6 @@
 		34742D3C2CE4AB400064F327 /* AssetToBuyCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34742D3B2CE4AB400064F327 /* AssetToBuyCell.xib */; };
 		34742D3E2CE4AB670064F327 /* AssetToBuyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34742D3D2CE4AB670064F327 /* AssetToBuyCell.swift */; };
 		34742D402CE4ABA30064F327 /* AssetToBuyCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34742D3F2CE4ABA30064F327 /* AssetToBuyCellModel.swift */; };
-		3478E88A2A2DD0190080B50E /* Illustration Rocket.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3478E8892A2DD0190080B50E /* Illustration Rocket.riv */; };
 		347B7C242C3280FE0016A5C0 /* PromoLayout0Cell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 347B7C232C3280FE0016A5C0 /* PromoLayout0Cell.xib */; };
 		347B7C262C3281190016A5C0 /* PromoLayout0Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B7C252C3281190016A5C0 /* PromoLayout0Cell.swift */; };
 		347B7C282C3281260016A5C0 /* PromoCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B7C272C3281260016A5C0 /* PromoCellModel.swift */; };
@@ -310,16 +319,6 @@
 		3484020E2DB8E7D500A91C65 /* BuyBTCViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3484020D2DB8E7C400A91C65 /* BuyBTCViewModel.swift */; };
 		3484118C265E6113002D2202 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3484118B265E6113002D2202 /* Constants.swift */; };
 		3486AD7227CFC5060013D8FF /* AssetsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3486AD7127CFC5060013D8FF /* AssetsList.swift */; };
-		3487657429D43B2A0059D05F /* Illustration Account Archived.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656829D43B290059D05F /* Illustration Account Archived.riv */; };
-		3487657529D43B2A0059D05F /* Illustration Checklist.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656929D43B290059D05F /* Illustration Checklist.riv */; };
-		3487657629D43B2A0059D05F /* Illustration Wallet.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656A29D43B2A0059D05F /* Illustration Wallet.riv */; };
-		3487657729D43B2A0059D05F /* Illustration Error.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656B29D43B2A0059D05F /* Illustration Error.riv */; };
-		3487657829D43B2A0059D05F /* Illustration Checkmark.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656C29D43B2A0059D05F /* Illustration Checkmark.riv */; };
-		3487657929D43B2A0059D05F /* Illustration Stars Success.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656D29D43B2A0059D05F /* Illustration Stars Success.riv */; };
-		3487657B29D43B2A0059D05F /* Illustration Envelope.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656F29D43B2A0059D05F /* Illustration Envelope.riv */; };
-		3487657C29D43B2A0059D05F /* animation_04_jade_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657029D43B2A0059D05F /* animation_04_jade_v1.riv */; };
-		3487657D29D43B2A0059D05F /* Illustration Recovery Phrase.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657129D43B2A0059D05F /* Illustration Recovery Phrase.riv */; };
-		3487657F29D43B2A0059D05F /* animation_03_jade_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657329D43B2A0059D05F /* animation_03_jade_v1.riv */; };
 		3488FC69290AE26E00122628 /* BalanceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3488FC68290AE26E00122628 /* BalanceCell.xib */; };
 		3488FC6B290AE28000122628 /* BalanceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6A290AE28000122628 /* BalanceCell.swift */; };
 		3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6C290AE28700122628 /* BalanceCellModel.swift */; };
@@ -351,8 +350,6 @@
 		3498079D291CE42100F8DB95 /* AssetSelectCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498079C291CE42100F8DB95 /* AssetSelectCellModel.swift */; };
 		3498079F291CF05700F8DB95 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498079E291CF05600F8DB95 /* Collection.swift */; };
 		3499655529E542D70092B5BD /* DialogRenameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499655429E542D70092B5BD /* DialogRenameViewController.swift */; };
-		3499655829E569D60092B5BD /* animation_01_jade_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3499655629E569D60092B5BD /* animation_01_jade_v1.riv */; };
-		3499655929E569D60092B5BD /* animation_02_jade_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3499655729E569D60092B5BD /* animation_02_jade_v1.riv */; };
 		3499655C29E576300092B5BD /* DialogDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499655B29E576300092B5BD /* DialogDetailViewController.swift */; };
 		3499655F29E5962D0092B5BD /* DialogEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499655E29E5962D0092B5BD /* DialogEditViewController.swift */; };
 		3499656229E5A2620092B5BD /* DialogAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499656129E5A2620092B5BD /* DialogAboutViewController.swift */; };
@@ -956,11 +953,6 @@
 		3407F5D52A4AD034005EF8E1 /* LTErrorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTErrorViewController.swift; sourceTree = "<group>"; };
 		340A5F5328E339E0003D56B1 /* SafeNavigationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeNavigationManager.swift; sourceTree = "<group>"; };
 		340A5F5528E33F51003D56B1 /* DialogSafeNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogSafeNavigationViewController.swift; sourceTree = "<group>"; };
-		340ACC852D4B72E200CEB4F7 /* jadeplus_1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_1.riv; sourceTree = "<group>"; };
-		340ACC862D4B72E200CEB4F7 /* jadeplus_2.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_2.riv; sourceTree = "<group>"; };
-		340ACC872D4B72E200CEB4F7 /* jadeplus_3.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_3.riv; sourceTree = "<group>"; };
-		340ACC882D4B72E200CEB4F7 /* jadeplus_electricity.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_electricity.riv; sourceTree = "<group>"; };
-		340ACC892D4B72E200CEB4F7 /* jadeplus_rejected.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_rejected.riv; sourceTree = "<group>"; };
 		340EF8D628B3718D001AE87B /* WalletListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListCell.swift; sourceTree = "<group>"; };
 		340EF8D728B3718D001AE87B /* WalletListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletListCell.xib; sourceTree = "<group>"; };
 		340F07EF2620A6BB0065A986 /* DialogRecoveryHelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRecoveryHelpViewController.swift; sourceTree = "<group>"; };
@@ -1152,6 +1144,21 @@
 		345A7E1029ED7A2F00526CE5 /* WODetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WODetailsViewController.swift; sourceTree = "<group>"; };
 		345ADE042D3E560D00E7A20F /* HelpCenter.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HelpCenter.storyboard; sourceTree = "<group>"; };
 		345ADE062D3E566800E7A20F /* ContactUsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsViewController.swift; sourceTree = "<group>"; };
+		345B28D02DCE54040075860A /* Illustration Rocket.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Rocket.riv"; sourceTree = "<group>"; };
+		345B28D22DD1D6C30075860A /* animation_01_jade_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation_01_jade_v1.riv; sourceTree = "<group>"; };
+		345B28D42DD1D74B0075860A /* animation_02_jade_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation_02_jade_v1.riv; sourceTree = "<group>"; };
+		345B28D62DD1D79E0075860A /* animation_03_jade_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation_03_jade_v1.riv; sourceTree = "<group>"; };
+		345B28D82DD1DAAE0075860A /* animation_04_jade_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation_04_jade_v1.riv; sourceTree = "<group>"; };
+		345B28DA2DD1DB1D0075860A /* jadeplus_2.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_2.riv; sourceTree = "<group>"; };
+		345B28DC2DD1E37D0075860A /* Illustration Account Archived.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Account Archived.riv"; sourceTree = "<group>"; };
+		345B28DE2DD1E3F90075860A /* Illustration Checklist.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Checklist.riv"; sourceTree = "<group>"; };
+		345B28E02DD1E4610075860A /* Illustration Checkmark.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Checkmark.riv"; sourceTree = "<group>"; };
+		345B28E22DD1E5830075860A /* Illustration Envelope.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Envelope.riv"; sourceTree = "<group>"; };
+		345B28E42DD1E6BB0075860A /* Illustration Recovery Phrase.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Recovery Phrase.riv"; sourceTree = "<group>"; };
+		345B28E62DD1E7090075860A /* Illustration Stars Success.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Stars Success.riv"; sourceTree = "<group>"; };
+		345B28E82DD1E7600075860A /* Illustration Wallet.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Wallet.riv"; sourceTree = "<group>"; };
+		345B28EA2DD1E7BF0075860A /* jadeplus_1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_1.riv; sourceTree = "<group>"; };
+		345B28EC2DD1EB340075860A /* jadeplus_3.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_3.riv; sourceTree = "<group>"; };
 		345C70852836233800EF3971 /* AnalyticsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
 		345C70872836254600EF3971 /* AssetsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetsManager.swift; sourceTree = "<group>"; };
 		345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerAnimator.swift; sourceTree = "<group>"; };
@@ -1226,7 +1233,6 @@
 		34742D3B2CE4AB400064F327 /* AssetToBuyCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AssetToBuyCell.xib; sourceTree = "<group>"; };
 		34742D3D2CE4AB670064F327 /* AssetToBuyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetToBuyCell.swift; sourceTree = "<group>"; };
 		34742D3F2CE4ABA30064F327 /* AssetToBuyCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetToBuyCellModel.swift; sourceTree = "<group>"; };
-		3478E8892A2DD0190080B50E /* Illustration Rocket.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Rocket.riv"; sourceTree = "<group>"; };
 		347B7C232C3280FE0016A5C0 /* PromoLayout0Cell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromoLayout0Cell.xib; sourceTree = "<group>"; };
 		347B7C252C3281190016A5C0 /* PromoLayout0Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoLayout0Cell.swift; sourceTree = "<group>"; };
 		347B7C272C3281260016A5C0 /* PromoCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCellModel.swift; sourceTree = "<group>"; };
@@ -1246,16 +1252,6 @@
 		3484020D2DB8E7C400A91C65 /* BuyBTCViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyBTCViewModel.swift; sourceTree = "<group>"; };
 		3484118B265E6113002D2202 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		3486AD7127CFC5060013D8FF /* AssetsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsList.swift; sourceTree = "<group>"; };
-		3487656829D43B290059D05F /* Illustration Account Archived.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Account Archived.riv"; sourceTree = "<group>"; };
-		3487656929D43B290059D05F /* Illustration Checklist.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Checklist.riv"; sourceTree = "<group>"; };
-		3487656A29D43B2A0059D05F /* Illustration Wallet.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Wallet.riv"; sourceTree = "<group>"; };
-		3487656B29D43B2A0059D05F /* Illustration Error.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Error.riv"; sourceTree = "<group>"; };
-		3487656C29D43B2A0059D05F /* Illustration Checkmark.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Checkmark.riv"; sourceTree = "<group>"; };
-		3487656D29D43B2A0059D05F /* Illustration Stars Success.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Stars Success.riv"; sourceTree = "<group>"; };
-		3487656F29D43B2A0059D05F /* Illustration Envelope.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Envelope.riv"; sourceTree = "<group>"; };
-		3487657029D43B2A0059D05F /* animation_04_jade_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation_04_jade_v1.riv; sourceTree = "<group>"; };
-		3487657129D43B2A0059D05F /* Illustration Recovery Phrase.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Recovery Phrase.riv"; sourceTree = "<group>"; };
-		3487657329D43B2A0059D05F /* animation_03_jade_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation_03_jade_v1.riv; sourceTree = "<group>"; };
 		3488FC68290AE26E00122628 /* BalanceCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BalanceCell.xib; sourceTree = "<group>"; };
 		3488FC6A290AE28000122628 /* BalanceCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceCell.swift; sourceTree = "<group>"; };
 		3488FC6C290AE28700122628 /* BalanceCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceCellModel.swift; sourceTree = "<group>"; };
@@ -1287,8 +1283,6 @@
 		3498079C291CE42100F8DB95 /* AssetSelectCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSelectCellModel.swift; sourceTree = "<group>"; };
 		3498079E291CF05600F8DB95 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		3499655429E542D70092B5BD /* DialogRenameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRenameViewController.swift; sourceTree = "<group>"; };
-		3499655629E569D60092B5BD /* animation_01_jade_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation_01_jade_v1.riv; sourceTree = "<group>"; };
-		3499655729E569D60092B5BD /* animation_02_jade_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation_02_jade_v1.riv; sourceTree = "<group>"; };
 		3499655B29E576300092B5BD /* DialogDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogDetailViewController.swift; sourceTree = "<group>"; };
 		3499655E29E5962D0092B5BD /* DialogEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogEditViewController.swift; sourceTree = "<group>"; };
 		3499656129E5A2620092B5BD /* DialogAboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAboutViewController.swift; sourceTree = "<group>"; };
@@ -2967,25 +2961,22 @@
 		34AFA8E429D1723F00C4F3E6 /* Rive */ = {
 			isa = PBXGroup;
 			children = (
+				345B28D02DCE54040075860A /* Illustration Rocket.riv */,
+				345B28DC2DD1E37D0075860A /* Illustration Account Archived.riv */,
+				345B28DE2DD1E3F90075860A /* Illustration Checklist.riv */,
+				345B28E02DD1E4610075860A /* Illustration Checkmark.riv */,
+				345B28E22DD1E5830075860A /* Illustration Envelope.riv */,
 				3407F5D02A49C28A005EF8E1 /* Illustration Lightning Transaction.riv */,
-				3478E8892A2DD0190080B50E /* Illustration Rocket.riv */,
-				3487656829D43B290059D05F /* Illustration Account Archived.riv */,
-				3487656929D43B290059D05F /* Illustration Checklist.riv */,
-				3487656C29D43B2A0059D05F /* Illustration Checkmark.riv */,
-				3487656F29D43B2A0059D05F /* Illustration Envelope.riv */,
-				3487656B29D43B2A0059D05F /* Illustration Error.riv */,
-				3487657129D43B2A0059D05F /* Illustration Recovery Phrase.riv */,
-				3487656D29D43B2A0059D05F /* Illustration Stars Success.riv */,
-				3487656A29D43B2A0059D05F /* Illustration Wallet.riv */,
-				3499655629E569D60092B5BD /* animation_01_jade_v1.riv */,
-				3499655729E569D60092B5BD /* animation_02_jade_v1.riv */,
-				3487657329D43B2A0059D05F /* animation_03_jade_v1.riv */,
-				3487657029D43B2A0059D05F /* animation_04_jade_v1.riv */,
-				340ACC852D4B72E200CEB4F7 /* jadeplus_1.riv */,
-				340ACC862D4B72E200CEB4F7 /* jadeplus_2.riv */,
-				340ACC872D4B72E200CEB4F7 /* jadeplus_3.riv */,
-				340ACC882D4B72E200CEB4F7 /* jadeplus_electricity.riv */,
-				340ACC892D4B72E200CEB4F7 /* jadeplus_rejected.riv */,
+				345B28E42DD1E6BB0075860A /* Illustration Recovery Phrase.riv */,
+				345B28E62DD1E7090075860A /* Illustration Stars Success.riv */,
+				345B28D22DD1D6C30075860A /* animation_01_jade_v1.riv */,
+				345B28D42DD1D74B0075860A /* animation_02_jade_v1.riv */,
+				345B28D62DD1D79E0075860A /* animation_03_jade_v1.riv */,
+				345B28D82DD1DAAE0075860A /* animation_04_jade_v1.riv */,
+				345B28E82DD1E7600075860A /* Illustration Wallet.riv */,
+				345B28EA2DD1E7BF0075860A /* jadeplus_1.riv */,
+				345B28DA2DD1DB1D0075860A /* jadeplus_2.riv */,
+				345B28EC2DD1EB340075860A /* jadeplus_3.riv */,
 			);
 			path = Rive;
 			sourceTree = "<group>";
@@ -4464,17 +4455,17 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3487657B29D43B2A0059D05F /* Illustration Envelope.riv in Resources */,
 				8150EE202BB7293800E70A12 /* greenlight_device_cert.txt in Resources */,
 				345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */,
 				34C8E77729BF868500C84066 /* DeviceCell.xib in Resources */,
+				345B28DF2DD1E3F90075860A /* Illustration Checklist.riv in Resources */,
 				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
 				34287B722A8385330065471F /* Alert.storyboard in Resources */,
 				343FDF572D01CF4400EF59CC /* AmountCell.xib in Resources */,
+				345B28D12DCE54040075860A /* Illustration Rocket.riv in Resources */,
 				34D51B692A77939D00C0AF12 /* DialogInputDenominationFooter.xib in Resources */,
 				34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */,
-				3487657C29D43B2A0059D05F /* animation_04_jade_v1.riv in Resources */,
-				3499655829E569D60092B5BD /* animation_01_jade_v1.riv in Resources */,
+				345B28D52DD1D74B0075860A /* animation_02_jade_v1.riv in Resources */,
 				3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */,
 				8135873F2DBFCC8C0000116B /* HWDialogs.storyboard in Resources */,
 				34610C5B2B864B84005157C8 /* BleUnavailable.storyboard in Resources */,
@@ -4496,31 +4487,24 @@
 				345FC45C29ED480E009FCF43 /* WOFlow.storyboard in Resources */,
 				348A710A2D8AE05800490B55 /* WelcomeView.xib in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
-				3487657F29D43B2A0059D05F /* animation_03_jade_v1.riv in Resources */,
 				347B7C242C3280FE0016A5C0 /* PromoLayout0Cell.xib in Resources */,
+				345B28ED2DD1EB340075860A /* jadeplus_3.riv in Resources */,
 				344915EA2A0CE24700D35818 /* ReceiveAssetCell.xib in Resources */,
 				3407F5D12A49C28A005EF8E1 /* Illustration Lightning Transaction.riv in Resources */,
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
 				34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */,
 				209632642D8420C700FC716D /* QuoteCell.xib in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
-				340ACC8A2D4B72E200CEB4F7 /* jadeplus_3.riv in Resources */,
-				340ACC8B2D4B72E200CEB4F7 /* jadeplus_1.riv in Resources */,
-				340ACC8C2D4B72E200CEB4F7 /* jadeplus_rejected.riv in Resources */,
-				340ACC8D2D4B72E200CEB4F7 /* jadeplus_electricity.riv in Resources */,
-				340ACC8E2D4B72E200CEB4F7 /* jadeplus_2.riv in Resources */,
-				3487657929D43B2A0059D05F /* Illustration Stars Success.riv in Resources */,
-				3487657D29D43B2A0059D05F /* Illustration Recovery Phrase.riv in Resources */,
+				345B28D32DD1D6C30075860A /* animation_01_jade_v1.riv in Resources */,
+				345B28DB2DD1DB1D0075860A /* jadeplus_2.riv in Resources */,
 				34B0A4EE2D0198A6002E9A5C /* PromoLayout2Cell.xib in Resources */,
 				345402E92A1E43D5002CB598 /* DialogDenominationCell.xib in Resources */,
 				3420471C291BFFEF00EDE945 /* Utility.storyboard in Resources */,
 				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
 				346EB2762BE8BB3A0043139F /* SendFeeCell.xib in Resources */,
 				346C72612C466D4D00E698E1 /* PromoFlow.storyboard in Resources */,
-				3487657629D43B2A0059D05F /* Illustration Wallet.riv in Resources */,
 				3457F4B32923988600EF33B5 /* DialogListCell.xib in Resources */,
 				3419B44C2BEE302500492198 /* ReEnable2faAccountCell.xib in Resources */,
-				3487657429D43B2A0059D05F /* Illustration Account Archived.riv in Resources */,
 				34145FEE2DBB961E00F725E0 /* MoreActionsCell.xib in Resources */,
 				344D57DC2D71BF72009725A3 /* TabHeaderCell.xib in Resources */,
 				34F980AF29151C6600C12D48 /* TransactionCell.xib in Resources */,
@@ -4531,15 +4515,14 @@
 				34A883A42BA3251B004A1826 /* TxDetailsStatusCell.xib in Resources */,
 				3415CB042A67BD0100B66882 /* AddressAuth.storyboard in Resources */,
 				34204727291CE13100EDE945 /* AssetSelectCell.xib in Resources */,
-				3487657829D43B2A0059D05F /* Illustration Checkmark.riv in Resources */,
+				345B28E92DD1E7600075860A /* Illustration Wallet.riv in Resources */,
 				34FAB33A2D9BF51100317454 /* SecurityLevelCell.xib in Resources */,
+				345B28D92DD1DAAE0075860A /* animation_04_jade_v1.riv in Resources */,
 				3458AB14292D2822006EC7FB /* AssetExpandableView.xib in Resources */,
 				3428750F2D551DEB003FB5AE /* LangCell.xib in Resources */,
 				3483D09929FBDAF800C85106 /* LTInfoCell.xib in Resources */,
 				34B0D0042CE2553100A90080 /* ActionsSheetFlow.storyboard in Resources */,
-				3487657729D43B2A0059D05F /* Illustration Error.riv in Resources */,
 				34A883BF2BAB030F004A1826 /* TxDetailsMoreInfoCell.xib in Resources */,
-				3499655929E569D60092B5BD /* animation_02_jade_v1.riv in Resources */,
 				346EB26C2BE8BB0B0043139F /* SendFlow.storyboard in Resources */,
 				34F9809D2913A5EC00C12D48 /* WalletAssetCell.xib in Resources */,
 				34A8839E2BA30034004A1826 /* TxDetailsMultiAmountCell.xib in Resources */,
@@ -4551,7 +4534,9 @@
 				34C67E782924F57F00A50F89 /* AccountSelectSubCell.xib in Resources */,
 				34955C0E2B67B7200056DE90 /* HowToSecureCell.xib in Resources */,
 				340EF8D928B3718D001AE87B /* WalletListCell.xib in Resources */,
+				345B28E32DD1E5830075860A /* Illustration Envelope.riv in Resources */,
 				34A883AC2BA85F10004A1826 /* TxDetailsInfoCell.xib in Resources */,
+				345B28EB2DD1E7BF0075860A /* jadeplus_1.riv in Resources */,
 				34204708291A67E900EDE945 /* MultiLabelView.xib in Resources */,
 				346EB26F2BE8BB1A0043139F /* SendTitleView.xib in Resources */,
 				3415CB152A67DBB700B66882 /* AddressAuthHeader.xib in Resources */,
@@ -4567,7 +4552,10 @@
 				34B385D629B888610097220B /* HWFlow.storyboard in Resources */,
 				344915EE2A0CE26700D35818 /* ReceiveAddressCell.xib in Resources */,
 				3457F4A72923943C00EF33B5 /* Dialogs.storyboard in Resources */,
+				345B28D72DD1D79E0075860A /* animation_03_jade_v1.riv in Resources */,
 				34DDD0A9260A486300020380 /* Shared.storyboard in Resources */,
+				345B28E52DD1E6BB0075860A /* Illustration Recovery Phrase.riv in Resources */,
+				345B28DD2DD1E37D0075860A /* Illustration Account Archived.riv in Resources */,
 				342896902BCD1C2A0042F144 /* SingleLabelView.xib in Resources */,
 				344D57DE2D71D06F009725A3 /* TransactActionsCell.xib in Resources */,
 				34145FE72DBB75D900F725E0 /* SelectCountryCell.xib in Resources */,
@@ -4577,17 +4565,17 @@
 				34FAB33E2D9C2B4100317454 /* PreferenceCell.xib in Resources */,
 				3497936425F8B18C0029ECB1 /* OnBoard.storyboard in Resources */,
 				3445499429FBFC8F006725D2 /* LTNoteCell.xib in Resources */,
+				345B28E12DD1E4610075860A /* Illustration Checkmark.riv in Resources */,
 				3415CB0E2A67BFE500B66882 /* AddressAuthCell.xib in Resources */,
 				34F580052BA1ED1C00DCB076 /* TxDetailsAmountCell.xib in Resources */,
 				34C8585629F9012C004A3F83 /* LTFlow.storyboard in Resources */,
 				34C680EE2A72784900369639 /* DialogInputDenominationCell.xib in Resources */,
 				8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */,
 				34BC63612D0979A2001CC38F /* PromoLayout1Cell.xib in Resources */,
+				345B28E72DD1E7090075860A /* Illustration Stars Success.riv in Resources */,
 				6D8099D823021CEF0069A69F /* PopoverMenu.storyboard in Resources */,
-				3478E88A2A2DD0190080B50E /* Illustration Rocket.riv in Resources */,
 				34204718291B9A8600EDE945 /* PolicyCell.xib in Resources */,
 				344471C22C478DBD0051957E /* DialogGroupListCell.xib in Resources */,
-				3487657529D43B2A0059D05F /* Illustration Checklist.riv in Resources */,
 				3484020C2DB8E7B200A91C65 /* BuyBTCFlow.storyboard in Resources */,
 				345FC46929ED4D83009FCF43 /* WOTypeCell.xib in Resources */,
 				344D57CC2D71B5B5009725A3 /* WalletTab.storyboard in Resources */,
