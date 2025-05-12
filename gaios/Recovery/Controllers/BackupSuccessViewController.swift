@@ -5,12 +5,22 @@ class BackupSuccessViewController: UIViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnNext: UIButton!
+    @IBOutlet weak var animateView: UIView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setContent()
         setStyle()
         navigationItem.hidesBackButton = true
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+            let riveView = RiveModel.animationCheckMark.createRiveView()
+            riveView.frame = CGRect(x: 0.0, y: 0.0, width: self.animateView.frame.width, height: self.animateView.frame.height)
+
+            print(riveView.frame)
+            self.animateView.addSubview(riveView)
+        }
     }
     func setContent() {
         lblTitle.text = "Great! You successfully backed up your recovery phrase.".localized
