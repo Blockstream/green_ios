@@ -27,6 +27,7 @@ class ConnectViewController: HWFlowBaseViewController {
     @IBOutlet weak var retryButton: UIButton!
     @IBOutlet weak var retryWoButton: UIButton!
     @IBOutlet weak var progressView: ProgressView!
+    private var activeToken, resignToken: NSObjectProtocol?
 
     var viewModel: ConnectViewModel!
 
@@ -274,15 +275,27 @@ class ConnectViewController: HWFlowBaseViewController {
         super.viewDidAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(progressTor), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
         progressView.isAnimating = true
+        activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
+        resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
-        progressView.isAnimating = false
         Task { [weak self] in
             await self?.stopScan()
         }
+    }
+
+    func applicationDidBecomeActive(_ notification: Notification) {
+        progressView.isAnimating = true
+    }
+
+    func applicationWillResignActive(_ notification: Notification) {
+    }
+
+    deinit {
+        print("deinit")
     }
 
     @MainActor

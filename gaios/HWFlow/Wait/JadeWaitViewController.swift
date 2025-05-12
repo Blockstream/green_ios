@@ -16,6 +16,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
     @IBOutlet weak var animateView: UIView!
     @IBOutlet weak var progressView: ProgressView!
     @IBOutlet weak var btnConnectWithQr: UIButton!
+    private var activeToken, resignToken: NSObjectProtocol?
 
     let viewModel = JadeWaitViewModel()
     var scanViewModel: ScanViewModel?
@@ -59,6 +60,36 @@ class JadeWaitViewController: HWFlowBaseViewController {
                 self?.onUpdateScanViewModel()
             }
         })
+        activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
+        resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        UIApplication.shared.isIdleTimerDisabled = false
+        timer?.invalidate()
+        stopScan()
+        scanCancellable?.cancel()
+        cancellables.forEach { $0.cancel() }
+        if let token = activeToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = resignToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        UIApplication.shared.isIdleTimerDisabled = true
+        progressView.isAnimating = true
+    }
+    
+    func applicationDidBecomeActive(_ notification: Notification) {
+        progressView.isAnimating = true
+    }
+
+    func applicationWillResignActive(_ notification: Notification) {
     }
 
     @MainActor
@@ -129,13 +160,6 @@ class JadeWaitViewController: HWFlowBaseViewController {
         }
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        timer?.invalidate()
-        stopScan()
-        scanCancellable?.cancel()
-        cancellables.forEach { $0.cancel() }
-    }
-
     @objc func fireTimer() {
         refresh()
     }
@@ -193,7 +217,6 @@ class JadeWaitViewController: HWFlowBaseViewController {
         lblStepHint.setStyle(.txt)
         lblLoading.setStyle(.txt)
         btnConnectWithQr.setStyle(.inline)
-        progressView.isAnimating = true
     }
 
     @objc func setupBtnTapped() {
