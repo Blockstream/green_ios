@@ -76,10 +76,8 @@ extension TabHomeVC { // navigation
         }
     }
     func promoDismiss() {
-        Task {
-            await walletModel.reloadPromoCards()
-            reloadSections([.promo], animated: true)
-        }
+        walletModel.reloadPromoCards()
+        reloadSections([.promo], animated: true)
     }
     func backupAlertDismiss() {
         Task {
@@ -363,7 +361,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
         switch TabHomeSection(rawValue: section) {
         case .assets:
             if walletModel.walletAssetCellModels.count == 0 {
-                return sectionFooter("You don’t have any transactions yet.".localized)
+                return sectionFooter("You don’t have any assets yet.".localized)
             }
             return nil
         default:

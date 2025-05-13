@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="73" id="KGk-i7-Jjw" customClass="ReceiveAssetCell" customModule="gaios" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="354" height="73"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="354" height="73"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QNX-w7-Hb8">
+                        <rect key="frame" x="25" y="5" width="304" height="63"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="rightArrow" translatesAutoresizingMaskIntoConstraints="NO" id="OD3-aI-KfZ">
+                                <rect key="frame" x="272" y="21.666666666666668" width="20" height="20.000000000000004"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="20" id="HXV-XK-B5N"/>
+                                    <constraint firstAttribute="height" constant="20" id="M0V-Ew-rY7"/>
+                                </constraints>
+                            </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ntw_btc" translatesAutoresizingMaskIntoConstraints="NO" id="kYV-l5-c29">
+                                <rect key="frame" x="24" y="19.666666666666668" width="24" height="24.000000000000004"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="24" id="2Ng-04-KO3"/>
+                                    <constraint firstAttribute="width" constant="24" id="Cv4-YB-p2b"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_asset" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tiD-WM-kgf">
+                                <rect key="frame" x="64" y="23" width="200" height="17"/>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" name="gGrayCard"/>
+                        <constraints>
+                            <constraint firstItem="tiD-WM-kgf" firstAttribute="centerY" secondItem="QNX-w7-Hb8" secondAttribute="centerY" id="4tW-JO-t1p"/>
+                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="tiD-WM-kgf" secondAttribute="bottom" constant="22" id="6wL-ga-i4p"/>
+                            <constraint firstItem="tiD-WM-kgf" firstAttribute="leading" secondItem="kYV-l5-c29" secondAttribute="trailing" constant="16" id="FO7-iz-FX5"/>
+                            <constraint firstItem="OD3-aI-KfZ" firstAttribute="leading" secondItem="tiD-WM-kgf" secondAttribute="trailing" constant="8" id="Mgn-w9-Uqr"/>
+                            <constraint firstItem="kYV-l5-c29" firstAttribute="leading" secondItem="QNX-w7-Hb8" secondAttribute="leading" constant="24" id="U4R-Jd-p1i"/>
+                            <constraint firstAttribute="trailing" secondItem="OD3-aI-KfZ" secondAttribute="trailing" constant="12" id="ZuR-A7-COg"/>
+                            <constraint firstItem="kYV-l5-c29" firstAttribute="centerY" secondItem="QNX-w7-Hb8" secondAttribute="centerY" id="cw8-AL-7zT"/>
+                            <constraint firstItem="tiD-WM-kgf" firstAttribute="top" relation="greaterThanOrEqual" secondItem="QNX-w7-Hb8" secondAttribute="top" constant="22" id="o5q-n4-ckD"/>
+                            <constraint firstItem="OD3-aI-KfZ" firstAttribute="centerY" secondItem="QNX-w7-Hb8" secondAttribute="centerY" id="yDK-P2-8En"/>
+                        </constraints>
+                    </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dan-i2-WCd">
+                        <rect key="frame" x="0.0" y="0.0" width="354" height="73"/>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain" title=" "/>
+                        <connections>
+                            <action selector="tap:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="OW4-rA-lv8"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <color key="backgroundColor" name="gBlackBg"/>
+                <constraints>
+                    <constraint firstItem="dan-i2-WCd" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="3BS-xh-4gw"/>
+                    <constraint firstAttribute="bottom" secondItem="QNX-w7-Hb8" secondAttribute="bottom" constant="5" id="4gh-kT-Q9P"/>
+                    <constraint firstItem="QNX-w7-Hb8" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="5" id="Slj-CV-IGI"/>
+                    <constraint firstAttribute="trailing" secondItem="QNX-w7-Hb8" secondAttribute="trailing" constant="25" id="ceK-Er-foH"/>
+                    <constraint firstItem="QNX-w7-Hb8" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="25" id="kDq-Tc-CzZ"/>
+                    <constraint firstAttribute="trailing" secondItem="dan-i2-WCd" secondAttribute="trailing" id="uvM-aJ-k90"/>
+                    <constraint firstItem="dan-i2-WCd" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="xZX-E5-d96"/>
+                    <constraint firstAttribute="bottom" secondItem="dan-i2-WCd" secondAttribute="bottom" id="xaf-Qj-ZRu"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="bg" destination="QNX-w7-Hb8" id="cjj-bi-9EV"/>
+                <outlet property="imgView" destination="kYV-l5-c29" id="o6X-Lx-98w"/>
+                <outlet property="lblAsset" destination="tiD-WM-kgf" id="l1O-Ls-F8K"/>
+            </connections>
+            <point key="canvasLocation" x="13.740458015267174" y="41.197183098591552"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="ntw_btc" width="24" height="24"/>
+        <image name="rightArrow" width="9" height="14"/>
+        <namedColor name="gBlackBg">
+            <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="gGrayCard">
+            <color red="0.094117647058823528" green="0.094117647058823528" blue="0.094117647058823528" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

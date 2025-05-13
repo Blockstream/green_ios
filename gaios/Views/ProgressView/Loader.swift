@@ -28,7 +28,7 @@ class Loader: UIView {
         translatesAutoresizingMaskIntoConstraints = false
         setup()
         lblHint.setStyle(.txtBigger)
-        rectangle.backgroundColor = UIColor.gBlackBg().withAlphaComponent(0.8)
+        rectangle.backgroundColor = UIColor.gBlackBg().withAlphaComponent(0.9)
     }
 
     required init?(coder aDecoder: NSCoder) {

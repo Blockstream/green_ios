@@ -14,9 +14,8 @@ class SendAddressInputViewController: KeyboardViewController {
     @IBOutlet weak var infoIcon: UIImageView!
     @IBOutlet weak var lblInvalid: UILabel!
     @IBOutlet weak var btnClear: UIButton!
-    @IBOutlet weak var btnPasteSmall: UIButton!
     @IBOutlet weak var lblPlaceholder: UILabel!
-
+    @IBOutlet weak var lblSubtitle: UILabel!
     @IBOutlet weak var addressTextView: UITextView!
     @IBOutlet weak var btnQR: UIButton!
     @IBOutlet weak var btnPaste: UIButton!
@@ -61,18 +60,17 @@ class SendAddressInputViewController: KeyboardViewController {
     }
 
     func setContent() {
-        title = "id_recipient".localized
-        // addressTextView.place = "Enter address or invoice".localized
+        title = "id_send".localized
+        lblSubtitle.text = "id_recipient".localized
         lblInvalid.text = "id_invalid_address".localized
         btnQR.setTitle("id_scan_qr_code".localized, for: .normal)
         btnPaste.setTitle("id_paste".localized, for: .normal)
         btnPaste.setImage(UIImage(named: "ic_clipboard")?.maskWithColor(color: UIColor.gBlackBg()), for: .normal)
-        btnPasteSmall.setTitle("id_paste".localized, for: .normal)
         btnNext.setTitle("id_next".localized, for: .normal)
         if viewModel.txType == .sweep {
             lblPlaceholder.text = "id_enter_a_private_key_to_sweep".localized
         } else {
-            lblPlaceholder.text = "Enter Address or Invoice".localized
+            lblPlaceholder.text = "Enter an address or invoice".localized
         }
         addressTextView.textContainer.maximumNumberOfLines = 8
         addressTextView.textContainer.lineBreakMode = .byTruncatingTail
@@ -85,8 +83,8 @@ class SendAddressInputViewController: KeyboardViewController {
         lblInvalid.setStyle(.txt)
         btnQR.setStyle(.inline)
         btnPaste.setStyle(.primary)
-        btnPasteSmall.setStyle(.inlineGray)
         lblPlaceholder.setStyle(.txtCard)
+        lblSubtitle.setStyle(.txtCard)
         btnNextEnabled = true
     }
 
@@ -131,15 +129,6 @@ class SendAddressInputViewController: KeyboardViewController {
         }
     }
 
-    @IBAction func btnPasteSmall(_ sender: Any) {
-        if let text = UIPasteboard.general.string {
-            addressTextView.text = text
-            viewModel.input = text
-            reload()
-            Task { [weak self] in await self?.validate() }
-        }
-    }
-
     @IBAction func btnClear(_ sender: Any) {
         addressTextView.text = ""
         enableError(false)
@@ -159,10 +148,9 @@ class SendAddressInputViewController: KeyboardViewController {
         let res = await Task.detached {
             try await self.viewModel.parse()
             try await self.viewModel.loadSubaccountBalance()
-            
         }.result
         switch res {
-        case .success():
+        case .success:
             enableError(false)
             btnNext.setStyle(.primary)
             next()
@@ -177,7 +165,6 @@ class SendAddressInputViewController: KeyboardViewController {
         btnClear.isHidden = emptyText
         btnNext.isHidden = emptyText
         btnPaste.isHidden = !emptyText
-        btnPasteSmall.isHidden = !emptyText
         hidePlaceHolder(!emptyText)
     }
 
@@ -297,7 +284,6 @@ class SendAddressInputViewController: KeyboardViewController {
     }
 
     func presentAccountAssetViewController() {
-        guard let createTx = viewModel.createTx else { return }
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountAssetViewController") as? AccountAssetViewController {
             vc.viewModel = viewModel.accountAssetViewModel()

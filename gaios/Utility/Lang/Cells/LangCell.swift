@@ -18,13 +18,11 @@ class LangCell: UITableViewCell {
     override func prepareForReuse() {
         iconCurrent.isHidden = true
     }
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
 
     func configure(_ model: LangCellModel) {
         lblLangTtitle.text = model.title
         lblLangHint.text = model.hint
         iconCurrent.isHidden = !model.isCurrent
+        iconCurrent.image = UIImage(named: "ic_check_circle")?.maskWithColor(color: UIColor.gAccent())
     }
 }

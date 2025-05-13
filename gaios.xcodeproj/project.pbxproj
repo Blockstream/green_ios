@@ -153,11 +153,8 @@
 		3448E63B2730141500C7ADFF /* DialogReceiveShareTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E63A2730141400C7ADFF /* DialogReceiveShareTypeViewController.swift */; };
 		344915E32A0A3C8000D35818 /* LTExperimentalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344915E22A0A3C8000D35818 /* LTExperimentalViewController.swift */; };
 		344915E52A0BA27100D35818 /* LTSuccessViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344915E42A0BA27100D35818 /* LTSuccessViewModel.swift */; };
-		344915E92A0CE24700D35818 /* ReceiveAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344915E72A0CE24700D35818 /* ReceiveAssetCell.swift */; };
-		344915EA2A0CE24700D35818 /* ReceiveAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344915E82A0CE24700D35818 /* ReceiveAssetCell.xib */; };
 		344915ED2A0CE26700D35818 /* ReceiveAddressCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344915EB2A0CE26700D35818 /* ReceiveAddressCell.swift */; };
 		344915EE2A0CE26700D35818 /* ReceiveAddressCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344915EC2A0CE26700D35818 /* ReceiveAddressCell.xib */; };
-		344915F02A0CE27F00D35818 /* ReceiveAssetCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344915EF2A0CE27F00D35818 /* ReceiveAssetCellModel.swift */; };
 		344915F22A0CE29C00D35818 /* ReceiveAddressCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344915F12A0CE29C00D35818 /* ReceiveAddressCellModel.swift */; };
 		344B1BBA268C53F1000182B0 /* RecoveryPhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */; };
 		344B1BBC268C5567000182B0 /* Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BBB268C5567000182B0 /* Mnemonic.swift */; };
@@ -725,6 +722,9 @@
 		81CDF3452BF2D50500AA4C19 /* SendHWConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CDF3442BF2D50500AA4C19 /* SendHWConfirmViewModel.swift */; };
 		81D404E12A1D6138002631F5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D404E02A1D6138002631F5 /* Utils.swift */; };
 		81D932132A77968500356D06 /* DialogSignViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D932122A77968500356D06 /* DialogSignViewModel.swift */; };
+		81DAEE042DD4110F00635591 /* ReceiveAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81DAEE022DD4110E00635591 /* ReceiveAssetCell.xib */; };
+		81DAEE052DD4110F00635591 /* ReceiveAssetCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DAEE012DD4110E00635591 /* ReceiveAssetCellModel.swift */; };
+		81DAEE062DD4110F00635591 /* ReceiveAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DAEE002DD4110E00635591 /* ReceiveAssetCell.swift */; };
 		81DEB8302CF3966F0084FFF0 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DEB82F2CF3966B0084FFF0 /* Data.swift */; };
 		81DFA9962CB3EEE500EE0277 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DFA9952CB3EEE500EE0277 /* String.swift */; };
 		81E04A3B2AA63C6800867705 /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E04A3A2AA63C6800867705 /* Country.swift */; };
@@ -1073,11 +1073,8 @@
 		3448E63A2730141400C7ADFF /* DialogReceiveShareTypeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveShareTypeViewController.swift; sourceTree = "<group>"; };
 		344915E22A0A3C8000D35818 /* LTExperimentalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTExperimentalViewController.swift; sourceTree = "<group>"; };
 		344915E42A0BA27100D35818 /* LTSuccessViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTSuccessViewModel.swift; sourceTree = "<group>"; };
-		344915E72A0CE24700D35818 /* ReceiveAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveAssetCell.swift; sourceTree = "<group>"; };
-		344915E82A0CE24700D35818 /* ReceiveAssetCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReceiveAssetCell.xib; sourceTree = "<group>"; };
 		344915EB2A0CE26700D35818 /* ReceiveAddressCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveAddressCell.swift; sourceTree = "<group>"; };
 		344915EC2A0CE26700D35818 /* ReceiveAddressCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReceiveAddressCell.xib; sourceTree = "<group>"; };
-		344915EF2A0CE27F00D35818 /* ReceiveAssetCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveAssetCellModel.swift; sourceTree = "<group>"; };
 		344915F12A0CE29C00D35818 /* ReceiveAddressCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveAddressCellModel.swift; sourceTree = "<group>"; };
 		344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryPhrase.swift; sourceTree = "<group>"; };
 		344B1BBB268C5567000182B0 /* Mnemonic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mnemonic.swift; sourceTree = "<group>"; };
@@ -1660,6 +1657,9 @@
 		81D94CF021B93905003B03F9 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		81DA3D922541F0D1001159D6 /* TxInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInput.swift; sourceTree = "<group>"; };
 		81DA3D962541F110001159D6 /* TxChangeOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxChangeOutput.swift; sourceTree = "<group>"; };
+		81DAEE002DD4110E00635591 /* ReceiveAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveAssetCell.swift; sourceTree = "<group>"; };
+		81DAEE012DD4110E00635591 /* ReceiveAssetCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveAssetCellModel.swift; sourceTree = "<group>"; };
+		81DAEE022DD4110E00635591 /* ReceiveAssetCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReceiveAssetCell.xib; sourceTree = "<group>"; };
 		81DC54342885BD8300DC37C9 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
 		81DEB82F2CF3966B0084FFF0 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		81DFA9952CB3EEE500EE0277 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
@@ -2242,6 +2242,7 @@
 		344915E62A0CE1F800D35818 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				81DAEE032DD4110E00635591 /* ReceiveAssetCell */,
 				343FDF5A2D01CF6800EF59CC /* AmountCellModel.swift */,
 				343FDF582D01CF5600EF59CC /* AmountCell.swift */,
 				343FDF562D01CF4400EF59CC /* AmountCell.xib */,
@@ -2251,9 +2252,6 @@
 				3445499529FBFDB5006725D2 /* LTNoteCellModel.swift */,
 				3445499129FBFC8F006725D2 /* LTNoteCell.swift */,
 				3445499229FBFC8F006725D2 /* LTNoteCell.xib */,
-				344915EF2A0CE27F00D35818 /* ReceiveAssetCellModel.swift */,
-				344915E72A0CE24700D35818 /* ReceiveAssetCell.swift */,
-				344915E82A0CE24700D35818 /* ReceiveAssetCell.xib */,
 				344915F12A0CE29C00D35818 /* ReceiveAddressCellModel.swift */,
 				344915EB2A0CE26700D35818 /* ReceiveAddressCell.swift */,
 				344915EC2A0CE26700D35818 /* ReceiveAddressCell.xib */,
@@ -4039,6 +4037,16 @@
 			path = Managers;
 			sourceTree = "<group>";
 		};
+		81DAEE032DD4110E00635591 /* ReceiveAssetCell */ = {
+			isa = PBXGroup;
+			children = (
+				81DAEE002DD4110E00635591 /* ReceiveAssetCell.swift */,
+				81DAEE012DD4110E00635591 /* ReceiveAssetCellModel.swift */,
+				81DAEE022DD4110E00635591 /* ReceiveAssetCell.xib */,
+			);
+			path = ReceiveAssetCell;
+			sourceTree = "<group>";
+		};
 		81DBD7062A2A576500D88FFF /* configs */ = {
 			isa = PBXGroup;
 			children = (
@@ -4497,7 +4505,6 @@
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
 				347B7C242C3280FE0016A5C0 /* PromoLayout0Cell.xib in Resources */,
 				345B28ED2DD1EB340075860A /* jadeplus_3.riv in Resources */,
-				344915EA2A0CE24700D35818 /* ReceiveAssetCell.xib in Resources */,
 				3407F5D12A49C28A005EF8E1 /* Illustration Lightning Transaction.riv in Resources */,
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
 				34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */,
@@ -4555,6 +4562,7 @@
 				345B28F22DD32B180075860A /* SettingsCell.xib in Resources */,
 				34DA78AD2D8098E40022FBB1 /* DialogAccountCell.xib in Resources */,
 				6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */,
+				81DAEE042DD4110F00635591 /* ReceiveAssetCell.xib in Resources */,
 				34C8BD6A2BED132A00AE9CC4 /* ReEnable2fa.storyboard in Resources */,
 				8150EE1D2BB7248C00E70A12 /* greenlight_device_key.txt in Resources */,
 				34F0EC312D78402E0017C276 /* PriceChartCell.xib in Resources */,
@@ -4774,6 +4782,8 @@
 				344915E52A0BA27100D35818 /* LTSuccessViewModel.swift in Sources */,
 				34E8457C29DD6ABB00B207E7 /* DialogPassphraseViewController.swift in Sources */,
 				3457F4BA2923B0B500EF33B5 /* AccountPrefs.swift in Sources */,
+				81DAEE052DD4110F00635591 /* ReceiveAssetCellModel.swift in Sources */,
+				81DAEE062DD4110F00635591 /* ReceiveAssetCell.swift in Sources */,
 				3497936A25F8B18C0029ECB1 /* WalletSettingsViewController.swift in Sources */,
 				34D66CED29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift in Sources */,
 				345402E22A1E42E4002CB598 /* DialogDenominationViewController.swift in Sources */,
@@ -4814,7 +4824,6 @@
 				346F00E12CB3E48100F28A44 /* QRPsbtAquireViewController.swift in Sources */,
 				34F5689A2A828D490081BF0C /* LTRecoverFundsAmountCell.swift in Sources */,
 				81E8C359291FDAF000B2196B /* DialogTableViewController.swift in Sources */,
-				344915F02A0CE27F00D35818 /* ReceiveAssetCellModel.swift in Sources */,
 				348401FF2DB0FD9600A91C65 /* ManualBackupViewController.swift in Sources */,
 				3428750C2D551D31003FB5AE /* LangSelectViewModel.swift in Sources */,
 				344471C62C478F7C0051957E /* DialogGroupListCellModel.swift in Sources */,

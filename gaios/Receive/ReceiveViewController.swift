@@ -109,7 +109,7 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func register() {
-        ["AlertCardCell", "ReceiveAddressCell", "AmountCell", "LTInfoCell", "LTNoteCell", "WalletAssetCell"].forEach {
+        ["AlertCardCell", "ReceiveAddressCell", "AmountCell", "LTInfoCell", "LTNoteCell", "ReceiveAssetCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
@@ -688,9 +688,9 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case ReceiveSection.asset:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletAssetCell") as? WalletAssetCell {
-                let model = viewModel.walletAssetCellModel
-                cell.configure(model: viewModel.walletAssetCellModel, onTap: { self.didSelectAssetRow() })
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "ReceiveAssetCell") as? ReceiveAssetCell {
+                let model = viewModel.receiveAssetCellModel
+                cell.configure(model: viewModel.receiveAssetCellModel, onTap: { self.didSelectAssetRow() })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -770,7 +770,7 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
         case ReceiveSection.address:
             switch viewModel.type {
             case .address:
-                return headerView("id_account_address".localized)
+                return headerView("id_address".localized)
             case .bolt11:
                 return headerView("id_lightning_invoice".localized)
             case .swap:

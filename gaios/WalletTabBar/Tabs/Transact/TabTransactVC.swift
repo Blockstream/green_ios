@@ -166,7 +166,7 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         switch TabTransactSection(rawValue: section) {
         case .transactions:
-            if walletModel.cachedTransactions.count == 0 {
+            if walletModel.txCellModels.count == 0 && !walletTab.isReloading {
                 return footerH
             }
             return 0.1
@@ -195,8 +195,8 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         switch TabTransactSection(rawValue: section) {
         case .transactions:
-            if walletModel.cachedTransactions.count == 0 {
-                return sectionFooter("You don’t have any transactions yet.".localized)
+            if walletModel.txCellModels.count == 0 && !walletTab.isReloading {
+                return sectionFooter("no transactions".localized)
             }
             return nil
         default:

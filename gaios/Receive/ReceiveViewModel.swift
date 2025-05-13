@@ -273,7 +273,7 @@ class ReceiveViewModel {
         }
     }
 
-    var walletAssetCellModel: WalletAssetCellModel {
-        WalletAssetCellModel(assetId: asset, satoshi: 0, masked: hideBalance, hidden: true)
+    var receiveAssetCellModel: ReceiveAssetCellModel {
+        ReceiveAssetCellModel(assetId: asset)
     }
 }

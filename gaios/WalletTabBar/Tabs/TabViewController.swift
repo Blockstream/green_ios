@@ -86,6 +86,7 @@ extension TabViewController {
         let storyboard = UIStoryboard(name: "TxDetails", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "TxDetailsViewController") as? TxDetailsViewController, let wallet = tx.subaccountItem {
             vc.vm = TxDetailsViewModel(wallet: wallet, transaction: tx)
+            vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -129,6 +130,13 @@ extension TabViewController: DialogCompareSecurityViewControllerDelegate {
             SafeNavigationManager.shared.navigate( ExternalUrls.buyJadePlus )
         case .none:
             break
+        }
+    }
+}
+extension TabViewController: TxDetailsViewControllerDelegate {
+    func onMemoEdit() {
+        Task { [weak self] in
+            await self?.walletTab.reload(discovery: false)
         }
     }
 }
