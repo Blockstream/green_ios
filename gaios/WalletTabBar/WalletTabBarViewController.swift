@@ -346,7 +346,7 @@ extension WalletTabBarViewController: DrawerNetworkSelectionDelegate {
     func didSelectAccount(account: Account) {
         // don't switch if same account selected
         if account.id == self.walletModel.wm?.account.id ?? "" {
-            return
+            presentedViewController?.dismiss(animated: true)
         } else if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
             AccountNavigator.navLogged(accountId: account.id)
         } else {

@@ -11,10 +11,6 @@ class BiometricLoginViewController: UIViewController {
     @IBOutlet weak var subtitleLabel: UILabel!
     @IBOutlet weak var biometricButton: UIButton!
     @IBOutlet weak var pinButton: UIButton!
-    @IBOutlet weak var walletLabel: UILabel!
-    @IBOutlet weak var walletImageBox: UIView!
-    @IBOutlet weak var walletImage: UIImageView!
-    @IBOutlet weak var walletBox: UIView!
 
     var viewModel: LoginViewModel!
     private var account: Account { viewModel.account }
@@ -33,19 +29,27 @@ class BiometricLoginViewController: UIViewController {
     }
 
     func setContent() {
-        titleLabel.text = "Hello".localized
+        titleLabel.text = account.name.localized
         subtitleLabel.text = "Try Face ID again or enter your PIN to unlock your wallet.".localized
         let attrTitle = NSAttributedString(string: "Type PIN".localized, attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
         pinButton.setAttributedTitle(attrTitle, for: .normal)
-        biometricButton.setTitle("", for: .normal)
         pinButton.isHidden = !account.hasManualPin
+        biometricButton.setTitle("", for: .normal)
+        switch AuthenticationTypeHandler.biometryType {
+        case .faceID:
+            biometricButton.setImage(UIImage(named: "login_faceid"), for: .normal)
+        case .touchID:
+            biometricButton.setImage(UIImage(named: "login_touchid"), for: .normal)
+        default:
+            biometricButton.setImage(UIImage(), for: .normal)
+        }
     }
 
     func setStyle() {
         view.backgroundColor = UIColor.gBlackBg()
         pinButton.setStyle(.inline)
         titleLabel.setStyle(.title)
-        subtitleLabel.setStyle(.txt)
+        subtitleLabel.setStyle(.txtCard)
     }
 
     @IBAction func biometricButtonTap(_ sender: Any) {

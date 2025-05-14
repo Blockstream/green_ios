@@ -23,7 +23,7 @@ class ConnectViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblSubtitle: UILabel!
-    @IBOutlet weak var image: UIImageView!
+    //@IBOutlet weak var image: UIImageView!
     @IBOutlet weak var retryButton: UIButton!
     @IBOutlet weak var retryWoButton: UIButton!
     @IBOutlet weak var progressView: ProgressView!
@@ -57,7 +57,11 @@ class ConnectViewController: HWFlowBaseViewController {
             retryButton.isHidden = false
             retryButton.setTitle("id_connect_with_bluetooth".localized, for: .normal)
             retryWoButton.isHidden = !hasCredentials
-            progress("")
+            if hasCredentials {
+                progress("Try Face ID again or enter your PIN to unlock your wallet.")
+            } else {
+                progress("Enter your PIN to unlock your wallet.")
+            }
         case .scan:
             progressView.isHidden = false
             retryButton.isHidden = true
@@ -99,7 +103,7 @@ class ConnectViewController: HWFlowBaseViewController {
             progressView.isHidden = true
             retryButton.isHidden = false
             retryWoButton.isHidden = !hasCredentials
-            image.image = UIImage(named: "il_connection_fail")
+            //image.image = UIImage(named: "il_connection_fail")
             if let err = err {
                 let txt = viewModel.bleHwManager.toBleError(err, network: nil).localizedDescription
                 lblSubtitle.text = txt.localized
@@ -118,7 +122,6 @@ class ConnectViewController: HWFlowBaseViewController {
         super.viewDidLoad()
         setContent()
         setStyle()
-        loadNavigationBtns()
         viewModel.updateState = { self.state = $0 }
         viewModel.delegate = self
         Task { [weak self] in
@@ -136,29 +139,36 @@ class ConnectViewController: HWFlowBaseViewController {
         retryButton.isHidden = true
         retryWoButton.isHidden = true
         retryButton.setTitle("id_connect_with_bluetooth".localized, for: .normal)
-        retryWoButton.setTitle("id_watchonly_login".localized, for: .normal)
+        retryWoButton.setTitle("", for: .normal)
         lblTitle.text = viewModel.account.name
-        lblSubtitle.text = ""
+        lblSubtitle.text = "Try Face ID again or connect with Bluetooth to access your wallet.".localized
+        switch AuthenticationTypeHandler.biometryType {
+        case .faceID:
+            retryWoButton.setImage(UIImage(named: "login_faceid"), for: .normal)
+        case .touchID:
+            retryWoButton.setImage(UIImage(named: "login_touchid"), for: .normal)
+        default:
+            retryWoButton.setImage(UIImage(), for: .normal)
+        }
     }
 
     func setStyle() {
+        retryButton.setStyle(.inline)
         lblTitle.setStyle(.title)
-        lblSubtitle.setStyle(.txt)
+        lblSubtitle.setStyle(.txtCard)
         lblSubtitle.numberOfLines = 0
         lblSubtitle.translatesAutoresizingMaskIntoConstraints = false
-        retryButton.setStyle(.primary)
-        retryWoButton.setStyle(.outlined)
     }
 
     func updateImage(_ version: JadeVersionInfo? = nil) {
         if isJade {
             if let version = version {
-                image.image = JadeAsset.img(.select, version.boardType == .v2 ? .v2 : .v1)
+                //image.image = JadeAsset.img(.select, version.boardType == .v2 ? .v2 : .v1)
             } else {
-                image.image = JadeAsset.img(.selectDual, nil)
+                //image.image = JadeAsset.img(.selectDual, nil)
             }
         } else {
-            image.image = UIImage(named: "il_ledger")
+            //image.image = UIImage(named: "il_ledger")
         }
     }
 
@@ -222,20 +232,6 @@ class ConnectViewController: HWFlowBaseViewController {
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: false, completion: nil)
         }
-    }
-
-    func loadNavigationBtns() {
-        // Troubleshoot
-        let settingsBtn = UIButton(type: .system)
-        settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        settingsBtn.tintColor = UIColor.gAccent()
-        settingsBtn.setTitle("id_troubleshoot".localized, for: .normal)
-        settingsBtn.addTarget(self, action: #selector(troubleshootBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
-    }
-
-    @objc func troubleshootBtnTapped() {
-        SafeNavigationManager.shared.navigate( ExternalUrls.jadeTroubleshoot )
     }
 
     @IBAction func retryWoBtnTapped(_ sender: Any) {
