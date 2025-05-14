@@ -44,17 +44,32 @@ class GetStartedOnBoardViewController: UIViewController {
         lblHint.text = "id_everything_you_need_to_take".localized
         btnGetStarted.setTitle("id_get_started".localized, for: .normal)
         btnConnectJade.setTitle("Connect Jade".localized, for: .normal)
+        lblTitle.attributedText = textWithLineSpacing(text: "id_simple__secure_selfcustody".localized, spacing: 0)
+    }
+
+    func textWithLineSpacing(text: String, spacing: CGFloat) -> NSAttributedString {
+        let attributedString = NSMutableAttributedString(string: text)
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineBreakMode = .byWordWrapping
+        paragraphStyle.lineSpacing = spacing
+        attributedString.addAttribute(
+            .paragraphStyle,
+            value: paragraphStyle,
+            range: NSRange(location: 0, length: text.count))
+        return attributedString
     }
 
     func setStyle() {
         lblTitle.font = UIFont.systemFont(ofSize: 32.0, weight: .bold)
         lblTitle.textColor = .white
+        lblTitle.textAlignment = .center
         lblHint.font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
         lblHint.textColor = UIColor.gGrayTxt()
+        lblHint.textAlignment = .center
         btnGetStarted.setStyle(.primary)
 
         let pStyle = NSMutableParagraphStyle()
-        pStyle.lineSpacing = 7.0
+        pStyle.lineSpacing = 2.0
         let gAttr: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.gAccent(),
             NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
