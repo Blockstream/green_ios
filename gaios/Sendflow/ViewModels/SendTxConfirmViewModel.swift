@@ -20,8 +20,10 @@ class SendTxConfirmViewModel {
     var isFiat = false
     var session: SessionManager? {
         guard let subaccount = subaccount else { return nil }
-        if BleHwManager.shared.isConnected() {
-            return BleHwManager.shared.walletManager?.getSession(for: subaccount)
+        if let wm = wm, wm.account.isJade && wm.account.isWatchonly {
+            if BleHwManager.shared.isConnected() {
+                return BleHwManager.shared.walletManager?.getSession(for: subaccount)
+            }
         }
         return WalletManager.current?.getSession(for: subaccount)
     }
