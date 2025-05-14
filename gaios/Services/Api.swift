@@ -12,8 +12,8 @@ class Api {
         let request = URLRequest(url: url)
 
         let sessionConfig = URLSessionConfiguration.default
-        sessionConfig.timeoutIntervalForRequest = 5.0
-        sessionConfig.timeoutIntervalForResource = 5.0
+        sessionConfig.timeoutIntervalForRequest = 10.0
+        sessionConfig.timeoutIntervalForResource = 10.0
         let session = URLSession(configuration: sessionConfig)
 
         let (data, _) = try await session.data(for: request)
