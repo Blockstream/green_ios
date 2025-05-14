@@ -116,6 +116,16 @@ extension TabViewController {
             UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
         }
     }
+    /*@objc func switchNetwork() {
+        let storyboard = UIStoryboard(name: "DrawerNetworkSelection", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DrawerNetworkSelection") as? DrawerNetworkSelectionViewController {
+            vc.transitioningDelegate = self
+            vc.modalPresentationStyle = .custom
+            vc.delegate = self
+            //navigationController?.pushViewController(vc, animated: true)
+            present(vc, animated: true, completion: nil)
+        }
+    }*/
 }
 extension TabViewController: DialogCompareSecurityViewControllerDelegate {
     func onHardwareTap(_ action: CompareSecurityAction) {
@@ -140,3 +150,107 @@ extension TabViewController: TxDetailsViewControllerDelegate {
         }
     }
 }
+/*
+extension TabViewController: DrawerNetworkSelectionDelegate {
+
+    // accounts drawer: add new waller
+    func didSelectAddWallet() {
+        if let vc = AccountNavigator.started() {
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    // accounts drawer: select another account
+    func didSelectAccount(account: Account) {
+        // don't switch if same account selected
+        if account.id == walletModel.wm?.account.id ?? "" {
+            return
+        } else if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
+            AccountNavigator.navLogged(accountId: account.id)
+        } else {
+            if let vc = AccountNavigator.login(accountId: account.id) {
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+    }
+
+    // accounts drawer: select app settings
+    func didSelectSettings() {
+        self.presentedViewController?.dismiss(animated: true, completion: {
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+        })
+    }
+
+    func didSelectAbout() {
+        self.presentedViewController?.dismiss(animated: true, completion: {
+            let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAboutViewController") as? DialogAboutViewController {
+                vc.modalPresentationStyle = .overFullScreen
+                vc.delegate = self
+                self.present(vc, animated: false, completion: nil)
+            }
+        })
+    }
+}
+extension TabViewController: DialogAboutViewControllerDelegate {
+    func openContactUs() {
+        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
+    }
+}
+extension WalletTabBarViewController: DialogGroupListViewControllerDelegate {
+    func didSelectIndexPath(_ indexPath: IndexPath, with type: DialogGroupType) {
+        switch type {
+        case .walletPrefs:
+            if let item = WalletPrefs.getSelected(indexPath) {
+                switch item {
+                case .createAccount:
+                    AnalyticsManager.shared.newAccount(account: AccountsRepository.shared.current)
+//                    createAccount()
+                case .logout:
+                    userLogout()
+                case .denominations:
+                    showDenominationExchange()
+                case .rename:
+                    rename()
+                case .refresh:
+//                    tableView.beginRefreshing()
+//                    reload(discovery: true)
+                    break
+                case .archive:
+//                    showArchived()
+                    break
+                case .contact:
+                    presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
+                }
+            }
+        }
+    }
+}
+extension TabViewController: UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        if let presented = presented as? DrawerNetworkSelectionViewController {
+            return DrawerPresentationController(presentedViewController: presented, presenting: presenting)
+        }
+        return ModalPresentationController(presentedViewController: presented, presenting: presenting)
+    }
+
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        if presented as? DrawerNetworkSelectionViewController != nil {
+            return DrawerAnimator(isPresenting: true)
+        } else {
+            return ModalAnimator(isPresenting: true)
+        }
+    }
+
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        if dismissed as? DrawerNetworkSelectionViewController != nil {
+            return DrawerAnimator(isPresenting: false)
+        } else {
+            return ModalAnimator(isPresenting: false)
+        }
+    }
+}
+*/

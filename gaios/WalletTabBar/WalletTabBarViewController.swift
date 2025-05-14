@@ -97,6 +97,17 @@ class WalletTabBarViewController: UITabBarController {
             UIApplication.shared.delegate?.window??.rootViewController?.present(alert, animated: true, completion: nil)
         }
     }
+    
+    @objc func switchNetwork() {
+        let storyboard = UIStoryboard(name: "DrawerNetworkSelection", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DrawerNetworkSelection") as? DrawerNetworkSelectionViewController {
+            vc.transitioningDelegate = self
+            vc.modalPresentationStyle = .custom
+            vc.delegate = self
+            //navigationController?.pushViewController(vc, animated: true)
+            present(vc, animated: true, completion: nil)
+        }
+    }
 
     func setTabBar() {
         let tabBar = { () -> WalletTabBar in
@@ -130,16 +141,6 @@ class WalletTabBarViewController: UITabBarController {
             let img = WalletTab.security.tabItem.image
             tabSecurityVC.tabBarItem.image = img?.withBadge(iconColor: UIColor.gGrayTxt(), badgeColor: .red)
             tabSecurityVC.tabBarItem.selectedImage = img?.withBadge(iconColor: .white, badgeColor: .red)
-        }
-    }
-
-    @objc func switchNetwork() {
-        let storyboard = UIStoryboard(name: "DrawerNetworkSelection", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DrawerNetworkSelection") as? DrawerNetworkSelectionViewController {
-            vc.transitioningDelegate = self
-            vc.modalPresentationStyle = .custom
-            vc.delegate = self
-            present(vc, animated: true, completion: nil)
         }
     }
 
@@ -334,29 +335,33 @@ extension WalletTabBarViewController: DrawerNetworkSelectionDelegate {
 
     // accounts drawer: add new waller
     func didSelectAddWallet() {
-        AccountNavigator.goAddWallet(nv: navigationController)
+        if let vc = AccountNavigator.setup() {
+            self.navigationController?.pushViewController(viewController: vc, animated: true) {
+                self.presentedViewController?.dismiss(animated: true)
+            }
+        }
     }
 
     // accounts drawer: select another account
     func didSelectAccount(account: Account) {
         // don't switch if same account selected
-        if account.id == walletModel.wm?.account.id ?? "" {
+        if account.id == self.walletModel.wm?.account.id ?? "" {
             return
         } else if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
-            AccountNavigator.goLogged(accountId: account.id)
+            AccountNavigator.navLogged(accountId: account.id)
         } else {
-            AccountNavigator.goLogin(accountId: account.id)
+            AccountNavigator.navLogin(accountId: account.id)
         }
     }
 
     // accounts drawer: select app settings
     func didSelectSettings() {
-        self.presentedViewController?.dismiss(animated: true, completion: {
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
-                self.navigationController?.pushViewController(vc, animated: true)
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+            self.navigationController?.pushViewController(viewController: vc, animated: true) {
+                self.presentedViewController?.dismiss(animated: true)
             }
-        })
+        }
     }
 
     func didSelectAbout() {
@@ -370,6 +375,7 @@ extension WalletTabBarViewController: DrawerNetworkSelectionDelegate {
         })
     }
 }
+
 extension WalletTabBarViewController: DialogAboutViewControllerDelegate {
     func openContactUs() {
         presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
@@ -400,5 +406,15 @@ extension WalletTabBarViewController: DialogRenameViewControllerDelegate {
         }
     }
     func didCancel() {
+    }
+}
+
+extension WalletTabBarViewController: DenominationExchangeViewControllerDelegate {
+    func onDenominationExchangeSave() {
+        Task.detached { [weak self] in
+            // try? await self?.walletModel.loadBalances()
+            // try? await self?.walletModel.loadTransactions()
+            await self?.updateTabs([.home, .transact])
+        }
     }
 }

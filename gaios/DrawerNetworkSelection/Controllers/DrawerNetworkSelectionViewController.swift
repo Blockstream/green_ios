@@ -81,33 +81,16 @@ class DrawerNetworkSelectionViewController: UIViewController {
         }
     }
 
-    func goAccount(account: Account) {
-        if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
-            AccountNavigator.goLogged(accountId: account.id)
-        } else {
-            AccountNavigator.goLogin(accountId: account.id)
-        }
-    }
-
     func onTap(_ indexPath: IndexPath) {
         onTapOverview(indexPath)
     }
 
     func onTapOverview(_ indexPath: IndexPath) {
         if let account = getAccountFromTableView(indexPath) {
-            goAccount(account: account)
-            dismiss(animated: true, completion: nil)
+            self.delegate?.didSelectAccount(account: account)
         }
     }
 
-    func onTapLightShort(_ indexPath: IndexPath) {
-        if let account = getAccountFromTableView(indexPath) {
-            if let lightning = account.getDerivedLightningAccount() {
-                goAccount(account: lightning)
-                dismiss(animated: true, completion: nil)
-            }
-        }
-    }
     @IBAction func btnAddWallet(_ sender: Any) {
         newWalletView.pressAnimate {
             self.delegate?.didSelectAddWallet()
@@ -153,12 +136,12 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
                                isOverviewSelected: isOverviewSelected(account),
-                               isLightningSelected: isLightningSelected(account),
+                               isLightningSelected: false,
                                indexPath: indexPath,
                                onLongpress: nil,
                                onTap: { [weak self] indexPath in self?.onTap(indexPath) },
                                onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
-                               onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
+                               onTapLightShort: { _ in }
                 )
                 cell.selectionStyle = .none
                 return cell
@@ -168,12 +151,12 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
                                isOverviewSelected: isOverviewSelected(account),
-                               isLightningSelected: isLightningSelected(account),
+                               isLightningSelected: false,
                                indexPath: indexPath,
                                onLongpress: nil,
                                onTap: { [weak self] indexPath in self?.onTap(indexPath) },
                                onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
-                               onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
+                               onTapLightShort: { _ in }
                 )
                 cell.selectionStyle = .none
                 return cell
@@ -183,12 +166,12 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
                                isOverviewSelected: isOverviewSelected(account),
-                               isLightningSelected: isLightningSelected(account),
+                               isLightningSelected: false,
                                indexPath: indexPath,
                                onLongpress: nil,
                                onTap: { [weak self] indexPath in self?.onTap(indexPath) },
                                onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
-                               onTapLightShort: { [weak self] indexPath in self?.onTapLightShort(indexPath) }
+                               onTapLightShort: { _ in }
                 )
                 cell.selectionStyle = .none
                 return cell
@@ -202,13 +185,6 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
 
     func isOverviewSelected(_ account: Account) -> Bool {
         WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
-    }
-
-    func isLightningSelected(_ account: Account) -> Bool {
-        if let account = account.getDerivedLightningAccount() {
-            return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
-        }
-        return false
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

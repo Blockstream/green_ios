@@ -94,7 +94,7 @@ class PinCreateViewController: HWFlowBaseViewController {
         if let account = account {
             AccountsRepository.shared.current = account
             AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .hardware)
-            AccountNavigator.goLogged(accountId: account.id)
+            AccountNavigator.navLogged(accountId: account.id)
         }
     }
 

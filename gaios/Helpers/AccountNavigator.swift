@@ -6,95 +6,116 @@ import core
 
 class AccountNavigator {
 
-    @MainActor
-    // open the account if just logged or redirect to login
-    static func goLogin(accountId: String) {
-        let account = AccountsRepository.shared.get(for: accountId)!
-        let nv = UINavigationController()
-        let vcHome: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
-        let vcLogin: LoginViewController? = instantiateViewController(storyboard: "Home", identifier: "LoginViewController")
-        let vcBiometricLogin: BiometricLoginViewController? = instantiateViewController(storyboard: "Home", identifier: "BiometricLoginViewController")
-        let vcConnect: ConnectViewController? = instantiateViewController(storyboard: "HWFlow", identifier: "ConnectViewController")
-        let vcWatch: WOLoginViewController? = instantiateViewController(storyboard: "WOFlow", identifier: "WOLoginViewController")
-        if account.isWatchonly {
-            vcWatch?.account = account
-            nv.setViewControllers([vcHome!, vcWatch!], animated: true)
-        } else if account.isHW {
-            vcConnect?.viewModel = ConnectViewModel(
-                account: account,
-                firstConnection: false,
-                storeConnection: true)
-            nv.setViewControllers([vcHome!, vcConnect!], animated: true)
-        } else if account.hasBioPin || account.hasWoBioCredentials || account.hasWoCredentials {
-            vcBiometricLogin?.viewModel = LoginViewModel(account: account)
-            nv.setViewControllers([vcBiometricLogin!], animated: true)
-        } else {
-            vcLogin?.viewModel = LoginViewModel(account: account)
-            nv.setViewControllers([vcHome!, vcLogin!], animated: true)
-        }
-        changeRoot(root: nv, animated: true)
+    static func home() -> HomeViewController? {
+         instantiateViewController(storyboard: "Home", identifier: "Home")
     }
 
-    @MainActor
-    static func goLogged(accountId: String, isFirstLoad: Bool = false) {
-        let account = AccountsRepository.shared.get(for: accountId)!
-        AccountsRepository.shared.current = account
-        let walletModel = WalletModel()
+    static func navHome() {
         let nv = UINavigationController()
-        if let vc: WalletTabBarViewController = instantiateViewController(storyboard: "WalletTab", identifier: "WalletTabBarViewController") {
-            vc.walletModel = walletModel
-            vc.walletModel?.isFirstLoad = isFirstLoad
+        if let vc = home() {
             nv.setViewControllers([vc], animated: true)
             changeRoot(root: nv)
         }
     }
 
     @MainActor
-    static func goLogout(accountId: String?) {
-        if let accountId = accountId {
-            goLogin(accountId: accountId)
+    static func login(accountId: String) -> UIViewController? {
+        let account = AccountsRepository.shared.get(for: accountId)!
+        let vcLogin: LoginViewController? = instantiateViewController(storyboard: "Home", identifier: "LoginViewController")
+        let vcBiometricLogin: BiometricLoginViewController? = instantiateViewController(storyboard: "Home", identifier: "BiometricLoginViewController")
+        let vcConnect: ConnectViewController? = instantiateViewController(storyboard: "HWFlow", identifier: "ConnectViewController")
+        let vcWatch: WOLoginViewController? = instantiateViewController(storyboard: "WOFlow", identifier: "WOLoginViewController")
+        if account.isWatchonly {
+            vcWatch?.account = account
+            return vcWatch
+        } else if account.isHW {
+            vcConnect?.viewModel = ConnectViewModel(
+                account: account,
+                firstConnection: false,
+                storeConnection: true)
+            return vcConnect
+        } else if account.hasBioPin || account.hasWoBioCredentials || account.hasWoCredentials {
+            vcBiometricLogin?.viewModel = LoginViewModel(account: account)
+            return vcBiometricLogin
         } else {
-            goHome()
+            vcLogin?.viewModel = LoginViewModel(account: account)
+            return vcLogin
         }
+    }
+
+    @MainActor
+    static func logged(accountId: String, isFirstLoad: Bool = false) -> UIViewController? {
+        let account = AccountsRepository.shared.get(for: accountId)!
+        AccountsRepository.shared.current = account
+        let walletModel = WalletModel()
+        let vc: WalletTabBarViewController? = instantiateViewController(storyboard: "WalletTab", identifier: "WalletTabBarViewController")
+        vc?.walletModel = walletModel
+        vc?.walletModel?.isFirstLoad = isFirstLoad
+        return vc
+    }
+
+    @MainActor
+    static func started() -> GetStartedOnBoardViewController? {
+        instantiateViewController(storyboard: "OnBoard", identifier: "GetStartedOnBoardViewController")
+    }
+    
+    @MainActor
+    static func setup() -> SetupNewViewController? {
+        instantiateViewController(storyboard: "OnBoard", identifier: "SetupNewViewController")
+    }
+
+    @MainActor
+    static func navLogged(accountId: String, isFirstLoad: Bool = false) {
+        if let vc = logged(accountId: accountId, isFirstLoad: isFirstLoad) {
+            let nv = UINavigationController()
+            nv.setViewControllers([vc], animated: true)
+            changeRoot(root: nv)
+        }
+    }
+
+    @MainActor
+    static func navStarted() {
+        if let vc = started() {
+            let nv = UINavigationController()
+            nv.setViewControllers([vc], animated: true)
+            changeRoot(root: nv)
+        }
+    }
+
+    @MainActor
+    static func navLogin(accountId: String) {
+        if let vcHome = home(),
+        let vcLogin = login(accountId: accountId) {
+            let nv = UINavigationController()
+            nv.setViewControllers([vcHome, vcLogin], animated: true)
+            changeRoot(root: nv)
+        }
+    }
+
+    @MainActor
+    static func navLogout(accountId: String?) {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             appDelegate.resolve2faOff()
             appDelegate.window?.endEditing(true)
         }
-    }
-
-    @MainActor
-    static func goHome() {
-        let nv = UINavigationController()
-        let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
-        nv.setViewControllers([home!], animated: true)
-        changeRoot(root: nv)
-    }
-
-    @MainActor
-    static func goFirstPage() {
-        let nv = UINavigationController()
-        if AccountsRepository.shared.accounts.isEmpty {
-            let onboard: GetStartedOnBoardViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "GetStartedOnBoardViewController")
-            nv.setViewControllers([onboard!], animated: true)
+        if let accountId = accountId {
+            navLogin(accountId: accountId)
         } else {
-            let list = AccountsRepository.shared.accounts.filter { $0.hidden == false}
-            if list.count == 1, let account = list.first, account.getDerivedLightningAccount() == nil {
-                goLogin(accountId: account.id)
-                return
-            } else {
-                let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
-                nv.setViewControllers([home!], animated: true)
-            }
+            navHome()
         }
-        changeRoot(root: nv)
     }
 
-    static func goAddWallet(nv: UINavigationController?) {
-        let nv = UINavigationController()
-        let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
-        let onboard: GetStartedOnBoardViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "GetStartedOnBoardViewController")
-        nv.setViewControllers([home!, onboard!], animated: true)
-        changeRoot(root: nv)
+    @MainActor
+    static func navFirstPage() {
+        let wallets = AccountsRepository.shared.accounts.filter { $0.hidden == false}
+        if wallets.isEmpty {
+            // if there are no wallets
+            navStarted()
+        } else if wallets.count == 1, let walletId = wallets.first?.id {
+            navLogin(accountId: walletId)
+        } else {
+            navHome()
+        }
     }
 
     static func instantiateViewController<K>(storyboard: String, identifier: String) -> K? {

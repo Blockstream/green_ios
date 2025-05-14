@@ -124,9 +124,11 @@ class HomeViewController: UIViewController {
 
     func goAccount(accountId: String) {
         if let wm = WalletsRepository.shared.get(for: accountId), wm.logged {
-            AccountNavigator.goLogged(accountId: accountId)
+            AccountNavigator.navLogged(accountId: accountId)
         } else {
-            AccountNavigator.goLogin(accountId: accountId)
+            if let vc = AccountNavigator.login(accountId: accountId) {
+                navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
 

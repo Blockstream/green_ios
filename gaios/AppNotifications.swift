@@ -62,12 +62,11 @@ extension AppNotifications: UNUserNotificationCenterDelegate {
         if let xpub = appData ?? txPayload?.externalCustomerId,
            let account = getAccount(xpub: xpub) {
             if let wm = WalletsRepository.shared.get(for: account), wm.logged {
-                AccountNavigator.goLogged(accountId: account.id)
+                AccountNavigator.navLogged(accountId: account.id)
             } else {
-                AccountNavigator.goLogin(accountId: account.id)
+                AccountNavigator.navLogin(accountId: account.id)
             }
         }
-        // tell the app that we have finished processing the user’s action / response
         completionHandler()
     }
 

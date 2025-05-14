@@ -94,7 +94,7 @@ class ConnectViewController: HWFlowBaseViewController {
         case .logged:
             progressView.isHidden = false
             AccountsRepository.shared.upsert(viewModel.account)
-            AccountNavigator.goLogged(accountId: viewModel.account.id)
+            AccountNavigator.navLogged(accountId: viewModel.account.id)
         case .error(let err):
             progressView.isHidden = true
             retryButton.isHidden = false

@@ -225,12 +225,12 @@ class SetPinViewController: UIViewController {
             case .restore:
                 if let account = wallet?.account {
                     AccountsRepository.shared.current = account
-                    AccountNavigator.goLogged(accountId: account.id, isFirstLoad: false)
+                    AccountNavigator.navLogged(accountId: account.id, isFirstLoad: false)
                 }
             case .create:
                 if let account = wallet?.account {
                     AccountsRepository.shared.current = account
-                    AccountNavigator.goLogged(accountId: account.id, isFirstLoad: true)
+                    AccountNavigator.navLogged(accountId: account.id, isFirstLoad: true)
                 }
             }
         case .failure(let error):

@@ -306,7 +306,7 @@ class LoginViewController: UIViewController {
         AnalyticsManager.shared.activeWalletStart()
         
         BackupHelper.shared.cleanDismissedCache(walletId: account.id)
-        AccountNavigator.goLogged(accountId: account.id)
+        AccountNavigator.navLogged(accountId: account.id)
     }
     
     @MainActor

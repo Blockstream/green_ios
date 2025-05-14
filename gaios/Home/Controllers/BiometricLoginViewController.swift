@@ -38,10 +38,6 @@ class BiometricLoginViewController: UIViewController {
         let attrTitle = NSAttributedString(string: "Type PIN".localized, attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
         pinButton.setAttributedTitle(attrTitle, for: .normal)
         biometricButton.setTitle("", for: .normal)
-        let walletTap = UITapGestureRecognizer(target: self, action: #selector(switchNetwork))
-        walletBox.addGestureRecognizer(walletTap)
-        let attrText = NSAttributedString(string: account.name, attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
-        walletLabel.attributedText = attrText
         pinButton.isHidden = !account.hasManualPin
     }
 
@@ -50,21 +46,6 @@ class BiometricLoginViewController: UIViewController {
         pinButton.setStyle(.inline)
         titleLabel.setStyle(.title)
         subtitleLabel.setStyle(.txt)
-        walletLabel.setStyle(.txtCard)
-        walletImageBox.layer.cornerRadius = walletImageBox.frame.size.width / 2
-        walletImageBox.backgroundColor = UIColor.gAccent()
-        let iconName = account.networkType.testnet ? "ic_wallet_testnet" : "ic_wallet"
-        walletImage.image = UIImage(named: iconName)?.maskWithColor(color: UIColor.gBlackBg())
-    }
-
-    @objc func switchNetwork() {
-        let storyboard = UIStoryboard(name: "DrawerNetworkSelection", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DrawerNetworkSelection") as? DrawerNetworkSelectionViewController {
-            vc.transitioningDelegate = self
-            vc.modalPresentationStyle = .custom
-            vc.delegate = self
-            present(vc, animated: true, completion: nil)
-        }
     }
 
     @IBAction func biometricButtonTap(_ sender: Any) {
@@ -139,7 +120,7 @@ class BiometricLoginViewController: UIViewController {
         AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .biometrics)
         AnalyticsManager.shared.activeWalletStart()
         BackupHelper.shared.cleanDismissedCache(walletId: account.id)
-        AccountNavigator.goLogged(accountId: account.id)
+        AccountNavigator.navLogged(accountId: account.id)
     }
 
     @MainActor
@@ -220,50 +201,5 @@ extension BiometricLoginViewController: UIViewControllerTransitioningDelegate {
         } else {
             return ModalAnimator(isPresenting: false)
         }
-    }
-}
-extension BiometricLoginViewController: DrawerNetworkSelectionDelegate {
-
-    // accounts drawer: add new waller
-    func didSelectAddWallet() {
-        AccountNavigator.goAddWallet(nv: navigationController)
-    }
-
-    // accounts drawer: select another account
-    func didSelectAccount(account: Account) {
-        // don't switch if same account selected
-        if account.id == self.account.id {
-            return
-        } else if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
-            AccountNavigator.goLogged(accountId: account.id)
-        } else {
-            AccountNavigator.goLogin(accountId: account.id)
-        }
-    }
-
-    // accounts drawer: select app settings
-    func didSelectSettings() {
-        self.presentedViewController?.dismiss(animated: true, completion: {
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
-                self.navigationController?.pushViewController(vc, animated: true)
-            }
-        })
-    }
-
-    func didSelectAbout() {
-        self.presentedViewController?.dismiss(animated: true, completion: {
-            let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAboutViewController") as? DialogAboutViewController {
-                vc.modalPresentationStyle = .overFullScreen
-                vc.delegate = self
-                self.present(vc, animated: false, completion: nil)
-            }
-        })
-    }
-}
-extension BiometricLoginViewController: DialogAboutViewControllerDelegate {
-    func openContactUs() {
-        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
     }
 }

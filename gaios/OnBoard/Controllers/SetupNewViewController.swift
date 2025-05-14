@@ -104,7 +104,7 @@ class SetupNewViewController: UIViewController {
             stopLoader()
             if let account = wm?.account {
                 AccountsRepository.shared.current = account
-                AccountNavigator.goLogged(accountId: account.id, isFirstLoad: true)
+                AccountNavigator.navLogged(accountId: account.id, isFirstLoad: true)
             }
         case .failure(let err):
             stopLoader()
