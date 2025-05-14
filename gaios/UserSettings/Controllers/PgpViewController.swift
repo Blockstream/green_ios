@@ -8,7 +8,7 @@ class PgpViewController: KeyboardViewController {
     @IBOutlet weak var subtitle: UILabel!
     @IBOutlet weak var textarea: UITextView!
     @IBOutlet weak var btnSave: UIButton!
-
+    private var updateToken: NSObjectProtocol?
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "id_pgp_key".localized
@@ -17,6 +17,7 @@ class PgpViewController: KeyboardViewController {
         btnSave.addTarget(self, action: #selector(save), for: .touchUpInside)
         setStyle()
         textarea.text = getPgp() ?? ""
+        textarea.addDoneAndPasteButtonOnKeyboard(myAction: #selector(self.textarea.resignFirstResponder))
     }
 
     func setStyle() {
@@ -27,7 +28,17 @@ class PgpViewController: KeyboardViewController {
         super.viewDidAppear(animated)
         textarea.becomeFirstResponder()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "KeyboardPaste"), object: nil, queue: .main, using: keyboardPaste)
 
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let token = updateToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+    }
     func getPgp() -> String? {
         return WalletManager.current?.activeSessions.values
             .filter { !$0.gdkNetwork.electrum }
@@ -46,7 +57,11 @@ class PgpViewController: KeyboardViewController {
             }
         }
     }
-
+    func keyboardPaste(_ notification: Notification) {
+        if let txt = UIPasteboard.general.string {
+            textarea.text = txt
+        }
+    }
     func changeSettings(session: SessionManager, pgp: String) async throws {
         guard let settings = session.settings else { return }
         settings.pgp = pgp
@@ -58,7 +73,7 @@ class PgpViewController: KeyboardViewController {
         self.startAnimating()
         Task {
             do {
-                try await self.setPgp(pgp: txt ?? "")
+                try await self.setPgp(pgp: txt)
                 await MainActor.run {
                     self.navigationController?.popViewController(animated: true)
                 }

@@ -24,6 +24,7 @@ class AccountArchiveCell: UITableViewCell {
         bg.layer.cornerRadius = 6.0
         bgHint.layer.cornerRadius = 3.0
         iconsView.layer.cornerRadius = 3.0
+        lblAccountTitle.setStyle(.titleDialog)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

@@ -35,11 +35,11 @@ class SetGauthViewController: UIViewController {
         nextButton.setTitle("id_get_code".localized, for: .normal)
         subtitleLabel.text = "id_scan_the_qr_code_with_an".localized
         warningLabel.text = "id_the_recovery_key_below_will_not".localized
+        warningLabel.setStyle(.err)
         nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         nextButton.setStyle(.primary)
-        lblTitle.font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
-        subtitleLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-        subtitleLabel.textColor = .white.withAlphaComponent(0.6)
+        lblTitle.setStyle(.subTitle24)
+        subtitleLabel.setStyle(.txtCard)
         btnCopy.setTitle("id_copy".localized, for: .normal)
         btnCopy.cornerRadius = 3.0
 

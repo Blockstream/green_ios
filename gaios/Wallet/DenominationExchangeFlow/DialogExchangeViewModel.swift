@@ -2,6 +2,21 @@ import Foundation
 import gdk
 import core
 
+class CurrencyItem: Codable, Equatable {
+    var exchange: String
+    var currency: String
+
+    init(exchange: String, currency: String) {
+        self.currency = currency
+        self.exchange = exchange
+    }
+
+    public static func == (lhs: CurrencyItem, rhs: CurrencyItem) -> Bool {
+        return lhs.exchange == rhs.exchange &&
+            lhs.currency == rhs.currency
+    }
+}
+
 class DialogExchangeViewModel {
 
     var wm: WalletManager { WalletManager.current! }

@@ -52,37 +52,37 @@
                                     <constraint firstItem="bpx-la-3Wa" firstAttribute="centerX" secondItem="ohZ-tU-Wsx" secondAttribute="centerX" id="lYk-eN-XrH"/>
                                 </constraints>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SIt-BE-jiz">
+                                <rect key="frame" x="0.0" y="0.0" width="101.33333333333333" height="54"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <connections>
+                                    <action selector="btnTap:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="iS4-h7-Z34"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="SIt-BE-jiz" firstAttribute="top" secondItem="jb5-0p-iM8" secondAttribute="top" id="2gz-9x-zfg"/>
                             <constraint firstItem="N2z-MO-0Nx" firstAttribute="centerY" secondItem="jb5-0p-iM8" secondAttribute="centerY" id="5wo-XP-nUA"/>
+                            <constraint firstAttribute="bottom" secondItem="SIt-BE-jiz" secondAttribute="bottom" id="7KC-ar-MR8"/>
                             <constraint firstItem="ohZ-tU-Wsx" firstAttribute="leading" secondItem="N2z-MO-0Nx" secondAttribute="trailing" constant="10" id="Esa-ij-FZf"/>
                             <constraint firstItem="ohZ-tU-Wsx" firstAttribute="centerY" secondItem="jb5-0p-iM8" secondAttribute="centerY" id="Mxs-dY-goR"/>
+                            <constraint firstAttribute="trailing" secondItem="SIt-BE-jiz" secondAttribute="trailing" id="eOO-FF-ltn"/>
                             <constraint firstAttribute="trailing" secondItem="ohZ-tU-Wsx" secondAttribute="trailing" id="jLZ-eR-waO"/>
                             <constraint firstItem="N2z-MO-0Nx" firstAttribute="leading" secondItem="jb5-0p-iM8" secondAttribute="leading" id="l5m-fI-hp0"/>
+                            <constraint firstItem="SIt-BE-jiz" firstAttribute="leading" secondItem="jb5-0p-iM8" secondAttribute="leading" id="uB5-VM-5Cu"/>
                         </constraints>
                     </view>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SIt-BE-jiz">
-                        <rect key="frame" x="193.66666666666666" y="10" width="101.33333333333334" height="54"/>
-                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                        <connections>
-                            <action selector="btnTap:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="iS4-h7-Z34"/>
-                        </connections>
-                    </button>
                 </subviews>
                 <color key="backgroundColor" name="gBlackBg"/>
                 <constraints>
-                    <constraint firstItem="SIt-BE-jiz" firstAttribute="centerX" secondItem="jb5-0p-iM8" secondAttribute="centerX" id="9z4-Gk-aPN"/>
                     <constraint firstItem="66H-nD-N2B" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="15" id="Din-8o-06z"/>
                     <constraint firstItem="jb5-0p-iM8" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="FCk-td-1gW"/>
                     <constraint firstItem="jb5-0p-iM8" firstAttribute="leading" secondItem="66H-nD-N2B" secondAttribute="trailing" constant="20" id="Pam-S2-9KH"/>
                     <constraint firstAttribute="bottom" secondItem="jb5-0p-iM8" secondAttribute="bottom" constant="10" id="b90-0f-VRq"/>
-                    <constraint firstItem="SIt-BE-jiz" firstAttribute="centerY" secondItem="jb5-0p-iM8" secondAttribute="centerY" id="bf6-BL-GxM"/>
                     <constraint firstAttribute="trailing" secondItem="jb5-0p-iM8" secondAttribute="trailing" constant="25" id="e8a-B9-r3g"/>
                     <constraint firstItem="66H-nD-N2B" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="25" id="izf-a0-O97"/>
-                    <constraint firstItem="SIt-BE-jiz" firstAttribute="height" secondItem="jb5-0p-iM8" secondAttribute="height" id="jah-49-69A"/>
                     <constraint firstAttribute="bottom" secondItem="66H-nD-N2B" secondAttribute="bottom" constant="15" id="qaY-sJ-IS9"/>
-                    <constraint firstItem="SIt-BE-jiz" firstAttribute="width" secondItem="jb5-0p-iM8" secondAttribute="width" id="yf3-Yx-GDs"/>
                     <constraint firstItem="jb5-0p-iM8" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="zlJ-7p-17U"/>
                 </constraints>
             </tableViewCellContentView>

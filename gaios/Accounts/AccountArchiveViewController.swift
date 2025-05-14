@@ -4,14 +4,16 @@ import core
 enum AccountArchiveSection: Int, CaseIterable {
     case account = 0
 }
-
+protocol AccountArchiveViewControllerDelegate: AnyObject {
+    func archiveDidChange()
+}
 class AccountArchiveViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
 
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
-
+    weak var delegate: AccountArchiveViewControllerDelegate?
     var viewModel = AccountArchiveViewModel()
 
     override func viewDidLoad() {
@@ -19,16 +21,6 @@ class AccountArchiveViewController: UIViewController {
 
         let account = viewModel.wm.account
         navigationItem.title = account.name
-        navigationItem.setHidesBackButton(true, animated: false)
-
-        let ntwBtn = UIButton(type: .system)
-        ntwBtn.imageView?.contentMode = .scaleAspectFit
-        ntwBtn.addTarget(self, action: #selector(AccountArchiveViewController.back), for: .touchUpInside)
-        ntwBtn.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
-        navigationItem.leftBarButtonItems =
-            [UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(LoginViewController.back)),
-             UIBarButtonItem(customView: ntwBtn)
-            ]
 
         setContent()
 
@@ -151,7 +143,10 @@ extension AccountArchiveViewController: PopoverMenuUnarchiveDelegate {
             let subaccount = viewModel.subaccounts[index]
             Task {
                 try? await viewModel.unarchiveSubaccount(subaccount)
-                await MainActor.run { tableView.reloadData() }
+                await MainActor.run {
+                    tableView.reloadData()
+                    self.delegate?.archiveDidChange()
+                }
             }
         }
     }

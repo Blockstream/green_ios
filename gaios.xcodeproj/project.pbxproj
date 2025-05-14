@@ -13,7 +13,6 @@
 		092E1EB020CF993700362253 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092E1EAF20CF993700362253 /* UIColor.swift */; };
 		09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F19212F8D8700DE093B /* SearchTextField.swift */; };
 		09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */; };
-		093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093544D5212E844400134235 /* CurrencySelectorViewController.swift */; };
 		093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093544D7212E86DF00134235 /* CurrencyCell.swift */; };
 		09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */; };
 		09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B322165EB3A009BABFE /* SetGauthViewController.swift */; };
@@ -200,6 +199,8 @@
 		345402E82A1E43D5002CB598 /* DialogDenominationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345402E62A1E43D5002CB598 /* DialogDenominationCell.swift */; };
 		345402E92A1E43D5002CB598 /* DialogDenominationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 345402E72A1E43D5002CB598 /* DialogDenominationCell.xib */; };
 		345402F72A20A6A7002CB598 /* LTAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345402F62A20A6A7002CB598 /* LTAuthViewController.swift */; };
+		345607342DD336460070BCED /* TabSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345607332DD3363E0070BCED /* TabSettingsModel.swift */; };
+		345607362DD350DE0070BCED /* TabSettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345607352DD350D20070BCED /* TabSettingsCellModel.swift */; };
 		34560B7829B9C6E7007E916F /* JadeWaitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B7729B9C6E7007E916F /* JadeWaitViewController.swift */; };
 		34560B7A29B9D590007E916F /* JadeWaitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B7929B9D590007E916F /* JadeWaitViewModel.swift */; };
 		34560B8329BA257E007E916F /* SetupJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B8229BA257E007E916F /* SetupJadeViewController.swift */; };
@@ -240,6 +241,8 @@
 		345B28E92DD1E7600075860A /* Illustration Wallet.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28E82DD1E7600075860A /* Illustration Wallet.riv */; };
 		345B28EB2DD1E7BF0075860A /* jadeplus_1.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28EA2DD1E7BF0075860A /* jadeplus_1.riv */; };
 		345B28ED2DD1EB340075860A /* jadeplus_3.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28EC2DD1EB340075860A /* jadeplus_3.riv */; };
+		345B28F12DD32B180075860A /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345B28EF2DD32B180075860A /* SettingsCell.swift */; };
+		345B28F22DD32B180075860A /* SettingsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 345B28F02DD32B180075860A /* SettingsCell.xib */; };
 		345E1A82261EE6CD00A1D934 /* DrawerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */; };
 		345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */; };
 		345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */; };
@@ -264,9 +267,6 @@
 		346300E2274D4FBF00B28521 /* DialogShareTxOptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346300E1274D4FBF00B28521 /* DialogShareTxOptionViewController.swift */; };
 		346310EB2C3E69DE0037DA0F /* EnableTorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346310EA2C3E69DE0037DA0F /* EnableTorViewController.swift */; };
 		3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3463EBB926AEBAC900F3F2D9 /* UserSettings.storyboard */; };
-		3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBBE26AEBB1000F3F2D9 /* UserSettingsViewController.swift */; };
-		3463EBC426AEE64000F3F2D9 /* UserSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBC326AEE64000F3F2D9 /* UserSettingsCell.swift */; };
-		3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBC526AFF25F00F3F2D9 /* UserSettings.swift */; };
 		3465E2142A8F38FD0082D556 /* PinServerWarnViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465E2132A8F38FD0082D556 /* PinServerWarnViewController.swift */; };
 		346752EB291E316E00256132 /* ReceiveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752EA291E316E00256132 /* ReceiveViewModel.swift */; };
 		34675B0A29409D9900771D50 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34675B0929409D9900771D50 /* Common.swift */; };
@@ -693,8 +693,6 @@
 		81961B3D29E4F4A200E9B94D /* greenaddress.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 81961B2729E4F4A000E9B94D /* greenaddress.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		81961B4929E4F4F000E9B94D /* Wally.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF523E47E1E00569A5D /* Wally.swift */; };
 		819F1AEC2A0E6CAB00ECF999 /* PolicyCellType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819F1AEB2A0E6CAB00ECF999 /* PolicyCellType.swift */; };
-		81A4969629102FCB00CA218D /* UserSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A4969529102FCB00CA218D /* UserSettingsViewModel.swift */; };
-		81A49698291030AB00CA218D /* UserSettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A49697291030AB00CA218D /* UserSettingsCellModel.swift */; };
 		81A5919929155F6A001D1A65 /* MultisigSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A5919829155F6A001D1A65 /* MultisigSettingsViewController.swift */; };
 		81A5919B29156011001D1A65 /* MultisigSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A5919A29156011001D1A65 /* MultisigSettingsViewModel.swift */; };
 		81A5919D2915772E001D1A65 /* MultisigSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A5919C2915772E001D1A65 /* MultisigSettings.swift */; };
@@ -930,7 +928,6 @@
 		092E1EAF20CF993700362253 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		09309F19212F8D8700DE093B /* SearchTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
 		09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMnemonicsViewController.swift; sourceTree = "<group>"; };
-		093544D5212E844400134235 /* CurrencySelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencySelectorViewController.swift; sourceTree = "<group>"; };
 		093544D7212E86DF00134235 /* CurrencyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyCell.swift; sourceTree = "<group>"; };
 		09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorLimitViewController.swift; sourceTree = "<group>"; };
 		09546B322165EB3A009BABFE /* SetGauthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGauthViewController.swift; sourceTree = "<group>"; };
@@ -1122,6 +1119,8 @@
 		345402E62A1E43D5002CB598 /* DialogDenominationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogDenominationCell.swift; sourceTree = "<group>"; };
 		345402E72A1E43D5002CB598 /* DialogDenominationCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DialogDenominationCell.xib; sourceTree = "<group>"; };
 		345402F62A20A6A7002CB598 /* LTAuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTAuthViewController.swift; sourceTree = "<group>"; };
+		345607332DD3363E0070BCED /* TabSettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabSettingsModel.swift; sourceTree = "<group>"; };
+		345607352DD350D20070BCED /* TabSettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabSettingsCellModel.swift; sourceTree = "<group>"; };
 		34560B7729B9C6E7007E916F /* JadeWaitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeWaitViewController.swift; sourceTree = "<group>"; };
 		34560B7929B9D590007E916F /* JadeWaitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeWaitViewModel.swift; sourceTree = "<group>"; };
 		34560B8229BA257E007E916F /* SetupJadeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupJadeViewController.swift; sourceTree = "<group>"; };
@@ -1163,6 +1162,8 @@
 		345B28E82DD1E7600075860A /* Illustration Wallet.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Wallet.riv"; sourceTree = "<group>"; };
 		345B28EA2DD1E7BF0075860A /* jadeplus_1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_1.riv; sourceTree = "<group>"; };
 		345B28EC2DD1EB340075860A /* jadeplus_3.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = jadeplus_3.riv; sourceTree = "<group>"; };
+		345B28EF2DD32B180075860A /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
+		345B28F02DD32B180075860A /* SettingsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SettingsCell.xib; sourceTree = "<group>"; };
 		345C70852836233800EF3971 /* AnalyticsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
 		345C70872836254600EF3971 /* AssetsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetsManager.swift; sourceTree = "<group>"; };
 		345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerAnimator.swift; sourceTree = "<group>"; };
@@ -1183,9 +1184,6 @@
 		346300E1274D4FBF00B28521 /* DialogShareTxOptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogShareTxOptionViewController.swift; sourceTree = "<group>"; };
 		346310EA2C3E69DE0037DA0F /* EnableTorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTorViewController.swift; sourceTree = "<group>"; };
 		3463EBB926AEBAC900F3F2D9 /* UserSettings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = UserSettings.storyboard; sourceTree = "<group>"; };
-		3463EBBE26AEBB1000F3F2D9 /* UserSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsViewController.swift; sourceTree = "<group>"; };
-		3463EBC326AEE64000F3F2D9 /* UserSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsCell.swift; sourceTree = "<group>"; };
-		3463EBC526AFF25F00F3F2D9 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		3465E2132A8F38FD0082D556 /* PinServerWarnViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinServerWarnViewController.swift; sourceTree = "<group>"; };
 		346752EA291E316E00256132 /* ReceiveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveViewModel.swift; sourceTree = "<group>"; };
 		34675B0929409D9900771D50 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
@@ -1623,8 +1621,6 @@
 		81A062CF245322B0003464A0 /* HWResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWResolver.swift; sourceTree = "<group>"; };
 		81A062D124532454003464A0 /* HWProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWProtocol.swift; sourceTree = "<group>"; };
 		81A34FEE29C547B8004B27F4 /* NetworkSecurityCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSecurityCase.swift; sourceTree = "<group>"; };
-		81A4969529102FCB00CA218D /* UserSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsViewModel.swift; sourceTree = "<group>"; };
-		81A49697291030AB00CA218D /* UserSettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsCellModel.swift; sourceTree = "<group>"; };
 		81A5919829155F6A001D1A65 /* MultisigSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSettingsViewController.swift; sourceTree = "<group>"; };
 		81A5919A29156011001D1A65 /* MultisigSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSettingsViewModel.swift; sourceTree = "<group>"; };
 		81A5919C2915772E001D1A65 /* MultisigSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSettings.swift; sourceTree = "<group>"; };
@@ -2317,6 +2313,8 @@
 			isa = PBXGroup;
 			children = (
 				344D57D42D71B6F1009725A3 /* TabSettingsVC.swift */,
+				345607332DD3363E0070BCED /* TabSettingsModel.swift */,
+				345607352DD350D20070BCED /* TabSettingsCellModel.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -2328,6 +2326,7 @@
 				81928F8D2DC508010016108E /* TabHeaderCell */,
 				81928F8C2DC507F00016108E /* TransactActionsCell */,
 				81928F8B2DC507D10016108E /* PreferenceCell */,
+				345B28EE2DD32AB60075860A /* SettingsCell */,
 				81928F8A2DC507BF0016108E /* PriceChartCell */,
 				81928F892DC507AD0016108E /* WalletAssetCell */,
 				347B7C222C3280EA0016A5C0 /* PromoCell */,
@@ -2452,6 +2451,15 @@
 			path = HelpCenter;
 			sourceTree = "<group>";
 		};
+		345B28EE2DD32AB60075860A /* SettingsCell */ = {
+			isa = PBXGroup;
+			children = (
+				345B28EF2DD32B180075860A /* SettingsCell.swift */,
+				345B28F02DD32B180075860A /* SettingsCell.xib */,
+			);
+			path = SettingsCell;
+			sourceTree = "<group>";
+		};
 		345E1A80261EE6A500A1D934 /* DrawerNetworkSelection */ = {
 			isa = PBXGroup;
 			children = (
@@ -2541,12 +2549,10 @@
 		3463EBBD26AEBAEA00F3F2D9 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				3463EBBE26AEBB1000F3F2D9 /* UserSettingsViewController.swift */,
 				81A5919829155F6A001D1A65 /* MultisigSettingsViewController.swift */,
 				34A31EAE26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift */,
 				09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */,
 				09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */,
-				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
 				3416B67629D1A5EC00643C9C /* AccountArchivedViewController.swift */,
 				81837789224E6D4700DC0FB1 /* PgpViewController.swift */,
 				20E15EE12625AC6300DB8F43 /* MnemonicAuthViewController.swift */,
@@ -2561,8 +2567,6 @@
 			children = (
 				812DBDC1297261F1002992D6 /* WatchOnlySettingsCell.swift */,
 				812DBDBF29725F8A002992D6 /* WatchOnlySettingsCellModel.swift */,
-				3463EBC326AEE64000F3F2D9 /* UserSettingsCell.swift */,
-				81A49697291030AB00CA218D /* UserSettingsCellModel.swift */,
 				344F1C0B26B7CC4D009293E6 /* TwoFaMethodsCell.swift */,
 				34C9E10626B91F2500200D2F /* TwoFaCsvTimeCell.swift */,
 				093544D7212E86DF00134235 /* CurrencyCell.swift */,
@@ -3986,7 +3990,6 @@
 			children = (
 				812DBDC32977EE7F002992D6 /* TwoFactorSettingsViewModel.swift */,
 				81A5919A29156011001D1A65 /* MultisigSettingsViewModel.swift */,
-				81A4969529102FCB00CA218D /* UserSettingsViewModel.swift */,
 				812DBDBD2972509A002992D6 /* WatchOnlySettingsViewModel.swift */,
 				3470646A2A42C1710096313C /* RecoveryTransactionsViewModel.swift */,
 			);
@@ -3997,7 +4000,6 @@
 			isa = PBXGroup;
 			children = (
 				81A5919C2915772E001D1A65 /* MultisigSettings.swift */,
-				3463EBC526AFF25F00F3F2D9 /* UserSettings.swift */,
 				812DBDB929724E8C002992D6 /* WatchOnlySettings.swift */,
 			);
 			path = Models;
@@ -4550,6 +4552,7 @@
 				34F57FF72BA1EA0000DCB076 /* TxDetails.storyboard in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
+				345B28F22DD32B180075860A /* SettingsCell.xib in Resources */,
 				34DA78AD2D8098E40022FBB1 /* DialogAccountCell.xib in Resources */,
 				6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */,
 				34C8BD6A2BED132A00AE9CC4 /* ReEnable2fa.storyboard in Resources */,
@@ -4757,7 +4760,6 @@
 				34204722291C12DB00EDE945 /* AssetSelectViewModel.swift in Sources */,
 				34465B9B2D075785002E5033 /* GenuineCheckDialogViewController.swift in Sources */,
 				349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */,
-				3463EBC426AEE64000F3F2D9 /* UserSettingsCell.swift in Sources */,
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				34A883A82BA82C2D004A1826 /* TxDetailsActionCell.swift in Sources */,
 				818BA7182A30838F00DFB03A /* PairingSuccessViewController.swift in Sources */,
@@ -4766,6 +4768,7 @@
 				3497936F25F8B18C0029ECB1 /* StrokeAnimation.swift in Sources */,
 				81E56A672C2476950012A5A3 /* QRUnlockSelectAccountViewController.swift in Sources */,
 				34287B772A8385820065471F /* AlertViewModel.swift in Sources */,
+				345607362DD350DE0070BCED /* TabSettingsCellModel.swift in Sources */,
 				3499655529E542D70092B5BD /* DialogRenameViewController.swift in Sources */,
 				34C8E77629BF868500C84066 /* DeviceCell.swift in Sources */,
 				344915E52A0BA27100D35818 /* LTSuccessViewModel.swift in Sources */,
@@ -4777,6 +4780,7 @@
 				3484020E2DB8E7D500A91C65 /* BuyBTCViewModel.swift in Sources */,
 				3415CB092A67BF6100B66882 /* AddressAuthViewModel.swift in Sources */,
 				346EB2832BE8BB480043139F /* SendTxConfirmViewController.swift in Sources */,
+				345B28F12DD32B180075860A /* SettingsCell.swift in Sources */,
 				34204720291C12C000EDE945 /* AssetSelectViewController.swift in Sources */,
 				81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */,
 				817A0B412A41D48700E2F80D /* BleLedgerManager.swift in Sources */,
@@ -4867,7 +4871,6 @@
 				8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */,
 				81A773052A81029200C9FC5C /* LTRecoverFundsViewController.swift in Sources */,
 				34C8BD6D2BED13F200AE9CC4 /* ReEnable2faViewController.swift in Sources */,
-				3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */,
 				81E56A652C2476950012A5A3 /* QRUnlockJadePinInfoViewController.swift in Sources */,
 				81F5C9882ADD3F5F004B020A /* LTWithdrawNoteCell.swift in Sources */,
 				34A883C12BAB0329004A1826 /* TxDetailsMoreInfoCell.swift in Sources */,
@@ -4930,11 +4933,9 @@
 				81DFA9962CB3EEE500EE0277 /* String.swift in Sources */,
 				3420470C291A6FE100EDE945 /* MultiLabelViewModel.swift in Sources */,
 				3415CB102A67C92C00B66882 /* AddressAuthCellModel.swift in Sources */,
-				3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */,
 				3469A2462887D23700B2F640 /* StoreReviewManager.swift in Sources */,
 				812528D02B60FB7A004E9EB1 /* LTRecoveryFundsErrorCell.swift in Sources */,
 				34F0EC372D784B2B0017C276 /* PriceChartCellModel.swift in Sources */,
-				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
 				81A591A129157B1E001D1A65 /* MultisigSettingsCell.swift in Sources */,
 				34C9E10726B91F2500200D2F /* TwoFaCsvTimeCell.swift in Sources */,
 				816F0AF423E4713600569A5D /* UIViewController.swift in Sources */,
@@ -4959,12 +4960,10 @@
 				344D57E22D71E385009725A3 /* TransactActions.swift in Sources */,
 				FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */,
 				3488FC6B290AE28000122628 /* BalanceCell.swift in Sources */,
-				81A4969629102FCB00CA218D /* UserSettingsViewModel.swift in Sources */,
 				34B0D00C2CE2555300A90080 /* ActionsSheetCell.swift in Sources */,
 				34A883BC2BAB01EA004A1826 /* TxDetailsMoreInfoViewModel.swift in Sources */,
 				34A75B6D292BD704007995D7 /* NetworkPrefs.swift in Sources */,
 				8153AD292CECB7600030CE8F /* Meld.swift in Sources */,
-				81A49698291030AB00CA218D /* UserSettingsCellModel.swift in Sources */,
 				349F723E29C84DA4007B9154 /* UpdateFirmwareViewController.swift in Sources */,
 				34A2AF0027BBECD0006A01E9 /* WordCell.swift in Sources */,
 				3428750A2D551CC8003FB5AE /* LangSelectViewController.swift in Sources */,
@@ -5070,6 +5069,7 @@
 				3423C6DE27BFDC4B001D9E2C /* AccountCreateRecoveryKeyViewController.swift in Sources */,
 				3497936B25F8B18C0029ECB1 /* SetPinViewController.swift in Sources */,
 				344915E92A0CE24700D35818 /* ReceiveAssetCell.swift in Sources */,
+				345607342DD336460070BCED /* TabSettingsModel.swift in Sources */,
 				3483D09B29FBDB0B00C85106 /* LTInfoCellModel.swift in Sources */,
 				34610C592B86442E005157C8 /* MasterKeyViewController.swift in Sources */,
 				81E04A3B2AA63C6800867705 /* Country.swift in Sources */,

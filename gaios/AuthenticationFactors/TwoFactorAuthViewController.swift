@@ -137,6 +137,9 @@ class TwoFactorAuthViewController: KeyboardViewController {
             $0?.setStyle(.inline)
         }
         lblAttempts.setStyle(.txtCard)
+        lblsDigit.forEach {
+            $0.textColor = UIColor.gAccent()
+        }
     }
 
     func updateAttempts() {

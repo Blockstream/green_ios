@@ -50,7 +50,7 @@ extension UIViewController {
     }
 
     @MainActor
-    func presentContactUsViewController(request: ZendeskErrorRequest) {
+    func presentContactUsViewController(request: ZendeskErrorRequest, isPush: Bool = false) {
         if AppSettings.shared.gdkSettings?.tor ?? false {
             self.showOpenSupportUrl(request)
             return
@@ -58,8 +58,12 @@ extension UIViewController {
         if let vc = UIStoryboard(name: "HelpCenter", bundle: nil)
             .instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
             vc.request = request
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: true, completion: nil)
+            if isPush == false {
+                vc.modalPresentationStyle = .overFullScreen
+                self.present(vc, animated: true, completion: nil)
+            } else {
+                navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
 }

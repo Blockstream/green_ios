@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class UserSettingsCellModel {
+class TabSettingsCellModel {
 
     var title: String
     var subtitle: String
@@ -9,20 +9,20 @@ class UserSettingsCellModel {
     var disclosure: Bool = false
     var disclosureImage: UIImage?
     var switcher: Bool?
-    var type: USItem?
+    var type: SettingsItem?
 
-    init(_ item: UserSettingsItem) {
+    init(_ item: SettingsItemData) {
         title = item.title
         subtitle = item.subtitle
         attributed = item.attributed
         type = item.type
         switcher = item.switcher
         switch type {
-        case .Logout, .ArchievedAccounts, .ChangePin, .BackUpRecoveryPhrase, .TwoFactorAuthication, .WatchOnly, .PgpKey:
-            disclosure = true
-            disclosureImage = UIImage(named: "ic_settings_disclose")!
-        default:
+        case .version, .supportID:
             disclosure = false
+        default:
+            disclosureImage = UIImage(named: "rightArrow")!
+            disclosure = true
         }
     }
 }

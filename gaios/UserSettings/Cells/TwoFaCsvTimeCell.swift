@@ -27,9 +27,9 @@ class TwoFaCsvTimeCell: UITableViewCell {
         self.lblTitle.text = item.label()
         self.lblHint.text = item.description()
         if current == item.value(for: gdkNetwork) {
-            self.imgRadio?.image = UIImage(named: "selected_circle")!
+            self.imgRadio?.image = UIImage(named: "selected_circle")!.maskWithColor(color: UIColor.gAccent())
         } else {
-            self.imgRadio?.image = UIImage(named: "unselected_circle")!
+            self.imgRadio?.image = UIImage(named: "unselected_circle")!.maskWithColor(color: UIColor.gAccent())
         }
     }
 }

@@ -10,8 +10,14 @@ class WatchOnlySettingsViewModel {
     var wm: WalletManager { WalletManager.current! }
 
     // settings cell models
-    var sections = WOSection.allCases
-    var items = [WOSection: [UserSettingsItem]]()
+    var sections: [WOSection] {
+        if wm.hasMultisig {
+            WOSection.allCases
+        } else {
+            [WOSection.Singlesig]
+        }
+    }
+    var items = [WOSection: [SettingsItemData]]()
     var multisigCellModels = [WatchOnlySettingsCellModel]()
     var singlesigCellModels = [WatchOnlySettingsCellModel]()
 

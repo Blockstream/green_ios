@@ -27,6 +27,10 @@ enum TabSecuritySection: Int, CaseIterable {
 }
 enum TabSettingsSection: Int, CaseIterable {
     case header
+    case general
+    case wallet
+    case twoFactor
+    case about
 }
 
 class TabViewController: UIViewController {

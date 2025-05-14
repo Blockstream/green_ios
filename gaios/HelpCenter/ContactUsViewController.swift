@@ -138,21 +138,25 @@ class ContactUsViewController: KeyboardViewController {
     }
 
     @IBAction func btnCopy(_ sender: Any) {
-        startAnimating()
-        UIPasteboard.general.string = self.request.logs
-        stopAnimating()
-        DropAlert().warning(message: "id_copied_to_clipboard".localized, delay: 2.0)
+        startLoader(message: "Copying...")
+        DispatchQueue.global(qos: .background).async {
+            UIPasteboard.general.string = self.request.logs
+            DispatchQueue.main.async {
+                self.stopLoader()
+                DropAlert().warning(message: "id_copied_to_clipboard".localized, delay: 2.0)
+            }
+        }
     }
 
     @IBAction func btnSubmit(_ sender: Any) {
         request.email = emailField.text
         request.message = messageTextView.text
         Task {
-            startAnimating()
+            startLoader(message: "Submitting support request...")
             let res = await Task.detached(priority: .background) {
                 try await ZendeskSdk.shared.submitNewTicket(req: self.request)
             }.result
-            stopAnimating()
+            stopLoader()
             switch res {
             case .success:
                 let viewModel = AlertViewModel(title: "Support Request Created".localized,

@@ -11,6 +11,7 @@ class DialogDenominationCell: UITableViewCell {
         super.awakeFromNib()
         lblTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
         lblTitle.textColor = .white
+        icon.image = UIImage(named: "ic_check_circle")?.maskWithColor(color: UIColor.gAccent())
     }
 
     override func prepareForReuse() {

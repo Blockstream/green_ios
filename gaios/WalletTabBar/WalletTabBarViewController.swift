@@ -96,14 +96,6 @@ class WalletTabBarViewController: UITabBarController {
         DispatchQueue.main.async {
             UIApplication.shared.delegate?.window??.rootViewController?.present(alert, animated: true, completion: nil)
         }
-
-//        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-//        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogGroupListViewController") as? DialogGroupListViewController {
-//            vc.delegate = self
-//            vc.viewModel = DialogGroupListViewModel(title: "Wallet Preferences".localized, type: .walletPrefs, dataSource: WalletPrefs.getGroupItems())
-//            vc.modalPresentationStyle = .overFullScreen
-//            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
-//        }
     }
 
     func setTabBar() {
@@ -249,22 +241,17 @@ class WalletTabBarViewController: UITabBarController {
     }
 
     func userLogout() {
-        // userWillLogout = true
-//        self.presentedViewController?.dismiss(animated: true, completion: {
-            if AppSettings.shared.gdkSettings?.tor ?? false {
-                self.startLoader(message: "id_logout".localized)
+        self.startLoader(message: "id_logout".localized)
+        Task {
+            let account = self.walletModel.wm?.account
+            if account?.isHW ?? false {
+                try? await BleHwManager.shared.disconnect()
             }
-            Task {
-                let account = self.walletModel.wm?.account
-                if account?.isHW ?? false {
-                    try? await BleHwManager.shared.disconnect()
-                }
-                await WalletManager.current?.disconnect()
-                WalletsRepository.shared.delete(for: account?.id ?? "")
-                AccountNavigator.goLogout(accountId: nil)
-                self.stopLoader()
-            }
-//        })
+            await WalletManager.current?.disconnect()
+            WalletsRepository.shared.delete(for: account?.id ?? "")
+            AccountNavigator.goLogout(accountId: nil)
+            self.stopLoader()
+        }
     }
 
     func showDenominationExchange() {
@@ -304,8 +291,8 @@ extension WalletTabBarViewController: UITabBarControllerDelegate {
 //             if let nv = parent as? UINavigationController {
 //                 nv.navigationBar.topItem?.title = "Transact"
 //             }
-             settingsBtnTapped(self)
-             return false
+//             settingsBtnTapped(self)
+//             return false
          }
 
         guard let fromView = selectedViewController?.view, let toView = viewController.view else {
@@ -386,35 +373,6 @@ extension WalletTabBarViewController: DrawerNetworkSelectionDelegate {
 extension WalletTabBarViewController: DialogAboutViewControllerDelegate {
     func openContactUs() {
         presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
-    }
-}
-extension WalletTabBarViewController: DialogGroupListViewControllerDelegate {
-    func didSelectIndexPath(_ indexPath: IndexPath, with type: DialogGroupType) {
-        switch type {
-        case .walletPrefs:
-            if let item = WalletPrefs.getSelected(indexPath) {
-                switch item {
-                case .createAccount:
-                    AnalyticsManager.shared.newAccount(account: AccountsRepository.shared.current)
-//                    createAccount()
-                case .logout:
-                    userLogout()
-                case .denominations:
-                    showDenominationExchange()
-                case .rename:
-                    rename()
-                case .refresh:
-//                    tableView.beginRefreshing()
-//                    reload(discovery: true)
-                    break
-                case .archive:
-//                    showArchived()
-                    break
-                case .contact:
-                    presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
-                }
-            }
-        }
     }
 }
 extension WalletTabBarViewController: DenominationExchangeViewControllerDelegate {

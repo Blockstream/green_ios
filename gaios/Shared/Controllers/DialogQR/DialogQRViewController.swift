@@ -79,11 +79,8 @@ class DialogQRViewController: UIViewController {
     func setStyle() {
         cardView.setStyle(.bottomsheet)
         handle.cornerRadius = 1.5
-
-        lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
-        [lblHint].forEach {
-            $0.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
-        }
+        lblTitle.setStyle(.titleDialog)
+        lblHint.setStyle(.txtCard)
     }
 
     func dismiss() {

@@ -69,7 +69,7 @@ class DenominationExchangeViewController: UIViewController {
         }
         [denBg, exBg].forEach {
             $0?.cornerRadius = 5.0
-            $0?.backgroundColor = UIColor.gGrayElement()
+            $0?.backgroundColor = UIColor.gBlackBg()
         }
     }
 

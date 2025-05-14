@@ -262,7 +262,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
 
         case .header:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
-                cell.configure(title: "Security".localized, icon: walletModel.headerIcon, onTap: {[weak self] in
+                cell.configure(title: "Security".localized, icon: walletModel.headerIcon, tab: .security, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
                 })
                 cell.selectionStyle = .none

@@ -22,12 +22,18 @@ class TabHeaderCell: UITableViewCell {
         iconBox.backgroundColor = UIColor.gAccent()
     }
 
-    func configure(title: String, icon: UIImage, onTap: (() -> Void)?) {
+    func configure(title: String, icon: UIImage, tab: WalletTab, onTap: (() -> Void)?) {
         let attrText = NSAttributedString(string: AccountsRepository.shared.current?.name ?? "", attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
         lblTitle.text = title
         lblWallet.attributedText = attrText
         self.onTap = onTap
         self.icon.image = icon.maskWithColor(color: UIColor.gBlackBg())
+        switch tab {
+        case .settings:
+            walletsView.isHidden = true
+        default:
+            walletsView.isHidden = false
+        }
     }
     @IBAction func btnTap(_ sender: Any) {
         walletsView.pressAnimate {
