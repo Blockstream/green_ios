@@ -55,6 +55,8 @@ extension BreezSDK.SendPaymentError {
             return message.errorMessage ?? message
         case .ServiceConnectivity(let message):
             return message.errorMessage ?? message
+        case .InsufficientBalance(message: let message):
+            return message.errorMessage ?? message
         }
     }
 }
@@ -146,6 +148,8 @@ extension BreezSDK.LnUrlPayError {
         case .RouteTooExpensive(message: let message):
             return message.errorMessage ?? message
         case .ServiceConnectivity(message: let message):
+            return message.errorMessage ?? message
+        case .InsufficientBalance(message: let message):
             return message.errorMessage ?? message
         }
     }
