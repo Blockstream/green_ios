@@ -126,7 +126,7 @@ class HomeViewController: UIViewController {
         if let wm = WalletsRepository.shared.get(for: accountId), wm.logged {
             AccountNavigator.navLogged(accountId: accountId)
         } else {
-            if let vc = AccountNavigator.login(accountId: accountId) {
+            if let vc = AccountNavigator.login(accountId: accountId, autologin: true) {
                 navigationController?.pushViewController(vc, animated: true)
             }
         }

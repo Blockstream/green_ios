@@ -124,12 +124,16 @@ class ConnectViewController: HWFlowBaseViewController {
         setStyle()
         viewModel.updateState = { self.state = $0 }
         viewModel.delegate = self
-        Task { [weak self] in
-            if self?.hasCredentials ?? false {
-                await self?.loginBiometric()
-            } else {
-                await self?.startScan()
+        if viewModel.autologin {
+            Task { [weak self] in
+                if self?.hasCredentials ?? false {
+                    await self?.loginBiometric()
+                } else {
+                    await self?.startScan()
+                }
             }
+        } else {
+            state = .wait
         }
     }
 

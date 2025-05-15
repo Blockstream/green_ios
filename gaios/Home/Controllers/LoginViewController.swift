@@ -174,30 +174,32 @@ class LoginViewController: UIViewController {
         emergencyButton.setImage(UIImage(named: "ic_x_circle")!.maskWithColor(color: .white), for: .normal)
         emergencyButton.cornerRadius = 5.0
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(progressTor), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
         updateAttemptsLabel()
         reloadPin()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         reload()
-        autologin(passphrase: nil)
+        if viewModel.autologin {
+            autologin(passphrase: nil)
+        }
     }
-    
+
     func autologin(passphrase: String?) {
         if account.askEphemeral ?? false {
             Task { [weak self] in
                 self?.loginWithPassphrase(isAlwaysAsk: self?.account.askEphemeral ?? false)
             }
-        } else if !viewModel.disableBiometricLogin && account.hasBioPin {
+        } else if account.hasBioPin {
             Task { [weak self] in
                 await self?.login(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: passphrase)
             }
-        } else if !viewModel.disableBiometricLogin && account.hasWoBioCredentials {
+        } else if account.hasWoBioCredentials {
             Task { [weak self] in
                 await self?.login(usingAuth: .AuthKeyWoBioCredentials, withPIN: nil, bip39passphrase: passphrase)
             }

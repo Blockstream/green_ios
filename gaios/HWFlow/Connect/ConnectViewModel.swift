@@ -16,7 +16,7 @@ class ConnectViewModel: NSObject {
     var account: Account
     var firstConnection: Bool = false
     var storeConnection: Bool = true
-
+    var autologin: Bool = true
     var isScanning: Bool = false
     var state: ConnectionState = .none
     var isJade: Bool { account.isJade }
@@ -45,19 +45,21 @@ class ConnectViewModel: NSObject {
         peripherals: [ScanListItem] = [],
         delegate: (any ConnectViewModelDelegate)? = nil,
         peripheralID: UUID? = nil,
-        type: DeviceType = .Jade) {
-        self.account = account
-        self.state = state
-        self.firstConnection = firstConnection
-        self.storeConnection = storeConnection
-        self.updateState = updateState
-        self.peripherals = peripherals
-        self.delegate = delegate
-        self.peripheralID = peripheralID
-        self.type = type
-        super.init()
-        self.centralManager = CBCentralManager(delegate: self, queue: nil)
-    }
+        type: DeviceType = .Jade,
+        autologin: Bool = true) {
+            self.account = account
+            self.state = state
+            self.firstConnection = firstConnection
+            self.storeConnection = storeConnection
+            self.updateState = updateState
+            self.peripherals = peripherals
+            self.delegate = delegate
+            self.peripheralID = peripheralID
+            self.type = type
+            self.autologin = autologin
+            super.init()
+            self.centralManager = CBCentralManager(delegate: self, queue: nil)
+        }
 
     func startScan(deviceType: DeviceType) async throws {
         if isScanning {

@@ -19,7 +19,7 @@ class AccountNavigator {
     }
 
     @MainActor
-    static func login(accountId: String) -> UIViewController? {
+    static func login(accountId: String, autologin: Bool) -> UIViewController? {
         let account = AccountsRepository.shared.get(for: accountId)!
         let vcLogin: LoginViewController? = instantiateViewController(storyboard: "Home", identifier: "LoginViewController")
         let vcBiometricLogin: BiometricLoginViewController? = instantiateViewController(storyboard: "Home", identifier: "BiometricLoginViewController")
@@ -32,13 +32,14 @@ class AccountNavigator {
             vcConnect?.viewModel = ConnectViewModel(
                 account: account,
                 firstConnection: false,
-                storeConnection: true)
+                storeConnection: true,
+                autologin: autologin)
             return vcConnect
         } else if account.hasBioPin || account.hasWoBioCredentials || account.hasWoCredentials {
-            vcBiometricLogin?.viewModel = LoginViewModel(account: account)
+            vcBiometricLogin?.viewModel = LoginViewModel(account: account, autologin: autologin)
             return vcBiometricLogin
         } else {
-            vcLogin?.viewModel = LoginViewModel(account: account)
+            vcLogin?.viewModel = LoginViewModel(account: account, autologin: autologin)
             return vcLogin
         }
     }
@@ -91,9 +92,9 @@ class AccountNavigator {
     }
 
     @MainActor
-    static func navLogin(accountId: String) {
+    static func navLogin(accountId: String, autologin: Bool = true) {
         if let vcHome = home(),
-        let vcLogin = login(accountId: accountId) {
+        let vcLogin = login(accountId: accountId, autologin: autologin) {
             let nv = UINavigationController()
             nv.setViewControllers([vcHome, vcLogin], animated: true)
             changeRoot(root: nv)
@@ -107,7 +108,7 @@ class AccountNavigator {
             appDelegate.window?.endEditing(true)
         }
         if let accountId = accountId {
-            navLogin(accountId: accountId)
+            navLogin(accountId: accountId, autologin: false)
         } else {
             navHome()
         }

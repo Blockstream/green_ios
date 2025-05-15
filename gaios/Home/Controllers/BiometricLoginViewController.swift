@@ -61,14 +61,16 @@ class BiometricLoginViewController: UIViewController {
         let vcLogin = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController
         if let vcLogin = vcLogin {
             vcLogin.viewModel = viewModel
-            vcLogin.viewModel.disableBiometricLogin = true
+            vcLogin.viewModel.autologin = false
             navigationController?.pushViewController(vcLogin, animated: true)
         }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        autologin()
+        if viewModel.autologin {
+            autologin()
+        }
     }
 
     func autologin() {
