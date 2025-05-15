@@ -196,7 +196,7 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
         switch TabTransactSection(rawValue: section) {
         case .transactions:
             if walletModel.txCellModels.count == 0 && !walletTab.isReloading {
-                return sectionFooter("no transactions".localized)
+                return sectionFooter("You don't have any transactions yet.".localized)
             }
             return nil
         default:
