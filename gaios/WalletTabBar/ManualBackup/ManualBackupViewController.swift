@@ -1,6 +1,8 @@
 import Foundation
 import UIKit
 import LocalAuthentication
+import core
+
 class ManualBackupViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -48,9 +50,9 @@ class ManualBackupViewController: UIViewController {
     @IBAction func btnNext(_ sender: Any) {
         self.authenticated {
             DispatchQueue.main.async { [weak self] in
-                let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "ShowMnemonicsViewController") as? ShowMnemonicsViewController {
-                    vc.showBip85 = self?.showBip85 ?? false
+                if let accountId = WalletManager.current?.account.id,
+                    let vc = AccountNavigator.mnemonicOrRecover(accountId: accountId) {
+                    //vc.showBip85 = self?.showBip85 ?? false
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             }

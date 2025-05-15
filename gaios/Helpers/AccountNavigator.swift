@@ -58,10 +58,26 @@ class AccountNavigator {
     static func started() -> GetStartedOnBoardViewController? {
         instantiateViewController(storyboard: "OnBoard", identifier: "GetStartedOnBoardViewController")
     }
-    
+
     @MainActor
     static func setup() -> SetupNewViewController? {
         instantiateViewController(storyboard: "OnBoard", identifier: "SetupNewViewController")
+    }
+    @MainActor
+    static func recover() -> RecoveryCreateViewController? {
+        instantiateViewController(storyboard: "Recovery", identifier: "RecoveryCreateViewController")
+    }
+    @MainActor
+    static func mnemonic() -> ShowMnemonicsViewController? {
+        instantiateViewController(storyboard: "UserSettings", identifier: "ShowMnemonicsViewController")
+    }
+    @MainActor
+    static func mnemonicOrRecover(accountId: String) -> UIViewController? {
+        if BackupHelper.shared.needsBackup(walletId: accountId) {
+            return recover()
+        } else {
+            return mnemonic()
+        }
     }
 
     @MainActor

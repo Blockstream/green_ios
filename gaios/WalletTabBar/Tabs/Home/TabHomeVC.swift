@@ -152,8 +152,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                 case .backup:
                     cell.configure(alertCard,
                                    onLeft: {[weak self] in
-                        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
-                        if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController") as? RecoveryCreateViewController {
+                        if let vc = AccountNavigator.recover() {
                             self?.navigationController?.pushViewController(vc, animated: true)
                         }
                     },

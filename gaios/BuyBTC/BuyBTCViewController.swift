@@ -421,8 +421,7 @@ class BuyBTCViewController: KeyboardViewController {
     }
 
     @IBAction func btnBackup(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController") as? RecoveryCreateViewController {
+        if let vc = AccountNavigator.recover() {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
