@@ -51,8 +51,8 @@ class ManualBackupViewController: UIViewController {
         self.authenticated {
             DispatchQueue.main.async { [weak self] in
                 if let accountId = WalletManager.current?.account.id,
-                    let vc = AccountNavigator.mnemonicOrRecover(accountId: accountId) {
-                    //vc.showBip85 = self?.showBip85 ?? false
+                    let vc = AccountNavigator.mnemonic() {
+                    vc.showBip85 = self?.showBip85 ?? false
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             }

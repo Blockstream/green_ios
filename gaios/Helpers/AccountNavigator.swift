@@ -71,14 +71,6 @@ class AccountNavigator {
     static func mnemonic() -> ShowMnemonicsViewController? {
         instantiateViewController(storyboard: "UserSettings", identifier: "ShowMnemonicsViewController")
     }
-    @MainActor
-    static func mnemonicOrRecover(accountId: String) -> UIViewController? {
-        if BackupHelper.shared.needsBackup(walletId: accountId) {
-            return recover()
-        } else {
-            return mnemonic()
-        }
-    }
 
     @MainActor
     static func navLogged(accountId: String, isFirstLoad: Bool = false) {
