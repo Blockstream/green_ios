@@ -128,6 +128,8 @@ class ReceiveViewController: KeyboardViewController {
         btnOnChain.semanticContentAttribute = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
         btnVerify.setStyle(.primary)
         stateDidChange(.disabled)
+        lblAccount.setStyle(.sectionTitle)
+        btnAccount.setStyle(.sectionTitle)
     }
 
     var sections: [ReceiveSection] {

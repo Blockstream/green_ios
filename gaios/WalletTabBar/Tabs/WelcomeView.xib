@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -55,7 +55,7 @@
                                     </subviews>
                                 </stackView>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MpS-Zf-LHm" userLabel="Next">
-                                    <rect key="frame" x="103" y="274.66666666666663" width="115" height="50"/>
+                                    <rect key="frame" x="0.0" y="274.66666666666663" width="321" height="50"/>
                                     <color key="backgroundColor" name="gGreenMatrix"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="50" id="BtH-Zq-zQS"/>
@@ -72,12 +72,14 @@
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
+                                <constraint firstAttribute="trailing" secondItem="MpS-Zf-LHm" secondAttribute="trailing" id="4vp-0R-6Hm"/>
                                 <constraint firstItem="MpS-Zf-LHm" firstAttribute="centerX" secondItem="BIH-8A-dvl" secondAttribute="centerX" id="Ett-vs-442"/>
                                 <constraint firstItem="lbJ-P0-bre" firstAttribute="top" secondItem="hDb-vK-T8e" secondAttribute="bottom" constant="20" id="JJL-mc-mAB"/>
                                 <constraint firstItem="hDb-vK-T8e" firstAttribute="top" secondItem="BIH-8A-dvl" secondAttribute="top" id="Le7-6q-GdK"/>
                                 <constraint firstAttribute="bottom" secondItem="MpS-Zf-LHm" secondAttribute="bottom" id="Sfq-8y-2bp"/>
                                 <constraint firstAttribute="trailing" secondItem="lbJ-P0-bre" secondAttribute="trailing" id="UKt-bn-jQn"/>
                                 <constraint firstItem="hDb-vK-T8e" firstAttribute="centerX" secondItem="BIH-8A-dvl" secondAttribute="centerX" id="Ukk-xj-xPa"/>
+                                <constraint firstItem="MpS-Zf-LHm" firstAttribute="leading" secondItem="BIH-8A-dvl" secondAttribute="leading" id="UzU-m4-JdW"/>
                                 <constraint firstItem="lbJ-P0-bre" firstAttribute="leading" secondItem="BIH-8A-dvl" secondAttribute="leading" id="dnz-sZ-ZkU"/>
                                 <constraint firstItem="MpS-Zf-LHm" firstAttribute="top" secondItem="lbJ-P0-bre" secondAttribute="bottom" constant="20" id="nAg-Sc-Qg5"/>
                             </constraints>
@@ -99,7 +101,7 @@
                 <constraint firstAttribute="top" secondItem="esC-Pf-leR" secondAttribute="top" id="Fa9-3x-xof"/>
                 <constraint firstItem="esC-Pf-leR" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="Hsk-lb-kgn"/>
             </constraints>
-            <point key="canvasLocation" x="-2" y="-12"/>
+            <point key="canvasLocation" x="-2.2900763358778624" y="-12.67605633802817"/>
         </view>
     </objects>
     <resources>

@@ -245,12 +245,14 @@ class WalletTabBarViewController: UITabBarController {
         self.startLoader(message: "id_logout".localized)
         Task {
             let account = self.walletModel.wm?.account
-            if account?.isHW ?? false {
+            if let account = account, account.isHW && !account.isWatchonly {
                 try? await BleHwManager.shared.disconnect()
             }
             await WalletManager.current?.disconnect()
-            WalletsRepository.shared.delete(for: account?.id ?? "")
-            AccountNavigator.goLogout(accountId: nil)
+            if let account = account {
+                WalletsRepository.shared.delete(for: account.id)
+            }
+            AccountNavigator.navLogout(accountId: account?.id)
             self.stopLoader()
         }
     }
@@ -406,15 +408,5 @@ extension WalletTabBarViewController: DialogRenameViewControllerDelegate {
         }
     }
     func didCancel() {
-    }
-}
-
-extension WalletTabBarViewController: DenominationExchangeViewControllerDelegate {
-    func onDenominationExchangeSave() {
-        Task.detached { [weak self] in
-            // try? await self?.walletModel.loadBalances()
-            // try? await self?.walletModel.loadTransactions()
-            await self?.updateTabs([.home, .transact])
-        }
     }
 }

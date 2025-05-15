@@ -54,8 +54,7 @@ class SendFailViewController: UIViewController {
         bgTextView.cornerRadius = 4.0
         lblTitle.setStyle(.subTitle)
         btnAgain.setStyle(.primary)
-        btnSupport.setStyle(.outlinedWhite)
-        btnSupport.setTitleColor(UIColor.white, for: .normal)
+        btnSupport.setStyle(.outlined)
     }
 
     override func viewWillAppear(_ animated: Bool) {

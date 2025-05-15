@@ -12,6 +12,7 @@ enum JadeImage: String {
     case secure = "il_jade_secure"
     case logo   = "il_jade_logo"
     case load   = "il_jade_load"
+    case horizontal   = "il_jade_horizontal"
 }
 
 class JadeAsset {

@@ -67,7 +67,6 @@ class SendSuccessViewController: UIViewController {
         lblAddress.setStyle(.txtBigger)
         btnDone.setStyle(.primary)
         btnShare.setStyle(.outlined)
-        btnShare.setTitleColor(.white, for: .normal)
         lblHint.setStyle(.txt)
         let hint = NSMutableAttributedString(string: "You have just transferred \(amount ?? "")")
         hint.setColor(color: UIColor.gGrayTxt(), forText: "You have just transferred")

@@ -74,6 +74,8 @@ class OnboardViewModel {
         try await self.validateMnemonic(credentials.mnemonic ?? "")
         let account = try await createAccount()
         let wallet = WalletsRepository.shared.getOrAdd(for: account)
+        wallet.popupResolver = await PopupResolver()
+        wallet.hwInterfaceResolver = HwPopupResolver()
         if let pin = pin {
             credentials = try await addPinData(wallet: wallet, credentials: credentials, pin: pin)
         } else {

@@ -46,9 +46,6 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
     private var textContinuation: CheckedContinuation<String, Error>?
 
     public func code(_ method: String, attemptsRemaining: Int?, enable2faCallMethod: Bool, network: NetworkSecurityCase, failure: Bool) async throws -> String {
-        DispatchQueue.main.async {
-            UIApplication.topViewController()?.stopAnimating()
-        }
         return try await withCheckedThrowingContinuation { continuation in
             textContinuation = continuation
             codeCustomDialog(method, attemptsRemaining: attemptsRemaining, enable2faCallMethod: enable2faCallMethod, network: network, failure: failure)
@@ -120,9 +117,6 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
     }
 
     public func method(_ methods: [String]) async throws -> String {
-        DispatchQueue.main.async {
-            UIApplication.topViewController()?.stopAnimating()
-        }
         return try await withCheckedThrowingContinuation { continuation in
             textContinuation = continuation
             methodCustomDialog(methods)

@@ -5077,7 +5077,6 @@
 				34B0D0052CE2553100A90080 /* ActionsSheetViewModel.swift in Sources */,
 				3423C6DE27BFDC4B001D9E2C /* AccountCreateRecoveryKeyViewController.swift in Sources */,
 				3497936B25F8B18C0029ECB1 /* SetPinViewController.swift in Sources */,
-				344915E92A0CE24700D35818 /* ReceiveAssetCell.swift in Sources */,
 				345607342DD336460070BCED /* TabSettingsModel.swift in Sources */,
 				3483D09B29FBDB0B00C85106 /* LTInfoCellModel.swift in Sources */,
 				34610C592B86442E005157C8 /* MasterKeyViewController.swift in Sources */,

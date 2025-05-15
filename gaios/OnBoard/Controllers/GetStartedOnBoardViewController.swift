@@ -40,7 +40,6 @@ class GetStartedOnBoardViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "id_simple__secure_selfcustody".localized
         lblHint.text = "id_everything_you_need_to_take".localized
         btnGetStarted.setTitle("id_get_started".localized, for: .normal)
         btnConnectJade.setTitle("Connect Jade".localized, for: .normal)
@@ -50,6 +49,7 @@ class GetStartedOnBoardViewController: UIViewController {
     func textWithLineSpacing(text: String, spacing: CGFloat) -> NSAttributedString {
         let attributedString = NSMutableAttributedString(string: text)
         let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 0.85
         paragraphStyle.lineBreakMode = .byWordWrapping
         paragraphStyle.lineSpacing = spacing
         attributedString.addAttribute(

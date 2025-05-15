@@ -14,7 +14,6 @@ protocol HWDialogConnectViewControllerDelegate: AnyObject {
 
 class HWDialogConnectViewController: UIViewController {
 
-    @IBOutlet weak var icArrow: UIImageView!
     @IBOutlet weak var icWallet: UIImageView!
     @IBOutlet weak var btnDismiss: UIButton!
     @IBOutlet weak var bgLayer: UIView!
@@ -79,10 +78,9 @@ class HWDialogConnectViewController: UIViewController {
     func setContent() {
         lblTitle.text = AccountsRepository.shared.current?.name
         lblSubtitle.text = ""
-        icArrow.image = UIImage(named: "ic_hww_arrow")!.maskWithColor(color: UIColor.gAccent())
         if viewModel?.isJade ?? true {
             let isV2 = BleHwManager.shared.jade?.version?.boardType == .v2
-            icWallet.image = JadeAsset.img(.load, isV2 ? .v2 : .v1)
+            icWallet.image = JadeAsset.img(.horizontal, isV2 ? .v2 : .v1)
         } else {
             icWallet.image = UIImage(named: "ic_hww_ledger")
         }
@@ -183,7 +181,6 @@ class HWDialogConnectViewController: UIViewController {
     func progress(_ txt: String?) {
         DispatchQueue.main.async { [weak self] in
             self?.lblSubtitle.text = txt
-            //self?.progressView.isHidden = txt == nil
             self?.progressView.isAnimating = !(self?.progressView.isHidden ?? false)
         }
     }
