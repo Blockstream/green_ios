@@ -107,8 +107,12 @@ class AccountNavigator {
             appDelegate.resolve2faOff()
             appDelegate.window?.endEditing(true)
         }
-        if let accountId = accountId {
-            navLogin(accountId: accountId, autologin: false)
+        let wallets = AccountsRepository.shared.accounts.filter { $0.hidden == false}
+        if wallets.isEmpty {
+            // if there are no wallets
+            navStarted()
+        } else if wallets.count == 1, let accountId = accountId {
+            navLogin(accountId: accountId)
         } else {
             navHome()
         }

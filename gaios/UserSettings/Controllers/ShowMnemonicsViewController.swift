@@ -28,38 +28,42 @@ class ShowMnemonicsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setContent()
         setStyle()
-        let isHW = AccountsRepository.shared.current?.isHW ?? false
-        let derivedAccount = AccountsRepository.shared.current?.getDerivedLightningAccount()
         btnShowQR.setStyle(.primary)
         btnShowQR.setTitle("id_show_qr_code".localized, for: .normal)
-        Task {
-            do {
-                if credentials != nil {
-                    self.collectionView.reloadData()
-                    return
-                }
-                if isHW {
-                    if !showBip85 {
-                        throw GaError.GenericError("No export mnemonic from HW")
-                    } else if let derivedAccount = derivedAccount {
-                        self.lightningMnemonic = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: derivedAccount.keychain).mnemonic
-                    }
-                } else {
-                    self.credentials = try await WalletManager.current?.prominentSession?.getCredentials(password: "")
-                    self.bip39Passphrase = credentials?.bip39Passphrase
-                    if showBip85, let credentials = credentials {
-                        self.lightningMnemonic = try WalletManager.current?.getLightningMnemonic(credentials: credentials)
-                    }
-                }
-                await MainActor.run {
-                    self.collectionView.reloadData()
-                }
-            } catch {
-                showError(error)
+        Task { [weak self] in
+            await self?.reload()
+        }
+    }
+
+    func reload() async {
+        let isHW = AccountsRepository.shared.current?.isHW ?? false
+        let derivedAccount = AccountsRepository.shared.current?.getDerivedLightningAccount()
+        do {
+            if credentials != nil {
+                self.collectionView.reloadData()
+                return
             }
+            if isHW {
+                if !showBip85 {
+                    throw GaError.GenericError("No export mnemonic from HW")
+                } else if let derivedAccount = derivedAccount {
+                    self.lightningMnemonic = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: derivedAccount.keychain).mnemonic
+                }
+            } else {
+                self.credentials = try await WalletManager.current?.prominentSession?.getCredentials(password: "")
+                self.bip39Passphrase = credentials?.bip39Passphrase
+                if showBip85, let credentials = credentials {
+                    self.lightningMnemonic = try WalletManager.current?.getLightningMnemonic(credentials: credentials)
+                }
+            }
+            await MainActor.run {
+                self.collectionView.reloadData()
+            }
+        } catch {
+            showError(error)
         }
     }
     func setContent() {
