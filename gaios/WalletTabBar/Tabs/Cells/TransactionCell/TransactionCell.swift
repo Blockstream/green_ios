@@ -31,7 +31,6 @@ class TransactionCell: UITableViewCell {
         var txtCache = ""
         let registry = WalletManager.current
         for (idx, amount) in model.amounts.enumerated() {
-            let asset = registry?.info(for: amount.key)
             if let balance = Balance.fromSatoshi(amount.value, assetId: amount.key) {
                 let (value, denom) = balance.toValue()
                 let txtRight = "\(value) \(denom)"
@@ -54,11 +53,15 @@ class TransactionCell: UITableViewCell {
                                                 style: style))
             }
         }
-        addStackRow(MultiLabelViewModel(txtLeft: model.statusUI().label,
-                                        txtRight: model.subaccount?.localizedName ?? "",
-                                        hideBalance: nil,
-                                        style: model.statusUI().style))
-
+        let satoshi = model.assetAmountList.satoshi()
+        let policyAsset = model.subaccount?.gdkNetwork.policyAsset ?? AssetInfo.btcId
+        let fiat = Balance.fromSatoshi(satoshi, assetId: policyAsset)?.toFiatText()
+        addStackRow(
+            MultiLabelViewModel(
+                txtLeft: model.statusUI().label,
+                txtRight: satoshi != 0 ? fiat : nil,
+                hideBalance: nil,
+                style: model.statusUI().style))
         if !(model.tx.memo?.isEmpty ?? true) {
             if let row = Bundle.main.loadNibNamed("SingleLabelView", owner: self, options: nil)?.first as? SingleLabelView {
                 row.configure(model.tx.memo ?? "")
