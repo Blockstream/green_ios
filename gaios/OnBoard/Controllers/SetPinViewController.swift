@@ -12,6 +12,7 @@ enum PinFlow {
     case create
     case restore
     case settings
+    case backup
 }
 
 class SetPinViewController: UIViewController {
@@ -44,12 +45,12 @@ class SetPinViewController: UIViewController {
 
         if actionPin == .set {
             switch self.pinFlow {
-            case .settings:
-                AnalyticsManager.shared.recordView(.walletSettingsChangePIN, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
             case .create:
                 AnalyticsManager.shared.recordView(.onBoardPin, sgmt: AnalyticsManager.shared.onBoardSgmtUnified(flow: AnalyticsManager.OnBoardFlow.strCreate))
             case .restore:
                 AnalyticsManager.shared.recordView(.onBoardPin, sgmt: AnalyticsManager.shared.onBoardSgmtUnified(flow: AnalyticsManager.OnBoardFlow.strRestore))
+            default:
+                AnalyticsManager.shared.recordView(.walletSettingsChangePIN, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
             }
         }
     }
@@ -199,7 +200,7 @@ class SetPinViewController: UIViewController {
         let pinFlow = self.pinFlow
         let task = Task.detached { [weak self] in
             switch pinFlow {
-            case .settings:
+            case .settings, .backup:
                 await self?.startLoader(message: "id_setting_up_your_wallet".localized, isRive: true)
                 guard let credentials = try await WalletManager.current?.prominentSession?.getCredentials(password: "") else {
                     throw LoginError.failed("")
@@ -231,6 +232,11 @@ class SetPinViewController: UIViewController {
                 if let account = wallet?.account {
                     AccountsRepository.shared.current = account
                     AccountNavigator.navLogged(accountId: account.id, isFirstLoad: true)
+                }
+            case .backup:
+                let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+                if let vc = storyboard.instantiateViewController(withIdentifier: "BackupSuccessViewController") as? BackupSuccessViewController {
+                    self.navigationController?.pushViewController(vc, animated: true)
                 }
             }
         case .failure(let error):

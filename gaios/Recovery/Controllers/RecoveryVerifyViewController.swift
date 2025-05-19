@@ -105,15 +105,31 @@ class RecoveryVerifyViewController: UIViewController {
     }
 
     func next() {
-        if let accountId =  WalletManager.current?.account.id {
-            BackupHelper.shared.removeFromBackupList(accountId)
+        guard let account =  WalletManager.current?.account else {
+            return
         }
+        BackupHelper.shared.removeFromBackupList(account.id)
+        if !account.hasManualPin {
+            pushSetPinViewController()
+        } else {
+            pushBackupSuccessViewController()
+        }
+    }
+
+    func pushSetPinViewController() {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
+            vc.pinFlow = .backup
+            vc.viewModel = OnboardViewModel()
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    func pushBackupSuccessViewController() {
         let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "BackupSuccessViewController") as? BackupSuccessViewController {
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
-
     func updatePageControl() {
         pageControl.currentPage = questionCounter
     }
