@@ -53,11 +53,11 @@ class GenuineCheckEndViewModel {
         case .cancel:
             return "We were unable to complete the genuine check because it was canceled on Jade.".localized
         case .genuine:
-            return "We could successfully verify your Jade, enjoy the best Blockstream can offer you with your brand new jade.".localized
+            return "Your Jade Plus has been verified and was manufactured by Blockstream.".localized
         case .notGenuine:
             return "This device was not manufactured by Blockstream. It could be DIY hardware or possibly a malicious clone. Please contact support for more assistance.".localized
         case .progress:
-            return "Perform a genuine check to ensure that the Jade you received was manufactured by Blockstream.".localized
+            return "Perform a Genuine Check to ensure that the Jade you received was manufactured by Blockstream.".localized
         case .exit:
             return ""
         }
