@@ -37,9 +37,9 @@ class BiometricLoginViewController: UIViewController {
         biometricButton.setTitle("", for: .normal)
         switch AuthenticationTypeHandler.biometryType {
         case .faceID:
-            biometricButton.setImage(UIImage(named: "login_faceid"), for: .normal)
+            biometricButton.setImage(UIImage(systemName: "faceid"), for: .normal)
         case .touchID:
-            biometricButton.setImage(UIImage(named: "login_touchid"), for: .normal)
+            biometricButton.setImage(UIImage(systemName: "touchid"), for: .normal)
         default:
             biometricButton.setImage(UIImage(), for: .normal)
         }
@@ -50,6 +50,8 @@ class BiometricLoginViewController: UIViewController {
         pinButton.setStyle(.inline)
         titleLabel.setStyle(.title)
         subtitleLabel.setStyle(.txtCard)
+        biometricButton.backgroundColor = UIColor.gAccent()
+        biometricButton.cornerRadius = biometricButton.frame.size.width / 2
     }
 
     @IBAction func biometricButtonTap(_ sender: Any) {
