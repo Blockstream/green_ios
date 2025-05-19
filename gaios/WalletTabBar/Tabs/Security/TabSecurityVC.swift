@@ -10,15 +10,24 @@ class TabSecurityVC: TabViewController {
     var backupCardCellModel = [AlertCardCellModel]()
     var unlockCellModel: [PreferenceCellModel] {
         var list = [PreferenceCellModel]()
-        list.append(PreferenceCellModel(preferenceType: .bio, state: walletModel.wm?.account.hasBioPin == true || walletModel.wm?.account.hasWoBioCredentials == true ? .on : .off))
+        let hasFaceId = walletModel.wm?.account.hasBioPin == true || walletModel.wm?.account.hasWoBioCredentials == true
+        let hasManualPin = walletModel.wm?.account.hasManualPin == true
+        list.append(PreferenceCellModel(preferenceType: .faceID, state: hasFaceId ? .on : .off))
         if walletModel.wm?.account.isHW != true {
-            list.append(PreferenceCellModel(preferenceType: .pin, state: walletModel.wm?.account.hasManualPin == true ? .on : .off))
+            list.append(PreferenceCellModel(preferenceType: .pin, state: hasManualPin ? .on : .off))
         }
         return list
     }
     var jadeCellModel: [PreferenceCellModel] {
-        [PreferenceCellModel(preferenceType: .genuineCheck, state: .unknown),
-         PreferenceCellModel(preferenceType: .fwUpdate, state: .unknown)]
+        let boardType = WalletManager.current?.account.boardType ?? BleHwManager.shared.jade?.version?.boardType
+        switch boardType {
+        case .some(.v2):
+            return [
+                PreferenceCellModel(preferenceType: .genuineCheck, state: .unknown),
+                PreferenceCellModel(preferenceType: .fwUpdate, state: .unknown)]
+        default:
+            return [PreferenceCellModel(preferenceType: .fwUpdate, state: .unknown)]
+        }
     }
     var recoveryCellModel: [PreferenceCellModel] {
         [PreferenceCellModel(preferenceType: .recoveryPhrase, state: .unknown)]
@@ -244,11 +253,11 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
         case .level:
             return 1
         case .jade:
-            return walletModel.wm?.account.isJade ?? false ? 2 : 0
+            return walletModel.wm?.account.isJade ?? false ? jadeCellModel.count : 0
         case .backup:
             return backupCardCellModel.count
         case .unlock:
-            return unlockCellModel.count
+            return walletModel.wm?.account.isHW ?? false ? 0 : unlockCellModel.count
         case .recovery:
             return walletModel.canShowMnemonic() ? 1 : 0
         default:
@@ -339,7 +348,9 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
                 return sectionHeaderH
             } else { return 0.1 }
         case .unlock:
-            return sectionHeaderH
+            if !(walletModel.wm?.account.isHW ?? false) {
+                return sectionHeaderH
+            } else { return 0.1 }
         case .recovery:
             if walletModel.canShowMnemonic() {
                 return sectionHeaderH
@@ -374,7 +385,9 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
                 return sectionHeader("Your Jade".localized)
             } else { return nil }
         case .unlock:
-            return sectionHeader("Unlock method".localized)
+            if !(walletModel.wm?.account.isHW ?? false) {
+                return sectionHeader("View Balance".localized)
+            } else { return nil }
         case .recovery:
             if walletModel.canShowMnemonic() {
                 return sectionHeader("Recovery method".localized)

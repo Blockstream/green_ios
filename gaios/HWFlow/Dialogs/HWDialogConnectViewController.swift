@@ -50,6 +50,7 @@ class HWDialogConnectViewController: UIViewController {
        )
         viewModel?.updateState = { self.state = $0 }
         viewModel?.delegate = self
+        updateImage()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -78,8 +79,12 @@ class HWDialogConnectViewController: UIViewController {
     func setContent() {
         lblTitle.text = AccountsRepository.shared.current?.name
         lblSubtitle.text = ""
+    }
+
+    func updateImage() {
         if viewModel?.isJade ?? true {
-            let isV2 = BleHwManager.shared.jade?.version?.boardType == .v2
+            let boardType = viewModel?.account.boardType ?? BleHwManager.shared.jade?.version?.boardType
+            let isV2 = boardType == .v2
             icWallet.image = JadeAsset.img(.horizontal, isV2 ? .v2 : .v1)
         } else {
             icWallet.image = UIImage(named: "ic_hww_ledger")

@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import gdk
+import hw
 
 public struct Account: Codable, Equatable {
 
@@ -23,6 +24,7 @@ public struct Account: Codable, Equatable {
         case lightningWalletHashId = "lightning_wallet_hash_id"
         case watchonly
         case efusemac
+        case boardType
     }
 
     public var name: String
@@ -47,6 +49,7 @@ public struct Account: Codable, Equatable {
     private var watchonly: Bool?
     public var isWatchonly: Bool { watchonly ?? false || username != nil }
     public var efusemac: String?
+    public var boardType: JadeBoardType?
 
     public init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, walletHashId: String? = nil, lightningWalletHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false, isDerivedLightning: Bool = false, password: String? = nil, watchonly: Bool? = nil) {
         // Software / Hardware wallet account

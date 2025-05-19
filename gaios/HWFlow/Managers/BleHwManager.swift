@@ -215,6 +215,7 @@ class BleHwManager {
         }
         switch type {
         case .Jade:
+            walletManager.account.boardType = jade?.version?.boardType
             walletManager.account.efusemac = jade?.version?.efusemac
         case .Ledger:
             break
