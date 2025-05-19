@@ -102,23 +102,24 @@ class PriceChartCell: UITableViewCell {
         iconGain.image = UIImage()
 
         if let model = model?.priceChartModel {
-                switch timeFrame {
-                case .day:
-                    list = model.dayData
-                case .week:
-                    list = model.monthData.suffix(7 * 24)
-                case .month:
-                    list = model.monthData.suffix(30 * 24)
-                case .year:
-                    list = model.fullData.suffix(365)
-                case .all:
-                    list = model.fullData.suffix(365 * 5)
-                default:
-                    break
-                }
-
-        // Use the most recent price in the daily model for percentage change calculations
-            lblQuote.text = "\(String(format: "%.2f", model.dayData.last?.value ?? 0.0)) \(model.currency)".uppercased()
+            switch timeFrame {
+            case .day:
+                list = model.dayData
+            case .week:
+                list = model.monthData.suffix(7 * 24)
+            case .month:
+                list = model.monthData.suffix(30 * 24)
+            case .year:
+                list = model.fullData.suffix(365)
+            case .all:
+                list = model.fullData.suffix(365 * 5)
+            }
+            let formatter = NumberFormatter()
+            formatter.numberStyle = NumberFormatter.Style.decimal
+            let amount = model.dayData.last?.value ?? 0.0
+            let formattedString: String = formatter.string(for: amount) ?? String(format: "%.0f", amount)
+            // Use the most recent price in the daily model for percentage change calculations
+            lblQuote.text = "\(formattedString) \(model.currency)".uppercased()
             if let last = model.dayData.last?.value, let first = list.first?.value, first > 0 {
                 let ratio = ((last / first) - 1) * 100
                 let sign = ratio > 0 ? "+" : ""
