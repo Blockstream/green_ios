@@ -148,9 +148,9 @@ class ConnectViewController: HWFlowBaseViewController {
         lblSubtitle.text = "Try Face ID again or connect with Bluetooth to access your wallet.".localized
         switch AuthenticationTypeHandler.biometryType {
         case .faceID:
-            retryWoButton.setImage(UIImage(named: "login_faceid"), for: .normal)
+            retryWoButton.setImage(UIImage(systemName: "faceid"), for: .normal)
         case .touchID:
-            retryWoButton.setImage(UIImage(named: "login_touchid"), for: .normal)
+            retryWoButton.setImage(UIImage(systemName: "touchid"), for: .normal)
         default:
             retryWoButton.setImage(UIImage(), for: .normal)
         }
@@ -162,6 +162,8 @@ class ConnectViewController: HWFlowBaseViewController {
         lblSubtitle.setStyle(.txtCard)
         lblSubtitle.numberOfLines = 0
         lblSubtitle.translatesAutoresizingMaskIntoConstraints = false
+        retryWoButton.backgroundColor = UIColor.gAccent()
+        retryWoButton.cornerRadius = retryWoButton.frame.size.width / 2
     }
 
     func updateImage(_ version: JadeVersionInfo? = nil) {

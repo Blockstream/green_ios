@@ -48,7 +48,8 @@ class EditProtectionViewController: UIViewController {
                 btnNext.setTitle("Change PIN".localized, for: .normal)
             }
         case .faceID:
-            icon.image = UIImage(named: "ic_edit_protection_face")
+            icon.image = UIImage(systemName: "faceid")
+            icon.tintColor = .white
             lblTitle.text = "FaceID".localized
             lblHint.isHidden = true
             switch protectionAction {

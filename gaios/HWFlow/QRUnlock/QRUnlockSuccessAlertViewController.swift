@@ -33,7 +33,8 @@ class QRUnlockSuccessAlertViewController: UIViewController {
         view.alpha = 0.0
 
         if AuthenticationTypeHandler.biometryType == .faceID {
-            imgBio.image = UIImage(named: "ic_airgap_faceid")!
+            imgBio.image = UIImage(systemName: "faceid")
+            imgBio.tintColor = .white
             btnBio.setTitle("id_enable_face_id".localized, for: .normal)
             lblTitle.text = String(format: "id_use_s_for_quick_access".localized, "Face ID")
         } else if AuthenticationTypeHandler.biometryType == .touchID {

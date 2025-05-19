@@ -23,7 +23,12 @@ class PreferenceCellModel {
         self.type = preferenceType
     }
     var icImg: UIImage? {
-        UIImage(named: icName)
+        switch self.type {
+        case .faceID:
+            return UIImage(systemName: icName)?.maskWithColor(color: UIColor.gGrayTxt())
+        default:
+            return UIImage(named: icName)
+        }
     }
     var title: String {
         switch self.type {
@@ -45,7 +50,7 @@ class PreferenceCellModel {
     var icName: String {
         switch self.type {
         case .faceID:
-            return "ic_onboard_mini_face"
+            return "faceid"
         case .pin:
             return "ic_onboard_mini_pin"
         case .genuineCheck:
