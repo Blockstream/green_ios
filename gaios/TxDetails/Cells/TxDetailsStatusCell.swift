@@ -77,11 +77,11 @@ class TxDetailsStatusCell: UITableViewCell {
                 step = Int(model.blockHeight) - Int(model.transaction.blockHeight) + 1
                 lblStateTitle.text = String(format: "id_transaction_confirmed_ss".localized, "\(step)", "\(steps)")
                 lblStateStatus.text = model.txStatus
-                applyColor(UIColor.gGreenTx())
+                applyColor(UIColor.gAccent())
                 stateIcon.image = UIImage(named: "ic_tx_confirmed")!
             }
         } else {
-            applyColor(UIColor.gGreenTx())
+            applyColor(UIColor.gAccent())
             lblStateTitle.text = "id_transaction_completed".localized
             lblStateStatus.text = model.txStatus
             if isLightning && !(model.transaction.closingTxid?.isEmpty ?? true) {

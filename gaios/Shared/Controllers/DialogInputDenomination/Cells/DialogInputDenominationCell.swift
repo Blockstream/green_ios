@@ -13,6 +13,7 @@ class DialogInputDenominationCell: UITableViewCell {
         super.awakeFromNib()
         lblTitle.setStyle(.titleCard)
         lblHint.setStyle(.txtCard)
+        icon.image = UIImage(named: "ic_check_circle")?.maskWithColor(color: UIColor.gAccent())
     }
 
     override func prepareForReuse() {
