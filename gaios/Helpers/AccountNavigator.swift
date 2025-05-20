@@ -130,16 +130,16 @@ class AccountNavigator {
         let wallets = AccountsRepository.shared.accounts.filter { $0.hidden == false}
         if wallets.isEmpty {
             // if there are no wallets
-            UserDefaults.standard.set(true, forKey: AppStorageConstants.v5Expired.rawValue)
+            UserDefaults.standard.set(true, forKey: AppStorageConstants.v5Treiggered.rawValue)
             navStarted()
         } else if wallets.count == 1, let walletId = wallets.first?.id {
-            if UserDefaults.standard.bool(forKey: AppStorageConstants.v5Expired.rawValue) != true {
+            if UserDefaults.standard.bool(forKey: AppStorageConstants.v5Treiggered.rawValue) != true {
                 navV5()
             } else {
                 navLogin(accountId: walletId)
             }
         } else {
-            if UserDefaults.standard.bool(forKey: AppStorageConstants.v5Expired.rawValue) != true {
+            if UserDefaults.standard.bool(forKey: AppStorageConstants.v5Treiggered.rawValue) != true {
                 navV5()
             } else {
                 navHome()

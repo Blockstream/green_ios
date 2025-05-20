@@ -15,7 +15,7 @@ class V5ViewController: UIViewController {
         lblTitle.setStyle(.subTitle)
         lblHint.setStyle(.txtCard)
         btnGetStarted.setStyle(.primary)
-        UserDefaults.standard.set(true, forKey: AppStorageConstants.v5Expired.rawValue)
+        UserDefaults.standard.set(true, forKey: AppStorageConstants.v5Treiggered.rawValue)
     }
 
     @IBAction func btnGetStarted(_ sender: Any) {
