@@ -57,15 +57,14 @@ extension TabViewController {
     func buyScreen(_ walletModel: WalletModel) {
         let storyboard = UIStoryboard(name: "BuyBTCFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "BuyBTCViewController") as? BuyBTCViewController {
-            if var accounts = walletModel.wm?.bitcoinSubaccounts, let account = walletModel.wm?.bitcoinSubaccounts.first {
-                if let lightningSubaccount = walletModel.wm?.lightningSubaccount {
-                    // RE-Enable once validation is ready
-                    // accounts.append(lightningSubaccount)
-                }
-                vc.viewModel = BuyBTCViewModel(account: account,
-                                               accounts: accounts,
-                                               currency: walletModel.currency,
-                                               hideBalance: walletModel.hideBalance)
+            let orderedSubaccounts = (walletModel.wm?.bitcoinSubaccountsWithFunds ?? []) +
+            (walletModel.wm?.bitcoinSubaccounts ?? [])
+            if let subaccount = orderedSubaccounts.first {
+                vc.viewModel = BuyBTCViewModel(
+                    account: subaccount,
+                    accounts: walletModel.wm?.bitcoinSubaccounts ?? [],
+                    currency: walletModel.currency,
+                    hideBalance: walletModel.hideBalance)
                 navigationController?.pushViewController(vc, animated: true)
             }
         }
@@ -93,9 +92,15 @@ extension TabViewController {
     func receiveScreen(_ walletModel: WalletModel) {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
-            if let subaccount = walletModel.wm?.bitcoinSubaccounts.first {
-                vc.viewModel = ReceiveViewModel(account: subaccount,
-                                                accounts: walletModel.subaccounts)
+            let orderedSubaccounts =
+            (walletModel.wm?.bitcoinSubaccountsWithFunds ?? []) +
+            (walletModel.wm?.liquidSubaccountsWithFunds ?? []) +
+            (walletModel.wm?.bitcoinSubaccounts ?? []) +
+            (walletModel.wm?.liquidSubaccounts ?? [])
+            if let subaccount = orderedSubaccounts.first {
+                vc.viewModel = ReceiveViewModel(
+                    account: subaccount,
+                    accounts: walletModel.subaccounts)
                 navigationController?.pushViewController(vc, animated: true)
             }
         }
