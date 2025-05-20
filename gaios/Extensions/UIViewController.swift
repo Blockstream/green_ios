@@ -169,3 +169,20 @@ extension UIViewController {
         return storyboard.instantiateViewController(withIdentifier: identifier) as? K
     }
 }
+extension UIViewController {
+    func add_child(_ child: UIViewController) {
+        addChild(child)
+        view.addSubview(child.view)
+        child.didMove(toParent: self)
+    }
+
+    func remove_child() {
+        guard parent != nil else {
+            return
+        }
+
+        willMove(toParent: nil)
+        view.removeFromSuperview()
+        removeFromParent()
+    }
+}

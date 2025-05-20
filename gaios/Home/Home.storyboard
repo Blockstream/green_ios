@@ -808,6 +808,73 @@
             </objects>
             <point key="canvasLocation" x="5179.7101449275369" y="164.73214285714286"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="OXs-RF-lMv">
+            <objects>
+                <viewController storyboardIdentifier="V5ViewController" id="S9Z-Hg-kNT" customClass="V5ViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="mKZ-A3-H6h">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="eFq-DS-1k5">
+                                <rect key="frame" x="35" y="429.5" width="344" height="51"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7yz-hc-pD7">
+                                        <rect key="frame" x="144" y="0.0" width="56" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NLi-4t-Cx0">
+                                        <rect key="frame" x="144" y="30.5" width="56" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Dun-rK-GsH">
+                                <rect key="frame" x="35" y="520.5" width="344" height="56"/>
+                                <color key="backgroundColor" name="gAccent"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="56" id="ZxV-9C-Fsg"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                <state key="normal" title="btn_get_started">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnGetStarted:" destination="S9Z-Hg-kNT" eventType="touchUpInside" id="YgL-4s-q8d"/>
+                                </connections>
+                            </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_v5_update" translatesAutoresizingMaskIntoConstraints="NO" id="mcl-d4-Yz1">
+                                <rect key="frame" x="136" y="334.5" width="142" height="55"/>
+                            </imageView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="mmH-Qk-Tro"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
+                        <constraints>
+                            <constraint firstItem="eFq-DS-1k5" firstAttribute="centerY" secondItem="mmH-Qk-Tro" secondAttribute="centerY" id="J9U-P1-PIo"/>
+                            <constraint firstItem="Dun-rK-GsH" firstAttribute="leading" secondItem="mmH-Qk-Tro" secondAttribute="leading" constant="35" id="K2Z-DA-ktz"/>
+                            <constraint firstItem="mmH-Qk-Tro" firstAttribute="trailing" secondItem="eFq-DS-1k5" secondAttribute="trailing" constant="35" id="ORO-t7-gne"/>
+                            <constraint firstItem="eFq-DS-1k5" firstAttribute="leading" secondItem="mmH-Qk-Tro" secondAttribute="leading" constant="35" id="V7U-qI-z1J"/>
+                            <constraint firstItem="mmH-Qk-Tro" firstAttribute="trailing" secondItem="Dun-rK-GsH" secondAttribute="trailing" constant="35" id="WIg-LH-0rY"/>
+                            <constraint firstItem="Dun-rK-GsH" firstAttribute="top" secondItem="eFq-DS-1k5" secondAttribute="bottom" constant="40" id="syt-8a-JYA"/>
+                            <constraint firstItem="mcl-d4-Yz1" firstAttribute="centerX" secondItem="mmH-Qk-Tro" secondAttribute="centerX" id="u5l-xL-oMt"/>
+                            <constraint firstItem="eFq-DS-1k5" firstAttribute="top" secondItem="mcl-d4-Yz1" secondAttribute="bottom" constant="40" id="vcD-HG-XVN"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="Ipd-9W-FUS"/>
+                    <connections>
+                        <outlet property="btnGetStarted" destination="Dun-rK-GsH" id="4KM-9W-oLO"/>
+                        <outlet property="lblHint" destination="NLi-4t-Cx0" id="2Gn-LJ-0xE"/>
+                        <outlet property="lblTitle" destination="7yz-hc-pD7" id="9fe-vV-Jln"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="d55-fZ-0uP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-886" y="719"/>
+        </scene>
     </scenes>
     <resources>
         <image name="cancel" width="14" height="14"/>
@@ -816,6 +883,7 @@
         <image name="ic_alert_warn" width="30" height="27"/>
         <image name="ic_logo_blockstream" width="156" height="35"/>
         <image name="ic_passphrase" width="9.3333330154418945" height="9.3333330154418945"/>
+        <image name="ic_v5_update" width="142" height="55"/>
         <image name="ic_wallet_disclose" width="7.5" height="11.5"/>
         <image name="ic_x_circle" width="20" height="20"/>
         <namedColor name="customMatrixGreen">

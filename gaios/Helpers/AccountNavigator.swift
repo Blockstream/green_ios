@@ -9,7 +9,14 @@ class AccountNavigator {
     static func home() -> HomeViewController? {
          instantiateViewController(storyboard: "Home", identifier: "Home")
     }
-
+    static func navV5() {
+        let nv = UINavigationController()
+        let storyboard = UIStoryboard(name: "Home", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "V5ViewController") as? V5ViewController {
+            nv.setViewControllers([vc], animated: true)
+            changeRoot(root: nv)
+        }
+    }
     static func navHome() {
         let nv = UINavigationController()
         if let vc = home() {
@@ -123,11 +130,20 @@ class AccountNavigator {
         let wallets = AccountsRepository.shared.accounts.filter { $0.hidden == false}
         if wallets.isEmpty {
             // if there are no wallets
+            UserDefaults.standard.set(true, forKey: AppStorageConstants.v5Expired.rawValue)
             navStarted()
         } else if wallets.count == 1, let walletId = wallets.first?.id {
-            navLogin(accountId: walletId)
+            if UserDefaults.standard.bool(forKey: AppStorageConstants.v5Expired.rawValue) != true {
+                navV5()
+            } else {
+                navLogin(accountId: walletId)
+            }
         } else {
-            navHome()
+            if UserDefaults.standard.bool(forKey: AppStorageConstants.v5Expired.rawValue) != true {
+                navV5()
+            } else {
+                navHome()
+            }
         }
     }
 

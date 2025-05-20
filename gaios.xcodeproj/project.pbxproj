@@ -187,6 +187,7 @@
 		345142832693154100E8BE1B /* XCTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142822693154100E8BE1B /* XCTestBase.swift */; };
 		3451428526932B9300E8BE1B /* Receive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451428426932B9300E8BE1B /* Receive.swift */; };
 		3451428726933C6E00E8BE1B /* Send.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451428626933C6E00E8BE1B /* Send.swift */; };
+		34516E882DDB796700782ACD /* V5ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34516E872DDB796700782ACD /* V5ViewController.swift */; };
 		3452E6002696E2F4003F3FAA /* ChangePinUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452E5FF2696E2F4003F3FAA /* ChangePinUITests.swift */; };
 		3453C73626A5A1A100451FB3 /* DrawerMenuUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C73526A5A1A100451FB3 /* DrawerMenuUITests.swift */; };
 		3453C73826A5A41A00451FB3 /* Drawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C73726A5A41A00451FB3 /* Drawer.swift */; };
@@ -1107,6 +1108,7 @@
 		345142822693154100E8BE1B /* XCTestBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestBase.swift; sourceTree = "<group>"; };
 		3451428426932B9300E8BE1B /* Receive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Receive.swift; sourceTree = "<group>"; };
 		3451428626933C6E00E8BE1B /* Send.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Send.swift; sourceTree = "<group>"; };
+		34516E872DDB796700782ACD /* V5ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V5ViewController.swift; sourceTree = "<group>"; };
 		3452E5FF2696E2F4003F3FAA /* ChangePinUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePinUITests.swift; sourceTree = "<group>"; };
 		3453C73526A5A1A100451FB3 /* DrawerMenuUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerMenuUITests.swift; sourceTree = "<group>"; };
 		3453C73726A5A41A00451FB3 /* Drawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Drawer.swift; sourceTree = "<group>"; };
@@ -2930,6 +2932,7 @@
 				81226F7E2DB24B4300086EB8 /* BiometricLoginViewController.swift */,
 				347FD0B025FFA98300BB3FAB /* HomeViewController.swift */,
 				34CEFD9D260202010098536C /* LoginViewController.swift */,
+				34516E872DDB796700782ACD /* V5ViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -4861,6 +4864,7 @@
 				3415CB072A67BDEE00B66882 /* AddressAuthViewController.swift in Sources */,
 				34FAB33C2D9BF73000317454 /* SecurityLevelCell.swift in Sources */,
 				34CD34912C7D98CF00018824 /* VerifyOnDeviceViewController.swift in Sources */,
+				34516E882DDB796700782ACD /* V5ViewController.swift in Sources */,
 				345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */,
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
 				34560B9E29BF2120007E916F /* LedgerWaitViewController.swift in Sources */,

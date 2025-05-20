@@ -22,6 +22,7 @@ public enum AppStorageConstants: String {
     case dismissedPromos = "dismissed_promos"
     case walletsToBackup = "wallets_to_backuo"
     case buyCountyCodeUserSelected = "buy_county_code_user_selected"
+    case v5Expired = "v5_expired"
 }
 
 public protocol AnalyticsManagerDelegate: AnyObject {
