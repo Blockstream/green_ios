@@ -58,18 +58,19 @@ class SetupNewViewController: UIViewController {
     }
 
     func loadNavigationBtns() {
-        let settingsBtn = UIButton(type: .system)
-        settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
-        settingsBtn.setImage(UIImage(named: "ic_nav_disclose"), for: .normal)
-        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+        let button = UIButton(type: .system)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+        button.setTitle("id_set_up_watchonly".localized, for: .normal)
+        //button.setImage(UIImage(named: "id_set_up_watchonly"), for: .normal)
+        button.addTarget(self, action: #selector(watchonlyBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
     }
 
-    @objc func settingsBtnTapped() {
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
-            navigationController?.pushViewController(vc, animated: true)
-        }
+    @objc func watchonlyBtnTapped() {
+        let storyboard = UIStoryboard(name: "WOFlow", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "WOSelectViewController")
+        navigationController?.pushViewController(vc, animated: true)
+        AnalyticsManager.shared.woWallet()
     }
 
     func updateState() {

@@ -4,7 +4,6 @@ enum DebugPrefs: Int, CaseIterable {
     case deviceId = 0
     case promos = 1
     case cleanup = 2
-    case watchonly = 3
 
     var name: String {
         switch self {
@@ -14,8 +13,6 @@ enum DebugPrefs: Int, CaseIterable {
             return "Clear Dismissed Promos"
         case .cleanup:
             return "Clear Wallets List"
-        case .watchonly:
-            return "Add Watchonly"
         }
     }
 
@@ -27,8 +24,6 @@ enum DebugPrefs: Int, CaseIterable {
             return UIImage(named: "ic_dialog_remove")!.maskWithColor(color: .white)
         case .cleanup:
             return UIImage(named: "ic_dialog_remove")!.maskWithColor(color: .white)
-        case .watchonly:
-            return UIImage()
         }
     }
 
