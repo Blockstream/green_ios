@@ -728,6 +728,8 @@
 		81DAEE052DD4110F00635591 /* ReceiveAssetCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DAEE012DD4110E00635591 /* ReceiveAssetCellModel.swift */; };
 		81DAEE062DD4110F00635591 /* ReceiveAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DAEE002DD4110E00635591 /* ReceiveAssetCell.swift */; };
 		81DE63432DDE2F6600AB79DB /* SetupNewMoreActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DE63422DDE2F5700AB79DB /* SetupNewMoreActionsViewController.swift */; };
+		81DE63462DDE41AF00AB79DB /* DialogActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DE63452DDE41A800AB79DB /* DialogActionsViewController.swift */; };
+		81DE63482DDE468200AB79DB /* DialogActionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DE63472DDE467C00AB79DB /* DialogActionsViewModel.swift */; };
 		81DEB8302CF3966F0084FFF0 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DEB82F2CF3966B0084FFF0 /* Data.swift */; };
 		81DFA9962CB3EEE500EE0277 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DFA9952CB3EEE500EE0277 /* String.swift */; };
 		81E04A3B2AA63C6800867705 /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E04A3A2AA63C6800867705 /* Country.swift */; };
@@ -1667,6 +1669,8 @@
 		81DAEE022DD4110E00635591 /* ReceiveAssetCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReceiveAssetCell.xib; sourceTree = "<group>"; };
 		81DC54342885BD8300DC37C9 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
 		81DE63422DDE2F5700AB79DB /* SetupNewMoreActionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupNewMoreActionsViewController.swift; sourceTree = "<group>"; };
+		81DE63452DDE41A800AB79DB /* DialogActionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogActionsViewController.swift; sourceTree = "<group>"; };
+		81DE63472DDE467C00AB79DB /* DialogActionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogActionsViewModel.swift; sourceTree = "<group>"; };
 		81DEB82F2CF3966B0084FFF0 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		81DFA9952CB3EEE500EE0277 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		81E04A3A2AA63C6800867705 /* Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Country.swift; sourceTree = "<group>"; };
@@ -2268,6 +2272,7 @@
 		344D57C32D71A9EB009725A3 /* WalletTabBar */ = {
 			isa = PBXGroup;
 			children = (
+				81DE63442DDE419000AB79DB /* DialogActions */,
 				348402002DB21B9700A91C65 /* EditProtection */,
 				348401F32DAD1D8300A91C65 /* DialogCompareSecurity */,
 				34DA78A42D807F130022FBB1 /* DialogAccounts */,
@@ -4065,6 +4070,15 @@
 			path = configs;
 			sourceTree = "<group>";
 		};
+		81DE63442DDE419000AB79DB /* DialogActions */ = {
+			isa = PBXGroup;
+			children = (
+				81DE63472DDE467C00AB79DB /* DialogActionsViewModel.swift */,
+				81DE63452DDE41A800AB79DB /* DialogActionsViewController.swift */,
+			);
+			path = DialogActions;
+			sourceTree = "<group>";
+		};
 		81E56A5C2C2476950012A5A3 /* QRUnlock */ = {
 			isa = PBXGroup;
 			children = (
@@ -4723,6 +4737,7 @@
 				34204713291B91B000EDE945 /* SecuritySelectViewModel.swift in Sources */,
 				346F00DF2CB3CD8200F28A44 /* QRPsbtShowViewController.swift in Sources */,
 				346EB2882BE8BB480043139F /* SendHWConfirmViewController.swift in Sources */,
+				81DE63482DDE468200AB79DB /* DialogActionsViewModel.swift in Sources */,
 				3448B5CF29D59ADF008D5746 /* UITapGestureRecognizer.swift in Sources */,
 				348AD31C2BFCAAAF00F560C8 /* ReEnable2faSuccessViewController.swift in Sources */,
 				346EB2842BE8BB480043139F /* SendAddressInputViewController.swift in Sources */,
@@ -5136,6 +5151,7 @@
 				3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */,
 				34F51A7F2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift in Sources */,
 				81332CC32D55082D00F3520D /* Gdk.swift in Sources */,
+				81DE63462DDE41AF00AB79DB /* DialogActionsViewController.swift in Sources */,
 				34F0EC3A2D79A73F0017C276 /* Api.swift in Sources */,
 				3458AB12292D1F25006EC7FB /* AnyAssetCell.swift in Sources */,
 				34B0D0032CE2553100A90080 /* ActionsSheetViewController.swift in Sources */,

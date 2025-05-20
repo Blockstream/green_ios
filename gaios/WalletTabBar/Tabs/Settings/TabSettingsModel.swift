@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import core
 import gdk
+import greenaddress
 
 enum SettingsItem: String, Codable, CaseIterable {
     case header = "id_header"
@@ -17,7 +18,7 @@ enum SettingsItem: String, Codable, CaseIterable {
     case supportID = "Support ID"
     case rename = "id_rename_wallet"
     case lightning = "id_lightning"
-    case ampID = "Generate Amp ID"
+    case ampID = "id_amp_id"
 
     var string: String { self.rawValue.localized }
 }
@@ -39,6 +40,7 @@ class TabSettingsModel {
     var session: SessionManager? { wm?.prominentSession }
     var settings: Settings? { session?.settings }
     var isWatchonly: Bool { wm?.account.isWatchonly ?? false }
+    var isWatchonlySinglesig: Bool { (wm?.account.isWatchonly ?? false) && (wm?.account.username?.isEmpty ?? true) }
     var isSinglesig: Bool { session?.gdkNetwork.electrum ?? true }
     var isHW: Bool { wm?.account.isHW ?? false }
     var isDerivedLightning: Bool { wm?.account.isDerivedLightning ?? false }
@@ -137,7 +139,10 @@ class TabSettingsModel {
             type: .archievedAccounts)
         var menu = [SettingsItemData]()
         if !isWatchonly {
-            menu += [lightning, ampID]
+            menu += [lightning]
+        }
+        if !isWatchonlySinglesig {
+            menu += [ampID]
         }
         if !isDerivedLightning && !isWatchonly {
             menu += [watchOnly]
@@ -215,5 +220,51 @@ class TabSettingsModel {
         attrStr.setAttributes(iAttr, for: pricing)
         attrStr.setAttributes(iAttr, for: exchange)
         return attrStr
+    }
+
+    func hasSubaccountAmp() -> Bool {
+        !getSubaccountsAmp().isEmpty
+    }
+
+    func getSubaccountsAmp() -> [WalletItem] {
+        wm?.subaccounts.filter({ $0.type == .amp }) ?? []
+    }
+
+    func createSubaccountAmp() async throws {
+        guard let session = wm?.liquidMultisigSession else {
+            throw GaError.GenericError("Invalid session".localized)
+        }
+        try await session.connect()
+        if !session.logged {
+            if let device = wm?.hwDevice {
+                try await session.register(credentials: nil, hw: device)
+                _ = try await session.loginUser(credentials: nil, hw: device)
+            } else {
+                let credentials = try await wm?.prominentSession?.getCredentials(password: "")
+                try await session.register(credentials: credentials, hw: nil)
+                _ = try await session.loginUser(credentials: credentials, hw: nil)
+            }
+        }
+        _ = try await session.createSubaccount(CreateSubaccountParams(name: uniqueAmpName(), type: .amp))
+        _ = try await session.updateSubaccount(UpdateSubaccountParams(subaccount: 0, hidden: false))
+        _ = try await wm?.subaccounts()
+    }
+
+    func uniqueAmpName() -> String {
+        let counter = wm?.subaccounts.filter({ $0.type == .amp && $0.gdkNetwork.liquid }).count ?? 0
+        if counter > 0 {
+            return "Liquid AMP \(counter+1)"
+        }
+        return "Liquid AMP"
+    }
+
+    func dialogAccountsModel() -> DialogAccountsViewModel {
+        return DialogAccountsViewModel(
+            title: "Account Selector",
+            hint: "Select the desired account you want to get AMP ID.".localized,
+            isSelectable: true,
+            assetId: nil,
+            accounts: getSubaccountsAmp(),
+            hideBalance: false)
     }
 }

@@ -233,7 +233,7 @@ class ReceiveViewController: KeyboardViewController {
             screenName: "Receive")
         presentContactUsViewController(request: request)
     }
-    
+
     @MainActor
     func presentDialogAccountsViewController() {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
@@ -244,6 +244,7 @@ class ReceiveViewController: KeyboardViewController {
             present(vc, animated: false, completion: nil)
         }
     }
+
     @MainActor
     func presentConnectViewController() {
         let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
@@ -491,20 +492,6 @@ class ReceiveViewController: KeyboardViewController {
 
 extension ReceiveViewController: AssetSelectViewControllerDelegate {
 
-    func createSubaccountAmp(completition: (() -> Void)? = nil) async {
-        startAnimating()
-        let task = Task.detached { [weak self] in
-            try await self?.viewModel.createSubaccountAmp()
-        }
-        switch await task.result {
-        case .success:
-            stopAnimating()
-            completition?()
-        case .failure(let err):
-            stopAnimating()
-            showError(err.description().localized)
-        }
-    }
     func didSelectAnyAsset(_ type: AnyAssetType) {
         switch type {
         case .liquid:
@@ -512,17 +499,8 @@ extension ReceiveViewController: AssetSelectViewControllerDelegate {
             viewModel.anyAsset = type
             viewModel.accounts = viewModel.getLiquidSubaccounts()
         case .amp:
-            if !viewModel.hasSubaccountAmp() {
-                Task {
-                    await self.createSubaccountAmp() {
-                        self.didSelectAnyAsset(.amp)
-                    }
-                }
-                return
-            } else {
-                viewModel.anyAsset = type
-                viewModel.accounts = viewModel.getLiquidAmpSubaccounts()
-            }
+            viewModel.anyAsset = type
+            viewModel.accounts = viewModel.getLiquidAmpSubaccounts()
         }
         if let account = viewModel.accounts.first {
             viewModel.account = account
@@ -544,11 +522,7 @@ extension ReceiveViewController: AssetSelectViewControllerDelegate {
         default:
             let info = WalletManager.current?.info(for: assetId)
             if info?.amp ?? false && !viewModel.hasSubaccountAmp() {
-                Task {
-                    await self.createSubaccountAmp() {
-                        self.didSelectAsset(assetId)
-                    }
-                }
+                DropAlert().warning(message: "Create Amp account to receive Amp asset")
                 return
             }
             viewModel?.accounts = info?.amp ?? false ? viewModel.getLiquidAmpSubaccounts() : viewModel.getLiquidSubaccounts()

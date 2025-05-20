@@ -183,12 +183,15 @@ class ReceiveViewModel {
     }
 
     func getAssetSelectViewModel() -> AssetSelectViewModel {
-        let assetIds = WalletManager.current?.registry.all.map { $0.assetId }
+        let hasSubaccountAmp = hasSubaccountAmp()
+        let assetIds = WalletManager.current?.registry.all
+            .filter { !(!hasSubaccountAmp && $0.amp == true) }
+            .map { $0.assetId }
         let list = AssetAmountList.from(assetIds: assetIds ?? [])
         return AssetSelectViewModel(
             assets: list,
             enableAnyLiquidAsset: true,
-            enableAnyAmpAsset: true)
+            enableAnyAmpAsset: hasSubaccountAmp)
     }
 
     func dialogInputDenominationViewModel() -> DialogInputDenominationViewModel {
@@ -215,6 +218,7 @@ class ReceiveViewModel {
         }
         return nil
     }
+
     func reloadBackupCards() {
         var cards: [AlertCardType] = []
         if BackupHelper.shared.needsBackup(walletId: wm.account.id) && BackupHelper.shared.isDismissed(walletId: wm.account.id, position: .receive) == false {
@@ -224,25 +228,6 @@ class ReceiveViewModel {
     }
     func hasSubaccountAmp() -> Bool {
         !wm.subaccounts.filter({ $0.type == .amp }).isEmpty
-    }
-    func createSubaccountAmp() async throws {
-        guard let session = wm.liquidMultisigSession else {
-            throw GaError.GenericError("Invalid session".localized)
-        }
-        try await session.connect()
-        if !session.logged {
-            if let device = wm.hwDevice {
-                try await session.register(credentials: nil, hw: device)
-                _ = try await session.loginUser(credentials: nil, hw: device)
-            } else {
-                let credentials = try await wm.prominentSession?.getCredentials(password: "")
-                try await session.register(credentials: credentials, hw: nil)
-                _ = try await session.loginUser(credentials: credentials, hw: nil)
-            }
-        }
-        _ = try await session.createSubaccount(CreateSubaccountParams(name: "", type: .amp))
-        _ = try await session.updateSubaccount(UpdateSubaccountParams(subaccount: 0, hidden: false))
-        _ = try await wm.subaccounts()
     }
     func getLightningSubaccounts() -> [WalletItem] {
         wm.subaccounts.filter { !$0.hidden && $0.networkType.lightning }
