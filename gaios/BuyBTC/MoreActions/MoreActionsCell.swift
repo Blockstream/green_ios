@@ -22,6 +22,12 @@ class MoreActionsCell: UITableViewCell {
         lblTitle.text = model.title
         self.onTap = onTap
     }
+    
+    func configure(model: SetupNewMoreActions,
+                   onTap: (() -> Void)?) {
+        lblTitle.text = model.title
+        self.onTap = onTap
+    }
     @IBAction func btnTap(_ sender: Any) {
         bg.pressAnimate {
             self.onTap?()

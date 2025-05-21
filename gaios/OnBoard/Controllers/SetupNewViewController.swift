@@ -44,8 +44,6 @@ class SetupNewViewController: UIViewController {
         lblSubtitle.text = "Create a new wallet to begin your bitcoin journey."
         btnCta1.setTitle("Setup Mobile Wallet".localized, for: .normal)
         btnCta2.setStyle(.underline(txt: "Restore from backup".localized, color: UIColor.gAccent()))
-        //btnCta1.setTitle("Setup Hardware Wallet".localized, for: .normal)
-        //btnCta2.setStyle(.underline(txt: "Don’t have one? Buy a Jade".localized, color: UIColor.gAccent()))
         let riveView = RiveModel.animationWallet.createRiveView()
         animateView.addSubview(riveView)
         riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
@@ -59,14 +57,25 @@ class SetupNewViewController: UIViewController {
 
     func loadNavigationBtns() {
         let button = UIButton(type: .system)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        button.setTitle("id_set_up_watchonly".localized, for: .normal)
-        //button.setImage(UIImage(named: "id_set_up_watchonly"), for: .normal)
-        button.addTarget(self, action: #selector(watchonlyBtnTapped), for: .touchUpInside)
+        button.setImage(UIImage(named: "ic_buy_circle_dots"), for: .normal)
+        button.addTarget(self, action: #selector(onMoreActions), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
     }
+    
+    @objc func onMoreActions() {
+        presentSetupNewMoreActionsViewController()
+    }
 
-    @objc func watchonlyBtnTapped() {
+    func presentSetupNewMoreActionsViewController() {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SetupNewMoreActionsViewController") as? SetupNewMoreActionsViewController {
+            vc.viewModel = SetupNewMoreActionsViewModel()
+            vc.delegate = self
+            AnalyticsManager.shared.woWallet()
+            present(vc, animated: true)
+        }
+    }
+    func pushWOSelectViewController() {
         let storyboard = UIStoryboard(name: "WOFlow", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "WOSelectViewController")
         navigationController?.pushViewController(vc, animated: true)
@@ -189,5 +198,10 @@ extension SetupNewViewController: DialogListViewControllerDelegate {
         case .none:
             break
         }
+    }
+}
+extension SetupNewViewController: SetupNewMoreActionsViewControllerDelegate {
+    func didSelectAction(_ indexPath: IndexPath) {
+        pushWOSelectViewController()
     }
 }

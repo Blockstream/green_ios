@@ -40,14 +40,6 @@ class WOSetupViewController: KeyboardViewController {
         loginButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         usernameTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))
         passwordTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))
-        view.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.view
-        usernameTextField.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.usernameField
-        passwordTextField.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.passwordField
-        loginButton.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.loginBtn
-
-        [usernameTextField, passwordTextField].forEach{
-            $0?.setStyle(.input)
-        }
         AnalyticsManager.shared.recordView(.onBoardWatchOnlyCredentials)
     }
 
@@ -81,6 +73,9 @@ class WOSetupViewController: KeyboardViewController {
         remView.borderWidth = 1.0
         remView.borderColor = .white.withAlphaComponent(0.7)
         remView.layer.cornerRadius = 5.0
+        [usernameTextField, passwordTextField].forEach{
+            $0?.setStyle(.input)
+        }
     }
 
     func refresh() {

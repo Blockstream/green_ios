@@ -727,6 +727,7 @@
 		81DAEE042DD4110F00635591 /* ReceiveAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81DAEE022DD4110E00635591 /* ReceiveAssetCell.xib */; };
 		81DAEE052DD4110F00635591 /* ReceiveAssetCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DAEE012DD4110E00635591 /* ReceiveAssetCellModel.swift */; };
 		81DAEE062DD4110F00635591 /* ReceiveAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DAEE002DD4110E00635591 /* ReceiveAssetCell.swift */; };
+		81DE63432DDE2F6600AB79DB /* SetupNewMoreActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DE63422DDE2F5700AB79DB /* SetupNewMoreActionsViewController.swift */; };
 		81DEB8302CF3966F0084FFF0 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DEB82F2CF3966B0084FFF0 /* Data.swift */; };
 		81DFA9962CB3EEE500EE0277 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DFA9952CB3EEE500EE0277 /* String.swift */; };
 		81E04A3B2AA63C6800867705 /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E04A3A2AA63C6800867705 /* Country.swift */; };
@@ -1665,6 +1666,7 @@
 		81DAEE012DD4110E00635591 /* ReceiveAssetCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveAssetCellModel.swift; sourceTree = "<group>"; };
 		81DAEE022DD4110E00635591 /* ReceiveAssetCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReceiveAssetCell.xib; sourceTree = "<group>"; };
 		81DC54342885BD8300DC37C9 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
+		81DE63422DDE2F5700AB79DB /* SetupNewMoreActionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupNewMoreActionsViewController.swift; sourceTree = "<group>"; };
 		81DEB82F2CF3966B0084FFF0 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		81DFA9952CB3EEE500EE0277 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		81E04A3A2AA63C6800867705 /* Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Country.swift; sourceTree = "<group>"; };
@@ -2801,6 +2803,7 @@
 		3497935425F8B18C0029ECB1 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				81DE63422DDE2F5700AB79DB /* SetupNewMoreActionsViewController.swift */,
 				34955C0B2B67B6BA0056DE90 /* HowToSecure */,
 				34A75B62292B6984007995D7 /* OnBoardInfo */,
 				3497935B25F8B18C0029ECB1 /* SetPinViewController.swift */,
@@ -4737,6 +4740,7 @@
 				34C67E772924F57F00A50F89 /* AccountSelectSubCell.swift in Sources */,
 				34145FD22DBA3F6E00F725E0 /* SelectProviderViewModel.swift in Sources */,
 				345ED1F429C088DC00BD9071 /* GetStartedOnBoardViewController.swift in Sources */,
+				81DE63432DDE2F6600AB79DB /* SetupNewMoreActionsViewController.swift in Sources */,
 				34B0A4F02D0198B8002E9A5C /* PromoLayout2Cell.swift in Sources */,
 				816685DA2BEE50EF00B03B02 /* SendTxConfirmViewModel.swift in Sources */,
 				3483D09829FBDAF800C85106 /* LTInfoCell.swift in Sources */,
