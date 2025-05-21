@@ -16,6 +16,7 @@ enum ElementStyle {
 
 enum CardStyle {
     case defaultStyle
+    case lightStyle
 }
 
 extension UIView {
@@ -199,6 +200,11 @@ extension UIView {
             layer.cornerRadius = 5
             borderWidth = 1.0
             borderColor = UIColor.gGrayCardBorder()
+        case .lightStyle:
+            backgroundColor = UIColor.gGrayPanel()
+            layer.cornerRadius = 5
+            borderWidth = 1.0
+            borderColor = UIColor.white.withAlphaComponent(0.07)
         }
     }
 }

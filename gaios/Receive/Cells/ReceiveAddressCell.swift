@@ -28,7 +28,7 @@ class ReceiveAddressCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        bgCard.layer.cornerRadius = 5.0
+        bgCard.setStyle(CardStyle.defaultStyle)
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
         qrFrame.addGestureRecognizer(longPressRecognizer)
         lnBanner.backgroundColor = UIColor.gAccent()
@@ -61,7 +61,7 @@ class ReceiveAddressCell: UITableViewCell {
         plainTxt.isHidden = true
         groupedTxt.isHidden = true
         bgCard.borderWidth = 1.0
-        bgCard.borderColor = .clear
+        bgCard.borderColor = UIColor.gGrayCardBorder()
         if model.text == model.textNoURI && model.isLightning == false {
             groupedTxt.isHidden = false
             AddressDisplay.configure(

@@ -78,7 +78,7 @@ class SendAddressInputViewController: KeyboardViewController {
 
     func setStyle() {
         infoBg.cornerRadius = 4.0
-        textBg.cornerRadius = 4.0
+        textBg.setStyle(CardStyle.defaultStyle)
         infoIcon.image = UIImage(named: "ic_lightning_info")!.maskWithColor(color: .white)
         lblInvalid.setStyle(.txt)
         btnQR.setStyle(.inline)

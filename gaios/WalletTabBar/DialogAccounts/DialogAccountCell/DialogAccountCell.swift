@@ -19,7 +19,8 @@ class DialogAccountCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        bg.cornerRadius = 5.0
+        bg.setStyle(CardStyle.defaultStyle)
+        bg.borderColor = .white.withAlphaComponent(0.1)
         [lblName, lblAmount].forEach {
             $0?.setStyle(.txtBigger)
         }

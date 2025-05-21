@@ -12,6 +12,7 @@ class SelectCountryCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         bg.setStyle(CardStyle.defaultStyle)
+        bg.borderColor = .white.withAlphaComponent(0.1)
         lblTitle.setStyle(.txtBold)
         lblHint.setStyle(.txtCard)
     }

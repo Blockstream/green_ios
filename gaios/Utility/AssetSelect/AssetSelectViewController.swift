@@ -35,7 +35,7 @@ class AssetSelectViewController: UIViewController {
     }
 
     func setStyle() {
-        searchCard.cornerRadius = 5.0
+        searchCard.setStyle(CardStyle.defaultStyle)
     }
 
     @objc func triggerTextChange() {

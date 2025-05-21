@@ -228,7 +228,7 @@ class SendAmountViewController: KeyboardViewController {
     }
 
     func setStyle() {
-        textBg.cornerRadius = 4.0
+        textBg.setStyle(CardStyle.defaultStyle)
         [infoBg, infoMultiBg].forEach {
             $0.cornerRadius = 4.0
         }

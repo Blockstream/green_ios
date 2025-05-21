@@ -20,7 +20,7 @@ class AccountAssetCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        bg.cornerRadius = 5.0
+        bg.setStyle(CardStyle.defaultStyle)
     }
 
     override func prepareForReuse() {

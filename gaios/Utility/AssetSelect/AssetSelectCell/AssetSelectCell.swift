@@ -14,7 +14,7 @@ class AssetSelectCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        bg.cornerRadius = 5.0
+        bg.setStyle(CardStyle.defaultStyle)
         ampSubview.cornerRadius = 5.0
         assetSubview.cornerRadius = 5.0
     }

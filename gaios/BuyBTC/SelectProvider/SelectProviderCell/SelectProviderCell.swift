@@ -17,7 +17,7 @@ class SelectProviderCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        bg.cornerRadius = 5.0
+        bg.setStyle(CardStyle.lightStyle)
         iconView.cornerRadius = 15.0
         lblIcon.setStyle(.txtBold)
         lblTitle.setStyle(.txtBold)
@@ -30,7 +30,7 @@ class SelectProviderCell: UITableViewCell {
     }
     override func prepareForReuse() {
         bestView.isHidden = true
-        bg.borderColor = .clear
+        bg.borderColor = .white.withAlphaComponent(0.07)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -53,7 +53,7 @@ class SelectProviderCell: UITableViewCell {
             bg.borderColor = UIColor.gAccent()
         } else {
             bestView.isHidden = true
-            bg.borderColor = UIColor.clear
+            bg.borderColor = .white.withAlphaComponent(0.07)
         }
         lblReceive.text = "You receive".localized
         lblAmount.text = String(format: "%.8f BTC", model.quote.destinationAmount)

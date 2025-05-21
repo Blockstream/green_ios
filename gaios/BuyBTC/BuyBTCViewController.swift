@@ -18,7 +18,7 @@ class BuyBTCViewController: KeyboardViewController {
     @IBOutlet weak var amountStack: UIStackView!
     @IBOutlet weak var providerStack: UIStackView!
     @IBOutlet weak var accountStack: UIStackView!
-    
+
     @IBOutlet weak var lblSection1: UILabel!
     @IBOutlet weak var lblSection2: UILabel!
     @IBOutlet weak var lblSection3: UILabel!
@@ -79,7 +79,7 @@ class BuyBTCViewController: KeyboardViewController {
             self.amountTextField.becomeFirstResponder()
         }
     }
-    
+
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
@@ -103,16 +103,18 @@ class BuyBTCViewController: KeyboardViewController {
     }
     func setStyle() {
         [bgAmount, bgProvider].forEach {
-            $0.cornerRadius = 4.0
-            $0.backgroundColor = UIColor.gGrayPanel()
+//            $0.cornerRadius = 4.0
+//            $0.backgroundColor = UIColor.gGrayPanel()
+            $0?.setStyle(CardStyle.lightStyle)
         }
         [lblSection1, lblSection2, lblSection3].forEach {
             $0?.setStyle(.txtSectionHeader)
             $0?.textColor = UIColor.gGrayTxt()
         }
         [btnTier1, btnTier2, btnTier3].forEach {
-            $0?.cornerRadius = 6.0
-            $0?.backgroundColor = UIColor.gGrayPanel()
+//            $0?.cornerRadius = 6.0
+//            $0?.backgroundColor = UIColor.gGrayPanel()
+            $0?.setStyle(CardStyle.lightStyle)
             $0?.setTitleColor(.white, for: .normal)
             $0?.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
         }
