@@ -11,6 +11,7 @@ enum ConnectionState {
     case wait
     case scan
     case connect
+    case connected
     case auth(JadeVersionInfo?)
     case login
     case logged
@@ -68,6 +69,11 @@ class ConnectViewController: HWFlowBaseViewController {
             retryWoButton.isHidden = true
             progress("id_looking_for_device".localized)
         case .connect:
+            progressView.isHidden = false
+            retryButton.isHidden = true
+            retryWoButton.isHidden = true
+            progress("id_connecting".localized)
+        case .connected:
             progressView.isHidden = false
             retryButton.isHidden = true
             retryWoButton.isHidden = true

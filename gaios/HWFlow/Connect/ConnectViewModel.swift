@@ -119,7 +119,7 @@ class ConnectViewModel: NSObject {
                 account: account,
                 fwVersion: version?.jadeVersion,
                 model: "\(version?.boardType.rawValue ?? "")")
-            updateState?(.auth(version))
+            updateState?(.connected)
         } else {
             _ = try await bleHwManager.ledger?.getLedgerNetwork()
             let version = try await bleHwManager.ledger?.version()
@@ -127,10 +127,12 @@ class ConnectViewModel: NSObject {
                 account: account,
                 fwVersion: version ?? "",
                 model: "Ledger Nano X")
-            updateState?(.auth(nil))
+            updateState?(.connected)
         }
     }
     func loginJade() async throws {
+        let version = try await bleHwManager.jade?.version()
+        updateState?(.auth(version))
         // authentication
         for i in 0..<3 {
             let res = try await bleHwManager.authenticating(testnet: account.networkType.testnet)
@@ -169,6 +171,7 @@ class ConnectViewModel: NSObject {
     }
 
     func loginLedger() async throws {
+        updateState?(.auth(nil))
         // authentication
         for i in 0..<3 {
             let res = try await bleHwManager.authenticating()

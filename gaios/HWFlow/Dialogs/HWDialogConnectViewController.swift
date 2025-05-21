@@ -106,6 +106,8 @@ class HWDialogConnectViewController: UIViewController {
             progress("id_looking_for_device".localized)
         case .connect:
             progress("id_connecting".localized)
+        case .connected:
+            progress("id_connecting".localized)
         case .auth(let version):
             if !isJade {
                 progress("id_connect_your_ledger_to_use_it".localized)
@@ -128,12 +130,9 @@ class HWDialogConnectViewController: UIViewController {
     }
 
     func dismiss(completion: @escaping () -> ()?) {
-        UIView.animate(withDuration: 0.3, animations: {
-            self.view.alpha = 0.0
-        }, completion: { _ in
-            self.dismiss(animated: false, completion: nil)
+        self.dismiss(animated: false) {
             completion()
-        })
+        }
     }
 
     @IBAction func btnDismiss(_ sender: Any) {
