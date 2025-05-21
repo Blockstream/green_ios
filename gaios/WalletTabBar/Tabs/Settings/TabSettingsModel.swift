@@ -136,7 +136,9 @@ class TabSettingsModel {
             section: .wallet,
             type: .archievedAccounts)
         var menu = [SettingsItemData]()
-        menu += [lightning, ampID]
+        if !isWatchonly {
+            menu += [lightning, ampID]
+        }
         if !isDerivedLightning && !isWatchonly {
             menu += [watchOnly]
         }
