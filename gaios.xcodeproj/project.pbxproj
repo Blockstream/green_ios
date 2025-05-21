@@ -458,6 +458,7 @@
 		34DA78AF2D8098FF0022FBB1 /* DialogAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DA78AE2D8098FC0022FBB1 /* DialogAccountCell.swift */; };
 		34DBF17B2A44315000066479 /* MagnifyQRViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */; };
 		34DDD0A9260A486300020380 /* Shared.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34DDD0A8260A486300020380 /* Shared.storyboard */; };
+		34DEF15A2DDDC8D70083A695 /* animation_v5.riv in Resources */ = {isa = PBXBuildFile; fileRef = 34DEF1592DDDC8D70083A695 /* animation_v5.riv */; };
 		34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */; };
 		34E0CA8C2981395600695304 /* Survey.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34E0CA8B2981395600695304 /* Survey.storyboard */; };
 		34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E0CA8D298139B200695304 /* SurveyViewController.swift */; };
@@ -1395,6 +1396,7 @@
 		34DA78AE2D8098FC0022FBB1 /* DialogAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAccountCell.swift; sourceTree = "<group>"; };
 		34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagnifyQRViewController.swift; sourceTree = "<group>"; };
 		34DDD0A8260A486300020380 /* Shared.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Shared.storyboard; sourceTree = "<group>"; };
+		34DEF1592DDDC8D70083A695 /* animation_v5.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation_v5.riv; sourceTree = "<group>"; };
 		34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveVerifyAddressViewController.swift; sourceTree = "<group>"; };
 		34E0CA8B2981395600695304 /* Survey.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Survey.storyboard; sourceTree = "<group>"; };
 		34E0CA8D298139B200695304 /* SurveyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyViewController.swift; sourceTree = "<group>"; };
@@ -2986,6 +2988,7 @@
 				345B28EA2DD1E7BF0075860A /* jadeplus_1.riv */,
 				345B28DA2DD1DB1D0075860A /* jadeplus_2.riv */,
 				345B28EC2DD1EB340075860A /* jadeplus_3.riv */,
+				34DEF1592DDDC8D70083A695 /* animation_v5.riv */,
 			);
 			path = Rive;
 			sourceTree = "<group>";
@@ -4555,6 +4558,7 @@
 				345B28E32DD1E5830075860A /* Illustration Envelope.riv in Resources */,
 				34A883AC2BA85F10004A1826 /* TxDetailsInfoCell.xib in Resources */,
 				345B28EB2DD1E7BF0075860A /* jadeplus_1.riv in Resources */,
+				34DEF15A2DDDC8D70083A695 /* animation_v5.riv in Resources */,
 				34204708291A67E900EDE945 /* MultiLabelView.xib in Resources */,
 				346EB26F2BE8BB1A0043139F /* SendTitleView.xib in Resources */,
 				3415CB152A67DBB700B66882 /* AddressAuthHeader.xib in Resources */,

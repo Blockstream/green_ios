@@ -62,6 +62,7 @@ enum RiveModel {
     static let animationSideBtns = RiveViewModel(fileName: "jadeplus_1")
     static let animationTwoArrows = RiveViewModel(fileName: "jadeplus_2")
     static let animationFrontBtn = RiveViewModel(fileName: "jadeplus_3")
+    static let animationV5 = RiveViewModel(fileName: "animation_v5")
 }
 
 // animationSideBtns, animationFrontBtn, animationSideBtns
