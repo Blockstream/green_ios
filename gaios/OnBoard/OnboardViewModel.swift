@@ -76,14 +76,19 @@ class OnboardViewModel {
         let wallet = WalletsRepository.shared.getOrAdd(for: account)
         wallet.popupResolver = await PopupResolver()
         wallet.hwInterfaceResolver = HwPopupResolver()
+        // setup auth
         if let pin = pin {
             credentials = try await addPinData(wallet: wallet, credentials: credentials, pin: pin)
         } else {
             credentials = try await addBiometricData(wallet: wallet, credentials: credentials)
         }
         try await checkWalletsJustRestored(wm: wallet, credentials: credentials)
+        // login
         let walletIdentifier = try wallet.prominentSession?.walletIdentifier(credentials: credentials)
-        let lightningCredentials = try wallet.deriveLightningCredentials(from: credentials)
+        var lightningCredentials: Credentials?
+        if AppSettings.shared.experimental && !wallet.testnet {
+            lightningCredentials = try wallet.deriveLightningCredentials(from: credentials)
+        }
         try await wallet.login(
             credentials: credentials,
             lightningCredentials: lightningCredentials,
@@ -92,6 +97,22 @@ class OnboardViewModel {
             fullRestore: true,
             parentWalletId: walletIdentifier)
         AnalyticsManager.shared.importWallet(account: wallet.account)
+        // check existing lightning subaccount
+        if let lightningCredentials = lightningCredentials,
+            let lightningSession = wallet.lightningSession,
+            lightningSession.logged {
+            let balance = try await lightningSession.getBalance(subaccount: 0, numConfs: 0)
+            let txs = try await lightningSession.transactions(subaccount: 0)
+            if txs.list.isEmpty && balance[AssetInfo.btcId] ?? 0 == 0 {
+                // remove session
+                try? await lightningSession.disconnect()
+                _ = try? await wallet.subaccounts()
+            } else {
+                // add lightning auth into keychain
+                try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: lightningCredentials, for: account.keychainLightning)
+            }
+        }
+        // cleanup previous restored account
         if let restoreAccountId = OnboardViewModel.restoreAccountId {
             if let account = AccountsRepository.shared.get(for: restoreAccountId) {
                 wallet.account.name = account.name

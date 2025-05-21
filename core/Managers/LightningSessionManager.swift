@@ -126,7 +126,6 @@ public class LightningSessionManager: SessionManager {
     }
 
     public override func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
-        _ = try await loginUser(credentials: credentials!)
     }
 
     public override func walletIdentifier(credentials: Credentials) throws -> WalletIdentifier? {
@@ -280,7 +279,6 @@ public class LightningSessionManager: SessionManager {
     }
 
     public override func discovery(refresh: Bool, updateHidden: Bool) async throws {
-        try await super.discovery(refresh: refresh, updateHidden: updateHidden)
     }
 
     public func createInvoice(satoshi: UInt64, description: String) async throws -> ReceivePaymentResponse? {

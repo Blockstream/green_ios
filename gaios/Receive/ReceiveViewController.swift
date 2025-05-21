@@ -45,7 +45,7 @@ class ReceiveViewController: KeyboardViewController {
     weak var verifyOnDeviceViewController: HWDialogVerifyOnDeviceViewController?
 
     var hideVerify: Bool {
-        return !(viewModel.wm.account.isJade && !viewModel.wm.account.isWatchonly && !viewModel.account.isLightning)
+        return !(viewModel.wm.account.isJade && !viewModel.wm.isWatchonly && !viewModel.account.isLightning)
     }
 
     override func viewDidLoad() {

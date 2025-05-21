@@ -20,7 +20,7 @@ class SendTxConfirmViewModel {
     var isFiat = false
     var session: SessionManager? {
         guard let subaccount = subaccount else { return nil }
-        if let wm = wm, wm.account.isJade && wm.account.isWatchonly {
+        if let wm = wm, wm.account.isJade && wm.isWatchonly {
             if BleHwManager.shared.isConnected() {
                 return BleHwManager.shared.walletManager?.getSession(for: subaccount)
             }
@@ -122,13 +122,13 @@ class SendTxConfirmViewModel {
         transaction?.addressees.compactMap { $0.assetId }.compactMap { self.wm?.image(for: $0) } ?? []
     }
     func enableExportPsbt() -> Bool {
-        wm?.account.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && !importSignedPsbt
+        wm?.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && !importSignedPsbt
     }
     func needConnectHw() -> Bool {
         wm?.account.isHW ?? false
     }
     func needExportPsbt() -> Bool {
-        wm?.account.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && signedPsbt == nil
+        wm?.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && signedPsbt == nil
     }
     private func sendTx() async throws -> SendTransactionSuccess {
         guard let session = session,

@@ -64,9 +64,12 @@ class LoginViewModel {
     func loginWithCredentials(credentials: Credentials) async throws -> WalletManager {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         wm.popupResolver = await PopupResolver()
-        wm.hwInterfaceResolver = await HwPopupResolver()
-        let lightningMnemonic = try wm.getLightningMnemonic(credentials: credentials)
-        let lightningCredentials = Credentials(mnemonic: lightningMnemonic, bip39Passphrase: credentials.bip39Passphrase)
+        wm.hwInterfaceResolver = HwPopupResolver()
+        var lightningCredentials: Credentials?
+        if wm.existDerivedLightning() {
+            lightningCredentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
+            lightningCredentials?.bip39Passphrase = credentials.bip39Passphrase
+        }
         let walletIdentifier = try wm.prominentSession?.walletIdentifier(credentials: credentials)
         try await wm.login(
             credentials: credentials,

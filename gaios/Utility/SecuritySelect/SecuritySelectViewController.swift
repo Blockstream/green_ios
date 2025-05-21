@@ -305,8 +305,8 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
 }
 
 extension SecuritySelectViewController: LTExportJadeViewControllerDelegate {
-    func didExportedWallet(credentials: gdk.Credentials, wallet: gdk.WalletItem) {
-        didCreatedWallet(wallet, credentials: credentials)
+    func didExportedWallet() {
+        //didCreatedWallet(wallet, credentials: credentials)
     }
 }
 

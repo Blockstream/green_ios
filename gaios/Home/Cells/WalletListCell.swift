@@ -7,29 +7,15 @@ class WalletListCell: UITableViewCell {
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var iconSecurityType: UIImageView!
-    @IBOutlet weak var circleImageView: UIImageView!
     @IBOutlet weak var iconPassphrase: UIImageView!
     @IBOutlet weak var iconHW: UIImageView!
     @IBOutlet weak var lblHint: UILabel!
-
-    @IBOutlet weak var lblOverviewTitle: UILabel!
-    @IBOutlet weak var lblShortcutTitle: UILabel!
-    @IBOutlet weak var shortcutStack: UIStackView!
-    @IBOutlet weak var circleImageOverview: UIImageView!
-    @IBOutlet weak var circleImageShortcut: UIImageView!
-    @IBOutlet weak var shortcutView: UIView!
     @IBOutlet weak var buttonView: UIButton!
-    @IBOutlet weak var overView: UIView!
 
     var onLongpress: ((IndexPath) -> Void)?
-    var onLongpressOverview: ((IndexPath) -> Void)?
-    var onLongpressLightShort: ((IndexPath) -> Void)?
     var onTap: ((IndexPath) -> Void)?
-    var onTapOverview: ((IndexPath) -> Void)?
-    var onTapLightShort: ((IndexPath) -> Void)?
     var indexPath: IndexPath?
 
-    var hasShortcut = false
     var account: Account?
 
     override func awakeFromNib() {
@@ -37,20 +23,7 @@ class WalletListCell: UITableViewCell {
         bg.setStyle(CardStyle.defaultStyle)
 
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressed))
-        let longPressOverviewRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressedOverview))
-        let longPressLightShortRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressedLightShort))
         buttonView.addGestureRecognizer(longPressRecognizer)
-        overView.addGestureRecognizer(longPressOverviewRecognizer)
-        shortcutView.addGestureRecognizer(longPressLightShortRecognizer)
-
-        shortcutView.layer.cornerRadius = 7.0
-        shortcutView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
 
     override func prepareForReuse() {
@@ -63,23 +36,14 @@ class WalletListCell: UITableViewCell {
     }
 
     func configure(item: Account,
-                   isOverviewSelected: Bool = false,
-                   isLightningSelected: Bool = false,
                    indexPath: IndexPath,
                    onLongpress: ((IndexPath) -> Void)? = nil,
-                   onLongpressOverview: ((IndexPath) -> Void)? = nil,
-                   onLongpressLightShort: ((IndexPath) -> Void)? = nil,
-                   onTap: ((IndexPath) -> Void)? = nil,
-                   onTapOverview: ((IndexPath) -> Void)? = nil,
-                   onTapLightShort: ((IndexPath) -> Void)? = nil
+                   onTap: ((IndexPath) -> Void)? = nil
     ) {
         lblTitle.text = item.name
         lblHint.text = ""
-        [lblTitle, lblOverviewTitle, lblShortcutTitle].forEach {
-            $0.setStyle(.txtBigger)
-        }
+        lblTitle.setStyle(.txtBigger)
         lblHint.setStyle(.txtSmaller)
-        self.hasShortcut = false//item.getDerivedLightningAccount() != nil
         self.account = item
         let img: UIImage? = {
             if item.isWatchonly {
@@ -109,24 +73,9 @@ class WalletListCell: UITableViewCell {
         }
         iconPassphrase.isHidden = !item.isEphemeral
         iconHW.isHidden = !item.isHW
-
-        shortcutStack.subviews.forEach { $0.isHidden = true }
-        if hasShortcut == true {
-            shortcutStack.subviews.forEach { $0.isHidden = false }
-        }
-        circleImageView.isHidden = hasShortcut || !isOverviewSelected
-        circleImageOverview.isHidden = !hasShortcut || !isOverviewSelected
-        circleImageShortcut.isHidden = !hasShortcut || !isLightningSelected
-        lblOverviewTitle.text = "Wallet Overview".localized
-        lblShortcutTitle.text = "Lightning Account".localized
-
         self.indexPath = indexPath
         self.onTap = onTap
-        self.onTapOverview = onTapOverview
-        self.onTapLightShort = onTapLightShort
         self.onLongpress = onLongpress
-        self.onLongpressOverview = onLongpressOverview
-        self.onLongpressLightShort = onLongpressLightShort
     }
 
     @objc func onLongPressed(sender: UILongPressGestureRecognizer) {
@@ -137,42 +86,10 @@ class WalletListCell: UITableViewCell {
         }
     }
 
-    @objc func onLongPressedOverview(sender: UILongPressGestureRecognizer) {
-        if sender.state == UIGestureRecognizer.State.began {
-            if let indexPath = indexPath {
-                onLongpressOverview?(indexPath)
-            }
-        }
-    }
-
-    @objc func onLongPressedLightShort(sender: UILongPressGestureRecognizer) {
-        if sender.state == UIGestureRecognizer.State.began {
-            if let indexPath = indexPath {
-                onLongpressLightShort?(indexPath)
-            }
-        }
-    }
-
     @IBAction func btnTap(_ sender: Any) {
         if let indexPath = indexPath {
             bg.pressAnimate {
                 self.onTap?(indexPath)
-            }
-        }
-    }
-
-    @IBAction func onTapOverview(_ sender: Any) {
-        if let indexPath = indexPath {
-            bg.pressAnimate {
-                self.onTapOverview?(indexPath)
-            }
-        }
-    }
-
-    @IBAction func btnTapLightShort(_ sender: Any) {
-        if let indexPath = indexPath {
-            bg.pressAnimate {
-                self.onTapLightShort?(indexPath)
             }
         }
     }

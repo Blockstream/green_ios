@@ -36,26 +36,9 @@ class ManualBackupViewController: UIViewController {
         lblInfo3.setStyle(.txt)
         btnNext.setStyle(.primary)
     }
-    func authenticated(successAction: @escaping () -> Void) {
-        let context = LAContext()
-        var error: NSError?
-        if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
-            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Authentication" ) { success, _ in
-                if success {
-                    successAction()
-                }
-            }
-        }
-    }
     @IBAction func btnNext(_ sender: Any) {
-        self.authenticated {
-            DispatchQueue.main.async { [weak self] in
-                if let accountId = WalletManager.current?.account.id,
-                    let vc = AccountNavigator.mnemonic() {
-                    vc.showBip85 = self?.showBip85 ?? false
-                    self?.navigationController?.pushViewController(vc, animated: true)
-                }
-            }
+        if let vc = AccountNavigator.mnemonic() {
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }

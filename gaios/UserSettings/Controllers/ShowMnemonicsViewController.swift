@@ -3,6 +3,7 @@ import UIKit
 import gdk
 import greenaddress
 import core
+import LocalAuthentication
 
 class ShowMnemonicsViewController: UIViewController {
 
@@ -12,19 +13,11 @@ class ShowMnemonicsViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var btnShowQR: UIButton!
 
-    var items: [String] = []
-    var bip39Passphrase: String?
+    var prefilledCredentials: Credentials?
     var showBip85: Bool = false
-    var credentials: Credentials? {
-        didSet {
-            items = credentials?.mnemonic?.split(separator: " ").map(String.init) ?? []
-        }
-    }
-    var lightningMnemonic: String? {
-        didSet {
-            items = lightningMnemonic?.split(separator: " ").map(String.init) ?? []
-        }
-    }
+    private var isHW: Bool { AccountsRepository.shared.current?.isHW ?? false }
+    private var items: [String] = []
+    private var bip39Passphrase: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,39 +25,46 @@ class ShowMnemonicsViewController: UIViewController {
         setStyle()
         btnShowQR.setStyle(.primary)
         btnShowQR.setTitle("id_show_qr_code".localized, for: .normal)
-        Task { [weak self] in
-            await self?.reload()
+        items = prefilledCredentials?.mnemonic?.split(separator: " ").map(String.init) ?? []
+        collectionView.reloadData()
+        if prefilledCredentials != nil {
+            return
+        }
+        authenticated {
+            Task {
+                await self.reload(showLightning: self.showBip85)
+            }
         }
     }
 
-    func reload() async {
-        let isHW = AccountsRepository.shared.current?.isHW ?? false
-        let derivedAccount = AccountsRepository.shared.current?.getDerivedLightningAccount()
-        do {
-            if credentials != nil {
-                self.collectionView.reloadData()
-                return
-            }
-            if isHW {
-                if !showBip85 {
-                    throw GaError.GenericError("No export mnemonic from HW")
-                } else if let derivedAccount = derivedAccount {
-                    self.lightningMnemonic = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: derivedAccount.keychain).mnemonic
-                }
+    func getCredentials() async -> Credentials? {
+        return try? await WalletManager.current?.prominentSession?.getCredentials(password: "")
+    }
+
+    func getLightningCredentials() -> Credentials? {
+        guard let account = WalletManager.current?.account else {
+            return nil
+        }
+        return try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
+    }
+
+    func reload(showLightning: Bool) async {
+        let task = Task.detached { [weak self] in
+            if showLightning {
+                return await self?.getLightningCredentials()
             } else {
-                self.credentials = try await WalletManager.current?.prominentSession?.getCredentials(password: "")
-                self.bip39Passphrase = credentials?.bip39Passphrase
-                if showBip85, let credentials = credentials {
-                    self.lightningMnemonic = try WalletManager.current?.getLightningMnemonic(credentials: credentials)
-                }
+                return await self?.getCredentials()
             }
-            await MainActor.run {
-                self.collectionView.reloadData()
-            }
-        } catch {
-            showError(error)
+        }
+        switch await task.result {
+        case .success(let credentials):
+            items = credentials?.mnemonic?.split(separator: " ").map(String.init) ?? []
+            collectionView.reloadData()
+        case .failure(let err):
+            showError(err)
         }
     }
+
     func setContent() {
         // title = "id_recovery_phrase".localized
         lblInfo.text = "RECOVERY METHOD".localized
@@ -91,6 +91,20 @@ class ShowMnemonicsViewController: UIViewController {
 
     @IBAction func btnShowQR(_ sender: Any) {
         magnifyQR()
+    }
+    
+    func authenticated(successAction: @escaping () -> Void) {
+        let context = LAContext()
+        var error: NSError?
+        if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
+            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Authentication" ) { success, _ in
+                if success {
+                    successAction()
+                } else {
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }
+        }
     }
 }
 

@@ -57,20 +57,16 @@ public class AccountsRepository {
 
     public func get(for id: String) -> Account? {
         ephAccounts.filter({ $0.id == id }).first ??
-        accounts.filter({ $0.id == id }).first ??
-        accounts.compactMap { $0.getDerivedLightningAccount() }.filter({ $0.id == id }).first
+        accounts.filter({ $0.id == id }).first
     }
 
     public func find(xpubHashId: String) -> [Account]? {
         ephAccounts.filter({ $0.xpubHashId == xpubHashId }) +
-        accounts.filter({ $0.xpubHashId == xpubHashId }) +
-        accounts.compactMap { $0.getDerivedLightningAccount() }.filter({ $0.xpubHashId == xpubHashId })
+        accounts.filter({ $0.xpubHashId == xpubHashId })
     }
 
     public func upsert(_ account: Account) {
-        if account.isDerivedLightning {
-            return
-        } else if account.isEphemeral {
+        if account.isEphemeral {
             if !ephAccounts.contains(where: { $0.id == account.id }) {
                 ephAccounts += [account]
             }
@@ -88,13 +84,9 @@ public class AccountsRepository {
     public func remove(_ account: Account) async {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         try? await wm.unregisterLightning()
-        try? await wm.removeLightningShortcut()
-        if !account.isDerivedLightning {
-            // full wallet deletion
-            try? await wm.removeLightning()
-            account.removePinKeychainData()
-            try? account.removeBioKeychainData()
-        }
+        await wm.removeLightning()
+        account.removePinKeychainData()
+        account.removeBioKeychainData()
         accounts.removeAll(where: { $0.id == account.id})
     }
 

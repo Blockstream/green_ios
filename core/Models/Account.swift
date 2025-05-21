@@ -44,14 +44,13 @@ public struct Account: Codable, Equatable {
     public var isEphemeral: Bool = false
     public var askEphemeral: Bool?
     public var ephemeralId: Int?
-    public var isDerivedLightning: Bool = false
     public var lightningWalletHashId: String?
     private var watchonly: Bool?
     public var isWatchonly: Bool { watchonly ?? false || username != nil }
     public var efusemac: String?
     public var boardType: JadeBoardType?
 
-    public init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, walletHashId: String? = nil, lightningWalletHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false, isDerivedLightning: Bool = false, password: String? = nil, watchonly: Bool? = nil) {
+    public init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, walletHashId: String? = nil, lightningWalletHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false, password: String? = nil, watchonly: Bool? = nil) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name
@@ -69,7 +68,6 @@ public struct Account: Codable, Equatable {
         self.lightningWalletHashId = lightningWalletHashId
         self.uuid = uuid
         self.hidden = hidden
-        self.isDerivedLightning = isDerivedLightning
         self.password = password
         self.watchonly = watchonly
         if isEphemeral {
@@ -168,17 +166,6 @@ public struct Account: Codable, Equatable {
     public func removePinKeychainData() {
         _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyPIN, for: keychain)
     }
-/*
-    public func removeLightningShortcut() {
-        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyLightning, forNetwork: keychain)
-    }
-
-    public func removeLightningCredentials() {
-        if let walletHashId = walletHashId {
-            LightningRepository.shared.remove(for: walletHashId)
-        }
-    }
-*/
     public func addBiometrics(session: SessionManager, credentials: Credentials) async throws {
         let password = String.random(length: 14)
         let params = EncryptWithPinParams(pin: password, credentials: credentials)
@@ -207,26 +194,10 @@ public struct Account: Codable, Equatable {
         }
     }
 
-    public func getDerivedLightningAccount() -> Account? {
-        let account = Account(
-                id: "\(id)-lightning-shortcut",
-                name: name,
-                network: .bitcoinSS,
-                isJade: isJade,
-                xpubHashId: xpubHashId,
-                walletHashId: walletHashId,
-                lightningWalletHashId: lightningWalletHashId,
-                isDerivedLightning: true,
-                password: password,
-                watchonly: false
-        )
-        if AuthenticationTypeHandler.findAuth(method: .AuthKeyLightning, forNetwork: account.keychain) {
-            return account
-        }
-        return nil
-    }
-
     public var walletIdentifier: WalletIdentifier? {
         return WalletIdentifier(walletHashId: walletHashId ?? "", xpubHashId: xpubHashId ?? "")
+    }
+    public var keychainLightning: String {
+        return "\(keychain)-lightning-shortcut"
     }
 }

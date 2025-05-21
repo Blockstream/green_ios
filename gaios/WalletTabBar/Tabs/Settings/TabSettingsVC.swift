@@ -157,7 +157,11 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
         case .rename:
             walletTab.rename()
         case .lightning:
-            comingSoon()
+            if viewModel.hasLightning() {
+                openLTSettingsViewController()
+            } else {
+                openLTCreateViewController()
+            }
         case .ampID:
             if !viewModel.hasSubaccountAmp() {
                 presentDialogCreateAmp()
@@ -205,6 +209,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
             stopLoader()
             if let subaccount = viewModel.getSubaccountsAmp().first {
                 presentDialogAmpId(subaccount)
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.newSubaccount.rawValue), object: nil, userInfo: nil)
             }
         case .failure(let err):
             stopLoader()
@@ -332,6 +337,26 @@ extension TabSettingsVC {
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
             vc.delegate = self
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func openLTSettingsViewController() {
+        guard let lightningSession = viewModel.wm?.lightningSession else {
+            DropAlert().warning(message: "Create a lightning account")
+            return
+        }
+        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LTSettingsViewController") as? LTSettingsViewController {
+            vc.viewModel = LTSettingsViewModel(lightningSession: lightningSession)
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func openLTCreateViewController() {
+        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LTCreateViewController") as? LTCreateViewController {
+            vc.viewModel = LTCreateViewModel()
             navigationController?.pushViewController(vc, animated: true)
         }
     }

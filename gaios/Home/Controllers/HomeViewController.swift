@@ -290,7 +290,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             let account = AccountsRepository.shared.swAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
-                               isOverviewSelected: isOverviewSelected(account),
                                indexPath: indexPath,
                                onLongpress: { [weak self] indexPath in self?.onTapLongPressOverview(indexPath, cell: cell) },
                                onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
@@ -301,7 +300,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             let account = ephAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
-                               isOverviewSelected: isOverviewSelected(account),
                                indexPath: indexPath,
                                onLongpress: nil,
                                onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
@@ -313,7 +311,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(
                     item: account,
-                    isOverviewSelected: isOverviewSelected(account),
                     indexPath: indexPath,
                     onLongpress: { [weak self] indexPath in self?.onTapLongPressOverview(indexPath, cell: cell) },
                     onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
@@ -333,7 +330,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuHomeViewController") as? PopoverMenuHomeViewController {
             popover.delegate = self
             popover.index = account.id
-            popover.isDerivedLightning = false
             popover.menuOptions = [.edit, .delete]
             popover.modalPresentationStyle = .popover
             let popoverPresentationController = popover.popoverPresentationController

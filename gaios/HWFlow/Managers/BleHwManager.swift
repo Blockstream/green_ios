@@ -193,8 +193,8 @@ class BleHwManager {
         walletManager.hwDevice = device
         walletManager.hwProtocol = hwProtocol
         var derivedCredentials: Credentials?
-        if let derivedAccount = account.getDerivedLightningAccount() {
-            derivedCredentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: derivedAccount.keychain)
+        if AuthenticationTypeHandler.findAuth(method: .AuthKeyLightning, forNetwork: account.keychainLightning) {
+            derivedCredentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
         }
         do {
             if let masterXpub = try await getMasterXpub(chain: account.gdkNetwork.chain) {

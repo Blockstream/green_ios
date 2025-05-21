@@ -56,12 +56,5 @@ class DenominationExchangeViewModel {
         guard let session = wm.prominentSession,
             let settings = settings else { return }
         _ = try await session.changeSettings(settings: settings)
-        if let account = wm.account.getDerivedLightningAccount() {
-            let session = SessionManager(account.gdkNetwork)
-            try? await session.connect()
-            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychain)
-            _ = try? await session.loginUser(credentials)
-            _ = try? await session.changeSettings(settings: settings)
-        }
     }
 }

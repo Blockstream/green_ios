@@ -62,7 +62,7 @@ class WalletTabBarViewController: UITabBarController {
                 self?.wView.removeFromSuperview()
             })
             // load backup alert
-            if let wm = walletModel.wm, !wm.account.isHW && !wm.account.isWatchonly {
+            if let wm = walletModel.wm, !wm.account.isHW && !wm.isWatchonly {
                 BackupHelper.shared.addToBackupList(walletModel.wm?.account.id)
             }
         }
@@ -154,7 +154,7 @@ class WalletTabBarViewController: UITabBarController {
 
     func handleEvent(_ eventType: EventType, details: [AnyHashable: Any]) {
         switch eventType {
-        case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed:
+        case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed, .newSubaccount:
             Task.detached { [weak self] in
                 await self?.reload(discovery: false)
             }
@@ -248,7 +248,7 @@ class WalletTabBarViewController: UITabBarController {
         self.startLoader(message: "id_logout".localized)
         Task {
             let account = self.walletModel.wm?.account
-            if let account = account, account.isHW && !account.isWatchonly {
+            if let account = account, account.isHW {
                 try? await BleHwManager.shared.disconnect()
             }
             await WalletManager.current?.disconnect()

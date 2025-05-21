@@ -202,13 +202,13 @@ class ConnectViewModel: NSObject {
         guard let credentials = credentials else {
             throw HWError.Declined("")
         }
-        let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(
-            method: .AuthKeyLightning,
-            for: account.keychain)
+        //let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(
+        ///    method: .AuthKeyLightning,
+        //    for: account.keychain)
         updateState?(.login)
-        try await wm.logiHwWatchonly(
+        try await wm.loginWatchonly(
             credentials: credentials,
-            lightningCredentials: lightningCredentials)
+            lightningCredentials: nil)
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)
         }

@@ -95,7 +95,7 @@ class NotificationService: UNNotificationServiceExtension {
         case .success:
             logger.info("\(self.TAG, privacy: .public): MeldTransactionTask starts successfully")
         case .failure(let err):
-            logger.error("\(self.TAG, privacy: .public): MeldTransactionTask fails with \(err.description() ?? "", privacy: .public)")
+            logger.error("\(self.TAG, privacy: .public): MeldTransactionTask fails with \(err.description(), privacy: .public)")
             currentTask.onShutdown()
             shutdown()
         }
@@ -112,16 +112,16 @@ class NotificationService: UNNotificationServiceExtension {
             return
         }
         logger.info("\(self.TAG, privacy: .public): xpub: \(xpub, privacy: .public)")
-        guard let lightningAccount = getLightningAccount(xpub: xpub) else {
+        guard let account = getAccount(xpub: xpub) else {
             logger.error("\(self.TAG, privacy: .public): Wallet not lightning found")
             currentTask.onShutdown()
             shutdown()
             return
         }
-        logger.info("\(self.TAG, privacy: .public): Using lightning wallet \(lightningAccount.name, privacy: .public)")
+        logger.info("\(self.TAG, privacy: .public): Using lightning wallet \(account.name, privacy: .public)")
         let task = Task { [weak self] in
             logger.info("\(self?.TAG ?? "", privacy: .public): Breez SDK is not connected, connecting....")
-            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: lightningAccount.keychain)
+            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
             let breezSdk = try await self?.breezSDKConnector.register(credentials: credentials, listener: currentTask)
             logger.info("\(self?.TAG ?? "", privacy: .public): Breez SDK connected successfully")
             if let breezSdk = breezSdk {
@@ -132,18 +132,10 @@ class NotificationService: UNNotificationServiceExtension {
         case .success:
             logger.info("\(self.TAG, privacy: .public): MeldTransactionTask starts successfully")
         case .failure(let err):
-            logger.error("\(self.TAG, privacy: .public): Breez SDK connection failed \(err.description() ?? "", privacy: .public)")
+            logger.error("\(self.TAG, privacy: .public): Breez SDK connection failed \(err.description(), privacy: .public)")
             currentTask.onShutdown()
             shutdown()
         }
-    }
-
-    func getLightningAccount(xpub: String) -> Account? {
-        let accounts = AccountsRepository.shared.accounts
-        return accounts
-            .compactMap { $0.getDerivedLightningAccount() }
-            .filter { $0.xpubHashId == xpub }
-            .first
     }
 
     func getAccount(xpub: String) -> Account? {

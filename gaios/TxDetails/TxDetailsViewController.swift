@@ -31,7 +31,7 @@ class TxDetailsViewController: UIViewController {
     private var isReloading = false
 
     var isWatchonly: Bool {
-        WalletManager.current?.account.isWatchonly ?? false
+        WalletManager.current?.isWatchonly ?? false
     }
     var isSinglesig: Bool {
         vm.transaction.subaccount?.isSinglesig ?? true

@@ -98,7 +98,7 @@ class SendTxConfirmViewController: UIViewController {
         lblNoteTitle.text = "id_my_notes".localized
         lblNoteTxt.text = ""
 
-        lblPayRequestByTitle.text = "id_payment_requested_by_s".localized
+        lblPayRequestByTitle.text = String(format: "id_payment_requested_by_s".localized, "")
         lblPayRequestByValue.text = ""
         lblPayRequestByHint.text = ""
         payRequestByStack.isHidden = true

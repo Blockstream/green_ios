@@ -251,11 +251,11 @@ class SecuritySelectViewModel {
             return
         }
         let credentials = try wm.deriveLightningCredentials(from: mainCredentials)
-        try await wm.addLightningShortcut(credentials: credentials)
+        //try await wm.addLightningShortcut(credentials: credentials)
     }
 
     func addHWShortcutLightning(_ credentials: Credentials) async throws {
-        try await wm.addLightningShortcut(credentials: credentials)
+        //try await wm.addLightningShortcut(credentials: credentials)
     }
 
     var linkMore: String {

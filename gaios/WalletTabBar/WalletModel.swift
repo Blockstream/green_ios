@@ -21,7 +21,7 @@ class WalletModel {
     
     /// load visible subaccounts
     var subaccounts: [WalletItem] { wm?.subaccounts.filter { !($0.hidden) } ?? [] }
-    var watchOnly: Bool { wm?.account.isWatchonly ?? false}
+    var watchOnly: Bool { wm?.isWatchonly ?? false}
     var headerIcon: UIImage { return UIImage(named: wm?.prominentNetwork.gdkNetwork.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white) }
     
     /// Cached data
@@ -120,12 +120,11 @@ class WalletModel {
         fetchingTxs = true
         // get gdk/lightning transactions
         let txs = try await wm.pagedTransactions(subaccounts: wm.subaccounts, of: reset ? 0 : pages)
+        if reset {
+            cachedTransactions = [:]
+        }
         for (account, pagetxs) in txs {
-            if reset {
-                cachedTransactions[account] = [pagetxs]
-            } else {
-                cachedTransactions[account] = (cachedTransactions[account] ?? []) + [pagetxs]
-            }
+            cachedTransactions[account] = (cachedTransactions[account] ?? []) + [pagetxs]
         }
         // get meld transactions
         if let xpub = wm.account.xpubHashId, Meld.needFetchingTxs(xpub: xpub) && reset {
@@ -290,27 +289,6 @@ class WalletModel {
                                                                                         accounts: accounts,
                                                                                         accountsTypes: accountsTypes))
     }
-    
-    func needShortcut() -> Bool {
-        
-        guard wm?.lightningSubaccount != nil else {
-            return false
-        }
-        if wm?.existDerivedLightning() == true {
-            return false
-        }
-        if wm?.account.isHW == true {
-            return false
-        }
-        if AccountsRepository.shared.current?.gdkNetwork.mainnet == false {
-            return false
-        }
-        if AccountsRepository.shared.current?.isWatchonly == true {
-            return false
-        }
-        return true
-    }
-    
     func registerNotifications() {
         guard let token = UserDefaults(suiteName: Bundle.main.appGroup)?.string(forKey: "token"),
               let wm = wm,
@@ -359,6 +337,6 @@ class WalletModel {
     }
     
     func canShowMnemonic() -> Bool {
-        wm?.account.isHW == false && wm?.account.isWatchonly == false && wm?.account.isDerivedLightning == false
+        wm?.account.isHW == false && wm?.isWatchonly == false
     }
 }

@@ -5,44 +5,7 @@ import hw
 import core
 
 protocol LTExportJadeViewControllerDelegate: AnyObject {
-    func didExportedWallet(credentials: Credentials, wallet: WalletItem)
-}
-
-class LTExportJadeViewModel {
-    private var wm: WalletManager? { WalletManager.current }
-    private var privateKey: Data?
-
-    func request() async -> BcurEncodedData? {
-        guard let session = wm?.prominentSession else { return nil }
-        let (privateKey, bcurParts) = await session.jadeBip8539Request()
-        self.privateKey = privateKey
-        return bcurParts
-    }
-
-    func reply(publicKey: String, encrypted: String) async throws -> Credentials {
-        guard let session = wm?.prominentSession else {
-            throw HWError.Abort("Invalid session")
-        }
-        guard let privateKey = privateKey else {
-            throw HWError.Abort("Invalid private key")
-        }
-        let lightningMnemonic = await session.jadeBip8539Reply(
-            privateKey: privateKey,
-            publicKey: publicKey.hexToData(),
-            encrypted: encrypted.hexToData())
-        guard let lightningMnemonic = lightningMnemonic else {
-            throw HWError.Abort("Invalid key derivation")
-        }
-        let credentials = Credentials(mnemonic: lightningMnemonic)
-        try await wm?.lightningSession?.connect()
-        try await wm?.lightningSession?.register(credentials: credentials)
-        try await WalletManager.current?.subaccounts()
-        return credentials
-    }
-
-    func subaccount() async throws -> WalletItem? {
-        try await wm?.lightningSubaccount
-    }
+    func didExportedWallet()
 }
 
 class LTExportJadeViewController: UIViewController {
@@ -58,7 +21,7 @@ class LTExportJadeViewController: UIViewController {
     @IBOutlet weak var btnQREnlarge: UIButton!
 
     var delegate: LTExportJadeViewControllerDelegate?
-    private let viewModel = LTExportJadeViewModel()
+    var viewModel: LTExportJadeViewModel!
     private var bcur: BcurEncodedData?
 
     override func viewDidLoad() {
@@ -70,7 +33,7 @@ class LTExportJadeViewController: UIViewController {
     }
 
     func setContent() {
-        title = "Export Lightning Key to Green".localized
+        title = "Export Lightning Key".localized
         subtitleLabel.text = "Scan QR with Jade".localized
         descriptionLabel.text = "Securely import from your Jade a dedicated key for lightning.".localized
         nextButton.setTitle("id_next".localized, for: .normal)
@@ -136,23 +99,29 @@ class LTExportJadeViewController: UIViewController {
 
 extension LTExportJadeViewController: DialogScanViewControllerDelegate {
     func didScan(value: ScanResult, index: Int?) {
+        Task { [weak self] in
+            await self?.enableLightning(value: value)
+        }
+    }
+    func enableLightning(value: ScanResult) async {
         startLoader(message: String(format: "id_creating_your_s_account".localized, "id_lightning".localized.lowercased()))
-        Task {
-            do {
-                let credentials = try await viewModel.reply(
-                    publicKey: value.bcur?.publicΚey ?? "",
-                    encrypted: value.bcur?.encrypted ?? "")
-                if let subaccount = try await viewModel.subaccount() {
-                    await MainActor.run {
-                        self.stopLoader()
-                        self.navigationController?.popViewController(animated: true)
-                        self.delegate?.didExportedWallet(credentials: credentials, wallet: subaccount)
-                    }
-                }
-            } catch {
-                self.stopLoader()
-                self.showError(error)
+        let task = Task.detached { [weak self] in
+            guard let credentials = try await self?.viewModel.reply(
+                publicKey: value.bcur?.publicΚey ?? "",
+                encrypted: value.bcur?.encrypted ?? "") else {
+                throw HWError.Abort("id_operation_failure")
             }
+            try await self?.viewModel.enableLightning(credentials: credentials)
+            return credentials
+        }
+        switch await task.result {
+        case .success:
+            self.stopLoader()
+            self.navigationController?.popViewController(animated: true)
+            self.delegate?.didExportedWallet()
+        case .failure(let err):
+            self.stopLoader()
+            self.showError(err)
         }
     }
     func didStop() {

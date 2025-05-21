@@ -537,6 +537,7 @@
 		8114888E2B785A27004C7AB6 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 8114888D2B785A27004C7AB6 /* FirebaseMessaging */; };
 		81196E9D2B739F7900537A6E /* CBOR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81196E9C2B739F7900537A6E /* CBOR.swift */; };
 		811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */; };
+		811FB34A2DDEB634002FFFB7 /* LTExportJadeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811FB3492DDEB62A002FFFB7 /* LTExportJadeViewModel.swift */; };
 		81226F7F2DB24B4E00086EB8 /* BiometricLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81226F7E2DB24B4300086EB8 /* BiometricLoginViewController.swift */; };
 		812528CE2B60F214004E9EB1 /* LTRecoverFundsSummaryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812528CD2B60F214004E9EB1 /* LTRecoverFundsSummaryCell.swift */; };
 		812528D02B60FB7A004E9EB1 /* LTRecoveryFundsErrorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812528CF2B60FB7A004E9EB1 /* LTRecoveryFundsErrorCell.swift */; };
@@ -554,6 +555,12 @@
 		8135873F2DBFCC8C0000116B /* HWDialogs.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8135873E2DBFCC8C0000116B /* HWDialogs.storyboard */; };
 		813872962A04AF450092CFD2 /* LNExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 813872952A04AF450092CFD2 /* LNExtensions.swift */; };
 		81430C0D2C85D2A000C57B3E /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81430C0C2C85D2A000C57B3E /* Enums.swift */; };
+		814A9CBD2DDCDDB5004AE73F /* LTSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814A9CBC2DDCDDAE004AE73F /* LTSettingsViewController.swift */; };
+		814A9CC02DDCDF9A004AE73F /* LTSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814A9CBF2DDCDF95004AE73F /* LTSettingsModel.swift */; };
+		814A9CC22DDCE1EC004AE73F /* LTCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814A9CC12DDCE1DF004AE73F /* LTCreateViewController.swift */; };
+		814A9CC72DDCE78D004AE73F /* LTSettingCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814A9CC42DDCE78D004AE73F /* LTSettingCellModel.swift */; };
+		814A9CC82DDCE78D004AE73F /* LTSettingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814A9CC32DDCE78D004AE73F /* LTSettingCell.swift */; };
+		814A9CC92DDCE78D004AE73F /* LTSettingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 814A9CC52DDCE78D004AE73F /* LTSettingCell.xib */; };
 		8150EE1B2BB721B700E70A12 /* greenlight_device_key.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8150EE1A2BB721B700E70A12 /* greenlight_device_key.txt */; };
 		8150EE1D2BB7248C00E70A12 /* greenlight_device_key.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8150EE1A2BB721B700E70A12 /* greenlight_device_key.txt */; };
 		8150EE1F2BB727EE00E70A12 /* greenlight_device_cert.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8150EE1E2BB727EE00E70A12 /* greenlight_device_cert.txt */; };
@@ -731,6 +738,8 @@
 		81DE63432DDE2F6600AB79DB /* SetupNewMoreActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DE63422DDE2F5700AB79DB /* SetupNewMoreActionsViewController.swift */; };
 		81DE63462DDE41AF00AB79DB /* DialogActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DE63452DDE41A800AB79DB /* DialogActionsViewController.swift */; };
 		81DE63482DDE468200AB79DB /* DialogActionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DE63472DDE467C00AB79DB /* DialogActionsViewModel.swift */; };
+		81DE63412DDE13B700AB79DB /* LTCreateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DE63402DDE13B300AB79DB /* LTCreateModel.swift */; };
+		81DE63432DDE2F6600AB79DB /* SetupNewMoreActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DE63422DDE2F5700AB79DB /* SetupNewMoreActionsViewController.swift */; };
 		81DEB8302CF3966F0084FFF0 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DEB82F2CF3966B0084FFF0 /* Data.swift */; };
 		81DFA9962CB3EEE500EE0277 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DFA9952CB3EEE500EE0277 /* String.swift */; };
 		81E04A3B2AA63C6800867705 /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E04A3A2AA63C6800867705 /* Country.swift */; };
@@ -1497,6 +1506,7 @@
 		811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorConfig.swift; sourceTree = "<group>"; };
 		811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		811EFEE62A2BAFFB0054EBFE /* GdkSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GdkSettings.swift; sourceTree = "<group>"; };
+		811FB3492DDEB62A002FFFB7 /* LTExportJadeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTExportJadeViewModel.swift; sourceTree = "<group>"; };
 		81205D6821C3B7EB005180CF /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		81226F7E2DB24B4300086EB8 /* BiometricLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricLoginViewController.swift; sourceTree = "<group>"; };
 		8124524125D6B0DD00537238 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
@@ -1518,6 +1528,12 @@
 		813872932A0480E20092CFD2 /* LightningSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningSessionManager.swift; sourceTree = "<group>"; };
 		813872952A04AF450092CFD2 /* LNExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNExtensions.swift; sourceTree = "<group>"; };
 		81430C0C2C85D2A000C57B3E /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
+		814A9CBC2DDCDDAE004AE73F /* LTSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTSettingsViewController.swift; sourceTree = "<group>"; };
+		814A9CBF2DDCDF95004AE73F /* LTSettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTSettingsModel.swift; sourceTree = "<group>"; };
+		814A9CC12DDCE1DF004AE73F /* LTCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTCreateViewController.swift; sourceTree = "<group>"; };
+		814A9CC32DDCE78D004AE73F /* LTSettingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTSettingCell.swift; sourceTree = "<group>"; };
+		814A9CC42DDCE78D004AE73F /* LTSettingCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTSettingCellModel.swift; sourceTree = "<group>"; };
+		814A9CC52DDCE78D004AE73F /* LTSettingCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LTSettingCell.xib; sourceTree = "<group>"; };
 		8150EE1A2BB721B700E70A12 /* greenlight_device_key.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = greenlight_device_key.txt; sourceTree = "<group>"; };
 		8150EE1E2BB727EE00E70A12 /* greenlight_device_cert.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = greenlight_device_cert.txt; sourceTree = "<group>"; };
 		8152772629F9B52F00853EA1 /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
@@ -1673,6 +1689,8 @@
 		81DE63422DDE2F5700AB79DB /* SetupNewMoreActionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupNewMoreActionsViewController.swift; sourceTree = "<group>"; };
 		81DE63452DDE41A800AB79DB /* DialogActionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogActionsViewController.swift; sourceTree = "<group>"; };
 		81DE63472DDE467C00AB79DB /* DialogActionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogActionsViewModel.swift; sourceTree = "<group>"; };
+		81DE63402DDE13B300AB79DB /* LTCreateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTCreateModel.swift; sourceTree = "<group>"; };
+		81DE63422DDE2F5700AB79DB /* SetupNewMoreActionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupNewMoreActionsViewController.swift; sourceTree = "<group>"; };
 		81DEB82F2CF3966B0084FFF0 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		81DFA9952CB3EEE500EE0277 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		81E04A3A2AA63C6800867705 /* Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Country.swift; sourceTree = "<group>"; };
@@ -3121,6 +3139,8 @@
 		34C8585229F900AE004A3F83 /* LTFlow */ = {
 			isa = PBXGroup;
 			children = (
+				814A9CC62DDCE78D004AE73F /* LTSettingCell */,
+				814A9CBE2DDCDF8C004AE73F /* Models */,
 				34C8585529F9012C004A3F83 /* LTFlow.storyboard */,
 				34C8585329F90102004A3F83 /* Controllers */,
 			);
@@ -3132,6 +3152,8 @@
 			children = (
 				81F5C98A2ADD4581004B020A /* LTWithdraw */,
 				34F568952A828CC00081BF0C /* LTRecoverFunds */,
+				814A9CBC2DDCDDAE004AE73F /* LTSettingsViewController.swift */,
+				814A9CC12DDCE1DF004AE73F /* LTCreateViewController.swift */,
 				3445498E29FBF7D9006725D2 /* LTSuccessViewController.swift */,
 				344915E42A0BA27100D35818 /* LTSuccessViewModel.swift */,
 				344915E22A0A3C8000D35818 /* LTExperimentalViewController.swift */,
@@ -3616,6 +3638,26 @@
 				81E56A742C247AC30012A5A3 /* QrJadeConnection.swift */,
 			);
 			path = Jade;
+			sourceTree = "<group>";
+		};
+		814A9CBE2DDCDF8C004AE73F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				811FB3492DDEB62A002FFFB7 /* LTExportJadeViewModel.swift */,
+				81DE63402DDE13B300AB79DB /* LTCreateModel.swift */,
+				814A9CBF2DDCDF95004AE73F /* LTSettingsModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		814A9CC62DDCE78D004AE73F /* LTSettingCell */ = {
+			isa = PBXGroup;
+			children = (
+				814A9CC32DDCE78D004AE73F /* LTSettingCell.swift */,
+				814A9CC42DDCE78D004AE73F /* LTSettingCellModel.swift */,
+				814A9CC52DDCE78D004AE73F /* LTSettingCell.xib */,
+			);
+			path = LTSettingCell;
 			sourceTree = "<group>";
 		};
 		815A804229B3D41800269027 /* Repository */ = {
@@ -4613,6 +4655,7 @@
 				345B28E12DD1E4610075860A /* Illustration Checkmark.riv in Resources */,
 				3415CB0E2A67BFE500B66882 /* AddressAuthCell.xib in Resources */,
 				34F580052BA1ED1C00DCB076 /* TxDetailsAmountCell.xib in Resources */,
+				814A9CC92DDCE78D004AE73F /* LTSettingCell.xib in Resources */,
 				34C8585629F9012C004A3F83 /* LTFlow.storyboard in Resources */,
 				34C680EE2A72784900369639 /* DialogInputDenominationCell.xib in Resources */,
 				8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */,
@@ -4801,6 +4844,7 @@
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				34A883A82BA82C2D004A1826 /* TxDetailsActionCell.swift in Sources */,
 				818BA7182A30838F00DFB03A /* PairingSuccessViewController.swift in Sources */,
+				811FB34A2DDEB634002FFFB7 /* LTExportJadeViewModel.swift in Sources */,
 				34CD34932C7D98E700018824 /* VerifyOnDeviceViewModel.swift in Sources */,
 				818BA7132A2F909B00DFB03A /* ScanListItem.swift in Sources */,
 				3497936F25F8B18C0029ECB1 /* StrokeAnimation.swift in Sources */,
@@ -4864,6 +4908,8 @@
 				34610C5D2B864BED005157C8 /* BleUnavailableViewController.swift in Sources */,
 				346EB2702BE8BB1A0043139F /* SendTitleView.swift in Sources */,
 				817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */,
+				814A9CC72DDCE78D004AE73F /* LTSettingCellModel.swift in Sources */,
+				814A9CC82DDCE78D004AE73F /* LTSettingCell.swift in Sources */,
 				34B8DA0D2938FC0B001DA9B9 /* AccountCreateFooterView.swift in Sources */,
 				3415862129EE80AC005002D9 /* WOSetupViewController.swift in Sources */,
 				34C680F02A72786500369639 /* DialogInputDenominationCell.swift in Sources */,
@@ -4956,6 +5002,7 @@
 				812DBDC029725F8A002992D6 /* WatchOnlySettingsCellModel.swift in Sources */,
 				34F9809C2913A5EC00C12D48 /* WalletAssetCell.swift in Sources */,
 				3420471A291B9AA700EDE945 /* PolicyCellModel.swift in Sources */,
+				814A9CC02DDCDF9A004AE73F /* LTSettingsModel.swift in Sources */,
 				3403BDAC2630282600118C64 /* Learn2faViewController.swift in Sources */,
 				34D51B6B2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift in Sources */,
 				34955C142B67B8750056DE90 /* HowToSecureCellModel.swift in Sources */,
@@ -5046,6 +5093,7 @@
 				344D57C72D71AA5D009725A3 /* WalletTabBar.swift in Sources */,
 				81EA2DCF2B21F3E600A1F924 /* LoginViewModel.swift in Sources */,
 				819F1AEC2A0E6CAB00ECF999 /* PolicyCellType.swift in Sources */,
+				81DE63412DDE13B700AB79DB /* LTCreateModel.swift in Sources */,
 				3497936D25F8B18C0029ECB1 /* RotationAnimation.swift in Sources */,
 				347B7C282C3281260016A5C0 /* PromoCellModel.swift in Sources */,
 				344D57E02D71D088009725A3 /* TransactActionsCell.swift in Sources */,
@@ -5054,6 +5102,7 @@
 				6DF2DEE923F38314005F16E9 /* HelpViewController.swift in Sources */,
 				3457F4BF2924091600EF33B5 /* AssetExpandableSelectViewModel.swift in Sources */,
 				344471BE2C46B31F0051957E /* DialogGroupListViewModel.swift in Sources */,
+				814A9CC22DDCE1EC004AE73F /* LTCreateViewController.swift in Sources */,
 				348402022DB21ECD00A91C65 /* EditProtectionViewController.swift in Sources */,
 				34F0EC2F2D783EE70017C276 /* PriceChartModel.swift in Sources */,
 				349804D42772385600EAA1F4 /* DialogRecipientDeleteViewController.swift in Sources */,
@@ -5117,6 +5166,7 @@
 				344EF1C32C10528700689D63 /* TxDetailsTotalsCellModel.swift in Sources */,
 				34BEEAEF2857274700C0187D /* DialogWatchOnlySetUpViewController.swift in Sources */,
 				81226F7F2DB24B4E00086EB8 /* BiometricLoginViewController.swift in Sources */,
+				814A9CBD2DDCDDB5004AE73F /* LTSettingsViewController.swift in Sources */,
 				34287B752A83855B0065471F /* AlertViewController.swift in Sources */,
 				34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */,
 				3419B4532BF340AB00492198 /* ReEnable2faViewModel.swift in Sources */,

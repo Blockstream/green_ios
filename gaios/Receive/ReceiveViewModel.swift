@@ -199,8 +199,10 @@ class ReceiveViewModel {
 
     func getAssetSelectViewModel() -> AssetSelectViewModel {
         let hasSubaccountAmp = hasSubaccountAmp()
+        let hasLighting = wm.existDerivedLightning()
         let assetIds = WalletManager.current?.registry.all
             .filter { !(!hasSubaccountAmp && $0.amp == true) }
+            .filter { hasLighting || $0.assetId != AssetInfo.lightningId }
             .map { $0.assetId }
         let list = AssetAmountList.from(assetIds: assetIds ?? [])
         return AssetSelectViewModel(

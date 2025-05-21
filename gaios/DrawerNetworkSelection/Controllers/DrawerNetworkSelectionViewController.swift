@@ -135,13 +135,9 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             let account = AccountsRepository.shared.swAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
-                               isOverviewSelected: isOverviewSelected(account),
-                               isLightningSelected: false,
                                indexPath: indexPath,
                                onLongpress: nil,
-                               onTap: { [weak self] indexPath in self?.onTap(indexPath) },
-                               onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
-                               onTapLightShort: { _ in }
+                               onTap: { [weak self] indexPath in self?.onTap(indexPath) }
                 )
                 cell.selectionStyle = .none
                 return cell
@@ -150,13 +146,9 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             let account = ephAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
-                               isOverviewSelected: isOverviewSelected(account),
-                               isLightningSelected: false,
                                indexPath: indexPath,
                                onLongpress: nil,
-                               onTap: { [weak self] indexPath in self?.onTap(indexPath) },
-                               onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
-                               onTapLightShort: { _ in }
+                               onTap: { [weak self] indexPath in self?.onTap(indexPath) }
                 )
                 cell.selectionStyle = .none
                 return cell
@@ -165,13 +157,9 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
-                               isOverviewSelected: isOverviewSelected(account),
-                               isLightningSelected: false,
                                indexPath: indexPath,
                                onLongpress: nil,
-                               onTap: { [weak self] indexPath in self?.onTap(indexPath) },
-                               onTapOverview: { [weak self] indexPath in self?.onTapOverview(indexPath) },
-                               onTapLightShort: { _ in }
+                               onTap: { [weak self] indexPath in self?.onTap(indexPath) }
                 )
                 cell.selectionStyle = .none
                 return cell
@@ -275,19 +263,9 @@ extension DrawerNetworkSelectionViewController: UIScrollViewDelegate {
     func animateShortcut() {
 
         for cell in tableView.visibleCells {
-            if let c = cell as? WalletListCell, c.hasShortcut == true,
+            if let c = cell as? WalletListCell,
                c.account?.id == DrawerAnimationManager.shared.accountId {
-
                 DrawerAnimationManager.shared.accountId = nil
-                UIView.animate(withDuration: 0.5, animations: {
-                    c.shortcutView.backgroundColor = UIColor.gLightning()
-                }, completion: { completed in
-                    UIView.animate(withDuration: 1.0, animations: {
-                        c.shortcutView.backgroundColor = UIColor.clear
-                    }, completion: { completed in
-                        self.isAnimating = false
-                    })
-                })
             }
         }
     }

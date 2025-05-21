@@ -39,11 +39,10 @@ class TabSettingsModel {
     // load wallet manager for current logged session
     var session: SessionManager? { wm?.prominentSession }
     var settings: Settings? { session?.settings }
-    var isWatchonly: Bool { wm?.account.isWatchonly ?? false }
-    var isWatchonlySinglesig: Bool { (wm?.account.isWatchonly ?? false) && (wm?.account.username?.isEmpty ?? true) }
+    var isWatchonly: Bool { wm?.isWatchonly ?? false }
+    var isWatchonlySinglesig: Bool { (wm?.isWatchonly ?? false) && (wm?.account.username?.isEmpty ?? true) }
     var isSinglesig: Bool { session?.gdkNetwork.electrum ?? true }
     var isHW: Bool { wm?.account.isHW ?? false }
-    var isDerivedLightning: Bool { wm?.account.isDerivedLightning ?? false }
     var multiSigSession: SessionManager? { wm?.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }
 
     // reload all contents
@@ -138,13 +137,13 @@ class TabSettingsModel {
             section: .wallet,
             type: .archievedAccounts)
         var menu = [SettingsItemData]()
-        if !isWatchonly {
+        if !isWatchonly && AppSettings.shared.experimental {
             menu += [lightning]
         }
         if !isWatchonlySinglesig {
             menu += [ampID]
         }
-        if !isDerivedLightning && !isWatchonly {
+        if !isWatchonly {
             menu += [watchOnly]
         }
         menu += [rename]
@@ -189,10 +188,7 @@ class TabSettingsModel {
     }
 
     func load() {
-        if isDerivedLightning {
-            sections = [.header, .general, .wallet, .twoFactor, .about ]
-            items = [.header: getHeader(), .general: getGeneral(), .wallet: getWallet(), .twoFactor: getTwoFactor(), .about: getAbout()]
-        } else if isWatchonly || isHW {
+        if isWatchonly || isHW {
             sections = [.header, .general, .wallet, .about ]
             items = [.header: getHeader(), .general: getGeneral(), .wallet: getWallet(), .about: getAbout()]
         } else {
@@ -266,5 +262,13 @@ class TabSettingsModel {
             assetId: nil,
             accounts: getSubaccountsAmp(),
             hideBalance: false)
+    }
+    func hasLightning() -> Bool {
+        guard let account = WalletManager.current?.account else {
+            return false
+        }
+        return AuthenticationTypeHandler.findAuth(
+            method: .AuthKeyLightning,
+            forNetwork: account.keychainLightning)
     }
 }

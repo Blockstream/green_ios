@@ -270,7 +270,7 @@ class LoginViewController: UIViewController {
         self.stopLoader()
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ShowMnemonicsViewController") as? ShowMnemonicsViewController {
-            vc.credentials = credentials
+            vc.prefilledCredentials = credentials
             self.navigationController?.pushViewController(vc, animated: true)
         }
         self.pinCode = ""
