@@ -72,7 +72,8 @@ class SetupNewViewController: UIViewController {
             vc.viewModel = SetupNewMoreActionsViewModel()
             vc.delegate = self
             AnalyticsManager.shared.woWallet()
-            present(vc, animated: true)
+            vc.modalPresentationStyle = .overFullScreen
+            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
         }
     }
     func pushWOSelectViewController() {
