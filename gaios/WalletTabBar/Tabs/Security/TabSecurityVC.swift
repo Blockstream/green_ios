@@ -5,12 +5,12 @@ import core
 class TabSecurityVC: TabViewController {
 
     @IBOutlet weak var tableView: UITableView!
-    private var completion: (()->())?
+    private var completion: (()->Void)?
 
     var backupCardCellModel = [AlertCardCellModel]()
     var unlockCellModel: [PreferenceCellModel] {
         var list = [PreferenceCellModel]()
-        list.append(PreferenceCellModel(preferenceType: .faceID, state: walletModel.wm?.account.hasBioPin == true || walletModel.wm?.account.hasWoBioCredentials == true ? .on : .off))
+        list.append(PreferenceCellModel(preferenceType: .bio, state: walletModel.wm?.account.hasBioPin == true || walletModel.wm?.account.hasWoBioCredentials == true ? .on : .off))
         if walletModel.wm?.account.isHW != true {
             list.append(PreferenceCellModel(preferenceType: .pin, state: walletModel.wm?.account.hasManualPin == true ? .on : .off))
         }
@@ -81,11 +81,11 @@ class TabSecurityVC: TabViewController {
     }
     func onPreferenceCell(_ model: PreferenceCellModel) {
         switch model.type {
-        case .faceID:
+        case .bio:
             if walletModel.wm?.account.isHW ?? false {
                 DropAlert().error(message: "Toggle is not supported with Hardware Wallet")
             } else {
-                editProtection(type: .faceID, action: model.state == .on ? .disable : .enable)
+                editProtection(type: model.hasTouchID ? .touchID : .faceID, action: model.state == .on ? .disable : .enable)
             }
         case .pin:
             editProtection(type: .pin, action: model.state == .on ? .change : .enable)

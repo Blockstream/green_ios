@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import core
 
 enum PreferenceCellState: String {
     case on = "ON"
@@ -7,7 +8,7 @@ enum PreferenceCellState: String {
     case unknown
 }
 enum PreferenceType {
-    case faceID
+    case bio
     case pin
     case genuineCheck
     case fwUpdate
@@ -22,9 +23,12 @@ class PreferenceCellModel {
         self.state = state
         self.type = preferenceType
     }
+    var hasTouchID: Bool {
+        return AuthenticationTypeHandler.biometryType == .touchID
+    }
     var icImg: UIImage? {
         switch self.type {
-        case .faceID:
+        case .bio:
             return UIImage(systemName: icName)?.maskWithColor(color: UIColor.gGrayTxt())
         default:
             return UIImage(named: icName)
@@ -32,8 +36,8 @@ class PreferenceCellModel {
     }
     var title: String {
         switch self.type {
-        case .faceID:
-            return "FaceID".localized
+        case .bio:
+            return hasTouchID ? "TouchID" : "FaceID"
         case .pin:
             return "PIN".localized
         case .genuineCheck:
@@ -49,8 +53,8 @@ class PreferenceCellModel {
     }
     var icName: String {
         switch self.type {
-        case .faceID:
-            return "faceid"
+        case .bio:
+            return hasTouchID ? "touchid" : "faceid"
         case .pin:
             return "ic_onboard_mini_pin"
         case .genuineCheck:

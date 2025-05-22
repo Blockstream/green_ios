@@ -61,7 +61,8 @@ class EditProtectionViewController: UIViewController {
                 break
             }
         case .touchID:
-            icon.image = UIImage(named: "ic_edit_protection_touch")
+            icon.image = UIImage(systemName: "touchid")
+            icon.tintColor = .white
             lblTitle.text = "Touch ID".localized
             lblHint.isHidden = true
             switch protectionAction {
