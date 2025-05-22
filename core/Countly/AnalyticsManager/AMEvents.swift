@@ -58,6 +58,10 @@ public enum AnalyticsEventName: String {
 
     case buyInitiate = "buy_initiate"
     case buyRedirect = "buy_redirect"
+    case getStarted = "get_started"
+    case setupSww = "setup_sww"
+    case swwCreated = "sww_created"
+    case backupManual = "backup_manual"
 }
 
 extension AnalyticsManager {
@@ -419,6 +423,20 @@ extension AnalyticsManager {
     public func buyRedirect(account: Account?) {
         var s = sessSgmt(account)
         recordEvent(.buyRedirect, sgmt: s)
+    }
+    public func getStarted() {
+        recordEvent(.getStarted)
+    }
+    public func setupSww() {
+        recordEvent(.setupSww)
+    }
+    public func swwCreated(account: Account?) {
+        var s = sessSgmt(account)
+        recordEvent(.swwCreated, sgmt: s)
+    }
+    public func backupManual(account: Account?) {
+        var s = sessSgmt(account)
+        recordEvent(.backupManual, sgmt: s)
     }
 }
 

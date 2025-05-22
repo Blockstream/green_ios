@@ -55,6 +55,7 @@ class TabViewController: UIViewController {
 }
 extension TabViewController {
     func buyScreen(_ walletModel: WalletModel) {
+        AnalyticsManager.shared.buyInitiate(account: AccountsRepository.shared.current)
         let storyboard = UIStoryboard(name: "BuyBTCFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "BuyBTCViewController") as? BuyBTCViewController {
             let orderedSubaccounts = (walletModel.wm?.bitcoinSubaccountsWithFunds ?? []) +

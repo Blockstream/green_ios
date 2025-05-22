@@ -152,6 +152,7 @@ class GetStartedOnBoardViewController: UIViewController {
     }
 
     @IBAction func btnGetStarted(_ sender: Any) {
+        AnalyticsManager.shared.getStarted()
         tryNext(.getStarted)
     }
 

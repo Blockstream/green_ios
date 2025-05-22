@@ -58,6 +58,7 @@ class WalletTabBarViewController: UITabBarController {
             view.addSubview(wView)
             wView.frame = view.frame
             wView.configure(with: WelcomeViewModel(), onTap: {[weak self] in
+                AnalyticsManager.shared.swwCreated(account: AccountsRepository.shared.current)
                 self?.wView.removeFromSuperview()
             })
             // load backup alert

@@ -94,6 +94,7 @@ class WalletModel {
         if let balances = try await wm?.balances(subaccounts: subaccounts ?? []) {
             cachedBalance = AssetAmountList(balances)
         }
+        self.callAnalytics(subaccounts)
     }
 
     func reloadBalances() {
@@ -278,13 +279,14 @@ class WalletModel {
         ReEnable2faViewModel(expiredSubaccounts: expiredSubaccounts)
     }
 
-    func callAnalytics() {
+    func callAnalytics(_ subs: [WalletItem]?) {
 
+        guard let subs else { return }
         if analyticsDone == true { return }
         analyticsDone = true
 
         var accountsFunded: Int = 0
-        subaccounts.forEach { item in
+        subs.forEach { item in
             let assets = item.satoshi ?? [:]
             for (_, value) in assets where value > 0 {
                     accountsFunded += 1
@@ -292,8 +294,8 @@ class WalletModel {
             }
         }
         let walletFunded: Bool = accountsFunded > 0
-        let accounts: Int = subaccounts.count
-        let accountsTypes: String = Array(Set(subaccounts.map { $0.type.rawValue })).sorted().joined(separator: ",")
+        let accounts: Int = subs.count
+        let accountsTypes: String = Array(Set(subs.map { $0.type.rawValue })).sorted().joined(separator: ",")
         AnalyticsManager.shared.activeWalletEnd(account: AccountsRepository.shared.current,
                                                 walletData: AnalyticsManager.WalletData(walletFunded: walletFunded,
                                                                                      accountsFunded: accountsFunded,

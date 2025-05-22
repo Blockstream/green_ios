@@ -327,7 +327,6 @@ class BuyBTCViewController: KeyboardViewController {
         showError(error.description().localized)
     }
     func proceedWithWidget(url: String?, quote: MeldQuoteItem) {
-        AnalyticsManager.shared.buyRedirect(account: self.viewModel.wm.account)
         SafeNavigationManager.shared.navigate(url, exitApp: false, title: quote.serviceProvider) {
             // completion
             Task { [weak self] in
@@ -418,6 +417,7 @@ class BuyBTCViewController: KeyboardViewController {
     }
     @IBAction func btnNext(_ sender: Any) {
         if quotes.count != 0 {
+            AnalyticsManager.shared.buyRedirect(account: self.viewModel.wm.account)
             selectProvider(quotes[selectedIndex])
         }
     }

@@ -169,6 +169,7 @@ class SetupNewViewController: UIViewController {
     @IBAction func btnCta1(_ sender: Any) {
         switch state {
         case .mobile:
+            AnalyticsManager.shared.setupSww()
             tryNext(.setupMobile)
         case .hardware:
             tryNext(.setupHardware)

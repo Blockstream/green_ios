@@ -1,5 +1,5 @@
 import UIKit
-
+import core
 struct WelcomeViewModel {
     let title: String
     let hint: String

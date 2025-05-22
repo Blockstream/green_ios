@@ -226,11 +226,13 @@ class SetPinViewController: UIViewController {
             case .restore:
                 if let account = wallet?.account {
                     AccountsRepository.shared.current = account
+                    AnalyticsManager.shared.activeWalletStart()
                     AccountNavigator.navLogged(accountId: account.id, isFirstLoad: false)
                 }
             case .create:
                 if let account = wallet?.account {
                     AccountsRepository.shared.current = account
+                    AnalyticsManager.shared.activeWalletStart()
                     AccountNavigator.navLogged(accountId: account.id, isFirstLoad: true)
                 }
             case .backup:

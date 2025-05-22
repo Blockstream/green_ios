@@ -1,5 +1,5 @@
 import UIKit
-
+import core
 class BackupSuccessViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -17,8 +17,6 @@ class BackupSuccessViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
             let riveView = RiveModel.animationCheckMark.createRiveView()
             riveView.frame = CGRect(x: 0.0, y: 0.0, width: self.animateView.frame.width, height: self.animateView.frame.height)
-
-            print(riveView.frame)
             self.animateView.addSubview(riveView)
         }
     }
@@ -33,6 +31,7 @@ class BackupSuccessViewController: UIViewController {
         btnNext.setStyle(.primary)
     }
     @IBAction func btnNext(_ sender: Any) {
+        AnalyticsManager.shared.backupManual(account: AccountsRepository.shared.current)
         let originReceive = navigationController?.viewControllers.filter { $0 is ReceiveViewController }.first
         let originBuy = navigationController?.viewControllers.filter { $0 is BuyBTCViewController }.first
         if originReceive != nil {
