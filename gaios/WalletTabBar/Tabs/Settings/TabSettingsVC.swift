@@ -257,7 +257,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogActionsViewController") as? DialogActionsViewController {
             vc.viewModel = DialogActionsViewModel(
                 title: subaccount.name,
-                description: "Your AMP account is set up and ready to be used. Copy your AMP ID that is necessary to receive authorization to move security token. Copy and share it with the issuer of a security token you are holding in order to obtain authorization.".localized,
+                description: "Your AMP account is set up and ready to be used. Copy your AMP ID and share it with your security token issuer to receive authorization to move funds.".localized,
                 confirm: "Copy AMP ID".localized,
                 link: "Learn More".localized)
             vc.delegate = { action in
