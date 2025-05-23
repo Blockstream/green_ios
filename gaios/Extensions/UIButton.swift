@@ -101,6 +101,7 @@ extension UIButton {
         case .primary:
             backgroundColor = UIColor.gAccent()
             setTitleColor(UIColor.gBlackBg(), for: .normal)
+            tintColor = UIColor.gBlackBg()
             isEnabled = true
         case .primaryGray:
             backgroundColor = UIColor.gW40()
