@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -28,7 +28,7 @@
                             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mjQ-HR-J10">
-                                    <rect key="frame" x="102" y="343" width="210" height="210"/>
+                                    <rect key="frame" x="102" y="273" width="210" height="210"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="210" id="0Vh-9X-WVk"/>
@@ -59,7 +59,7 @@
                                 <constraint firstItem="5Ha-eL-thk" firstAttribute="leading" secondItem="rCJ-3n-6KM" secondAttribute="leading" constant="36" id="FWm-D0-6zu"/>
                                 <constraint firstItem="6N4-4c-rfw" firstAttribute="centerY" secondItem="rCJ-3n-6KM" secondAttribute="centerY" id="fVt-gt-WVP"/>
                                 <constraint firstItem="5Ha-eL-thk" firstAttribute="top" secondItem="mjQ-HR-J10" secondAttribute="bottom" priority="100" constant="16" id="iNN-pb-bbL"/>
-                                <constraint firstItem="mjQ-HR-J10" firstAttribute="centerY" secondItem="rCJ-3n-6KM" secondAttribute="centerY" id="z4U-Bz-LCZ"/>
+                                <constraint firstItem="mjQ-HR-J10" firstAttribute="centerY" secondItem="rCJ-3n-6KM" secondAttribute="centerY" constant="-70" id="z4U-Bz-LCZ"/>
                             </constraints>
                         </view>
                     </subviews>
