@@ -12,7 +12,7 @@ class TabSecurityVC: TabViewController {
         var list = [PreferenceCellModel]()
         let hasFaceId = walletModel.wm?.account.hasBioPin == true || walletModel.wm?.account.hasWoBioCredentials == true
         let hasManualPin = walletModel.wm?.account.hasManualPin == true
-        list.append(PreferenceCellModel(preferenceType: .faceID, state: hasFaceId ? .on : .off))
+        list.append(PreferenceCellModel(preferenceType: .bio, state: hasFaceId ? .on : .off))
         if walletModel.wm?.account.isHW != true {
             list.append(PreferenceCellModel(preferenceType: .pin, state: hasManualPin ? .on : .off))
         }
