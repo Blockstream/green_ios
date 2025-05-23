@@ -7,6 +7,7 @@ import lightning
 public class AuthenticationTypeHandler {
     public enum AuthError: Error, Equatable {
         case CanceledByUser
+        case DeniedByUser
         case NotSupported
         case PasscodeNotSet
         case ConnectionFailed
@@ -37,6 +38,8 @@ public class AuthenticationTypeHandler {
                     }
                 case .ServiceNotAvailable(let desc), .SecurityError(let desc):
                     return desc
+                case .DeniedByUser:
+                    return "Denied by user"
                 }
             }
         }
@@ -142,8 +145,8 @@ public class AuthenticationTypeHandler {
 
     static func getAuthKeyBiometricPrivateKey(network: String) throws -> String {
         let label = "AuthKeyBiometricPrivateKey\(network)"
-        let res = try? get_(method: .AuthKeyPrivate, forNetwork: label)
-        if let value = res?[label] as? String {
+        let res = try get_(method: .AuthKeyPrivate, forNetwork: label)
+        if let value = res[label] as? String {
             return value
         }
         // migration from legacy local userdefaults
@@ -218,6 +221,8 @@ public class AuthenticationTypeHandler {
             let cfError = error!.takeRetainedValue()
             if CFErrorGetCode(cfError) == -2 {
                 throw AuthError.CanceledByUser
+            } else if CFErrorGetCode(cfError) == -1018 {
+                throw AuthError.DeniedByUser
             } else {
                 throw AuthError.SecurityError(describeSecurityError(cfError))
             }

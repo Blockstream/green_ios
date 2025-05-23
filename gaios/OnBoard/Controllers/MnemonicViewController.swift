@@ -191,48 +191,38 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             }
         case .failure(let err):
             stopLoader()
+            logger.error("\(err.description())")
             switch err as? AuthenticationTypeHandler.AuthError {
+            case .some(.DeniedByUser):
+                pushOnBoardAppAccessViewController()
             case .some:
-                OnboardViewModel.flowType = .restore
-                let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardAppAccessViewController") as? OnBoardAppAccessViewController {
-                    navigationController?.pushViewController(vc, animated: true)
+                switch AuthenticationTypeHandler.biometryType {
+                case .faceID:
+                    pushOnBoardAppAccessViewController()
+                default:
+                    pushOnBoardAppPinViewController()
                 }
-                return
-            default:
-                break
+            case .none:
+                showError(err.description().localized)
             }
-            switch err as? LoginError {
-            case .walletMismatch:
-                showError("Wallet mismatch".localized)
-                return
-            case .failed:
-                showError("id_login_failed".localized)
-                return
-            case .walletNotFound:
-                showError("id_wallet_not_found".localized)
-                return
-            case .walletsJustRestored:
-                showError("id_wallet_already_restored".localized)
-                return
-            case .invalidMnemonic:
-                showError("id_invalid_recovery_phrase".localized)
-                page += 1
-                AnalyticsManager.shared.recoveryPhraseCheckFailed(page: self.page)
-                return
-            case .connectionFailed:
-                showError("id_connection_failed".localized)
-                return
-            default:
-                break
-            }
-            switch err as? TwoFactorCallError {
-            case .cancel(localizedDescription: let desc),
-                    .failure(localizedDescription: let desc):
-                showError(desc)
-            default:
-                showError(err.localizedDescription)
-            }
+        }
+    }
+
+    func pushOnBoardAppPinViewController() {
+        OnboardViewModel.flowType = .restore
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardAppPinViewController") as? OnBoardAppPinViewController {
+            navigationController?.pushViewController(vc, animated: true)
+            return
+        }
+    }
+
+    func pushOnBoardAppAccessViewController() {
+        OnboardViewModel.flowType = .restore
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardAppAccessViewController") as? OnBoardAppAccessViewController {
+            navigationController?.pushViewController(vc, animated: true)
+            return
         }
     }
 

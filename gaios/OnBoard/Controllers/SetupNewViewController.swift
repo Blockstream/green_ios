@@ -120,14 +120,36 @@ class SetupNewViewController: UIViewController {
             }
         case .failure(let err):
             stopLoader()
-            if let err = err as? AuthenticationTypeHandler.AuthError {
-                let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardAppAccessViewController") as? OnBoardAppAccessViewController {
-                    navigationController?.pushViewController(vc, animated: true)
-                    return
+            logger.error("\(err.description())")
+            switch err as? AuthenticationTypeHandler.AuthError {
+            case .some(.DeniedByUser):
+                pushOnBoardAppAccessViewController()
+            case .some:
+                switch AuthenticationTypeHandler.biometryType {
+                case .faceID:
+                    pushOnBoardAppAccessViewController()
+                default:
+                    pushOnBoardAppPinViewController()
                 }
+            case .none:
+                showError(err.description().localized)
             }
-            showError(err.description().localized)
+        }
+    }
+
+    func pushOnBoardAppPinViewController() {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardAppPinViewController") as? OnBoardAppPinViewController {
+            navigationController?.pushViewController(vc, animated: true)
+            return
+        }
+    }
+
+    func pushOnBoardAppAccessViewController() {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardAppAccessViewController") as? OnBoardAppAccessViewController {
+            navigationController?.pushViewController(vc, animated: true)
+            return
         }
     }
 
