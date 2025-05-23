@@ -2124,8 +2124,15 @@
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="icx-AT-OcH">
                                                 <rect key="frame" x="0.0" y="40.333333333333314" width="375" height="687.66666666666674"/>
                                                 <subviews>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Cm8-gh-onX">
+                                                        <rect key="frame" x="0.0" y="70" width="375" height="200"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="200" id="WA4-9R-J3a"/>
+                                                        </constraints>
+                                                    </view>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gsk-5y-9YW">
-                                                        <rect key="frame" x="50" y="217.33333333333337" width="275" height="20.333333333333343"/>
+                                                        <rect key="frame" x="50" y="275" width="275" height="20.333333333333314"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -2163,25 +2170,18 @@
                                                             </button>
                                                         </subviews>
                                                     </stackView>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Cm8-gh-onX">
-                                                        <rect key="frame" x="50" y="25" width="275" height="184.66666666666666"/>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="width" secondItem="Cm8-gh-onX" secondAttribute="height" multiplier="274:184" id="1Ex-bg-j1m"/>
-                                                        </constraints>
-                                                    </view>
                                                 </subviews>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="trailing" secondItem="gsk-5y-9YW" secondAttribute="trailing" constant="50" id="59N-fR-Oij"/>
                                                     <constraint firstAttribute="bottom" secondItem="MNp-6u-NvZ" secondAttribute="bottom" constant="25" id="9Tn-rg-mjk"/>
+                                                    <constraint firstItem="Cm8-gh-onX" firstAttribute="centerX" secondItem="icx-AT-OcH" secondAttribute="centerX" id="ONq-vU-qyo"/>
                                                     <constraint firstAttribute="trailing" secondItem="MNp-6u-NvZ" secondAttribute="trailing" constant="25" id="bk0-dz-Hdc"/>
-                                                    <constraint firstAttribute="trailing" secondItem="Cm8-gh-onX" secondAttribute="trailing" constant="50" id="chY-Lz-rTJ"/>
-                                                    <constraint firstItem="Cm8-gh-onX" firstAttribute="leading" secondItem="icx-AT-OcH" secondAttribute="leading" constant="50" id="fpy-Sk-euT"/>
-                                                    <constraint firstItem="gsk-5y-9YW" firstAttribute="top" secondItem="Cm8-gh-onX" secondAttribute="bottom" constant="7.6666666666667425" id="gBC-tT-s7y"/>
+                                                    <constraint firstItem="gsk-5y-9YW" firstAttribute="top" secondItem="Cm8-gh-onX" secondAttribute="bottom" constant="5" id="gBC-tT-s7y"/>
                                                     <constraint firstItem="MNp-6u-NvZ" firstAttribute="leading" secondItem="icx-AT-OcH" secondAttribute="leading" constant="25" id="gaH-Gy-va0"/>
                                                     <constraint firstItem="gsk-5y-9YW" firstAttribute="leading" secondItem="icx-AT-OcH" secondAttribute="leading" constant="50" id="kln-hE-AjW"/>
-                                                    <constraint firstItem="Cm8-gh-onX" firstAttribute="top" secondItem="icx-AT-OcH" secondAttribute="top" constant="25" id="nAV-Y8-Gkt"/>
+                                                    <constraint firstItem="Cm8-gh-onX" firstAttribute="top" secondItem="icx-AT-OcH" secondAttribute="top" constant="70" id="nAV-Y8-Gkt"/>
+                                                    <constraint firstItem="Cm8-gh-onX" firstAttribute="width" secondItem="icx-AT-OcH" secondAttribute="width" id="uLQ-eS-Z5n"/>
                                                 </constraints>
                                             </view>
                                         </subviews>

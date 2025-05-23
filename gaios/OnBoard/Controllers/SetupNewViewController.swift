@@ -44,7 +44,7 @@ class SetupNewViewController: UIViewController {
         lblSubtitle.text = "Create a new wallet to begin your bitcoin journey."
         btnCta1.setTitle("Setup Mobile Wallet".localized, for: .normal)
         btnCta2.setStyle(.underline(txt: "Restore from backup".localized, color: UIColor.gAccent()))
-        let riveView = RiveModel.animationWallet.createRiveView()
+        let riveView = RiveModel.createWallet.createRiveView()
         animateView.addSubview(riveView)
         riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
     }
@@ -56,12 +56,13 @@ class SetupNewViewController: UIViewController {
     }
 
     func loadNavigationBtns() {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(named: "ic_buy_circle_dots"), for: .normal)
-        button.addTarget(self, action: #selector(onMoreActions), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
+        let settingsBtn = UIButton(type: .system)
+        settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+        settingsBtn.setImage(UIImage(named: "ic_nav_disclose"), for: .normal)
+        settingsBtn.addTarget(self, action: #selector(onMoreActions), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
     }
-    
+
     @objc func onMoreActions() {
         presentSetupNewMoreActionsViewController()
     }

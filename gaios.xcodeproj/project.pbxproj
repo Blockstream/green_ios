@@ -459,6 +459,7 @@
 		34DBF17B2A44315000066479 /* MagnifyQRViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */; };
 		34DDD0A9260A486300020380 /* Shared.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34DDD0A8260A486300020380 /* Shared.storyboard */; };
 		34DEF15A2DDDC8D70083A695 /* animation_v5.riv in Resources */ = {isa = PBXBuildFile; fileRef = 34DEF1592DDDC8D70083A695 /* animation_v5.riv */; };
+		34DEF1862DE071520083A695 /* create_wallet.riv in Resources */ = {isa = PBXBuildFile; fileRef = 34DEF1852DE071520083A695 /* create_wallet.riv */; };
 		34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */; };
 		34E0CA8C2981395600695304 /* Survey.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34E0CA8B2981395600695304 /* Survey.storyboard */; };
 		34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E0CA8D298139B200695304 /* SurveyViewController.swift */; };
@@ -1400,6 +1401,7 @@
 		34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagnifyQRViewController.swift; sourceTree = "<group>"; };
 		34DDD0A8260A486300020380 /* Shared.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Shared.storyboard; sourceTree = "<group>"; };
 		34DEF1592DDDC8D70083A695 /* animation_v5.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation_v5.riv; sourceTree = "<group>"; };
+		34DEF1852DE071520083A695 /* create_wallet.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = create_wallet.riv; sourceTree = "<group>"; };
 		34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveVerifyAddressViewController.swift; sourceTree = "<group>"; };
 		34E0CA8B2981395600695304 /* Survey.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Survey.storyboard; sourceTree = "<group>"; };
 		34E0CA8D298139B200695304 /* SurveyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyViewController.swift; sourceTree = "<group>"; };
@@ -2997,6 +2999,7 @@
 				345B28DA2DD1DB1D0075860A /* jadeplus_2.riv */,
 				345B28EC2DD1EB340075860A /* jadeplus_3.riv */,
 				34DEF1592DDDC8D70083A695 /* animation_v5.riv */,
+				34DEF1852DE071520083A695 /* create_wallet.riv */,
 			);
 			path = Rive;
 			sourceTree = "<group>";
@@ -4548,6 +4551,7 @@
 				34F980AF29151C6600C12D48 /* TransactionCell.xib in Resources */,
 				344EF1BF2C10522A00689D63 /* TxDetailsTotalsCell.xib in Resources */,
 				34F51A802A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib in Resources */,
+				34DEF1862DE071520083A695 /* create_wallet.riv in Resources */,
 				343BC9542AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard in Resources */,
 				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
 				34A883A42BA3251B004A1826 /* TxDetailsStatusCell.xib in Resources */,
