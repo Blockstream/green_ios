@@ -57,7 +57,7 @@ class ReceiveViewController: KeyboardViewController {
 
         AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
 
-        didSelectAsset(AssetInfo.btcId)
+        didSelectAccount(viewModel.account)
         // always nag even after dismiss
         BackupHelper.shared.cleanDismissedCache(walletId: viewModel.wm.account.id, position: .receive)
     }
@@ -164,7 +164,7 @@ class ReceiveViewController: KeyboardViewController {
         reloadNavigationBtns()
         viewModel.reloadBackupCards()
         tableView.reloadData()
-        accountStack.isHidden = viewModel.accounts.count <= 1
+        accountStack.isHidden = viewModel.getAccounts().count <= 1
         btnAccount.setTitle(viewModel.account.localizedName, for: .normal)
     }
 
@@ -173,8 +173,7 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func reloadNavigationBtns() {
-        let network = viewModel.account.gdkNetwork
-        if network.lightning {
+        if viewModel.account.networkType.lightning {
             let btnNote = UIButton(type: .system)
             btnNote.setStyle(.inline)
             btnNote.setTitle(Common.noteActionName(viewModel.description ?? ""), for: .normal)
@@ -497,39 +496,39 @@ extension ReceiveViewController: AssetSelectViewControllerDelegate {
         case .liquid:
             viewModel.asset = AssetInfo.lbtcId
             viewModel.anyAsset = type
-            viewModel.accounts = viewModel.getLiquidSubaccounts()
+            if !viewModel.account.networkType.liquid {
+                if let account = viewModel.getAccounts().first {
+                    viewModel.account = account
+                }
+            }
         case .amp:
             viewModel.anyAsset = type
-            viewModel.accounts = viewModel.getLiquidAmpSubaccounts()
-        }
-        if let account = viewModel.accounts.first {
-            viewModel.account = account
+            if viewModel.account.type != .amp {
+                if let account = viewModel.getAccounts().first {
+                    viewModel.account = account
+                }
+            }
         }
         reload()
         newAddress()
     }
 
     func didSelectAsset(_ assetId: String) {
-        viewModel?.asset = assetId
-        viewModel?.anyAsset = nil
-        switch assetId {
-        case AssetInfo.btcId, AssetInfo.testId:
-            viewModel?.accounts = viewModel.getBitcoinSubaccounts()
-        case AssetInfo.lightningId:
-            viewModel?.accounts = viewModel.getLightningSubaccounts()
-        case AssetInfo.lbtcId, AssetInfo.ltestId:
-            viewModel?.accounts = viewModel.getLiquidSubaccounts()
-        default:
-            let info = WalletManager.current?.info(for: assetId)
-            if info?.amp ?? false && !viewModel.hasSubaccountAmp() {
-                DropAlert().warning(message: "Create Amp account to receive Amp asset")
-                return
-            }
-            viewModel?.accounts = info?.amp ?? false ? viewModel.getLiquidAmpSubaccounts() : viewModel.getLiquidSubaccounts()
+        let info = WalletManager.current?.info(for: assetId)
+        if info?.amp ?? false && !viewModel.hasSubaccountAmp() {
+            DropAlert().warning(message: "Create Amp account to receive Amp asset")
+            return
         }
-        if let account = viewModel?.accounts.first {
-            viewModel?.account = account
-            viewModel.type = account.gdkNetwork.lightning ? .bolt11 : .address
+        viewModel.asset = assetId
+        viewModel.anyAsset = nil
+        if (info?.isBitcoin ?? true && !viewModel.account.networkType.bitcoin) ||
+            (info?.isLightning ?? true && !viewModel.account.networkType.lightning) ||
+            (info?.amp ?? true && viewModel.account.type != .amp ) ||
+            (info?.isLiquid ?? true && !viewModel.account.networkType.liquid) {
+            if let account = viewModel.getAccounts().first {
+                viewModel.account = account
+                viewModel.type = account.gdkNetwork.lightning ? .bolt11 : .address
+            }
         }
         reload()
         newAddress()

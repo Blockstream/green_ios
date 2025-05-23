@@ -254,7 +254,7 @@ class SendAddressInputViewController: KeyboardViewController {
     func presentReceiveViewController() {
         guard let createTx = viewModel.createTx else { return }
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {gaios/TxDetails/Cells/TxDetailsStatusCell.swift
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
             vc.viewModel = ReceiveViewModel()
             navigationController?.pushViewController(vc, animated: true)
         }

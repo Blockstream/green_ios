@@ -17,7 +17,7 @@ class ReceiveAssetCell: UITableViewCell {
     }
 
     func configure(model: ReceiveAssetCellModel, onTap: (() -> Void)?) {
-        self.lblAsset.text = model.asset?.name ?? model.asset?.assetId
+        self.lblAsset.text = model.title
         self.imgView?.image = model.icon
         self.onTap = onTap
     }

@@ -46,6 +46,10 @@ public struct AssetInfo: Codable, Equatable {
     public static func == (lhs: AssetInfo, rhs: AssetInfo) -> Bool {
         lhs.assetId == rhs.assetId
     }
+    
+    public var isLightning: Bool { assetId == AssetInfo.lightningId }
+    public var isBitcoin: Bool { assetId == AssetInfo.btcId }
+    public var isLiquid: Bool { ![AssetInfo.btcId, AssetInfo.testId, AssetInfo.lightningId].contains(assetId) }
 
     // Default asset id
     public static var btcId = "btc"

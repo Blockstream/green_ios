@@ -48,32 +48,22 @@ class TabViewController: UIViewController {
         // swiftlint:disable force_cast
         parent as! WalletTabBarViewController
     }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
 }
 extension TabViewController {
     func buyScreen(_ walletModel: WalletModel) {
         AnalyticsManager.shared.buyInitiate(account: AccountsRepository.shared.current)
         let storyboard = UIStoryboard(name: "BuyBTCFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "BuyBTCViewController") as? BuyBTCViewController {
-            let orderedSubaccounts = (walletModel.wm?.bitcoinSubaccountsWithFunds ?? []) +
-            (walletModel.wm?.bitcoinSubaccounts ?? [])
-            if let subaccount = orderedSubaccounts.first {
-                vc.viewModel = BuyBTCViewModel(
-                    account: subaccount,
-                    accounts: walletModel.wm?.bitcoinSubaccounts ?? [],
-                    currency: walletModel.currency,
-                    hideBalance: walletModel.hideBalance)
-                navigationController?.pushViewController(vc, animated: true)
-            }
+            vc.viewModel = BuyBTCViewModel(
+                currency: walletModel.currency,
+                hideBalance: walletModel.hideBalance)
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
     func sendScreen(_ walletModel: WalletModel) {
         let sendAddressInputViewModel = SendAddressInputViewModel(
             input: nil,
-            preferredAccount: walletModel.wm?.bitcoinSubaccounts.first,
+            preferredAccount: ReceiveViewModel.defaultAccount,
             txType: walletModel.isSweepEnabled() ? .sweep : .transaction)
 
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
@@ -84,7 +74,7 @@ extension TabViewController {
     }
     func txScreen(_ tx: Transaction) {
         let storyboard = UIStoryboard(name: "TxDetails", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "TxDetailsViewController") as? TxDetailsViewController, let wallet = tx.subaccountItem {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "TxDetailsViewController") as? TxDetailsViewController, let wallet = tx.subaccount {
             vc.vm = TxDetailsViewModel(wallet: wallet, transaction: tx)
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
@@ -93,17 +83,8 @@ extension TabViewController {
     func receiveScreen(_ walletModel: WalletModel) {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
-            let orderedSubaccounts =
-            (walletModel.wm?.bitcoinSubaccountsWithFunds ?? []) +
-            (walletModel.wm?.liquidSubaccountsWithFunds ?? []) +
-            (walletModel.wm?.bitcoinSubaccounts ?? []) +
-            (walletModel.wm?.liquidSubaccounts ?? [])
-            if let subaccount = orderedSubaccounts.first {
-                vc.viewModel = ReceiveViewModel(
-                    account: subaccount,
-                    accounts: walletModel.subaccounts)
-                navigationController?.pushViewController(vc, animated: true)
-            }
+            vc.viewModel = ReceiveViewModel()
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
     func accountsScreen(model: DialogAccountsViewModel) {

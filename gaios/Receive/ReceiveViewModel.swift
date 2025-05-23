@@ -15,12 +15,11 @@ enum ReceiveType: Int, CaseIterable {
 
 class ReceiveViewModel {
 
-    var accounts: [WalletItem]
+    var account: WalletItem { didSet { ReceiveViewModel.defaultAccount = account }}
     var asset: String
     var satoshi: Int64?
     var anyAsset: AnyAssetType?
     var isFiat: Bool = false
-    var account: WalletItem
     var type: ReceiveType
     var description: String?
     var address: Address?
@@ -32,9 +31,28 @@ class ReceiveViewModel {
     var wm: WalletManager { WalletManager.current! }
     var backupCardCellModel = [AlertCardCellModel]()
 
-    init(account: WalletItem, accounts: [WalletItem]) {
-        self.account = account
-        self.accounts = accounts
+    static func getLightningSubaccounts() -> [WalletItem] {
+        if let subaccount = WalletManager.current?.lightningSubaccount {
+            return [subaccount]
+        } else {
+            return []
+        }
+    }
+    static func getBitcoinSubaccounts() -> [WalletItem] {
+        WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+    }
+    static func getLiquidSubaccounts() -> [WalletItem] {
+        WalletManager.current?.liquidSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+    }
+    static func getLiquidAmpSubaccounts() -> [WalletItem] {
+        WalletManager.current?.liquidAmpSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+    }
+    static func getSubaccounts() -> [WalletItem] {
+        WalletManager.current?.subaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+    }
+
+    init() {
+        self.account = ReceiveViewModel.defaultAccount ?? ReceiveViewModel.getSubaccounts().first!
         self.asset = account.gdkNetwork.getFeeAsset()
         self.type = account.gdkNetwork.lightning ? .bolt11 : .address
         self.inputDenomination = wm.prominentSession?.settings?.denomination ?? .Sats
@@ -77,9 +95,9 @@ class ReceiveViewModel {
         guard let address = address?.address else { return nil }
         let account = AccountsRepository.shared.current
         return HWDialogVerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false,
-                                       address: address,
-                                       isRedeposit: false,
-                                       isDismissible: false)
+                                               address: address,
+                                               isRedeposit: false,
+                                               isDismissible: false)
     }
 
     func addressToUri(address: String, satoshi: Int64, assetId: String) -> String {
@@ -218,7 +236,6 @@ class ReceiveViewModel {
         }
         return nil
     }
-
     func reloadBackupCards() {
         var cards: [AlertCardType] = []
         if BackupHelper.shared.needsBackup(walletId: wm.account.id) && BackupHelper.shared.isDismissed(walletId: wm.account.id, position: .receive) == false {
@@ -229,17 +246,26 @@ class ReceiveViewModel {
     func hasSubaccountAmp() -> Bool {
         !wm.subaccounts.filter({ $0.type == .amp }).isEmpty
     }
-    func getLightningSubaccounts() -> [WalletItem] {
-        wm.subaccounts.filter { !$0.hidden && $0.networkType.lightning }
-    }
-    func getBitcoinSubaccounts() -> [WalletItem] {
-        wm.subaccounts.filter { !$0.hidden && !$0.networkType.liquid && !$0.networkType.lightning }
-    }
-    func getLiquidSubaccounts() -> [WalletItem] {
-        wm.subaccounts.filter { !$0.hidden && $0.networkType.liquid }
-    }
-    func getLiquidAmpSubaccounts() -> [WalletItem] {
-        wm.subaccounts.filter { !$0.hidden && $0.networkType.liquid && $0.type == .amp }
+
+    func getAccounts() -> [WalletItem] {
+        switch anyAsset {
+        case .liquid:
+            return ReceiveViewModel.getLiquidSubaccounts()
+        case .amp:
+            return ReceiveViewModel.getLiquidAmpSubaccounts()
+        case nil:
+            break
+        }
+        let asset = wm.info(for: asset)
+        if asset.isLightning {
+            return ReceiveViewModel.getLightningSubaccounts()
+        } else if asset.isBitcoin {
+            return ReceiveViewModel.getBitcoinSubaccounts()
+        } else if asset.amp ?? false {
+            return ReceiveViewModel.getLiquidAmpSubaccounts()
+        } else {
+            return ReceiveViewModel.getLiquidSubaccounts()
+        }
     }
 
     func dialogAccountsModel() -> DialogAccountsViewModel {
@@ -248,7 +274,7 @@ class ReceiveViewModel {
             hint: "Select the desired account you want to receive your funds.".localized,
             isSelectable: true,
             assetId: asset,
-            accounts: accounts,
+            accounts: getAccounts(),
             hideBalance: hideBalance)
     }
 
@@ -259,6 +285,21 @@ class ReceiveViewModel {
     }
 
     var receiveAssetCellModel: ReceiveAssetCellModel {
-        ReceiveAssetCellModel(assetId: asset)
+        ReceiveAssetCellModel(assetId: asset, anyAsset: anyAsset)
+    }
+    static var defaultAccountLabel: String? {
+        guard let wm = WalletManager.current else { return nil }
+        return "\(wm.account.id)_receive_subaccount"
+    }
+    static var defaultAccount: WalletItem? {
+        get {
+            guard let label = defaultAccountLabel else { return nil }
+            let accountId = UserDefaults.standard.string(forKey: label)
+            return WalletManager.current?.subaccounts.filter({ $0.id == accountId }).first
+        }
+        set {
+            guard let label = defaultAccountLabel else { return }
+            UserDefaults.standard.set(newValue?.id, forKey: label)
+        }
     }
 }

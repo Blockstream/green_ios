@@ -126,13 +126,13 @@ extension DialogAccountsViewController: UITableViewDelegate, UITableViewDataSour
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: DialogAccountCell.identifier, for: indexPath) as? DialogAccountCell, let model = viewModel?.accountCellModels[indexPath.row] {
-
-            cell.configure(model: model,
-                           isSelectable: viewModel?.isSelectable ?? false,
-                           hideBalance: viewModel?.hideBalance ?? false,
-                           onTap: {[weak self] in
-                self?.dismiss(model.account)
-            })
+            cell.configure(
+                model: model,
+                isSelectable: viewModel?.isSelectable ?? false,
+                hideBalance: viewModel?.hideBalance ?? false,
+                onTap: {[weak self] in
+                    self?.dismiss(model.account)
+                })
             cell.selectionStyle = .none
             return cell
         }

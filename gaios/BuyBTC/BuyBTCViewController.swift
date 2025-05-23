@@ -456,6 +456,7 @@ extension BuyBTCViewController: SelectProviderViewControllerDelegate {
 extension BuyBTCViewController: DialogAccountsViewControllerDelegate {
     func didSelectAccount(_ walletItem: gdk.WalletItem?) {
         if let walletItem {
+            BuyBTCViewModel.defaultAccount = walletItem
             viewModel.account = walletItem
             loadAddress()
             reload()

@@ -27,8 +27,7 @@ class BuyBTCViewModel {
     var asset: String
     var satoshi: Int64?
     var isFiat: Bool = true
-    var account: WalletItem
-    var accounts: [WalletItem]
+    var account: WalletItem { didSet { ReceiveViewModel.defaultAccount = account }}
     var inputDenomination: gdk.DenominationType = .Sats
     var state: AmountCellState = .invalidBuy
     var meld: Meld
@@ -42,7 +41,10 @@ class BuyBTCViewModel {
         false
     }
     var showAccountSwitch: Bool {
-        accounts.count > 1
+        getAccounts().count > 1
+    }
+    static func getBitcoinSubaccounts() -> [WalletItem] {
+        WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
     var address: Address?
     var dialogAccountsModel: DialogAccountsViewModel {
@@ -51,18 +53,15 @@ class BuyBTCViewModel {
             hint: "Select the desired account you want to receive your bitcoin.".localized,
             isSelectable: true,
             assetId: AssetInfo.btcId,
-            accounts: accounts,
+            accounts: getAccounts(),
             hideBalance: hideBalance)
     }
-    init(account: WalletItem,
-         accounts: [WalletItem],
-         currency: String?,
+    init(currency: String?,
          hideBalance: Bool = false) {
-        self.account = account
+        self.account = BuyBTCViewModel.defaultAccount ?? BuyBTCViewModel.getBitcoinSubaccounts().first!
         self.asset = account.gdkNetwork.getFeeAsset()
         self.meld = Meld()
         self.inputDenomination = WalletManager.current?.prominentSession?.settings?.denomination ?? .Sats
-        self.accounts = accounts
         self.hideBalance = hideBalance
         self.currency = currency
         self.loadTiers()
@@ -159,5 +158,30 @@ class BuyBTCViewModel {
         // enable fetching txs based on meld reply
         Meld.enableFetchingTxs(xpub: xpub, enable: hasPendingTx)
         return hasPendingTx
+    }
+
+    static var defaultAccountLabel: String? {
+        guard let wm = WalletManager.current else { return nil }
+        return "\(wm.account.id)_buy_subaccount"
+    }
+
+    static var defaultAccount: WalletItem? {
+        get {
+            guard let label = defaultAccountLabel else { return nil }
+            let accountId = UserDefaults.standard.string(forKey: label)
+            return WalletManager.current?.subaccounts.filter({ $0.id == accountId }).first
+        }
+        set {
+            guard let label = defaultAccountLabel else { return }
+            UserDefaults.standard.set(newValue?.id, forKey: label)
+        }
+    }
+    
+    func getBitcoinSubaccounts() -> [WalletItem] {
+        wm.subaccounts.filter { !$0.hidden && !$0.networkType.liquid && !$0.networkType.lightning }.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 })
+    }
+    
+    func getAccounts() -> [WalletItem] {
+        return getBitcoinSubaccounts()
     }
 }

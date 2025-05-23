@@ -32,6 +32,7 @@ public enum NetworkSecurityCase: String, CaseIterable {
     public var lightning: Bool { gdkNetwork.lightning }
     public var testnet: Bool { !gdkNetwork.mainnet }
     public var liquid: Bool { gdkNetwork.liquid }
+    public var bitcoin: Bool { !liquid && !lightning }
 
     public func name() -> String {
         switch self {
