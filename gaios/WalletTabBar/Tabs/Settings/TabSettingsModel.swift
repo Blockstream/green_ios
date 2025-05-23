@@ -174,7 +174,7 @@ class TabSettingsModel {
     func getAbout() -> [SettingsItemData] {
         let version = SettingsItemData(
             title: SettingsItem.version.string,
-            subtitle: Common.versionString,
+            subtitle: Common.versionNumber,
             section: .about,
             type: .version)
         let support = SettingsItemData(
