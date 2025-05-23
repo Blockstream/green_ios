@@ -80,10 +80,6 @@ class BiometricLoginViewController: UIViewController {
             Task { [weak self] in
                 await self?.login(usingAuth: .AuthKeyBiometric)
             }
-        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: account.keychain) {
-            Task { [weak self] in
-                await self?.login(usingAuth: .AuthKeyWoBioCredentials)
-            }
         } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: account.keychain) {
             Task { [weak self] in
                 await self?.login(usingAuth: .AuthKeyWoCredentials)
@@ -102,9 +98,6 @@ class BiometricLoginViewController: UIViewController {
         let account = viewModel.account
         let task = Task.detached { [weak self] in
             switch usingAuth {
-            case .AuthKeyWoBioCredentials:
-                let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
-                _ = try await self?.viewModel.loginWithCredentials(credentials: credentials)
             case .AuthKeyWoCredentials:
                 let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
                 _ = try await self?.viewModel.loginWithCredentials(credentials: credentials)
@@ -131,18 +124,36 @@ class BiometricLoginViewController: UIViewController {
         AccountNavigator.navLogged(accountId: account.id)
     }
 
+    func failureAuthError(error: AuthenticationTypeHandler.AuthError) {
+        switch error {
+        case .DeniedByUser:
+            presentAlertDialogFaceId()
+        case .LockedOut:
+            presentBioAuthError("Too many attempts. Retry later".localized)
+        case .CanceledByUser:
+            break
+        case .KeychainError:
+            presentBioAuthError(error.description(), enableReset: true)
+        case .SecurityError(let desc):
+            presentBioAuthError(desc)
+        case .PasscodeNotSet:
+            presentBioAuthError("Passcode not set".localized)
+        case .NotSupported:
+            presentBioAuthError("Auth not supported".localized)
+        case .ServiceNotAvailable:
+            presentBioAuthError("Service not available".localized)
+        }
+    }
+
     @MainActor
     func failure(error: Error, enableFailingCounter: Bool) {
         self.stopLoader()
+        AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: error.description())
+        if let error = error as? AuthenticationTypeHandler.AuthError {
+            failureAuthError(error: error)
+            return
+        }
         switch error {
-        case AuthenticationTypeHandler.AuthError.CanceledByUser:
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: "id_action_cancel")
-        case AuthenticationTypeHandler.AuthError.KeychainError:
-            self.onBioAuthError(error.localizedDescription)
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: error.localizedDescription)
-        case AuthenticationTypeHandler.AuthError.SecurityError(let desc):
-            DropAlert().error(message: desc.localized)
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: desc)
         case LoginError.connectionFailed:
             DropAlert().error(message: "id_connection_failed".localized)
             AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: "id_connection_failed")
@@ -167,6 +178,7 @@ class BiometricLoginViewController: UIViewController {
             AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
         }
     }
+
     func showReportError(msg: String) {
         let request = ZendeskErrorRequest(
             error: msg,
@@ -176,13 +188,25 @@ class BiometricLoginViewController: UIViewController {
         presentContactUsViewController(request: request)
     }
 
-    func onBioAuthError(_ message: String) {
-        let text = String(format: "id_syou_need_ton1_reset_greens".localized, message)
-        let alert = UIAlertController(title: "id_warning".localized, message: text, preferredStyle: .alert)
+    func presentBioAuthError(_ message: String, enableReset: Bool = false) {
+        let alert = UIAlertController(title: "id_warning".localized, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .default) { _ in })
-        alert.addAction(UIAlertAction(title: "id_reset".localized, style: .destructive) { _ in
-            try? self.account.removeBioKeychainData()
+        if enableReset {
+            alert.addAction(UIAlertAction(title: "id_reset".localized, style: .destructive) { _ in
+                self.account.removeBioKeychainData()
+            })
+        }
+        DispatchQueue.main.async {
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+    func presentAlertDialogFaceId() {
+        let msg = "Biometric access disabled. Enable it from iOS settings"
+        let alert = UIAlertController(title: "id_warning".localized, message: msg, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Open Settings".localized, style: .default) { _ in
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
         })
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .destructive) { _ in })
         DispatchQueue.main.async {
             self.present(alert, animated: true, completion: nil)
         }

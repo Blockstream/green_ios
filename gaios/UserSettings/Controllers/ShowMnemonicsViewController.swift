@@ -28,7 +28,6 @@ class ShowMnemonicsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setContent()
         setStyle()
         btnShowQR.setStyle(.primary)

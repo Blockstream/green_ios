@@ -105,6 +105,7 @@ class ConnectViewModel: NSObject {
     func peripheral(_ peripheralID: UUID) -> Peripheral? {
         bleHwManager.centralManager.retrievePeripherals(withIdentifiers: [peripheralID]).first
     }
+
     func connect() async throws {
         await stopScan()
         updateState?(.connect)
@@ -159,9 +160,9 @@ class ConnectViewModel: NSObject {
                 .reduce(into: [], { $0 += $1 })
             let credentials = Credentials(coreDescriptors: descriptors)
             do {
-                _ = try AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoBioCredentials, credentials: credentials, for: account.keychain)
-            } catch {
                 _ = try AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoCredentials, credentials: credentials, for: account.keychain)
+            } catch {
+                logger.error("\(error.description())")
             }
         }
     }
@@ -195,9 +196,8 @@ class ConnectViewModel: NSObject {
         let wm = WalletManager(account: account, prominentNetwork: account.networkType)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = HwPopupResolver()
-        let method: AuthenticationTypeHandler.AuthType = account.hasWoBioCredentials ? .AuthKeyWoBioCredentials : .AuthKeyWoCredentials
         let credentials = try? AuthenticationTypeHandler.getCredentials(
-            method: method,
+            method: .AuthKeyWoCredentials,
             for: account.keychain)
         guard let credentials = credentials else {
             throw HWError.Declined("")

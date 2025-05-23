@@ -1,4 +1,5 @@
 import UIKit
+import LocalAuthentication
 import CoreBluetooth
 import AsyncBluetooth
 import Combine
@@ -16,6 +17,7 @@ enum ConnectionState {
     case login
     case logged
     case none
+    case errorWatchonly
     case error(Error?)
     case firmware(String?)
 }
@@ -34,7 +36,7 @@ class ConnectViewController: HWFlowBaseViewController {
 
     private var selectedItem: ScanListItem?
     private var isJade: Bool { viewModel.isJade }
-    private var hasCredentials: Bool { viewModel.account.hasWoBioCredentials || viewModel.account.hasWoCredentials }
+    private var hasCredentials: Bool { viewModel.account.hasWoCredentials }
 
     var state: ConnectionState = .none {
         didSet {
@@ -105,11 +107,15 @@ class ConnectViewController: HWFlowBaseViewController {
             progressView.isHidden = false
             AccountsRepository.shared.upsert(viewModel.account)
             AccountNavigator.navLogged(accountId: viewModel.account.id)
+        case .errorWatchonly:
+            progressView.isHidden = true
+            retryButton.isHidden = false
+            retryWoButton.isHidden = !hasCredentials
+            lblSubtitle.text = "Try Face ID again or connect with Bluetooth to access your wallet.".localized
         case .error(let err):
             progressView.isHidden = true
             retryButton.isHidden = false
             retryWoButton.isHidden = !hasCredentials
-            //image.image = UIImage(named: "il_connection_fail")
             if let err = err {
                 let txt = viewModel.bleHwManager.toBleError(err, network: nil).localizedDescription
                 lblSubtitle.text = txt.localized
@@ -131,16 +137,34 @@ class ConnectViewController: HWFlowBaseViewController {
         viewModel.updateState = { self.state = $0 }
         viewModel.delegate = self
         if viewModel.autologin {
-            Task { [weak self] in
-                if self?.hasCredentials ?? false {
+            if hasCredentials {
+                Task { [weak self] in
+                    if AuthenticationTypeHandler.biometryType != LABiometryType.none {
+                        let evaluate = try? await self?.authenticated()
+                        if !(evaluate ?? false) {
+                            self?.state = .errorWatchonly
+                            return
+                        }
+                    }
                     await self?.loginBiometric()
-                } else {
+                }
+            } else {
+                Task { [weak self] in
                     await self?.startScan()
                 }
             }
         } else {
             state = .wait
         }
+    }
+
+    func authenticated() async throws -> Bool {
+        let context = LAContext()
+        var error: NSError?
+        if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
+            return try await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Authentication")
+        }
+        return false
     }
 
     @MainActor
@@ -151,7 +175,7 @@ class ConnectViewController: HWFlowBaseViewController {
         retryButton.setTitle("id_connect_with_bluetooth".localized, for: .normal)
         retryWoButton.setTitle("", for: .normal)
         lblTitle.text = viewModel.account.name
-        lblSubtitle.text = "Try Face ID again or connect with Bluetooth to access your wallet.".localized
+        lblSubtitle.text = ""
         switch AuthenticationTypeHandler.biometryType {
         case .faceID:
             retryWoButton.setImage(UIImage(systemName: "faceid"), for: .normal)
@@ -248,9 +272,13 @@ class ConnectViewController: HWFlowBaseViewController {
 
     @IBAction func retryWoBtnTapped(_ sender: Any) {
         Task {
-            await loginBiometric()
+            let evalute = try? await authenticated()
+            if evalute ?? false {
+                await self.loginBiometric()
+            }
         }
     }
+
     @IBAction func retryBtnTapped(_ sender: Any) {
         setContent()
         Task {

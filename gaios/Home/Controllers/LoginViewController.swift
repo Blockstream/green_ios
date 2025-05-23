@@ -199,9 +199,9 @@ class LoginViewController: UIViewController {
             Task { [weak self] in
                 await self?.login(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: passphrase)
             }
-        } else if account.hasWoBioCredentials {
+        } else if account.hasWoCredentials {
             Task { [weak self] in
-                await self?.login(usingAuth: .AuthKeyWoBioCredentials, withPIN: nil, bip39passphrase: passphrase)
+                await self?.login(usingAuth: .AuthKeyWoCredentials, withPIN: nil, bip39passphrase: passphrase)
             }
         } else {
             if !AuthenticationTypeHandler.supportsPasscodeAuthentication() {
@@ -283,8 +283,8 @@ class LoginViewController: UIViewController {
         self.startLoader(message: "id_logging_in".localized)
         let account = viewModel.account
         let task = Task.detached { [weak self] in
-            if usingAuth == .AuthKeyWoBioCredentials {
-                let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
+            if usingAuth == .AuthKeyWoCredentials {
+                let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
                 _ = try await self?.viewModel.loginWithCredentials(credentials: credentials)
             } else if usingAuth == .AuthKeyBiometric {
                 try await self?.viewModel.loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: bip39passphrase)

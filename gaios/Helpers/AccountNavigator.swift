@@ -32,17 +32,17 @@ class AccountNavigator {
         let vcBiometricLogin: BiometricLoginViewController? = instantiateViewController(storyboard: "Home", identifier: "BiometricLoginViewController")
         let vcConnect: ConnectViewController? = instantiateViewController(storyboard: "HWFlow", identifier: "ConnectViewController")
         let vcWatch: WOLoginViewController? = instantiateViewController(storyboard: "WOFlow", identifier: "WOLoginViewController")
-        if account.isWatchonly {
-            vcWatch?.account = account
-            return vcWatch
-        } else if account.isHW {
+        if account.isHW {
             vcConnect?.viewModel = ConnectViewModel(
                 account: account,
                 firstConnection: false,
                 storeConnection: true,
                 autologin: autologin)
             return vcConnect
-        } else if account.hasBioPin || account.hasWoBioCredentials || account.hasWoCredentials {
+        } else if account.isWatchonly {
+            vcWatch?.account = account
+            return vcWatch
+        } else if account.hasBioPin || account.hasWoCredentials {
             vcBiometricLogin?.viewModel = LoginViewModel(account: account, autologin: autologin)
             return vcBiometricLogin
         } else {
@@ -119,7 +119,7 @@ class AccountNavigator {
             // if there are no wallets
             navStarted()
         } else if wallets.count == 1, let accountId = accountId {
-            navLogin(accountId: accountId)
+            navLogin(accountId: accountId, autologin: false)
         } else {
             navHome()
         }

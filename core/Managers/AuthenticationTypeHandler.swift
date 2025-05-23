@@ -8,9 +8,9 @@ public class AuthenticationTypeHandler {
     public enum AuthError: Error, Equatable {
         case CanceledByUser
         case DeniedByUser
+        case LockedOut
         case NotSupported
         case PasscodeNotSet
-        case ConnectionFailed
         case KeychainError(_ status: OSStatus)
         case ServiceNotAvailable(_ desc: String)
         case SecurityError(_ desc: String)
@@ -27,8 +27,6 @@ public class AuthenticationTypeHandler {
                     return "id_your_ios_device_might_not_be"
                 case .PasscodeNotSet:
                     return "id_set_up_a_passcode_for_your_ios"
-                case .ConnectionFailed:
-                    return "id_connection_failed"
                 case .KeychainError(let status):
                     if #available(iOS 11.3, *) {
                         let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString
@@ -40,6 +38,8 @@ public class AuthenticationTypeHandler {
                     return desc
                 case .DeniedByUser:
                     return "Denied by user"
+                case .LockedOut:
+                    return "Locked Out"
                 }
             }
         }
@@ -52,7 +52,6 @@ public class AuthenticationTypeHandler {
         case AuthKeyPrivate = "com.blockstream.green.auth_key_private" // for biometric private key
         case AuthKeyLightning = "com.blockstream.green.auth_key_credentials" // for lightning credentials
         case AuthKeyWoCredentials = "com.blockstream.green.auth_key_wo_credentials" // for wathonly credentials
-        case AuthKeyWoBioCredentials = "com.blockstream.green.auth_key_wo_bio_credentials" // for wathonly credentials with bio auth
     }
 
     static let PrivateKeyPathSize = 32
@@ -221,6 +220,8 @@ public class AuthenticationTypeHandler {
             let cfError = error!.takeRetainedValue()
             if CFErrorGetCode(cfError) == -2 {
                 throw AuthError.CanceledByUser
+            } else if CFErrorGetCode(cfError) == -8 {
+                throw AuthError.LockedOut
             } else if CFErrorGetCode(cfError) == -1018 {
                 throw AuthError.DeniedByUser
             } else {
@@ -264,16 +265,6 @@ public class AuthenticationTypeHandler {
                 q[kSecAttrAccessible] = kSecAttrAccessibleAfterFirstUnlock
             case .AuthKeyPIN, .AuthKeyWoCredentials:
                 q[kSecAttrAccessible] = kSecAttrAccessibleWhenUnlocked
-            case .AuthKeyWoBioCredentials:
-                let access = SecAccessControlCreateWithFlags(
-                    nil, // Use the default allocator.
-                    kSecAttrAccessibleWhenUnlocked, // the item isn’t eligible for the iCloud keychain and won’t be included if the user restores a device backup to a new device.
-                    .biometryAny, // request biometric authentication, or to fall back on the device passcode, whenever the item is later read from the keychain.
-                    nil) // Ignore any error.
-                let context = LAContext()
-                context.touchIDAuthenticationAllowableReuseDuration = 10
-                q[kSecAttrAccessControl] = access
-                q[kSecUseAuthenticationUI] = kSecUseAuthenticationUI
             }
         }
         return q
@@ -287,12 +278,6 @@ public class AuthenticationTypeHandler {
             kSecReturnData: kCFBooleanTrue ?? true]
         if version == 1 {
             q[kSecAttrAccessGroup] = Bundle.main.appGroup
-            if method == .AuthKeyWoBioCredentials {
-                let context = LAContext()
-                context.localizedReason = "Access your mnemonic on the keychain"
-                context.touchIDAuthenticationAllowableReuseDuration = 10
-                q[kSecUseAuthenticationContext] = context
-            }
         }
         return q
     }
@@ -305,17 +290,12 @@ public class AuthenticationTypeHandler {
             kSecReturnData: kCFBooleanTrue ?? true]
         if version == 1 {
             q[kSecAttrAccessGroup] = Bundle.main.appGroup
-            if method == .AuthKeyWoBioCredentials {
-                let context = LAContext()
-                context.interactionNotAllowed = true
-                q[kSecUseAuthenticationContext] = context
-            }
         }
         return q
     }
 
     fileprivate static func set(method: AuthType, data: [String: Any], forNetwork: String) throws {
-        if [AuthType.AuthKeyBiometric, AuthType.AuthKeyWoBioCredentials].contains(method) && !supportsPasscodeAuthentication() {
+        if AuthType.AuthKeyBiometric == method && !supportsPasscodeAuthentication() {
             throw AuthError.PasscodeNotSet
         }
         guard let data = try? JSONSerialization.data(withJSONObject: data) else {
@@ -447,7 +427,7 @@ public class AuthenticationTypeHandler {
     }
 
     public static func setCredentials(method: AuthType, credentials: Credentials, for label: String) throws {
-        guard [AuthType.AuthKeyLightning, AuthType.AuthKeyWoCredentials, AuthType.AuthKeyWoBioCredentials].contains(method) else {
+        guard [AuthType.AuthKeyLightning, AuthType.AuthKeyWoCredentials].contains(method) else {
             throw AuthError.SecurityError("Invalid method")
         }
         try AuthenticationTypeHandler.setAuth(method: method, data: credentials, for: label)
@@ -464,7 +444,7 @@ public class AuthenticationTypeHandler {
         return try getAuth(method: method, for: label)
     }
     public static func getCredentials(method: AuthType, for label: String) throws -> Credentials {
-        guard [AuthType.AuthKeyLightning, AuthType.AuthKeyWoCredentials, AuthType.AuthKeyWoBioCredentials].contains(method) else {
+        guard [AuthType.AuthKeyLightning, AuthType.AuthKeyWoCredentials].contains(method) else {
             throw AuthError.SecurityError("Invalid method")
         }
         return try getAuth(method: method, for: label)
@@ -473,4 +453,3 @@ public class AuthenticationTypeHandler {
         try getAuth(method: AuthType.AuthCertLightning, for: label)
     }
 }
-

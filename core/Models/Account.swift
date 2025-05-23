@@ -122,12 +122,6 @@ public struct Account: Codable, Equatable {
             AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: keychain)
         }
     }
-
-    public var hasWoBioCredentials: Bool {
-        get {
-            AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: keychain)
-        }
-    }
     
     public var hasWoCredentials: Bool {
         get {
