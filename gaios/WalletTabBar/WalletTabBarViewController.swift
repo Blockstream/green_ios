@@ -232,7 +232,8 @@ class WalletTabBarViewController: UITabBarController {
         case .security:
             break
         case .settings:
-            break
+            tabSettingsVC.viewModel.load()
+            tabSettingsVC.tableView?.reloadData()
         }
     }
 
