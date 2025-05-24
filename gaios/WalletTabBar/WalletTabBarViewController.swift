@@ -165,6 +165,7 @@ class WalletTabBarViewController: UITabBarController {
                 }
             }
         case .Settings:
+            updateTabs([.home])
             Task.detached { [weak self] in
                 await self?.reloadChart()
                 await self?.updateTabs([.home])
