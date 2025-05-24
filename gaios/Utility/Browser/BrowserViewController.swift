@@ -66,7 +66,7 @@ class BrowserViewController: UIViewController, WKNavigationDelegate, WKUIDelegat
     }
 
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        if navigationAction.targetFrame == nil, let url = url {
+        if let url = navigationAction.request.url {
             logger.info("BrowserViewController url: \(url)")
             webView.load(URLRequest(url: url))
         }
