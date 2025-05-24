@@ -47,12 +47,9 @@ class ReceiveViewModel {
     static func getLiquidAmpSubaccounts() -> [WalletItem] {
         WalletManager.current?.liquidAmpSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
-    static func getSubaccounts() -> [WalletItem] {
-        WalletManager.current?.subaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
-    }
 
     init() {
-        self.account = ReceiveViewModel.defaultAccount ?? ReceiveViewModel.getSubaccounts().first!
+        self.account = ReceiveViewModel.defaultAccount ?? ReceiveViewModel.getBitcoinSubaccounts().first!
         self.asset = account.gdkNetwork.getFeeAsset()
         self.type = account.gdkNetwork.lightning ? .bolt11 : .address
         self.inputDenomination = wm.prominentSession?.settings?.denomination ?? .Sats
