@@ -15,6 +15,7 @@ public enum TransactionBaseType: UInt32 {
 enum ReceiveSection: Int, CaseIterable {
     case backup
     case asset
+    case account
     case amount
     case address
     case infoReceiveAmount
@@ -30,7 +31,6 @@ class ReceiveViewController: KeyboardViewController {
     @IBOutlet weak var btnOnChain: UIButton!
     @IBOutlet weak var btnConfirm: UIButton!
     @IBOutlet weak var stackBottom: NSLayoutConstraint!
-
     @IBOutlet weak var accountStack: UIStackView!
     @IBOutlet weak var lblAccount: UILabel!
     @IBOutlet weak var btnAccount: UIButton!
@@ -119,7 +119,6 @@ class ReceiveViewController: KeyboardViewController {
         btnShare.setTitle("id_share".localized, for: .normal)
         btnVerify.setTitle("id_verify_on_device".localized, for: .normal)
         btnConfirm.setTitle("id_confirm".localized, for: .normal)
-        lblAccount.text = "id_account".localized
     }
 
     func setStyle() {
@@ -128,24 +127,22 @@ class ReceiveViewController: KeyboardViewController {
         btnOnChain.semanticContentAttribute = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
         btnVerify.setStyle(.primary)
         stateDidChange(.disabled)
-        lblAccount.setStyle(.sectionTitle)
-        btnAccount.setStyle(.sectionTitle)
     }
 
     var sections: [ReceiveSection] {
         switch viewModel.type {
         case .bolt11:
             if lightningAmountEditing {
-                return [.asset, .amount]
+                return [.asset, .account, .amount]
             } else if viewModel.description == nil {
-                return [.asset, .amount, .address, .infoReceiveAmount, .infoExpiredIn]
+                return [.asset, .account, .amount, .address, .infoReceiveAmount, .infoExpiredIn]
             } else {
                 return ReceiveSection.allCases
             }
         case .swap:
-            return [.backup, .asset, .address]
+            return [.backup, .asset, .account, .address]
         case .address:
-            return [.backup, .asset, .address]
+            return [.backup, .asset, .account, .address]
         }
     }
 
@@ -161,15 +158,10 @@ class ReceiveViewController: KeyboardViewController {
         }
         btnVerify.isHidden = hideVerify
         btnOnChain.setTitle(viewModel.type == .bolt11 ? "id_show_onchain_address".localized : "id_show_lightning_invoice".localized, for: .normal)
+        accountStack.isHidden = true
         reloadNavigationBtns()
         viewModel.reloadBackupCards()
         tableView.reloadData()
-        accountStack.isHidden = viewModel.getAccounts().count <= 1
-        btnAccount.setTitle(viewModel.account.localizedName, for: .normal)
-    }
-
-    @IBAction func btnAccount(_ sender: Any) {
-        presentDialogAccountsViewController()
     }
 
     func reloadNavigationBtns() {
@@ -487,6 +479,10 @@ class ReceiveViewController: KeyboardViewController {
         }
         reload()
     }
+
+    @IBAction func btnAccount(_ sender: Any) {
+        presentDialogAccountsViewController()
+    }
 }
 
 extension ReceiveViewController: AssetSelectViewControllerDelegate {
@@ -625,6 +621,8 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
             return viewModel.backupCardCellModel.count
         case ReceiveSection.asset:
             return 1
+        case ReceiveSection.account:
+            return viewModel.getAccounts().count <= 1 ? 0 : 1
         case ReceiveSection.address:
             return 1
         case ReceiveSection.amount:
@@ -668,6 +666,45 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
+        case ReceiveSection.account:
+            let cell = UITableViewCell()
+            cell.backgroundColor = UIColor.gBlackBg()
+
+            let label = UILabel()
+            label.setStyle(.sectionTitle)
+            label.text = "id_account".localized
+
+            let button = UIButton(type: .system)
+            button.setStyle(.sectionTitle)
+            button.setTitle(viewModel.account.localizedName, for: .normal)
+            button.addTarget(self, action: #selector(btnAccount(_:)), for: .touchUpInside)
+            button.contentHorizontalAlignment = .right
+
+            // Use SF Symbol for downward chevron and add a space
+            let chevron = UIImageView(image: UIImage(systemName: "chevron.down"))
+            chevron.tintColor = .white
+
+            let rightStack = UIStackView(arrangedSubviews: [button, chevron])
+            rightStack.axis = .horizontal
+            rightStack.spacing = 8 // Add more space between button and chevron
+            rightStack.alignment = .center
+
+            let mainStack = UIStackView(arrangedSubviews: [label, rightStack])
+            mainStack.axis = .horizontal
+            mainStack.spacing = 8
+            mainStack.alignment = .center
+            mainStack.distribution = .equalSpacing
+
+            cell.contentView.addSubview(mainStack)
+            mainStack.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                mainStack.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 25),
+                mainStack.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -25),
+                mainStack.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8),
+                mainStack.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8)
+            ])
+            cell.selectionStyle = .none
+            return cell
         case ReceiveSection.amount:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AmountCell") as? AmountCell {
                 let model = viewModel.amountCellModel
@@ -716,6 +753,8 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
         switch sections[section] {
         case ReceiveSection.asset:
             return headerH
+        case ReceiveSection.account:
+            return 0.1
         case ReceiveSection.address:
             return headerH
         case ReceiveSection.amount:
@@ -741,6 +780,8 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
             return nil
         case ReceiveSection.asset:
             return headerView("id_asset".localized)
+        case ReceiveSection.account:
+            return nil
         case ReceiveSection.address:
             switch viewModel.type {
             case .address:
