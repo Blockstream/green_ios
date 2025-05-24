@@ -962,7 +962,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="22c-Ry-Qfu">
-                                <rect key="frame" x="157" y="606" width="100" height="100"/>
+                                <rect key="frame" x="157" y="566" width="100" height="100"/>
                                 <color key="backgroundColor" name="gAccent"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="100" id="o1f-VC-Z0m"/>
@@ -971,7 +971,7 @@
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="faceid" catalog="system">
-                                    <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="pointSize" pointSize="40"/>
+                                    <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="pointSize" pointSize="44"/>
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="retryWoBtnTapped:" destination="z5l-07-Xjx" eventType="touchUpInside" id="nQx-I9-9Gy"/>
@@ -1001,7 +1001,7 @@
                             <constraint firstItem="1SD-0X-jTs" firstAttribute="leading" secondItem="mHO-wb-71B" secondAttribute="leading" constant="44" id="D4Y-fc-6ur"/>
                             <constraint firstItem="wtv-sR-89M" firstAttribute="centerX" secondItem="mHO-wb-71B" secondAttribute="centerX" id="EIv-bo-DAm"/>
                             <constraint firstItem="mHO-wb-71B" firstAttribute="trailing" secondItem="XD3-0B-nuQ" secondAttribute="trailing" constant="25" id="IdV-1g-LyA"/>
-                            <constraint firstItem="XD3-0B-nuQ" firstAttribute="top" secondItem="22c-Ry-Qfu" secondAttribute="bottom" id="RKX-U0-c6O"/>
+                            <constraint firstItem="XD3-0B-nuQ" firstAttribute="top" secondItem="22c-Ry-Qfu" secondAttribute="bottom" constant="40" id="RKX-U0-c6O"/>
                             <constraint firstItem="XD3-0B-nuQ" firstAttribute="leading" secondItem="mHO-wb-71B" secondAttribute="leading" constant="25" id="Zgu-lN-G8o"/>
                             <constraint firstItem="r7h-vS-JNO" firstAttribute="top" secondItem="mHO-wb-71B" secondAttribute="top" constant="54" id="aSf-4y-yjk"/>
                             <constraint firstItem="mHO-wb-71B" firstAttribute="trailing" secondItem="lA6-67-DY6" secondAttribute="trailing" constant="44" id="cDs-yL-rP4"/>

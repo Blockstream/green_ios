@@ -746,7 +746,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JgN-l4-FxD">
-                                <rect key="frame" x="157" y="606" width="100" height="100"/>
+                                <rect key="frame" x="157" y="566" width="100" height="100"/>
                                 <color key="backgroundColor" name="gAccent"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="100" id="9TD-ml-y7d"/>
@@ -756,7 +756,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain">
                                     <imageReference key="image" image="faceid" catalog="system" symbolScale="default"/>
-                                    <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="pointSize" pointSize="40"/>
+                                    <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="pointSize" pointSize="44"/>
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="biometricButtonTap:" destination="1wu-hP-iXL" eventType="touchUpInside" id="Pk9-Uy-CiB"/>
@@ -784,7 +784,7 @@
                             <constraint firstItem="7S5-nF-fE9" firstAttribute="top" secondItem="gtZ-af-bd2" secondAttribute="top" constant="54" id="1qe-k7-cIe"/>
                             <constraint firstItem="gtZ-af-bd2" firstAttribute="trailing" secondItem="LgE-Az-NNa" secondAttribute="trailing" constant="44" id="D06-NU-jRq"/>
                             <constraint firstItem="gtZ-af-bd2" firstAttribute="bottom" secondItem="5KZ-i0-L4V" secondAttribute="bottom" constant="100" id="H3D-3M-SUB"/>
-                            <constraint firstItem="5KZ-i0-L4V" firstAttribute="top" secondItem="JgN-l4-FxD" secondAttribute="bottom" id="MUn-Xp-Vij"/>
+                            <constraint firstItem="5KZ-i0-L4V" firstAttribute="top" secondItem="JgN-l4-FxD" secondAttribute="bottom" constant="40" id="MUn-Xp-Vij"/>
                             <constraint firstItem="LgE-Az-NNa" firstAttribute="leading" secondItem="gtZ-af-bd2" secondAttribute="leading" constant="44" id="W1W-Hh-kr5"/>
                             <constraint firstItem="LgE-Az-NNa" firstAttribute="top" secondItem="7S5-nF-fE9" secondAttribute="bottom" constant="44" id="Xki-Eh-6BM"/>
                             <constraint firstItem="s37-ex-eSY" firstAttribute="leading" secondItem="gtZ-af-bd2" secondAttribute="leading" constant="44" id="cbK-Xx-UGT"/>
