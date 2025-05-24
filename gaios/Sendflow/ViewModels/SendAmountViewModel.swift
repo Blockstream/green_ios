@@ -271,7 +271,7 @@ class SendAmountViewModel {
 
     private func validateTransaction() async throws -> Transaction? {
         var tx = Transaction(self.transaction?.details ?? [:])
-        tx.subaccount = subaccount?.hashValue
+        tx.subaccountId = subaccount?.id
         if Task.isCancelled { return nil }
         if let feeRate = createTx.feeRate {
             tx.feeRate = feeRate
@@ -296,7 +296,7 @@ class SendAmountViewModel {
                 address?.isGreedy = true
                 address?.satoshi = 0
                 var addressee = address.toDict()
-                let btc = tx.subaccountItem?.gdkNetwork.getFeeAsset()
+                let btc = tx.subaccount?.gdkNetwork.getFeeAsset()
                 addressee?["id_asset"] = btc
                 tx.details["addressees"] = [addressee]
             }
@@ -328,7 +328,7 @@ class SendAmountViewModel {
             let res = try await session?.getUtxos(guParams)
             let crtParams = CreateRedepositTransactionParams(utxos: res?.unspentOutputs ?? [:], feeRate: feeRate, feeSubaccount: subaccount?.pointer ?? 0, expiredAt: nil, expiresIn: nil)
             var created = try await session?.createRedepositTransaction(params: crtParams)
-            created?.subaccount = subaccount?.hashValue
+            created?.subaccountId = subaccount?.id
             createTx.addressee = created?.addressees.first
             return created
         }
@@ -340,7 +340,7 @@ class SendAmountViewModel {
         if Task.isCancelled { return nil }
         tx.amounts = [:]
         var created = try? await session?.createTransaction(tx: tx)
-        created?.subaccount = subaccount?.hashValue
+        created?.subaccountId = subaccount?.id
         return created
     }
 

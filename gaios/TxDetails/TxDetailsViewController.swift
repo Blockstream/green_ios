@@ -34,7 +34,7 @@ class TxDetailsViewController: UIViewController {
         WalletManager.current?.account.isWatchonly ?? false
     }
     var isSinglesig: Bool {
-        vm.transaction.subaccountItem?.isSinglesig ?? true
+        vm.transaction.subaccount?.isSinglesig ?? true
     }
 
     var viewInExplorerPreference: Bool {
@@ -256,7 +256,7 @@ class TxDetailsViewController: UIViewController {
 
     func createTransaction(createTx: CreateTx, session: SessionManager) async throws -> Transaction {
         let unspentOutputs = try await session.getUnspentOutputs(GetUnspentOutputsParams(subaccount: vm.wallet.pointer, numConfs: 1))
-        var tx = Transaction([:], subaccount: vm.transaction.subaccount)
+        var tx = Transaction([:], subaccountId: vm.transaction.subaccountId)
         tx.previousTransaction = createTx.previousTransaction
         tx.feeRate = createTx.feeRate ?? session.gdkNetwork.defaultFee
         tx.utxos = unspentOutputs
@@ -327,7 +327,7 @@ class TxDetailsViewController: UIViewController {
     func pushLTRecoverFundsViewController(_ tx: Transaction) {
         let amount = tx.amounts["btc"].map {UInt64(abs($0))}
         let address = tx.inputs?.first?.address as? String
-        let model = LTRecoverFundsViewModel(wallet: tx.subaccountItem,
+        let model = LTRecoverFundsViewModel(wallet: tx.subaccount,
                                             onChainAddress: address,
                                             amount: amount,
                                             type: .refund)

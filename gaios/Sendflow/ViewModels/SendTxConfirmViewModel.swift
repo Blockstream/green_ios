@@ -67,7 +67,7 @@ class SendTxConfirmViewModel {
     var sendAll: Bool { addressee?.isGreedy ?? false}
     var satoshi: Int64? { addressee?.satoshi }
     var asset: AssetInfo? { wm?.info(for: assetId) }
-    var isLiquid: Bool { transaction?.subaccountItem?.gdkNetwork.liquid ?? false }
+    var isLiquid: Bool { transaction?.subaccount?.gdkNetwork.liquid ?? false }
 
     var assetImage: UIImage? {
         if multiAddressees {

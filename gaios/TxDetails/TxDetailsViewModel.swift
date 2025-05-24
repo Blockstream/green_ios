@@ -40,7 +40,7 @@ class TxDetailsViewModel {
     var txDetailsAmountCellModels: [TxDetailsAmountCellModel] {
         return assetAmountList.amounts.map {
             var amount = $0.1
-            let assetId = transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc"
+            let assetId = transaction.subaccount?.gdkNetwork.getFeeAsset() ?? "btc"
             if ($0.0 == assetId) && transaction.type == .outgoing {
                 amount = -(abs($0.1) - Int64(transaction.fee ?? 0))
             }
@@ -55,7 +55,7 @@ class TxDetailsViewModel {
     var showTotals: Bool {
         if !transaction.isLightning && transaction.type == .outgoing && assetAmountList.amounts.count == 1 {
             let amount: (String, Int64) = assetAmountList.amounts[0]
-            let assetId = transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc"
+            let assetId = transaction.subaccount?.gdkNetwork.getFeeAsset() ?? "btc"
             if amount.0 == assetId {
                 return true
             }
@@ -73,7 +73,7 @@ class TxDetailsViewModel {
         var receive: String?
 
         let amount: (String, Int64) = assetAmountList.amounts[0]
-        let assetId = transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc"
+        let assetId = transaction.subaccount?.gdkNetwork.getFeeAsset() ?? "btc"
         if amount.0 == assetId {
             let tSpent = abs(amount.1)
             if let balance = Balance.fromSatoshi(tSpent, assetId: assetId) {
@@ -134,7 +134,7 @@ class TxDetailsViewModel {
             !showTotals {
 
             // fee
-            if let balance = Balance.fromSatoshi(transaction.fee ?? 0, assetId: transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc") {
+            if let balance = Balance.fromSatoshi(transaction.fee ?? 0, assetId: transaction.subaccount?.gdkNetwork.getFeeAsset() ?? "btc") {
                 let (amount, denom) = balance.toValue()
                 let (fiat, fiatCurrency) = balance.toFiat()
                 let str = "\(amount) \(denom) ≈ \(fiat) \(fiatCurrency)"
@@ -244,7 +244,7 @@ class TxDetailsViewModel {
     }
 
     func showBumpFee() -> Bool {
-        let subaccount =  WalletManager.current?.subaccounts.filter { $0.hashValue == transaction.subaccount }.first
+        let subaccount =  WalletManager.current?.subaccounts.filter { $0.id == transaction.subaccountId }.first
         let isWatchonly = WalletManager.current?.account.isWatchonly ?? false
         let showBumpFee = !transaction.isLiquid && transaction.canRBF && !(subaccount?.session?.isResetActive ?? false)
         return showBumpFee

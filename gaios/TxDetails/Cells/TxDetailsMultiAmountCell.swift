@@ -51,7 +51,7 @@ class TxDetailsMultiAmountCell: UITableViewCell {
     }
 
     func loadIcon() {
-        if model?.tx.subaccountItem?.gdkNetwork.lightning ?? false {
+        if model?.tx.subaccount?.gdkNetwork.lightning ?? false {
             iconAsset.image = UIImage(named: "ic_lightning_btc")
         } else {
             iconAsset.image = WalletManager.current?.image(for: model!.id)

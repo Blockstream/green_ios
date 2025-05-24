@@ -1,6 +1,6 @@
 import Foundation
 
-public class WalletItem: Codable, Equatable, Comparable, Hashable {
+public class WalletItem: Codable, Equatable, Comparable {
 
     enum CodingKeys: String, CodingKey {
         case name
@@ -33,7 +33,10 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
 
     public var networkType: NetworkSecurityCase { NetworkSecurityCase(rawValue: network!)! }
     public var gdkNetwork: GdkNetwork { networkType.gdkNetwork }
-
+    
+    public var id: String {
+        "\(network ?? ""):\(pointer)"
+    }
     public var btc: Int64? {
         let feeAsset = gdkNetwork.getFeeAsset()
         return satoshi?[feeAsset]
@@ -91,13 +94,6 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
         }
         return lhsNetwork < rhsNetwork
     }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(network)
-        hasher.combine(pointer)
-        hasher.combine(type)
-    }
-
     public init(name: String, pointer: UInt32, receivingId: String, type: AccountType, bip44Discovered: Bool? = nil, recoveryXpub: String? = nil, hidden: Bool, network: String? = nil, coreDescriptors: [String]? = nil, extendedPubkey: String? = nil, userPath: [Int]? = nil, hasTxs: Bool = false, satoshi: [String: Int64]? = nil) {
         self.name = name
         self.pointer = pointer

@@ -204,7 +204,7 @@ class SecuritySelectViewModel {
 
     func createOrUnarchiveSubaccount(session: SessionManager, accounts: [WalletItem], txs: [Transaction], params: CreateSubaccountParams) async throws -> WalletItem? {
         let items = accounts.map { account in
-            (account, txs.filter { $0.subaccount == account.hashValue }.count)
+            (account, txs.filter { $0.subaccountId == account.id }.count)
         }
         let unfunded = items.filter { $0.1 == 0 }.map { $0.0 }.first
         if let unfunded = unfunded {

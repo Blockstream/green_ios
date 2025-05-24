@@ -43,11 +43,11 @@ class SendDialogFeeViewModel {
 
     func btcToText(_ satoshi: UInt64?) -> String? {
         guard let satoshi = satoshi else { return nil }
-        return Balance.fromSatoshi(satoshi, assetId: transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc")?.toText(denominationType)
+        return Balance.fromSatoshi(satoshi, assetId: transaction.subaccount?.gdkNetwork.getFeeAsset() ?? "btc")?.toText(denominationType)
     }
     func btcToFiat(_ satoshi: UInt64?) -> String? {
         guard let satoshi = satoshi else { return nil }
-        return Balance.fromSatoshi(satoshi, assetId: transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc")?.toFiatText()
+        return Balance.fromSatoshi(satoshi, assetId: transaction.subaccount?.gdkNetwork.getFeeAsset() ?? "btc")?.toFiatText()
     }
 
     func feeRateWithUnit(_ value: UInt64?) -> String? {

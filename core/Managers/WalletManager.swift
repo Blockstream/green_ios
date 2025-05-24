@@ -81,25 +81,6 @@ public class WalletManager {
         }
     }
 
-    // Store active subaccount
-    private var activeWalletHash: Int?
-    public var currentSubaccount: WalletItem? {
-        get {
-            if activeWalletHash == nil {
-                return subaccounts.first { $0.hidden == false }
-            }
-            return subaccounts.first { $0.hashValue == activeWalletHash}
-        }
-        set {
-            if let newValue = newValue {
-                activeWalletHash = newValue.hashValue
-                if let index = subaccounts.firstIndex(where: { $0.pointer == newValue.pointer && $0.network == newValue.network}) {
-                    subaccounts[index] = newValue
-                }
-            }
-        }
-    }
-
     // Get active session of the active subaccount
     public var prominentSession: SessionManager? {
         return sessions[prominentNetwork.rawValue]
@@ -416,6 +397,9 @@ public class WalletManager {
         subaccounts.filter { !$0.hidden }
             .filter { liquidNetworks.contains($0.networkType) }
     }
+    public var liquidAmpSubaccounts: [WalletItem] {
+        liquidSubaccounts.filter { $0.type == .amp }
+    }
     public var bitcoinSubaccountsWithFunds: [WalletItem] {
         bitcoinSubaccounts.filter { $0.satoshi?.compactMap{ $0.value }.reduce(0, +) ?? 0 > 0 }
     }
@@ -503,7 +487,7 @@ public class WalletManager {
                 group.addTask {
                     let acc = account.element
                     let satoshi = try? await acc.session?.getBalance(subaccount: acc.pointer, numConfs: 0)
-                    if let index = self.subaccounts.firstIndex(where: { $0.hashValue == acc.hashValue }), let satoshi = satoshi {
+                    if let index = self.subaccounts.firstIndex(where: { $0.id == acc.id }), let satoshi = satoshi {
                         self.subaccounts[index].satoshi = satoshi
                         self.subaccounts[index].hasTxs = satoshi.count > 1 ? true : account.element.hasTxs
                         self.subaccounts[index].hasTxs = (satoshi.first?.value ?? 0) > 0 ? true : account.element.hasTxs
@@ -530,7 +514,7 @@ public class WalletManager {
             for subaccount in subaccounts {
                 group.addTask {
                     let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: first)
-                    let page = txs?.list.map { Transaction($0.details, subaccount: subaccount.hashValue) }
+                    let page = txs?.list.map { Transaction($0.details, subaccountId: subaccount.id) }
                     return page ?? []
                 }
             }
@@ -540,16 +524,16 @@ public class WalletManager {
         }
     }
 
-    public func pagedTransactions(subaccounts: [WalletItem], of page: Int = 0) async throws -> [Int: Transactions] {
-        return try await withThrowingTaskGroup(of: (Int, Transactions).self, returning: [Int: Transactions].self) { group in
+    public func pagedTransactions(subaccounts: [WalletItem], of page: Int = 0) async throws -> [String: Transactions] {
+        return try await withThrowingTaskGroup(of: (String, Transactions).self, returning: [String: Transactions].self) { group in
             for subaccount in subaccounts {
                 group.addTask {
                     let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: page * 30, count: 30)
-                    let list = txs?.list.map { Transaction($0.details, subaccount: subaccount.hashValue) }
-                    return (subaccount.hashValue, Transactions(list: list ?? []))
+                    let list = txs?.list.map { Transaction($0.details, subaccountId: subaccount.id) }
+                    return (subaccount.id, Transactions(list: list ?? []))
                 }
             }
-            return try await group.reduce(into: [Int: Transactions]()) { partial, res in
+            return try await group.reduce(into: [String: Transactions]()) { partial, res in
                 partial[res.0] = res.1
             }
         }

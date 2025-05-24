@@ -254,15 +254,8 @@ class SendAddressInputViewController: KeyboardViewController {
     func presentReceiveViewController() {
         guard let createTx = viewModel.createTx else { return }
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
-            var subaccounts = [WalletItem]()
-            if createTx.isBitcoin {
-                subaccounts = viewModel.bitcoinSubaccounts
-            } else {
-                subaccounts = viewModel.liquidSubaccounts
-            }
-            vc.viewModel = ReceiveViewModel(account: subaccounts.first!,
-                                            accounts: subaccounts)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {gaios/TxDetails/Cells/TxDetailsStatusCell.swift
+            vc.viewModel = ReceiveViewModel()
             navigationController?.pushViewController(vc, animated: true)
         }
     }

@@ -3,13 +3,14 @@ import BreezSDK
 import gdk
 
 extension Transaction {
-
-    public var subaccountItem: WalletItem? {
-        return WalletManager.current?.subaccounts.filter({ $0.hashValue == subaccount }).first
+    
+    public var subaccount: WalletItem? {
+        get { WalletManager.current?.subaccounts.filter({ $0.id == subaccountId }).first }
+        set { subaccountId = newValue?.id }
     }
 
     public var feeAsset: String {
-        subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc"
+        subaccount?.gdkNetwork.getFeeAsset() ?? "btc"
     }
 
     public func amountsWithFees() -> [String: Int64] {
@@ -37,7 +38,7 @@ extension Transaction {
     }
 
     public var isLightning: Bool {
-        self.subaccountItem?.gdkNetwork.lightning ?? false
+        self.subaccount?.gdkNetwork.lightning ?? false
     }
 
     public func isUnconfirmed(block: UInt32) -> Bool {
@@ -64,9 +65,9 @@ extension Transaction {
         }
     }
 
-    public static func fromPayment(_ payment: BreezSDK.Payment, subaccount: Int) -> Transaction {
+    public static func fromPayment(_ payment: BreezSDK.Payment, subaccountId: String?) -> Transaction {
         var tx = Transaction([:])
-        tx.subaccount = subaccount
+        tx.subaccountId = subaccountId
         tx.canRBF = false
         tx.memo = payment.description ?? ""
         tx.fee = payment.feeMsat / 1000
@@ -117,10 +118,10 @@ extension Transaction {
         return tx
     }
 
-    public static func fromSwapInfo(_ swapInfo: SwapInfo, subaccount: Int, isRefundableSwap: Bool) -> Transaction {
+    public static func fromSwapInfo(_ swapInfo: SwapInfo, subaccountId: String?, isRefundableSwap: Bool) -> Transaction {
         var tx = Transaction([:])
         let amount = Int64(swapInfo.confirmedSats + swapInfo.unconfirmedSats)
-        tx.subaccount = subaccount
+        tx.subaccountId = subaccountId
         tx.blockHeight = isRefundableSwap ? UInt32.max : 0
         tx.canRBF = false
         tx.memo = nil
@@ -140,10 +141,10 @@ extension Transaction {
         return tx
     }
 
-    static func fromReverseSwapInfo(_ swapInfo: ReverseSwapInfo, subaccount: Int, isRefundableSwap: Bool) -> Transaction {
+    static func fromReverseSwapInfo(_ swapInfo: ReverseSwapInfo, subaccountId: String?, isRefundableSwap: Bool) -> Transaction {
         var tx = Transaction([:])
         let amount = Int64(swapInfo.onchainAmountSat)
-        tx.subaccount = subaccount
+        tx.subaccountId = subaccountId
         tx.blockHeight = isRefundableSwap ? UInt32.max : 0
         tx.canRBF = false
         tx.memo = ""

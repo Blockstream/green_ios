@@ -115,7 +115,7 @@ class SendAddressInputViewModel {
     }
     
     private func parsePsbt(for session: SessionManager, input: String) async throws -> CreateTx? {
-        var tx = try await wm?.prominentSession?.psbtGetDetails(params: PsbtGetDetailParams(psbt:  input, utxos: [:]))
+        let tx = try await wm?.prominentSession?.psbtGetDetails(params: PsbtGetDetailParams(psbt:  input, utxos: [:]))
         return CreateTx(txType: .psbt, psbt: input)
         
     }
@@ -188,12 +188,12 @@ class SendAddressInputViewModel {
     }
 
     func lightningTransaction() async -> Transaction? {
-        var tx = Transaction([:], subaccount: lightningSubaccount?.hashValue)
+        var tx = Transaction([:], subaccountId: lightningSubaccount?.id)
         if let addressee = createTx?.addressee {
             tx.addressees = [addressee]
         }
         var created = try? await lightningSession?.createTransaction(tx: tx)
-        created?.subaccount = lightningSubaccount?.hashValue
+        created?.subaccountId = lightningSubaccount?.id
         return created
     }
     
@@ -223,7 +223,7 @@ class SendAddressInputViewModel {
         var tx = try await session?.psbtGetDetails(params: PsbtGetDetailParams(psbt:  createTx?.psbt, utxos: [:]))
         let addressee = tx?.transactionOutputs?.map { Addressee.from(address: $0.address ?? "", satoshi: $0.satoshi, assetId: $0.assetId) }
         tx?.addressees = addressee ?? []
-        tx?.subaccount = subaccount?.hashValue
+        tx?.subaccountId = subaccount?.id
         return SendTxConfirmViewModel(
             transaction: tx,
             subaccount: subaccount,

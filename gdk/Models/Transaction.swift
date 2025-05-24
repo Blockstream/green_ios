@@ -209,15 +209,15 @@ public enum TransactionType: String, Codable {
 
 public struct Transaction: Comparable {
     public var details: [String: Any]
-    public var subaccount: Int?
+    public var subaccountId: String?
 
     private func get<T>(_ key: String) -> T? {
         return details[key] as? T
     }
 
-    public init(_ details: [String: Any], subaccount: Int? = nil) {
+    public init(_ details: [String: Any], subaccountId: String? = nil) {
         self.details = details
-        self.subaccount = subaccount
+        self.subaccountId = subaccountId
     }
 
     public var addressees: [Addressee] {

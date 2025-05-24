@@ -475,17 +475,17 @@ public class SessionManager {
 
     public func createTransaction(tx: Transaction) async throws -> Transaction {
         let res = try await wrap(fun: self.session?.createTransaction, params: tx.details)
-        return Transaction(res["result"] as? [String: Any] ?? [:], subaccount: tx.subaccount)
+        return Transaction(res["result"] as? [String: Any] ?? [:], subaccountId: tx.subaccountId)
     }
 
     public func blindTransaction(tx: Transaction) async throws -> Transaction {
         let res = try await wrap(fun: self.session?.blindTransaction, params: tx.details)
-        return Transaction(res["result"] as? [String: Any] ?? [:], subaccount: tx.subaccount)
+        return Transaction(res["result"] as? [String: Any] ?? [:], subaccountId: tx.subaccountId)
     }
 
     public func signTransaction(tx: Transaction) async throws -> Transaction {
         let res = try await wrap(fun: self.session?.signTransaction, params: tx.details)
-        return Transaction(res["result"] as? [String: Any] ?? [:], subaccount: tx.subaccount)
+        return Transaction(res["result"] as? [String: Any] ?? [:], subaccountId: tx.subaccountId)
     }
 
     public func sendTransaction(tx: Transaction) async throws -> SendTransactionSuccess {
@@ -630,13 +630,13 @@ public class SessionManager {
     public func createRedepositTransaction(params: CreateRedepositTransactionParams) async throws -> Transaction {
         let res = try await wrap(fun: session?.createRedepositTransaction, params: params.toDict() ?? [:])
         let result = res["result"] as? [String: Any]
-        return Transaction(result ?? [:], subaccount: nil)
+        return Transaction(result ?? [:], subaccountId: nil)
     }
 
     public func psbtGetDetails(params: PsbtGetDetailParams) async throws -> Transaction {
         let res = try await wrap(fun: session?.PsbtGetDetails, params: params.toDict() ?? [:])
         let result = res["result"] as? [String: Any]
-        return Transaction(result ?? [:], subaccount: nil)
+        return Transaction(result ?? [:], subaccountId: nil)
     }
     
     public func signPsbt(params: SignPsbtParams) async throws -> SignPsbtResult {

@@ -255,7 +255,7 @@ public class LightningSessionManager: SessionManager {
             }
             if invoice.isExpired {
                 tx.error = "id_invoice_expired"
-            } else if let subaccount = tx.subaccountItem,
+            } else if let subaccount = tx.subaccount,
                let error = generateLightningError(account: subaccount, satoshi: sendableSatoshi) {
                 tx.error = error
             }
@@ -269,7 +269,7 @@ public class LightningSessionManager: SessionManager {
             tx.addressees = [addressee]
             tx.amounts = ["btc": Int64(sendableSatoshi)]
             tx.transactionOutputs = [TransactionInputOutput.fromLnUrlPay(requestData, input: address, satoshi: Int64(sendableSatoshi))]
-            if let subaccount = tx.subaccountItem,
+            if let subaccount = tx.subaccount,
                let error = generateLightningError(account: subaccount, satoshi: sendableSatoshi, min: requestData.minSendableSatoshi, max: requestData.maxSendableSatoshi) {
                 tx.error = error
             }
@@ -332,17 +332,17 @@ public class LightningSessionManager: SessionManager {
         guard let lb = self.lightBridge else {
             return Transactions(list: [])
         }
-        let subaccount = try await subaccounts().first.hashValue
+        let subaccountId = try await subaccounts().first?.id
         // get list payments
-        var txs = try lb.getListPayments().compactMap { Transaction.fromPayment($0, subaccount: subaccount) }
+        var txs = try lb.getListPayments().compactMap { Transaction.fromPayment($0, subaccountId: subaccountId) }
         // get list refundables
-        txs += try lb.listRefundables().compactMap { Transaction.fromSwapInfo($0, subaccount: subaccount, isRefundableSwap: true) }
+        txs += try lb.listRefundables().compactMap { Transaction.fromSwapInfo($0, subaccountId: subaccountId, isRefundableSwap: true) }
         // get list reverse swap
-        txs += try lb.listReverseSwapProgress().compactMap { Transaction.fromReverseSwapInfo($0, subaccount: subaccount, isRefundableSwap: false) }
+        txs += try lb.listReverseSwapProgress().compactMap { Transaction.fromReverseSwapInfo($0, subaccountId: subaccountId, isRefundableSwap: false) }
         // get swap in progress
         if let sp = try lb.swapProgress() {
             txs += [sp].compactMap {
-                Transaction.fromSwapInfo($0, subaccount: subaccount, isRefundableSwap: false)
+                Transaction.fromSwapInfo($0, subaccountId: subaccountId, isRefundableSwap: false)
             }
         }
         txs = txs.sorted().reversed()

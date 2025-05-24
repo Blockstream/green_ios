@@ -27,7 +27,7 @@ class TransactionCellModel {
         self.tx = tx
         self.blockHeight = blockHeight
         self.date = tx.date(dateStyle: .medium, timeStyle: .none)
-        self.subaccount = wm?.subaccounts.filter { $0.hashValue == tx.subaccount }.first
+        self.subaccount = wm?.subaccounts.filter { $0.id == tx.subaccountId }.first
         if let subaccount = self.subaccount {
             self.amounts = amounts(self.tx, subaccount)
         }

@@ -53,7 +53,7 @@ class TxDetailsStatusCell: UITableViewCell {
         var step: Int = 0
         var steps: Int = 0
         steps = model.transaction.isLiquid ? 2 : 6
-        let isLightning = model.transaction.subaccountItem?.gdkNetwork.lightning ?? false
+        let isLightning = model.transaction.subaccount?.gdkNetwork.lightning ?? false
 
         if model.transaction.isRefundableSwap ?? false {
             lblStateTitle.text = "id_transaction_failed".localized
@@ -142,7 +142,7 @@ class TxDetailsStatusCell: UITableViewCell {
 
             let amounts = model.transaction.amounts
             var icons: [UIImage] = []
-            if model.transaction.subaccountItem?.gdkNetwork.lightning ?? false {
+            if model.transaction.subaccount?.gdkNetwork.lightning ?? false {
                 icons = [UIImage(named: "ic_lightning_btc")!]
             } else {
                 let registry = WalletManager.current
@@ -162,7 +162,7 @@ class TxDetailsStatusCell: UITableViewCell {
             }
         } else {
             var icons: [UIImage] = []
-            if model.transaction.subaccountItem?.gdkNetwork.lightning ?? false {
+            if model.transaction.subaccount?.gdkNetwork.lightning ?? false {
                 icons = [UIImage(named: "ic_lightning_btc")!]
             } else {
                 let ids = model.assetAmountList.amounts.map { $0.0 }
@@ -233,7 +233,7 @@ class TxDetailsStatusCell: UITableViewCell {
     }
 
     func subaccount(tx: Transaction) -> WalletItem? {
-        return WalletManager.current?.subaccounts.filter { $0.hashValue == tx.subaccount }.first
+        return WalletManager.current?.subaccounts.filter { $0.id == tx.subaccountId }.first
     }
 
     func setIconSpv(tx: Transaction) {

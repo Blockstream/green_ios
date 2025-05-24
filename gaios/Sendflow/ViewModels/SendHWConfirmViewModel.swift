@@ -14,13 +14,13 @@ struct SendHWConfirmViewModel {
 
     var addressee: Addressee? { tx.addressees.first }
     var address: String? { addressee?.address }
-    var assetId: String { addressee?.assetId ?? tx.subaccountItem?.gdkNetwork.getFeeAsset() ??  "btc" }
+    var assetId: String { addressee?.assetId ?? tx.subaccount?.gdkNetwork.getFeeAsset() ??  "btc" }
     var sendAll: Bool { addressee?.isGreedy ?? false}
     var satoshi: Int64? { addressee?.satoshi }
-    var fee: Balance? { Balance.fromSatoshi(tx.fee ?? 0, assetId: tx.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc") }
+    var fee: Balance? { Balance.fromSatoshi(tx.fee ?? 0, assetId: tx.subaccount?.gdkNetwork.getFeeAsset() ?? "btc") }
     var amount: Balance? { Balance.fromSatoshi(satoshi ?? 0, assetId: assetId) }
     var total: Balance? {
-        let feeAsset = tx.subaccountItem?.gdkNetwork.getFeeAsset()
+        let feeAsset = tx.subaccount?.gdkNetwork.getFeeAsset()
         var amount = satoshi ?? 0
         if feeAsset == assetId {
             amount += Int64(tx.fee ?? 0)
