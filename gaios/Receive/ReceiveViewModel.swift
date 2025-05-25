@@ -199,15 +199,19 @@ class ReceiveViewModel {
 
     func getAssetSelectViewModel() -> AssetSelectViewModel {
         let hasSubaccountAmp = hasSubaccountAmp()
-        let hasLighting = wm.existDerivedLightning()
+        let hasLightning = wm.existDerivedLightning()
+        let hasLiquid = hasSubaccountLiquid()
+        let hasBitcoin = hasSubaccountBitcoin()
         let assetIds = WalletManager.current?.registry.all
             .filter { !(!hasSubaccountAmp && $0.amp == true) }
-            .filter { hasLighting || $0.assetId != AssetInfo.lightningId }
+            .filter { hasLightning || $0.assetId != AssetInfo.lightningId }
+            .filter { hasBitcoin || ![AssetInfo.btcId, AssetInfo.testId].contains($0.assetId) }
+            .filter { hasLiquid || [AssetInfo.btcId, AssetInfo.testId, AssetInfo.lightningId].contains($0.assetId) }
             .map { $0.assetId }
         let list = AssetAmountList.from(assetIds: assetIds ?? [])
         return AssetSelectViewModel(
             assets: list,
-            enableAnyLiquidAsset: true,
+            enableAnyLiquidAsset: hasLiquid,
             enableAnyAmpAsset: hasSubaccountAmp)
     }
 
@@ -244,6 +248,12 @@ class ReceiveViewModel {
     }
     func hasSubaccountAmp() -> Bool {
         !wm.subaccounts.filter({ $0.type == .amp }).isEmpty
+    }
+    func hasSubaccountLiquid() -> Bool {
+        !wm.subaccounts.filter({ $0.networkType.liquid }).isEmpty
+    }
+    func hasSubaccountBitcoin() -> Bool {
+        !wm.subaccounts.filter({ $0.networkType.bitcoin }).isEmpty
     }
 
     func getAccounts() -> [WalletItem] {
