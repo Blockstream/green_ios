@@ -262,4 +262,12 @@ class SendTxConfirmViewModel {
                                        isRedeposit: true,
                                        isDismissible: false)
     }
+
+    func showSignTransactionViaQR() -> Bool {
+        wm?.isWatchonly ?? false && [.bitcoinSS, .testnetSS].contains(session?.networkType) && txType != .sweep && !importSignedPsbt
+    }
+
+    func showSignTransaction() -> Bool {
+        !(wm?.isWatchonly ?? false) || (wm?.isHW ?? false) || importSignedPsbt
+    }
 }

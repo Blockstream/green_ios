@@ -104,8 +104,8 @@ class SendTxConfirmViewController: UIViewController {
         payRequestByStack.isHidden = true
         lblMultiAddrHint.text = "id_multiple_assets".localized
         btnSignViaQr.setTitle("id_sign_transaction_via_qr".localized, for: .normal)
-        btnSignViaQr.isHidden = !viewModel.enableExportPsbt()
-        squareSliderView.isHidden = viewModel.enableExportPsbt()
+        btnSignViaQr.isHidden = !viewModel.showSignTransactionViaQR()
+        squareSliderView.isHidden = !viewModel.showSignTransaction()
     }
 
     func setStyle() {
