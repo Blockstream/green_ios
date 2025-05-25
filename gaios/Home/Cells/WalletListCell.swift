@@ -7,10 +7,9 @@ class WalletListCell: UITableViewCell {
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var iconSecurityType: UIImageView!
-    @IBOutlet weak var iconPassphrase: UIImageView!
-    @IBOutlet weak var iconHW: UIImageView!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var buttonView: UIButton!
+    @IBOutlet weak var iconArrow: UIImageView!
 
     var onLongpress: ((IndexPath) -> Void)?
     var onTap: ((IndexPath) -> Void)?
@@ -31,8 +30,6 @@ class WalletListCell: UITableViewCell {
         lblTitle.text = ""
         lblHint.text = ""
         iconSecurityType.image = UIImage()
-        iconPassphrase.image = UIImage()
-        iconHW.image = UIImage()
     }
 
     func configure(item: Account,
@@ -58,21 +55,9 @@ class WalletListCell: UITableViewCell {
         self.iconSecurityType.image = UIImage() // UIImage(named: "ic_keys_invert")!
 
         lblHint.isHidden = !(item.isEphemeral || item.isHW)
-
         if let ephemeralId = item.ephemeralId {
             lblHint.text = "BIP39 #\( ephemeralId )"
-            iconPassphrase.image = UIImage(named: "ic_passphrase")!
         }
-        if item.isHW {
-            if item.isJade {
-                iconHW.image = JadeAsset.img(.logo, nil)
-            }
-            if item.isLedger {
-                iconHW.image = UIImage(named: "ic_hww_ledger")!
-            }
-        }
-        iconPassphrase.isHidden = !item.isEphemeral
-        iconHW.isHidden = !item.isHW
         self.indexPath = indexPath
         self.onTap = onTap
         self.onLongpress = onLongpress
