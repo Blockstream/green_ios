@@ -5,21 +5,25 @@ import core
 class TabSecurityVC: TabViewController {
 
     @IBOutlet weak var tableView: UITableView!
-    private var completion: (()->Void)?
+    private var completion: (() -> Void)?
 
     var backupCardCellModel = [AlertCardCellModel]()
     var unlockCellModel: [PreferenceCellModel] {
         var list = [PreferenceCellModel]()
         let hasBiometricUnlock = walletModel.wm?.account.hasBioPin == true || walletModel.wm?.account.hasWoCredentials == true
         let hasManualPin = walletModel.wm?.account.hasManualPin == true
-        let isHW = walletModel.wm?.account.isHW ?? false
-        list.append(PreferenceCellModel(preferenceType: .bio, state: hasBiometricUnlock ? .on : .off))
-        if !isHW {
+        let isWatchonly = walletModel.wm?.isWatchonly ?? false
+        if !isWatchonly {
+            list.append(PreferenceCellModel(preferenceType: .bio, state: hasBiometricUnlock ? .on : .off))
             list.append(PreferenceCellModel(preferenceType: .pin, state: hasManualPin ? .on : .off))
         }
         return list
     }
     var jadeCellModel: [PreferenceCellModel] {
+        let isHW = walletModel.wm?.account.isJade ?? false
+        if !isHW {
+            return []
+        }
         let boardType = WalletManager.current?.account.boardType ?? BleHwManager.shared.jade?.version?.boardType
         switch boardType {
         case .some(.v2):
@@ -31,7 +35,12 @@ class TabSecurityVC: TabViewController {
         }
     }
     var recoveryCellModel: [PreferenceCellModel] {
-        [PreferenceCellModel(preferenceType: .recoveryPhrase, state: .unknown)]
+        let isWatchonly = walletModel.wm?.isWatchonly ?? false
+        let isHW = walletModel.wm?.isHW ?? false
+        if !isWatchonly && !isHW {
+            return [PreferenceCellModel(preferenceType: .recoveryPhrase, state: .unknown)]
+        }
+        return []
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -148,7 +157,7 @@ class TabSecurityVC: TabViewController {
             }
         case .failure(let err):
             switch err as? HWError {
-            case .some(HWError.NoNewFirmwareFound(_)):
+            case .some(HWError.NoNewFirmwareFound):
                 DropAlert().success(message: "Firmware up to date")
             default:
                 DropAlert().error(message: err.description().localized)
@@ -258,9 +267,9 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
         case .backup:
             return backupCardCellModel.count
         case .unlock:
-            return walletModel.wm?.account.isHW ?? false ? 0 : unlockCellModel.count
+            return unlockCellModel.count
         case .recovery:
-            return walletModel.canShowMnemonic() ? 1 : 0
+            return recoveryCellModel.count
         default:
             return 0
         }
@@ -345,17 +354,11 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch TabSecuritySection(rawValue: section) {
         case .jade:
-            if walletModel.wm?.account.isJade ?? false {
-                return sectionHeaderH
-            } else { return 0.1 }
+            return jadeCellModel.count > 0 ? sectionHeaderH : 0.1
         case .unlock:
-            if !(walletModel.wm?.account.isHW ?? false) {
-                return sectionHeaderH
-            } else { return 0.1 }
+            return unlockCellModel.count > 0 ? sectionHeaderH : 0.1
         case .recovery:
-            if walletModel.canShowMnemonic() {
-                return sectionHeaderH
-            } else { return 0.1 }
+            return recoveryCellModel.count > 0 ? sectionHeaderH : 0.1
         default:
             return 0.1
         }
@@ -382,17 +385,11 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
 
         switch TabSecuritySection(rawValue: section) {
         case .jade:
-            if walletModel.wm?.account.isJade ?? false {
-                return sectionHeader("Your Jade".localized)
-            } else { return nil }
+            return jadeCellModel.count > 0 ? sectionHeader("Your Jade".localized) : nil
         case .unlock:
-            if !(walletModel.wm?.account.isHW ?? false) {
-                return sectionHeader("View Balance".localized)
-            } else { return nil }
+            return unlockCellModel.count > 0 ? sectionHeader("View Balance".localized) : nil
         case .recovery:
-            if walletModel.canShowMnemonic() {
-                return sectionHeader("Recovery method".localized)
-            } else { return nil }
+            return recoveryCellModel.count > 0 ? sectionHeader("Recovery method".localized) : nil
         default:
             return nil
         }
