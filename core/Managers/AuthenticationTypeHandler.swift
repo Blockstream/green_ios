@@ -222,7 +222,7 @@ public class AuthenticationTypeHandler {
                 throw AuthError.CanceledByUser
             } else if CFErrorGetCode(cfError) == -8 {
                 throw AuthError.LockedOut
-            } else if CFErrorGetCode(cfError) == -1018 {
+            } else if CFErrorGetCode(cfError) == -1018 || CFErrorGetCode(cfError) == -3 {
                 throw AuthError.DeniedByUser
             } else {
                 throw AuthError.SecurityError(describeSecurityError(cfError))
