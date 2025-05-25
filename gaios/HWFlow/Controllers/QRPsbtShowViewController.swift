@@ -19,6 +19,7 @@ class QRPsbtShowViewController: UIViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
 
+    @IBOutlet weak var imgStep: UIImageView!
     @IBOutlet weak var btnVerify: UIButton!
     @IBOutlet weak var btnNext: UIButton!
 
@@ -72,6 +73,7 @@ class QRPsbtShowViewController: UIViewController {
         lblHint.textColor = .black
         btnVerify.setStyle(.outlinedBlack)
         btnNext.setStyle(.primary)
+        imgStep.image = UIImage(named: "ic_qr_scan_shield")?.maskWithColor(color: UIColor.gAccent())
         btnTrouble.setImage(UIImage(named: "ic_help")?.maskWithColor(color: UIColor.gAccent()), for: .normal)
     }
 

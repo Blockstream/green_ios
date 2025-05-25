@@ -21,7 +21,8 @@ class QRPsbtAquireViewController: UIViewController {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var qrScanView: QRCodeReaderView!
     @IBOutlet weak var progress: UIProgressView!
-
+    @IBOutlet weak var imgStep: UIImageView!
+    
     weak var delegate: QRPsbtAquireViewControllerDelegate?
 
     var index: Int?
@@ -59,6 +60,7 @@ class QRPsbtAquireViewController: UIViewController {
         qrScanView.borderWidth = 10.0
         qrScanView.borderColor = UIColor.gGrayCamera()
         qrScanView.cornerRadius = 10.0
+        imgStep.image = UIImage(named: "ic_qr_scan_square")?.maskWithColor(color: UIColor.gAccent())
     }
 
     override func viewDidAppear(_ animated: Bool) {
