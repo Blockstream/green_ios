@@ -1,4 +1,5 @@
 import UIKit
+import core
 import gdk
 
 class WOSelectViewController: UIViewController {
@@ -102,22 +103,28 @@ extension WOSelectViewController: UITableViewDelegate, UITableViewDataSource {
 extension WOSelectViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
 
-    func getNetworks(singlesig: Bool, testnet: Bool) -> [NetworkSecurityCase] {
-        if testnet {
-            return singlesig ? [.testnetSS, .testnetLiquidSS] : [.testnetMS, .testnetLiquidMS]
+    func getNetworks(singlesig: Bool, withTestnet: Bool) -> [NetworkSecurityCase] {
+        if withTestnet && singlesig {
+            return [.bitcoinSS, .liquidSS, .testnetSS, .testnetLiquidSS]
+        } else if withTestnet && !singlesig {
+            return [.bitcoinMS, .liquidMS, .testnetMS, .testnetLiquidMS]
+        } else if singlesig {
+            return [.bitcoinSS, .liquidSS]
         } else {
-            return singlesig ? [ .bitcoinSS, .liquidSS] : [.bitcoinMS, .liquidMS]
+            return [.bitcoinMS, .liquidMS]
         }
     }
 
     func selectNetwork(singlesig: Bool) {
-        let testnet = OnboardViewModel.chainType == .testnet
-        networks = getNetworks(singlesig: singlesig, testnet: testnet)
+        let testnet = AppSettings.shared.testnet
+        networks = getNetworks(singlesig: singlesig, withTestnet: testnet)
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
-            let cells = networks.map { DialogListCellModel(type: .list,
-                                                           icon: nil,
-                                                           title: $0.name()) }
+            let cells = networks.map {
+                DialogListCellModel(
+                    type: .list,
+                    icon: nil,
+                    title: $0.name()) }
             vc.viewModel = DialogListViewModel(title: "id_select_network".localized, type: .watchOnlyPrefs, items: cells)
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
