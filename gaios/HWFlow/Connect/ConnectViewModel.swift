@@ -148,6 +148,7 @@ class ConnectViewModel: NSObject {
         // login
         updateState?(.login)
         let wm = try await bleHwManager.login(account: account)
+        AccountsRepository.shared.current = account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)
         }
@@ -185,6 +186,7 @@ class ConnectViewModel: NSObject {
         // login
         updateState?(.login)
         let wm = try await bleHwManager.login(account: account)
+        AccountsRepository.shared.current = account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)
         }
@@ -209,6 +211,7 @@ class ConnectViewModel: NSObject {
         try await wm.loginWatchonly(
             credentials: credentials,
             lightningCredentials: nil)
+        AccountsRepository.shared.current = account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)
         }

@@ -1,4 +1,5 @@
 import Foundation
+import LocalAuthentication
 import UIKit
 import core
 import gdk
@@ -143,54 +144,60 @@ class WOLoginViewController: KeyboardViewController {
         }
     }
 
-    func login() {
+    func authenticated() async throws -> Bool {
+        let context = LAContext()
+        var error: NSError?
+        if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
+            return try await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Authentication")
+        }
+        return false
+    }
+
+    func loginSinglesig() async throws {
+        switch AuthenticationTypeHandler.biometryType {
+        case .faceID, .touchID:
+            let evaluate = try? await authenticated()
+            if evaluate ?? false {
+                try await viewModel.loginSinglesig(for: self.account)
+            }
+        default:
+            try await viewModel.loginSinglesig(for: self.account)
+        }
+    }
+    
+    func loginMultisig() async throws {
         let password = self.passwordTextField.text ?? ""
+        try await self.viewModel.loginMultisig(for: self.account, password: password)
+    }
+
+    func login() async {
         dismissKeyboard()
         startLoader(message: "id_logging_in".localized)
-        Task {
-            do {
-                if self.isSS {
-                    try await self.viewModel.loginSinglesig(for: self.account)
-                } else {
-                    try await self.viewModel.loginMultisig(for: self.account, password: password)
-                }
-                success()
-            } catch {
-                failure(error)
+        let task = Task.detached { [weak self] in
+            if await self?.isSS ?? false {
+                try await self?.loginSinglesig()
+            } else {
+                try await self?.loginMultisig()
             }
+        }
+        switch await task.result {
+        case .success:
             stopLoader()
+            AccountNavigator.navLogged(accountId: account.id)
+            AnalyticsManager.shared.importWallet(account: account)
+        case .failure(let error):
+            stopLoader()
+            showError(error)
+            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: error.description())
+            WalletsRepository.shared.delete(for: self.account)
         }
-    }
-
-    @MainActor
-    func success() {
-        stopLoader()
-        AccountNavigator.navLogged(accountId: account.id)
-        AnalyticsManager.shared.importWallet(account: account)
-    }
-
-    @MainActor
-    func failure(_ error: Error) {
-        var prettyError = "id_login_failed"
-        switch error {
-        case TwoFactorCallError.failure(let localizedDescription):
-            prettyError = localizedDescription
-        case LoginError.connectionFailed:
-            prettyError = "id_connection_failed"
-        case LoginError.failed:
-            prettyError = "id_login_failed"
-        default:
-            break
-        }
-        stopLoader()
-        DropAlert().error(message: prettyError.localized)
-        AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
-        WalletsRepository.shared.delete(for: self.account)
     }
 
     @objc func click(_ sender: Any) {
         view.endEditing(true)
-        login()
+        Task { [weak self] in
+            await self?.login()
+        }
     }
 
     @IBAction func btnSettings(_ sender: Any) {

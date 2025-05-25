@@ -16,13 +16,7 @@ class WODetailsViewController: KeyboardViewController {
     @IBOutlet weak var lblCoda: UILabel!
     @IBOutlet weak var btnFile: UIButton!
     @IBOutlet weak var lblError: UILabel!
-    @IBOutlet weak var bioView: UIView!
-    @IBOutlet weak var iconBio: UIImageView!
-    @IBOutlet weak var btnBio: UIButton!
-    @IBOutlet weak var lblBio: UILabel!
-
     private let viewModel = WOViewModel()
-    private var isBio: Bool = false
     var network: NetworkSecurityCase!
 
     override func viewDidLoad() {
@@ -36,8 +30,6 @@ class WODetailsViewController: KeyboardViewController {
         textView.textContainer.maximumNumberOfLines = 10
         textView.textContainer.heightTracksTextView = true
         textView.isScrollEnabled = false
-        btnBio.isEnabled = AuthenticationTypeHandler.supportsBiometricAuthentication()
-
         refresh()
     }
 
@@ -52,7 +44,6 @@ class WODetailsViewController: KeyboardViewController {
         btnImport.setTitle("id_import".localized, for: .normal)
         lblError.text = "This is not a valid descriptor"
         btnFile.setTitle("id_import_from_file".localized, for: .normal)
-        lblBio.text = "id_login_with_biometrics".localized
         if network.liquid {
             segment.selectedSegmentIndex = 1
             segment.setEnabled(false, forSegmentAt: 0)
@@ -70,9 +61,6 @@ class WODetailsViewController: KeyboardViewController {
         bgTextView.cornerRadius = 5.0
         btnImport.setStyle(.primaryDisabled)
         btnFile.setStyle(.inline)
-        bioView.borderWidth = 1.0
-        bioView.borderColor = .white.withAlphaComponent(0.7)
-        bioView.layer.cornerRadius = 5.0
         segment.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
         segment.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.lightGray], for: .normal)
     }
@@ -93,7 +81,6 @@ class WODetailsViewController: KeyboardViewController {
         default:
             break
         }
-        iconBio.image = isBio ? UIImage(named: "ic_checkbox_on")! : UIImage(named: "ic_checkbox_off")!
     }
 
     func openDocumentPicker() {
@@ -132,11 +119,6 @@ class WODetailsViewController: KeyboardViewController {
         }
     }
 
-    @IBAction func btnBio(_ sender: Any) {
-        isBio = !isBio
-        refresh()
-    }
-
     @IBAction func btnImport(_ sender: Any) {
         login(for: network)
     }
@@ -152,7 +134,7 @@ class WODetailsViewController: KeyboardViewController {
         let credentials = self.segment.selectedSegmentIndex == 0 ? Credentials(slip132ExtendedPubkeys: keys) : Credentials(coreDescriptors: keys)
         Task {
             do {
-                try await self.viewModel.setupSinglesig(for: account, enableBio: self.isBio, credentials: credentials)
+                try await self.viewModel.setupSinglesig(for: account, credentials: credentials)
                 try await self.viewModel.loginSinglesig(for: account)
                 self.stopLoader()
                 success(account: account)

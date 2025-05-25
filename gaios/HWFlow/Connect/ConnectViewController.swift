@@ -139,14 +139,17 @@ class ConnectViewController: HWFlowBaseViewController {
         if viewModel.autologin {
             if hasCredentials {
                 Task { [weak self] in
-                    if AuthenticationTypeHandler.biometryType != LABiometryType.none {
+                    switch AuthenticationTypeHandler.biometryType {
+                    case .faceID, .touchID:
                         let evaluate = try? await self?.authenticated()
-                        if !(evaluate ?? false) {
+                        if evaluate ?? false {
+                            await self?.loginBiometric()
+                        } else {
                             self?.state = .errorWatchonly
-                            return
                         }
+                    default:
+                        await self?.loginBiometric()
                     }
-                    await self?.loginBiometric()
                 }
             } else {
                 Task { [weak self] in

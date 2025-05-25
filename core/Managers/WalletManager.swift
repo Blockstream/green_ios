@@ -202,6 +202,11 @@ public class WalletManager {
         //    try? await lightningSession?.connect()
         //    _ = try? await lightningSession?.loginUser(lightningCredentials)
         //}
+        if let pubKeys = credentials.slip132ExtendedPubkeys {
+            let session = account.networkType.liquid ? liquidSinglesigSession : bitcoinSinglesigSession
+            try? await session?.connect()
+            _ = try? await session?.loginUser(credentials)
+        }
         if let username = credentials.username, !username.isEmpty {
             let session = account.networkType.liquid ? liquidMultisigSession : bitcoinMultisigSession
             try? await session?.connect()
