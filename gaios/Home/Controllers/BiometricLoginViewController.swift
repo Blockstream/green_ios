@@ -160,7 +160,7 @@ class BiometricLoginViewController: UIViewController {
         case LoginError.walletNotFound:
             let msg = "id_wallet_not_found"
             DropAlert().error(message: msg.localized)
-            showReportError(msg: msg)
+            showError(msg: msg)
         case GaError.NotAuthorizedError(_):
             AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: "id_not_authorized")
         case TwoFactorCallError.failure(let msg):
@@ -168,15 +168,23 @@ class BiometricLoginViewController: UIViewController {
                 DropAlert().error(message: msg.localized)
             } else {
                 DropAlert().error(message: msg.localized)
-                showReportError(msg: msg)
+                showError(msg: msg)
             }
             AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
         default:
             let msg = "id_login_failed"
             DropAlert().error(message: msg.localized)
-            showReportError(msg: msg)
+            showError(msg: msg)
             AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
         }
+    }
+    func showError(msg: String) {
+        let alert = UIAlertController(title: "id_error".localized, message: msg.localized, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "id_contact_support".localized, style: .cancel) { _ in
+            self.showReportError(msg: msg)
+        })
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .destructive) { _ in })
+        self.present(alert, animated: true, completion: nil)
     }
 
     func showReportError(msg: String) {

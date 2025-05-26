@@ -329,7 +329,7 @@ class LoginViewController: UIViewController {
         case LoginError.walletNotFound:
             let msg = "id_wallet_not_found"
             DropAlert().error(message: msg.localized)
-            showReportError(msg: msg)
+            showError(msg: msg)
         case GaError.NotAuthorizedError(_):
             self.wrongPin()
             AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: "id_not_authorized")
@@ -342,17 +342,26 @@ class LoginViewController: UIViewController {
                 }
             } else {
                 DropAlert().error(message: msg.localized)
-                showReportError(msg: msg)
+                showError(msg: msg)
             }
             AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
         default:
             let msg = "id_login_failed"
-            showReportError(msg: msg)
+            showError(msg: msg)
             DropAlert().error(message: msg.localized)
             AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
         }
         self.pinCode = ""
         self.reloadPin()
+    }
+
+    func showError(msg: String) {
+        let alert = UIAlertController(title: "id_error".localized, message: msg.localized, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "id_contact_support".localized, style: .cancel) { _ in
+            self.showReportError(msg: msg)
+        })
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .destructive) { _ in })
+        self.present(alert, animated: true, completion: nil)
     }
 
     func showReportError(msg: String) {
