@@ -418,9 +418,8 @@ extension TabSettingsVC: DialogWatchOnlySetUpViewControllerDelegate {
 extension TabSettingsVC: DenominationExchangeViewControllerDelegate {
     func onDenominationExchangeSave() {
         self.viewModel.load()
-        Task { [weak self] in
-            await self?.walletTab.reload(discovery: false)
-        }
+        walletModel.reloadBalances()
+        walletTab.updateTabs([.home, .transact])
     }
 }
 
