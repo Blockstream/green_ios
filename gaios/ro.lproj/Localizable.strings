@@ -1333,7 +1333,7 @@
 "id_ticker" = "Simbol";
 "id_time_s" = "Timp: %@";
 "id_tip_we_recommend_you_enable" = "Vă recomandăm să activați mai multe metode 2FA. Dacă aveți activată doar o metodă 2FA și veți pierde accesul la ea, va trebui să așteptați cel puțin un an până când veți avea din nou acces la fondurile din portofel.";
-"id_tip_you_can_use_the" = "Tip: You can use the xPub/yPub/zPub to view your watch-only wallet in Green, or you may import it to another platform. Each account in your wallet has a separate xPub/yPub/zPub.";
+"id_tip_you_can_use_the" = "Tip: You can use the xPub/yPub/zPub to view your watch-only wallet in the Blockstream app, or you may import it to another platform. Each account in your wallet has a separate xPub/yPub/zPub.";
 "id_to" = "To";
 "id_to_authorize_the_transaction" = "To authorize the transaction you need to enter your 2FA code.";
 "id_to_keep_you_in_control_of_your" = "Pentru a vă ajuta să păstrați controlul monedelor, protecția oferită de autentificarea cu doi factori (2FA) expiră după aproximativ %d zile de la ultima dvs plată. Dacă nu tranzacționați monedele suficient de des, vi se va cere să realizați o operațiune pentru reactivarea 2FA.";

@@ -18,7 +18,7 @@ class GetStartedOnBoardViewController: UIViewController {
 
     var actionToButton: ActionToButton?
 
-    let strIAgree = "By using Blockstream Green, you agree to the Terms & Conditions and Privacy Policy.".localized
+    let strIAgree = "By using Blockstream app, you agree to the Terms & Conditions and Privacy Policy.".localized
     let strTerms = "Terms & Conditions".localized
     let strPrivacy = "Privacy Policy".localized
 

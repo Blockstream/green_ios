@@ -1333,7 +1333,7 @@
 "id_ticker" = "Ticker";
 "id_time_s" = "Tijd: %@";
 "id_tip_we_recommend_you_enable" = "Tip: we raden je aan meer dan één 2FA-methode in te schakelen. Als je slechts één 2FA-methode instelt en deze vervolgens verliest, moet je minimaal een jaar wachten totdat de 2FA verloopt.";
-"id_tip_you_can_use_the" = "Tip: je kunt de xPub/yPub/zPub gebruiken om je watch-only-wallet in Green te bekijken of je kunt het importeren naar een ander platform. Elke account in je wallet heeft een eigen xPub/yPub/zPub.";
+"id_tip_you_can_use_the" = "Tip: je kunt de xPub/yPub/zPub gebruiken om je watch-only-wallet in the Blockstream app te bekijken of je kunt het importeren naar een ander platform. Elke account in je wallet heeft een eigen xPub/yPub/zPub.";
 "id_to" = "To";
 "id_to_authorize_the_transaction" = "To authorize the transaction you need to enter your 2FA code.";
 "id_to_keep_you_in_control_of_your" = "Om de controle over je geld te behouden, verloopt de tweetrapsauthenticatie-bescherming na ongeveer %d dagen sinds je laatste betaling. Als je niet vaak genoeg geld overmaakt, wordt je gevraagd om een 2FA-reactiveringstransactie uit te voeren.";

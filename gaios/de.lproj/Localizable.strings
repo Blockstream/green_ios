@@ -1333,7 +1333,7 @@
 "id_ticker" = "Ticker";
 "id_time_s" = "Zeit: %@";
 "id_tip_we_recommend_you_enable" = "Hinweis: Wir empfehlen, mehr als eine 2FA-Methode zu aktivieren. Wenn du nur eine 2FA-Methode aufsetzt und verlierst, dann wirst du mindestens ein Jahr warten müssen bis die 2FA abläuft.";
-"id_tip_you_can_use_the" = "Tip: Du kannst den xPub/yPub/zPub verwenden, um dein Watch-only Wallet in Green anzusehen, oder zu kannst es auf andere Plattformen importieren. Jedes Konto in deinem Wallet hat einen eigenen xPub/yPub/zPub.";
+"id_tip_you_can_use_the" = "Tip: Du kannst den xPub/yPub/zPub verwenden, um dein Watch-only Wallet in the Blockstream app anzusehen, oder zu kannst es auf andere Plattformen importieren. Jedes Konto in deinem Wallet hat einen eigenen xPub/yPub/zPub.";
 "id_to" = "To";
 "id_to_authorize_the_transaction" = "To authorize the transaction you need to enter your 2FA code.";
 "id_to_keep_you_in_control_of_your" = "Damit du die Kontrolle über deine Gelder behältst, erlischt der Schutz der Zwei-Faktor-Authentifizierung nach etwa %d Tagen nach deiner letzten Zahlung. Du wirst dann aufgefordert, eine Zwei-Faktor-Reaktivierungstransaktion durchzuführen, wenn du nicht oft genug Gelder bewegst.";
