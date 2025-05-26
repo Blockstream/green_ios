@@ -34,19 +34,19 @@
                                 <rect key="frame" x="20" y="776" width="374" height="66"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EBo-9L-Mba">
-                                        <rect key="frame" x="20" y="23.5" width="310" height="19.5"/>
+                                        <rect key="frame" x="20" y="23.5" width="298" height="19.5"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="jpE-ii-x7p">
-                                        <rect key="frame" x="350" y="29" width="8" height="8"/>
+                                        <rect key="frame" x="338" y="23" width="20" height="20"/>
                                         <subviews>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_wallet_disclose" translatesAutoresizingMaskIntoConstraints="NO" id="sVl-RJ-NjD">
-                                                <rect key="frame" x="0.0" y="0.0" width="8" height="8"/>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="rightArrow" translatesAutoresizingMaskIntoConstraints="NO" id="sVl-RJ-NjD">
+                                                <rect key="frame" x="0.0" y="0.0" width="20" height="20"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="8" id="Xpz-qM-xcJ"/>
-                                                    <constraint firstAttribute="height" constant="8" id="oRa-T2-4YH"/>
+                                                    <constraint firstAttribute="width" constant="20" id="Xpz-qM-xcJ"/>
+                                                    <constraint firstAttribute="height" constant="20" id="oRa-T2-4YH"/>
                                                 </constraints>
                                             </imageView>
                                         </subviews>
@@ -889,8 +889,8 @@
         <image name="ic_alert_warn" width="30" height="27"/>
         <image name="ic_logo_blockstream" width="156" height="35"/>
         <image name="ic_passphrase" width="9.3333330154418945" height="9.3333330154418945"/>
-        <image name="ic_wallet_disclose" width="7.5" height="11.5"/>
         <image name="ic_x_circle" width="20" height="20"/>
+        <image name="rightArrow" width="9" height="14"/>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

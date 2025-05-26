@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -65,7 +65,7 @@
                                 </subviews>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JdC-zz-Alv">
-                                <rect key="frame" x="0.0" y="0.0" width="335" height="30"/>
+                                <rect key="frame" x="0.0" y="0.0" width="335" height="83"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <connections>
@@ -77,13 +77,14 @@
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="JdC-zz-Alv" secondAttribute="trailing" id="1nP-dr-rKm"/>
                             <constraint firstItem="JdC-zz-Alv" firstAttribute="leading" secondItem="1WC-We-6dZ" secondAttribute="leading" id="9uj-nt-5LI"/>
+                            <constraint firstItem="JdC-zz-Alv" firstAttribute="top" secondItem="1WC-We-6dZ" secondAttribute="top" id="EFB-o1-Uy3"/>
                             <constraint firstItem="uow-48-Xrj" firstAttribute="centerX" secondItem="7qG-DN-BDm" secondAttribute="centerX" constant="15" id="EcS-Ua-z6O"/>
-                            <constraint firstItem="JdC-zz-Alv" firstAttribute="top" secondItem="1WC-We-6dZ" secondAttribute="top" id="GH8-ZC-bg0"/>
                             <constraint firstItem="7qG-DN-BDm" firstAttribute="centerY" secondItem="Tji-rn-5yD" secondAttribute="centerY" id="IDO-Z3-CC9"/>
                             <constraint firstItem="Tji-rn-5yD" firstAttribute="top" secondItem="1WC-We-6dZ" secondAttribute="top" constant="20" id="NTw-8a-Gna"/>
                             <constraint firstAttribute="bottom" secondItem="Tji-rn-5yD" secondAttribute="bottom" constant="20" id="PFV-J9-rWX"/>
                             <constraint firstItem="uow-48-Xrj" firstAttribute="centerY" secondItem="7qG-DN-BDm" secondAttribute="centerY" constant="15" id="VWk-YF-g6o"/>
                             <constraint firstItem="7qG-DN-BDm" firstAttribute="leading" secondItem="1WC-We-6dZ" secondAttribute="leading" constant="12" id="gCu-br-RZE"/>
+                            <constraint firstAttribute="bottom" secondItem="JdC-zz-Alv" secondAttribute="bottom" id="mvO-Eb-xnz"/>
                             <constraint firstItem="Tji-rn-5yD" firstAttribute="leading" secondItem="7qG-DN-BDm" secondAttribute="trailing" constant="16" id="n0W-Vz-jdz"/>
                             <constraint firstItem="akX-Ho-6sQ" firstAttribute="leading" secondItem="Tji-rn-5yD" secondAttribute="trailing" constant="5" id="ugx-3L-6Zl"/>
                             <constraint firstItem="akX-Ho-6sQ" firstAttribute="centerY" secondItem="Tji-rn-5yD" secondAttribute="centerY" id="wkP-RK-1q4"/>

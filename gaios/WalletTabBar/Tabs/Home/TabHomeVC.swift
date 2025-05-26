@@ -379,9 +379,10 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
 
     func didSelectAssetRowAt(indexPath: IndexPath) {
         let model = walletModel.walletAssetCellModels[indexPath.row]
+        let name = WalletManager.current?.info(for: model.assetId).name ?? ""
         let dialogModel = DialogAccountsViewModel(
-            title: WalletManager.current?.info(for: model.assetId).name ?? "",
-            hint: "Your Bitcoin total balance is the sum of the balances across these accounts.".localized,
+            title: name,
+            hint: "Your " + name + " total balance is the sum of the balances across these accounts.",
             isSelectable: false,
             assetId: model.assetId,
             accounts: walletModel.accountsBy(model.assetId),
