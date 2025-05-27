@@ -221,18 +221,18 @@ struct Meld {
             guard let url = URL(string: url) else {
                 throw GaError.GenericError("Invalid url")
             }
-            logger.info("Meld \(url.description)")
+            logger.info("Meld \(url.description, privacy: .public)")
             let res = try await Meld.call(url: url, method: method, data: nil)
-            logger.info("Meld \(String(data: res, encoding: .utf8) ?? "")")
+            logger.info("Meld \(String(data: res, encoding: .utf8) ?? "", privacy: .public)")
             return try JSONDecoder().decode(K.self, from: res)
         case "POST":
             guard let url = URL(string: url) else {
                 throw GaError.GenericError("Invalid url")
             }
             let data = try params.encoded()
-            logger.info("Meld \(url.description) \(params.toDict()?.description ?? "No params")")
+            logger.info("Meld \(url.description, privacy: .public) \(params.toDict()?.description ?? "No params", privacy: .public)")
             let res = try await Meld.call(url: url, method: method, data: data)
-            logger.info("Meld \(String(data: res, encoding: .utf8) ?? "")")
+            logger.info("Meld \(String(data: res, encoding: .utf8) ?? "", privacy: .public)")
             return try JSONDecoder().decode(K.self, from: res)
         default:
             logger.error("Meld Invalid request")

@@ -106,6 +106,6 @@ extension Error {
         if let breezError = self as? BreezSDK.ConnectError {
             return breezError.description() ?? "Connection error"
         }
-        return "id_operation_failure"
+        return self.localizedDescription
     }
 }

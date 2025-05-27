@@ -238,7 +238,10 @@ class BuyBTCViewController: KeyboardViewController {
         viewModel.address = nil
         Task {
             if let address = try? await viewModel.account.session?.getReceiveAddress(subaccount: viewModel.account.pointer) {
+                logger.info("Buy generate address: \(address.address ?? "", privacy: .public)")
                 viewModel.address = address
+            } else {
+                logger.error("Buy generate address error")
             }
         }
     }
@@ -260,7 +263,8 @@ class BuyBTCViewController: KeyboardViewController {
         case .success(let quotes):
             providerState = quotes?.count ?? 0 > 0 ? .valid : .noquote
             processQuotes(quotes)
-        case .failure:
+        case .failure(let error):
+            logger.error("Buy quote error: \(error.localizedDescription, privacy: .public)")
             providerState = .noquote
             reload()
         }
@@ -320,6 +324,7 @@ class BuyBTCViewController: KeyboardViewController {
         case .success(let url):
             proceedWithWidget(url: url, quote: quote)
         case .failure(let error):
+            logger.error("Buy widget error: \(error.localizedDescription, privacy: .public)")
             handleError(error)
         }
     }
@@ -331,6 +336,7 @@ class BuyBTCViewController: KeyboardViewController {
             // completion
             Task { [weak self] in
                 let res = try? await self?.viewModel.hasPendingTransactions()
+                logger.error("MELD has pending txs: \(String(res ?? false), privacy: .public)")
                 if res == true {
                     await MainActor.run {
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, userInfo: nil)
