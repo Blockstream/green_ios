@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -22,16 +22,16 @@
                                 <rect key="frame" x="0.0" y="59" width="393" height="793"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="z7Y-lc-6cv">
-                                        <rect key="frame" x="0.0" y="0.0" width="393" height="581"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="572.33333333333337"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_re_enable_2fa" translatesAutoresizingMaskIntoConstraints="NO" id="v3Y-Se-pN2">
-                                                <rect key="frame" x="39.333333333333343" y="-30" width="314.33333333333326" height="314.33333333333331"/>
+                                                <rect key="frame" x="78.666666666666671" y="0.0" width="235.66666666666663" height="235.66666666666666"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" secondItem="v3Y-Se-pN2" secondAttribute="height" multiplier="1:1" id="eeb-Bh-02D"/>
                                                 </constraints>
                                             </imageView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="xYA-Wc-oOO">
-                                                <rect key="frame" x="36" y="264.33333333333331" width="321" height="50.666666666666686"/>
+                                                <rect key="frame" x="36" y="255.66666666666666" width="321" height="50.666666666666657"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_hint1" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rD6-ha-dD6">
                                                         <rect key="frame" x="0.0" y="0.0" width="321" height="20.333333333333332"/>
@@ -40,7 +40,7 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_hint2" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zg9-gW-byb">
-                                                        <rect key="frame" x="0.0" y="30.333333333333371" width="321" height="20.333333333333329"/>
+                                                        <rect key="frame" x="0.0" y="30.333333333333314" width="321" height="20.333333333333329"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -48,7 +48,7 @@
                                                 </subviews>
                                             </stackView>
                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="0Rt-Ua-7Oj">
-                                                <rect key="frame" x="0.0" y="331" width="393" height="200"/>
+                                                <rect key="frame" x="0.0" y="322.33333333333331" width="393" height="199.99999999999994"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="200" id="fyP-NT-DJ7"/>
@@ -59,7 +59,7 @@
                                                 </connections>
                                             </tableView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="98q-FZ-9hp" userLabel="Next">
-                                                <rect key="frame" x="24" y="531" width="345" height="40"/>
+                                                <rect key="frame" x="24" y="522.33333333333337" width="345" height="40"/>
                                                 <color key="backgroundColor" name="customMatrixGreen"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="40" id="mIN-7f-Xo0"/>
@@ -75,9 +75,9 @@
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstItem="v3Y-Se-pN2" firstAttribute="top" secondItem="z7Y-lc-6cv" secondAttribute="top" constant="-30" id="0wA-jf-8DZ"/>
+                                            <constraint firstItem="v3Y-Se-pN2" firstAttribute="top" secondItem="z7Y-lc-6cv" secondAttribute="top" id="0wA-jf-8DZ"/>
                                             <constraint firstItem="0Rt-Ua-7Oj" firstAttribute="leading" secondItem="z7Y-lc-6cv" secondAttribute="leading" id="CO2-Nn-IJW"/>
-                                            <constraint firstItem="v3Y-Se-pN2" firstAttribute="width" secondItem="z7Y-lc-6cv" secondAttribute="width" multiplier="0.8" id="Nis-1D-gUB"/>
+                                            <constraint firstItem="v3Y-Se-pN2" firstAttribute="width" secondItem="z7Y-lc-6cv" secondAttribute="width" multiplier="0.6" id="Nis-1D-gUB"/>
                                             <constraint firstItem="v3Y-Se-pN2" firstAttribute="centerX" secondItem="z7Y-lc-6cv" secondAttribute="centerX" id="OWH-Zg-OmU"/>
                                             <constraint firstAttribute="bottom" secondItem="0Rt-Ua-7Oj" secondAttribute="bottom" constant="50" id="RCD-Zi-r6z"/>
                                             <constraint firstAttribute="trailing" secondItem="98q-FZ-9hp" secondAttribute="trailing" constant="24" id="UeF-Eg-2xz"/>
@@ -86,7 +86,7 @@
                                             <constraint firstItem="xYA-Wc-oOO" firstAttribute="leading" secondItem="z7Y-lc-6cv" secondAttribute="leading" constant="36" id="XdH-2f-akk"/>
                                             <constraint firstAttribute="trailing" secondItem="0Rt-Ua-7Oj" secondAttribute="trailing" id="apr-ev-6o9"/>
                                             <constraint firstItem="98q-FZ-9hp" firstAttribute="leading" secondItem="z7Y-lc-6cv" secondAttribute="leading" constant="24" id="b6c-E7-dGb"/>
-                                            <constraint firstItem="xYA-Wc-oOO" firstAttribute="top" secondItem="v3Y-Se-pN2" secondAttribute="bottom" constant="-20" id="dXR-2w-PKF"/>
+                                            <constraint firstItem="xYA-Wc-oOO" firstAttribute="top" secondItem="v3Y-Se-pN2" secondAttribute="bottom" constant="20" id="dXR-2w-PKF"/>
                                             <constraint firstItem="0Rt-Ua-7Oj" firstAttribute="top" secondItem="xYA-Wc-oOO" secondAttribute="bottom" constant="16" id="fXn-x3-7Mf"/>
                                         </constraints>
                                     </view>
@@ -125,12 +125,12 @@
         </scene>
     </scenes>
     <resources>
-        <image name="ic_re_enable_2fa" width="290.66665649414062" height="290.66665649414062"/>
+        <image name="ic_re_enable_2fa" width="440" height="440"/>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gBlackBg">
-            <color red="0.074509803921568626" green="0.082352941176470587" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

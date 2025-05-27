@@ -85,16 +85,19 @@ class AlertCardCell: UITableViewCell {
             lblHint.text = String(format: "id_your_wallet_is_locked_for_a".localized, message.twoFactorReset.daysRemaining)
             btnRight.setTitle("id_learn_more".localized, for: .normal)
             btnLeft.isHidden = true
-        case .dispute(_):
+            styleWarn()
+        case .dispute:
             lblTitle.text = "id_2fa_dispute_in_progress".localized
             lblHint.text = "id_warning_wallet_locked_by".localized
             btnRight.setTitle("id_learn_more".localized, for: .normal)
             btnLeft.isHidden = true
+            styleWarn()
         case .reactivate:
             lblTitle.text = "id_2fa_expired".localized
             lblHint.text = "id_show_coins_with_expiring".localized
             btnRight.setTitle("id_learn_more".localized, for: .normal)
             btnLeft.setTitle("Reactivate 2FA".localized, for: .normal)
+            styleWarn()
         case .systemMessage(let system):
             lblTitle.text = "id_system_message".localized
             lblHint.text = system.text.count > 200 ? system.text.prefix(200) + " ..." : system.text
@@ -182,18 +185,21 @@ class AlertCardCell: UITableViewCell {
             lblHint.text = "Some coins are no longer 2FA protected.".localized
             btnRight.setTitle("id_reenable_2fa".localized, for: .normal)
             btnLeft.isHidden = true
+            styleWarn()
         case .backup:
             lblTitle.text = "Back Up Your Wallet Now".localized
             lblHint.text = "Don't lose access to your funds.".localized
             btnLeft.setTitle("Backup Now".localized, for: .normal)
             btnRight.isHidden = true
             btnDismiss.isHidden = onDismiss == nil
-            iconWarn.image = UIImage(named: "ic_card_warn")
-            bg.backgroundColor = UIColor.gWarnCardBg()
-            bg.borderColor = UIColor.gWarnCardBorder()
+            styleWarn()
         }
     }
-
+    func styleWarn() {
+        iconWarn.image = UIImage(named: "ic_card_warn")
+        bg.backgroundColor = UIColor.gWarnCardBg()
+        bg.borderColor = UIColor.gWarnCardBorder()
+    }
     @IBAction func btnRight(_ sender: Any) {
         onRight?()
     }

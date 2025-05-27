@@ -1,5 +1,6 @@
 import UIKit
 import core
+import gdk
 class TabHomeVC: TabViewController {
 
     @IBOutlet weak var tableView: UITableView?
@@ -84,6 +85,34 @@ extension TabHomeVC { // navigation
             BackupHelper.shared.addToDismissed(walletId: walletModel.wm?.account.id, position: .homeTab)
             walletModel.reloadBackupCards()
             reloadSections([.backup], animated: true)
+        }
+    }
+    func presentReEnable2fa() {
+        let storyboard = UIStoryboard(name: "ReEnable2fa", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ReEnable2faViewController") as? ReEnable2faViewController {
+            vc.vm = walletModel.reEnable2faViewModel()
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    func remoteAlertDismiss() {
+        Task {
+            walletModel.remoteAlert = nil
+            await walletModel.reloadAlertCards()
+            reloadSections([.card], animated: true)
+        }
+    }
+    func systemMessageScreen(msg: SystemMessage) {
+        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SystemMessageViewController") as? SystemMessageViewController {
+            vc.msg = msg
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    func twoFactorResetMessageScreen(msg: TwoFactorResetMessage) {
+        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "Learn2faViewController") as? Learn2faViewController {
+            vc.message = msg
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }
@@ -174,7 +203,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                     cell.configure(alertCard,
                                    onLeft: nil,
                                    onRight: {[weak self] in
-//                        self?.twoFactorResetMessageScreen(msg: msg)
+                        self?.twoFactorResetMessageScreen(msg: msg)
                     }, onDismiss: nil)
                 case .reactivate:
                     cell.configure(alertCard,
@@ -185,7 +214,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                     cell.configure(alertCard,
                                    onLeft: nil,
                                    onRight: {[weak self] in
-//                        self?.systemMessageScreen(msg: msg)
+                        self?.systemMessageScreen(msg: msg)
                     },
                                    onDismiss: nil)
                 case .fiatMissing:
@@ -212,7 +241,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                                         }
                                     },
                                    onDismiss: {[weak self] in
-//                        self?.remoteAlertDismiss()
+                        self?.remoteAlertDismiss()
                     })
                 case .login(let network, let error):
                     let handleAlertGesture: (() -> Void)? = { [weak self] in
@@ -244,7 +273,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                     cell.configure(alertCard,
                                    onLeft: nil,
                                    onRight: {[weak self] in
-//                        self?.presentReEnable2fa()
+                        self?.presentReEnable2fa()
                     },
                                    onDismiss: nil)
                 case .backup:

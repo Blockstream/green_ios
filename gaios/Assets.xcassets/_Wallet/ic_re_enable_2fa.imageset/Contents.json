@@ -1,17 +1,8 @@
 {
   "images" : [
     {
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "re-enable.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "2FA Authentication.pdf",
+      "idiom" : "universal"
     }
   ],
   "info" : {

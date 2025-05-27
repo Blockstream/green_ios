@@ -73,6 +73,7 @@ class WalletTabBarViewController: UITabBarController {
         updateTabs([.home, .transact])
         Task.detached { [weak self] in
             // refresh tabs content on load
+            await self?.walletModel.reloadAlertCards()
             await self?.reloadChart()
             await self?.updateTabs([.home])
         }

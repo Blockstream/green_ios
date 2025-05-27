@@ -16,7 +16,7 @@ class ReEnable2faAccountCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        bg.cornerRadius = 5.0
+        bg.setStyle(CardStyle.defaultStyle)
         btnDisclose.isUserInteractionEnabled = false
         btnDisclose.backgroundColor = UIColor.gAccent()
         btnDisclose.cornerRadius = 4.0
@@ -24,7 +24,6 @@ class ReEnable2faAccountCell: UITableViewCell {
         [lblHint, lblType].forEach {
             $0.setStyle(.txtCard)
             $0.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-            $0.textColor = UIColor.gW60()
         }
     }
 
