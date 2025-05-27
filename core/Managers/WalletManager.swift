@@ -225,21 +225,25 @@ public class WalletManager {
     ) async throws {
         // disable liquid if is unsupported on hw
         if session.gdkNetwork.liquid && device?.supportsLiquid ?? 1 == 0 {
-            throw GaError.GenericError("disable liquid if is unsupported on hw")
+            logger.error("WM login disable liquid if is unsupported on hw")
+            return
         }
         // verify session
         if session.networkType == .lightning {
             if !AppSettings.shared.experimental || testnet {
-                throw GaError.GenericError("lightning no available")
+                logger.error("WM login lightning no available")
+                return
             } else if credentials == nil {
-                throw GaError.GenericError("no credentials found for lightning")
+                logger.error("WM login no credentials found for lightning")
+                return
             }
         } else if session.networkType != .lightning && (credentials == nil && device == nil) {
             throw GaError.GenericError("no credentials found for \(session.networkType.rawValue)")
         }
         let session = session.networkType == .lightning ? session as? LightningSessionManager : session
         guard let session = session else {
-            throw GaError.GenericError("Invalid session")
+            logger.error("WM login lightning no available")
+            return
         }
         // check existing a previous session
         let existDatadir = {
