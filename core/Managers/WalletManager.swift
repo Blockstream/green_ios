@@ -186,31 +186,26 @@ public class WalletManager {
         credentials: Credentials,
         lightningCredentials: Credentials? = nil
     ) async throws {
-        let bitcoinDescriptors = credentials.coreDescriptors?.filter({ !$0.hasPrefix("ct")})
-        let liquidDescriptors = credentials.coreDescriptors?.filter({ $0.hasPrefix("ct")})
-        if let bitcoinDescriptors = bitcoinDescriptors {
+        var loginUserResult: LoginUserResult?
+        if let bitcoinDescriptors = credentials.coreDescriptors?.filter({ !$0.hasPrefix("ct")}) {
             let credentials = Credentials(coreDescriptors: bitcoinDescriptors)
             try? await bitcoinSinglesigSession?.connect()
-            _ = try? await bitcoinSinglesigSession?.loginUser(credentials)
+            loginUserResult = try await bitcoinSinglesigSession?.loginUser(credentials)
         }
-        if let liquidDescriptors = liquidDescriptors {
+        if let liquidDescriptors = credentials.coreDescriptors?.filter({ $0.hasPrefix("ct")}) {
             let credentials = Credentials(coreDescriptors: liquidDescriptors)
             try? await liquidSinglesigSession?.connect()
-            _ = try? await liquidSinglesigSession?.loginUser(credentials)
+            loginUserResult = try await liquidSinglesigSession?.loginUser(credentials)
         }
-        //if let lightningCredentials = lightningCredentials {
-        //    try? await lightningSession?.connect()
-        //    _ = try? await lightningSession?.loginUser(lightningCredentials)
-        //}
         if let pubKeys = credentials.slip132ExtendedPubkeys {
             let session = account.networkType.liquid ? liquidSinglesigSession : bitcoinSinglesigSession
             try? await session?.connect()
-            _ = try? await session?.loginUser(credentials)
+            loginUserResult = try await session?.loginUser(credentials)
         }
         if let username = credentials.username, !username.isEmpty {
             let session = account.networkType.liquid ? liquidMultisigSession : bitcoinMultisigSession
             try? await session?.connect()
-            _ = try? await session?.loginUser(credentials)
+            loginUserResult = try? await session?.loginUser(credentials)
         }
         if activeSessions.isEmpty {
             throw HWError.Disconnected("id_you_are_not_connected")
@@ -218,6 +213,7 @@ public class WalletManager {
         _ = try await subaccounts()
         try? await loadRegistry()
         isWatchonly = true
+        account.xpubHashId = loginUserResult?.xpubHashId
     }
 
     public func loginSession(

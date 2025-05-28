@@ -208,10 +208,10 @@ class ConnectViewModel: NSObject {
         ///    method: .AuthKeyLightning,
         //    for: account.keychain)
         updateState?(.login)
-        try await wm.loginWatchonly(
+        _ = try await wm.loginWatchonly(
             credentials: credentials,
             lightningCredentials: nil)
-        AccountsRepository.shared.current = account
+        AccountsRepository.shared.current = wm.account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)
         }

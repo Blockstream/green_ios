@@ -46,8 +46,8 @@ class WOViewModel {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         let credentials = Credentials.watchonlyMultisig(username: username, password: password)
         try await wm.loginWatchonly(credentials: credentials)
-        AccountsRepository.shared.current = account
-        AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly)
+        AccountsRepository.shared.current = wm.account
+        AnalyticsManager.shared.loginWalletEnd(account: wm.account, loginType: .watchOnly)
     }
 
     func setupSinglesig(for account: Account, credentials: Credentials) async throws {
@@ -71,7 +71,7 @@ class WOViewModel {
             let credentials = try await session.decryptWithPin(decrypt)
             try await wm.loginWatchonly(credentials: credentials)
         }
-        AccountsRepository.shared.current = account
-        AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly)
+        AccountsRepository.shared.current = wm.account
+        AnalyticsManager.shared.loginWalletEnd(account: wm.account, loginType: .watchOnly)
     }
 }
