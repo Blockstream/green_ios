@@ -248,7 +248,7 @@ struct Country {
                 Country("ug", "Uganda", 256),
                 Country("ua", "Ukraine (Україна)", 380),
                 Country("ae", "United Arab Emirates (‫الإمارات العربية المتحدة‬‎)", 971),
-                Country("gb", "United Kingdom", 44),
+                //Country("gb", "United Kingdom", 44),
                 Country("us", "United States", 1),
                 Country("uy", "Uruguay", 598),
                 Country("uz", "Uzbekistan (Oʻzbekiston)", 998),

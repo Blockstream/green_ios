@@ -69,6 +69,11 @@ class BuyBTCViewController: KeyboardViewController {
         amountTextField.addTarget(self, action: #selector(BuyBTCViewController.textFieldDidChange(_:)),
                                   for: .editingChanged)
         loadAddress()
+        if viewModel.checkUKRegion() {
+            showAlert(title: "id_error".localized, message: "Feature unavailable in the UK. Coming soon.") {
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

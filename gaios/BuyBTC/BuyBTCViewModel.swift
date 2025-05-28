@@ -184,4 +184,7 @@ class BuyBTCViewModel {
     func getAccounts() -> [WalletItem] {
         return getBitcoinSubaccounts()
     }
+    func checkUKRegion() -> Bool {
+        return Locale.current.regionCode == "UK"
+    }
 }
