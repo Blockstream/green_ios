@@ -1,4 +1,5 @@
 import UIKit
+import core
 struct Country {
     let code: String
     let name: String
@@ -12,13 +13,20 @@ struct Country {
         self.name = name
         self.dialCode = dialCode
     }
+    static func getCountlyRemoteConfigEnableBuyIosUk() -> Bool {
+        return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigEnableBuyIosUk) as? Bool ?? false
+    }
     static func allMeld() -> [Country] {
-        return all().filter {
-            UIImage(named: $0.code.uppercased() + "-flag") != nil
-        }
+        let enableBuyIosUk = getCountlyRemoteConfigEnableBuyIosUk()
+        return all()
+            .filter {
+                UIImage(named: $0.code.uppercased() + "-flag") != nil
+            }.filter {
+                enableBuyIosUk || $0.code != "gb"
+            }
     }
     static func all() -> [Country] {
-
+        
         return [
                 Country("af", "Afghanistan (‫افغانستان‬‎)", 93),
                 Country("al", "Albania (Shqipëri)", 355),
@@ -248,7 +256,7 @@ struct Country {
                 Country("ug", "Uganda", 256),
                 Country("ua", "Ukraine (Україна)", 380),
                 Country("ae", "United Arab Emirates (‫الإمارات العربية المتحدة‬‎)", 971),
-                //Country("gb", "United Kingdom", 44),
+                Country("gb", "United Kingdom", 44),
                 Country("us", "United States", 1),
                 Country("uy", "Uruguay", 598),
                 Country("uz", "Uzbekistan (Oʻzbekiston)", 998),

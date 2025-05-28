@@ -16,7 +16,7 @@ extension UIViewController {
     @MainActor
     func showAlert(title: String, message: String, completion: @escaping () -> () = { }) {
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: title, message: message.localized, preferredStyle: .actionSheet)
+            let alert = UIAlertController(title: title, message: message.localized, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "id_continue".localized, style: .cancel) { _ in completion() })
             self.present(alert, animated: true, completion: completion)
         }

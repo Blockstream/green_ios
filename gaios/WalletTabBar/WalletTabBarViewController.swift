@@ -282,6 +282,15 @@ class WalletTabBarViewController: UITabBarController {
             UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
         }
     }
+
+    func checkUKRegion() -> Bool {
+        return Locale.current.regionCode == "GB"
+    }
+
+    func getCountlyRemoteConfigEnableBuyIosUk() -> Bool {
+        return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigEnableBuyIosUk) as? Bool ?? false
+    }
+
 }
 
 extension WalletTabBarViewController: UITabBarControllerDelegate {
