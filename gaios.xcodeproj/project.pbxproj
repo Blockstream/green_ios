@@ -372,6 +372,7 @@
 		34A75B6B292B6BA8007995D7 /* OnBoardInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6A292B6BA8007995D7 /* OnBoardInfoCell.swift */; };
 		34A75B6D292BD704007995D7 /* NetworkPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6C292BD704007995D7 /* NetworkPrefs.swift */; };
 		34A75B6F292BD9FC007995D7 /* PhrasePrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6E292BD9FC007995D7 /* PhrasePrefs.swift */; };
+		34A7F4FC2DE83CBE0003B9FE /* ScreenShield in Frameworks */ = {isa = PBXBuildFile; productRef = 34A7F4FB2DE83CBE0003B9FE /* ScreenShield */; };
 		34A8839E2BA30034004A1826 /* TxDetailsMultiAmountCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A8839D2BA30034004A1826 /* TxDetailsMultiAmountCell.xib */; };
 		34A883A02BA30050004A1826 /* TxDetailsMultiAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A8839F2BA30050004A1826 /* TxDetailsMultiAmountCell.swift */; };
 		34A883A42BA3251B004A1826 /* TxDetailsStatusCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A883A32BA3251B004A1826 /* TxDetailsStatusCell.xib */; };
@@ -1746,6 +1747,7 @@
 				81B2350F2A6A8BCD00B8FF5D /* Countly in Frameworks */,
 				34F0EC2B2D783E140017C276 /* DGCharts in Frameworks */,
 				81961B3C29E4F4A200E9B94D /* greenaddress.framework in Frameworks */,
+				34A7F4FC2DE83CBE0003B9FE /* ScreenShield in Frameworks */,
 				8173B8EC2AB19DB800C15C85 /* ZendeskSupportSDK in Frameworks */,
 				8177ED8E2B6C688C00C2271C /* core.framework in Frameworks */,
 				81961A6129E46B5600E9B94D /* gdk.framework in Frameworks */,
@@ -4260,6 +4262,7 @@
 				8173B8EB2AB19DB800C15C85 /* ZendeskSupportSDK */,
 				8114888D2B785A27004C7AB6 /* FirebaseMessaging */,
 				34F0EC2A2D783E140017C276 /* DGCharts */,
+				34A7F4FB2DE83CBE0003B9FE /* ScreenShield */,
 			);
 			productName = gaios;
 			productReference = 676FCF1C1F9D0CF800354E93 /* gaios.app */;
@@ -4514,6 +4517,7 @@
 				8173B8EA2AB19DB800C15C85 /* XCRemoteSwiftPackageReference "support_sdk_ios" */,
 				8114888C2B785A25004C7AB6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				34F0EC292D783E140017C276 /* XCRemoteSwiftPackageReference "Charts" */,
+				34A7F4FA2DE83CBE0003B9FE /* XCRemoteSwiftPackageReference "ScreenShield" */,
 			);
 			productRefGroup = 676FCF1D1F9D0CF800354E93 /* Products */;
 			projectDirPath = "";
@@ -7034,6 +7038,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		34A7F4FA2DE83CBE0003B9FE /* XCRemoteSwiftPackageReference "ScreenShield" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/JayantBadlani/ScreenShield";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.2;
+			};
+		};
 		34F0EC292D783E140017C276 /* XCRemoteSwiftPackageReference "Charts" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/danielgindi/Charts.git";
@@ -7109,6 +7121,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		34A7F4FB2DE83CBE0003B9FE /* ScreenShield */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 34A7F4FA2DE83CBE0003B9FE /* XCRemoteSwiftPackageReference "ScreenShield" */;
+			productName = ScreenShield;
+		};
 		34F0EC2A2D783E140017C276 /* DGCharts */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 34F0EC292D783E140017C276 /* XCRemoteSwiftPackageReference "Charts" */;

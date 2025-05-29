@@ -4,7 +4,7 @@ import gdk
 import greenaddress
 import core
 import LocalAuthentication
-
+import ScreenShield
 class ShowMnemonicsViewController: UIViewController {
 
     @IBOutlet weak var lblInfo: UILabel!
@@ -35,6 +35,23 @@ class ShowMnemonicsViewController: UIViewController {
                 await self.reload(showLightning: self.showBip85)
             }
         }
+        NotificationCenter.default.addObserver(forName: UIApplication.userDidTakeScreenshotNotification, object: nil, queue: OperationQueue.main) { notification in
+            let alert = UIAlertController(title: "Warning", message: "We prevent sensitive information from being copied to the clipboard or captured in a screenshot. Please copy it manually.", preferredStyle: .alert)
+            
+            let ok = UIAlertAction(title: "OK", style: .default, handler: { action in
+            })
+            alert.addAction(ok)
+            DispatchQueue.main.async(execute: {
+                self.present(alert, animated: true)
+            })
+        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // Protect ScreenShot
+        ScreenShield.shared.protect(view: self.collectionView)
+        ScreenShield.shared.protectFromScreenRecording()
     }
 
     func getCredentials() async -> Credentials? {

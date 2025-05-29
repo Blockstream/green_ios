@@ -1,5 +1,5 @@
 {
-  "originHash" : "9e24093088f6fc3cff594b21bc1b774cb1da599fc639afc6185a3d0a5be9d0c3",
+  "originHash" : "07b5b4af96fa15953bb2467507f8990c997753f40b82d7e876c50556a553afad",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -187,6 +187,15 @@
       "state" : {
         "revision" : "950601d4240ff4ba4b79bfea1b9e60b3976fc05a",
         "version" : "3.1.10"
+      }
+    },
+    {
+      "identity" : "screenshield",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/JayantBadlani/ScreenShield",
+      "state" : {
+        "revision" : "9586e6a305426398250e0bdc19cbd463437f1af1",
+        "version" : "1.2.2"
       }
     },
     {
