@@ -1,6 +1,6 @@
-# Green - A native Blockstream wallet for iOS
+# Blockstream App - A native Blockstream wallet for iOS
 
-Blockstream Green is a non-custodial Bitcoin wallet - it allows you to safely store, send, and receive your Bitcoin.
+Blockstream App is a non-custodial Bitcoin wallet - it allows you to safely store, send, and receive your Bitcoin.
 
 It's a mobile app available for [Android](https://github.com/Blockstream/green_android) and [iOS](https://github.com/Blockstream/green_ios), based on [gdk](https://github.com/blockstream/gdk), our cross-platform wallet library.
 
@@ -30,5 +30,5 @@ Read [our FAQ](https://greenaddress.it/en/faq.html) or contact us at [info@green
 
 ## License
 
-Blockstream Green is released under the terms of the GNU General Public License. See [LICENSE](LICENSE) for more information or see https://opensource.org/licenses/GPL-3.0
+Blockstream App is released under the terms of the GNU General Public License. See [LICENSE](LICENSE) for more information or see https://opensource.org/licenses/GPL-3.0
 
