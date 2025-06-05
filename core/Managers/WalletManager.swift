@@ -187,17 +187,17 @@ public class WalletManager {
         lightningCredentials: Credentials? = nil
     ) async throws {
         var loginUserResult: LoginUserResult?
-        if let bitcoinDescriptors = credentials.coreDescriptors?.filter({ !$0.hasPrefix("ct")}) {
+        if let bitcoinDescriptors = credentials.coreDescriptors?.filter({ !$0.hasPrefix("ct")}), !bitcoinDescriptors.isEmpty {
             let credentials = Credentials(coreDescriptors: bitcoinDescriptors)
             try? await bitcoinSinglesigSession?.connect()
             loginUserResult = try await bitcoinSinglesigSession?.loginUser(credentials)
         }
-        if let liquidDescriptors = credentials.coreDescriptors?.filter({ $0.hasPrefix("ct")}) {
+        if let liquidDescriptors = credentials.coreDescriptors?.filter({ $0.hasPrefix("ct")}), !liquidDescriptors.isEmpty {
             let credentials = Credentials(coreDescriptors: liquidDescriptors)
             try? await liquidSinglesigSession?.connect()
             loginUserResult = try await liquidSinglesigSession?.loginUser(credentials)
         }
-        if let pubKeys = credentials.slip132ExtendedPubkeys {
+        if let pubKeys = credentials.slip132ExtendedPubkeys, !pubKeys.isEmpty {
             let session = account.networkType.liquid ? liquidSinglesigSession : bitcoinSinglesigSession
             try? await session?.connect()
             loginUserResult = try await session?.loginUser(credentials)
