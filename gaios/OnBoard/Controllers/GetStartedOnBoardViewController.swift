@@ -97,7 +97,20 @@ class GetStartedOnBoardViewController: UIViewController {
         settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
         settingsBtn.setImage(UIImage(named: "ic_nav_disclose"), for: .normal)
         settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+        let aboutBtn = UIButton(type: .system)
+        aboutBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+        aboutBtn.setImage(UIImage(named: "ic_tab_security"), for: .normal)
+        aboutBtn.addTarget(self, action: #selector(aboutBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: settingsBtn), UIBarButtonItem(customView: aboutBtn)]
+    }
+
+    @objc func aboutBtnTapped() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAboutViewController") as? DialogAboutViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
     }
 
     @objc func onTap(_ gesture: UITapGestureRecognizer) {
@@ -173,6 +186,12 @@ extension GetStartedOnBoardViewController: DialogCountlyViewControllerDelegate {
         }
     }
 }
+extension GetStartedOnBoardViewController: DialogAboutViewControllerDelegate {
+    func openContactUs() {
+        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
+    }
+}
+
 //extension GetStartedOnBoardViewController: DialogListViewControllerDelegate {
 //    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
 //
