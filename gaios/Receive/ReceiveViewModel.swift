@@ -49,7 +49,7 @@ class ReceiveViewModel {
     }
 
     init() {
-        self.account = ReceiveViewModel.defaultAccount ?? ReceiveViewModel.getBitcoinSubaccounts().first!
+        self.account = ReceiveViewModel.defaultAccount ?? ReceiveViewModel.getBitcoinSubaccounts().first ??  ReceiveViewModel.getLiquidSubaccounts().first!
         self.asset = account.gdkNetwork.getFeeAsset()
         self.type = account.gdkNetwork.lightning ? .bolt11 : .address
         self.inputDenomination = wm.prominentSession?.settings?.denomination ?? .Sats

@@ -53,9 +53,12 @@ extension TabViewController {
 
     func buyScreen(_ walletModel: WalletModel) {
         AnalyticsManager.shared.buyInitiate(account: AccountsRepository.shared.current)
-        
         if !self.walletTab.getCountlyRemoteConfigEnableBuyIosUk() && self.walletTab.checkUKRegion() {
             showAlert(title: "Buy Bitcoin".localized, message: "Feature unavailable in the UK. Coming soon.")
+            return
+        }
+        if self.walletTab.getBitcoinSubaccounts().isEmpty {
+            showAlert(title: "Buy Bitcoin".localized, message: "Feature unavailable for Liquid accounts.")
             return
         }
         let storyboard = UIStoryboard(name: "BuyBTCFlow", bundle: nil)

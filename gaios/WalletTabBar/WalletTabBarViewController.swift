@@ -290,7 +290,10 @@ class WalletTabBarViewController: UITabBarController {
     func getCountlyRemoteConfigEnableBuyIosUk() -> Bool {
         return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigEnableBuyIosUk) as? Bool ?? false
     }
-
+    
+    func getBitcoinSubaccounts() -> [WalletItem] {
+        WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+    }
 }
 
 extension WalletTabBarViewController: UITabBarControllerDelegate {
