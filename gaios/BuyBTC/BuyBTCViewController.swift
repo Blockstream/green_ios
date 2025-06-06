@@ -256,6 +256,7 @@ class BuyBTCViewController: KeyboardViewController {
             return
         }
         let task = Task.detached { [weak self] in
+            await self?.viewModel.getDefaultProvider()
             return try await self?.viewModel.quote(amountStr)
         }
         let result = await task.result
@@ -271,7 +272,11 @@ class BuyBTCViewController: KeyboardViewController {
     }
     private func processQuotes(_ quotes: [MeldQuoteItem]?) {
         self.quotes = (quotes ?? []).sorted(by: { $0.destinationAmount > $1.destinationAmount })
-        self.selectedIndex = 0
+        if let provider = viewModel.defaultProvider, !provider.isEmpty {
+            self.selectedIndex = self.quotes.firstIndex(where: { $0.serviceProvider == provider }) ?? 0
+        } else {
+            self.selectedIndex = 0
+        }
         self.reload()
     }
     @objc func triggerTextChange() {

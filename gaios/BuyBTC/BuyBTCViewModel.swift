@@ -47,6 +47,7 @@ class BuyBTCViewModel {
         WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
     var address: Address?
+    var defaultProvider: String?
     var dialogAccountsModel: DialogAccountsViewModel {
         return DialogAccountsViewModel(
             title: "Account Selector",
@@ -104,6 +105,16 @@ class BuyBTCViewModel {
             }
         }
     }
+
+    func getDefaultProvider() async {
+        guard let customerId = wm.account.xpubHashId else {
+            return
+        }
+        if defaultProvider == nil {
+            defaultProvider = try? await meld.getLastUsedProvider(customerId: customerId) ?? ""
+        }
+    }
+
     func widget(quote: MeldQuoteItem, amountStr: String) async throws -> String {
         let amt = amountStr.replacingOccurrences(of: ",", with: ".")
         guard let addressStr = address?.address else {

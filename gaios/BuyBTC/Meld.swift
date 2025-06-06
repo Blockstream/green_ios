@@ -94,8 +94,8 @@ enum MeldTransactionStatus: String, Codable {
 
 public struct MeldServiceProviderDetails: Codable {
     let txnHash: String?
-    let type: String
-    let status: String
+    let type: String?
+    let status: String?
 }
 
 public struct MeldTransaction: Codable {
@@ -111,7 +111,7 @@ public struct MeldTransaction: Codable {
     let updatedAt: String
     let countryCode: String
     let externalCustomerId: String
-    let fiatAmountInUsd: Double
+    let fiatAmountInUsd: Double?
     let serviceProviderDetails: MeldServiceProviderDetails?
 }
 
@@ -258,6 +258,12 @@ struct Meld {
         return try await transactions(MeldTransactionsRequest(externalCustomerIds: xpub, statuses: statuses))
             .transactions
             .map({Transaction.fromMeldTransaction($0)})
+    }
+
+    func getLastUsedProvider(customerId: String) async throws -> String? {
+        let statuses = [MeldTransactionStatus.SETTLED].map({$0.rawValue}).joined(separator: ",")
+        let txs = try await transactions(MeldTransactionsRequest(externalCustomerIds: customerId, statuses: statuses))
+        return txs.transactions.first?.serviceProvider
     }
 
     func registerToken(fcmToken: String, externalCustomerId: String) async throws {
