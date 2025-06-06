@@ -23,6 +23,7 @@ public class MigratorManager {
     }
 
     public func migrate() {
+        logger.info("appDataVersion \(self.appDataVersion, privacy: .public)")
         if firstInitialization {
             // first installation or app upgrade from app version < v3.5.5
             if AccountsRepository.shared.accounts.isEmpty {
@@ -49,8 +50,50 @@ public class MigratorManager {
         appDataVersion = lastMigration
     }
 
+    // only for tests
+    private func logs() {
+        let keychainStoragev0 = KeychainStorage(account: AccountsRepository.attrAccount, service: AccountsRepository.attrServicev0)
+        let query = [
+            // without kSecAttrAccessible
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: keychainStoragev0.attrAccount,
+            kSecAttrService as String: keychainStoragev0.attrService,
+            kSecAttrAccessGroup as String: Bundle.main.appGroup] as [String: Any]
+        let data0 = try? keychainStoragev0.read(query)
+        let txt0 = String(decoding: data0 ?? Data(), as: UTF8.self)
+        logger.info("keychainStoragev0 \(txt0, privacy: .public)")
+        let keychainStoragev1 = KeychainStorage(account: AccountsRepository.attrAccount, service: AccountsRepository.attrServicev1)
+        let data1 = try? keychainStoragev1.read()
+        let txt1 = String(decoding: data1 ?? Data(), as: UTF8.self)
+        logger.info("keychainStoragev1 \(txt1, privacy: .public)")
+        do {
+            let accountsCached = try JSONDecoder().decode([Account].self, from: data1 ?? Data())
+            logger.info("accountsCached \(accountsCached.count, privacy: .public)")
+        } catch {
+            logger.info("accountsCached error \(error.localizedDescription, privacy: .public)")
+        }
+        if let path = GdkInit.defaults().datadir {
+            if let directoryContents = try? FileManager.default.contentsOfDirectory(atPath: path) {
+                logger.info("gdk path \(path, privacy: .public)")
+                for url in directoryContents {
+                    logger.info("\(url, privacy: .public)")
+                }
+            }
+        }
+        for network in ["mainnet", "testnet", "liquid"] {
+            if AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: network) {
+                logger.info("legacy pin account \(network, privacy: .public)")
+            }
+            if AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: network) {
+                logger.info("legacy bio account \(network, privacy: .public)")
+            }
+        }
+        
+    }
+
     private func migrateDatadir() { // from "4.0.0"
         // move cache dir to the app support
+        logger.info("MigrateManager: migrateDatadir")
         let params = GdkInit.defaults()
         let url = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true)
         if let atPath = url?.path, let toPath = params.datadir,
@@ -63,7 +106,8 @@ public class MigratorManager {
     }
 
     private func migrateWallets() { // from "3.5.5"
-        var accounts = [Account]()
+        logger.info("MigrateManager: migrateWallets")
+        var accounts: [Account]?
         for network in ["mainnet", "testnet", "liquid"] {
             let bioData = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: network)
             let pinData = AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: network)
@@ -71,13 +115,21 @@ public class MigratorManager {
                 let networkType = NetworkSecurityCase(rawValue: network) ?? .bitcoinMS
                 var account = Account(name: network.firstCapitalized, network: networkType, keychain: network)
                 account.attempts = UserDefaults.standard.integer(forKey: network + "_pin_attempts")
-                accounts.append(account)
+                if accounts == nil {
+                    accounts = [account]
+                } else {
+                    accounts?.append(account)
+                }
             }
         }
-        AccountsRepository.shared.accounts = accounts
+        if let accounts = accounts {
+            logger.info("MigrateManager: \(accounts.debugDescription, privacy: .public)")
+            AccountsRepository.shared.accounts = accounts
+        }
     }
 
     func updateKeychainAccessGroup() throws { // from  "4.0.25"
+        logger.info("MigrateManager: updateKeychainAccessGroup")
         let keychainStoragev0 = KeychainStorage(account: AccountsRepository.attrAccount, service: AccountsRepository.attrServicev0)
         let query = [
             // without kSecAttrAccessible & kSecAttrAccessGroup
@@ -85,12 +137,15 @@ public class MigratorManager {
             kSecAttrAccount as String: keychainStoragev0.attrAccount,
             kSecAttrService as String: keychainStoragev0.attrService] as [String: Any]
         if let data = try keychainStoragev0.read(query) {
+            let txt = String(decoding: data, as: UTF8.self)
+            logger.info("MigrateManager: \(txt, privacy: .public)")
             try AccountsRepository.shared.storage.write(data)
         }
         AccountsRepository.shared.cleanCache()
     }
 
     func updateKeychainAccessible() throws { // from "4.1.0"
+        logger.info("MigrateManager: updateKeychainAccessible")
         let keychainStoragev0 = KeychainStorage(account: AccountsRepository.attrAccount, service: AccountsRepository.attrServicev0)
         let query = [
             // without kSecAttrAccessible
@@ -99,17 +154,20 @@ public class MigratorManager {
             kSecAttrService as String: keychainStoragev0.attrService,
             kSecAttrAccessGroup as String: Bundle.main.appGroup] as [String: Any]
         if let data = try keychainStoragev0.read(query) {
+            let txt = String(decoding: data, as: UTF8.self)
+            logger.info("MigrateManager: \(txt, privacy: .public)")
             try AccountsRepository.shared.storage.write(data)
         }
         AccountsRepository.shared.cleanCache()
     }
 
     func updateBiometricPolicy() { // from  "4.1.7"
+        logger.info("MigrateManager: updateBiometricPolicy")
         for account in AccountsRepository.shared.accounts where AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain) {
             _ = try? AuthenticationTypeHandler.getAuthKeyBiometricPrivateKey(network: account.keychain)
         }
     }
-
+    // only for tests
     public func removeAll() {
         let keychainStoragev0 = KeychainStorage(account: AccountsRepository.attrAccount, service: AccountsRepository.attrServicev0)
         var query = [

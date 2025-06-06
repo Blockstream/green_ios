@@ -313,6 +313,7 @@ class LoginViewController: UIViewController {
     
     @MainActor
     func failure(error: Error, enableFailingCounter: Bool) {
+        logger.error("LOGIN \(error.description(), privacy: .public)")
         self.stopLoader()
         switch error {
         case AuthenticationTypeHandler.AuthError.CanceledByUser:

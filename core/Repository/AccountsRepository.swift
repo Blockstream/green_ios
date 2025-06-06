@@ -17,8 +17,12 @@ public class AccountsRepository {
             if let cached = accountsCached {
                 return cached
             }
-            let data = try? storage.read()
-            accountsCached = try? JSONDecoder().decode([Account].self, from: data ?? Data())
+            do {
+                let data = try? storage.read()
+                accountsCached = try JSONDecoder().decode([Account].self, from: data ?? Data())
+            } catch {
+                logger.error("AccountsRepository error \(error.localizedDescription, privacy: .public)")
+            }
             return accountsCached ?? []
         }
         set {

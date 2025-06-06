@@ -51,7 +51,7 @@ struct ZendeskErrorRequest {
             return "multisig_shield__green_"
         }
     }
-    var logs: String? {
+    func logs(truncated: Bool) -> String? {
         // Upload logs
         var logs = error ?? ""
         logs += "\r\n"
@@ -72,9 +72,13 @@ struct ZendeskErrorRequest {
         if shareLogs {
             let greenLogsFull = logger.export(category: "Green").joined(separator: "\r\n")
             let lightningLogsFull = logger.export(category: "Lightning").joined(separator: "\r\n")
-            logs = cutLogs(head: logs,
-                           greenLogs: greenLogsFull,
-                           lightningLogs: lightningLogsFull)
+            if truncated == true {
+                logs = cutLogs(head: logs,
+                               greenLogs: greenLogsFull,
+                               lightningLogs: lightningLogsFull)
+            } else {
+                logs += ["Green logs", greenLogsFull, "Lightning logs", lightningLogsFull].joined(separator: "\r\n")
+            }
         }
         return logs
     }
@@ -130,7 +134,7 @@ class ZendeskSdk {
             URLQueryItem(name: "tf_42657567831833", value: osInfo),
             URLQueryItem(name: "tf_900009625166", value: Bundle.main.versionNumber),
             URLQueryItem(name: "tf_900003758323", value: "green"),
-            URLQueryItem(name: "tf_21409433258649", value: req.logs),
+            URLQueryItem(name: "tf_21409433258649", value: req.logs(truncated: true)),
             URLQueryItem(name: "tf_42306364242073", value: countlyId),
             URLQueryItem(name: "tf_42575138597145", value: req.type.rawValue),
             URLQueryItem(name: "tf_23833728377881", value: supportId)
@@ -191,7 +195,7 @@ class ZendeskSdk {
             CustomField(fieldId: 900009625166, value: Bundle.main.versionNumber),
             CustomField(fieldId: 900008231623, value: "ios"),
             CustomField(fieldId: 42657567831833, value: osInfo),
-            CustomField(fieldId: 21409433258649, value: req.logs),
+            CustomField(fieldId: 21409433258649, value: req.logs(truncated: true)),
             CustomField(fieldId: 42306364242073, value: countlyId),
             CustomField(fieldId: 42575138597145, value: req.type.rawValue),
             CustomField(fieldId: 23833728377881, value: supportId)

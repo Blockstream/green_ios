@@ -139,12 +139,10 @@ class ContactUsViewController: KeyboardViewController {
 
     @IBAction func btnCopy(_ sender: Any) {
         startLoader(message: "Copying...")
-        DispatchQueue.global(qos: .background).async {
-            UIPasteboard.general.string = self.request.logs
-            DispatchQueue.main.async {
-                self.stopLoader()
-                DropAlert().warning(message: "id_copied_to_clipboard".localized, delay: 2.0)
-            }
+        DispatchQueue.main.async {
+            UIPasteboard.general.string = self.request.logs(truncated: false)
+            self.stopLoader()
+            DropAlert().warning(message: "id_copied_to_clipboard".localized, delay: 2.0)
         }
     }
 

@@ -127,7 +127,7 @@ class AccountNavigator {
 
     @MainActor
     static func navFirstPage() {
-        let wallets = AccountsRepository.shared.accounts.filter { $0.hidden == false}
+        let wallets = AccountsRepository.shared.accounts
         if wallets.isEmpty {
             // if there are no wallets
             UserDefaults.standard.set(true, forKey: AppStorageConstants.v5Treiggered.rawValue)
