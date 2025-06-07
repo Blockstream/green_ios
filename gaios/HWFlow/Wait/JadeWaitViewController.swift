@@ -288,10 +288,9 @@ extension JadeWaitViewController: QRUnlockJadeViewControllerDelegate {
     func signPsbt(_ psbt: String) {
     }
 
-    func login(credentials: gdk.Credentials) {
-        if let account = AccountsRepository.shared.current {
-            AccountNavigator.navLogged(accountId: account.id)
-        }
+    func login(credentials: gdk.Credentials, wallet: core.WalletManager) {
+        AccountsRepository.shared.current = wallet.account
+        AccountNavigator.navLogged(accountId: wallet.account.id)
     }
 
     func abort() {

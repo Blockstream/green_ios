@@ -662,7 +662,7 @@ extension SendTxConfirmViewController: QRUnlockJadeViewControllerDelegate {
     }
 
     @MainActor
-    func login(credentials: gdk.Credentials) {
+    func login(credentials: gdk.Credentials, wallet: WalletManager) {
     }
 
     @MainActor

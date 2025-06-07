@@ -1753,6 +1753,7 @@
                         <outlet property="bgLayer" destination="aa6-eP-ekm" id="1jt-hM-wGz"/>
                         <outlet property="btnBack" destination="QZt-iD-iCe" id="cKF-Ma-jn2"/>
                         <outlet property="btnTrouble" destination="p4f-bY-VME" id="Wjm-vJ-NJp"/>
+                        <outlet property="imgStep" destination="vRc-tz-Hug" id="mnF-eg-HuQ"/>
                         <outlet property="lblHint" destination="tvA-pd-Z9T" id="0Vg-dA-8EA"/>
                         <outlet property="lblNavTitle" destination="Ypf-si-mas" id="66q-1B-rzP"/>
                         <outlet property="lblStep" destination="utV-Xx-W03" id="ZZb-zv-ET7"/>

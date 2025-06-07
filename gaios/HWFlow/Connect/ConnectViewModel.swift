@@ -57,11 +57,12 @@ class ConnectViewModel: NSObject {
             self.peripheralID = peripheralID
             self.type = type
             self.autologin = autologin
-            super.init()
-            self.centralManager = CBCentralManager(delegate: self, queue: nil)
         }
 
     func startScan(deviceType: DeviceType) async throws {
+        if self.centralManager == nil {
+            self.centralManager = CBCentralManager(delegate: self, queue: nil)
+        }
         if isScanning {
             return
         }

@@ -5,7 +5,7 @@ import gdk
 import hw
 
 protocol QRUnlockJadeViewControllerDelegate: AnyObject {
-    func login(credentials: Credentials)
+    func login(credentials: Credentials, wallet: WalletManager)
     func abort()
     func signerFlow()
 }
@@ -328,11 +328,13 @@ extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate
         Task {
             let task = Task.detached { [weak self] in
                 try await self?.vm.exportXpub(enableBio: action == .bio, credentials: credentials)
-                try await self?.vm.login()
+                return try await self?.vm.login()
             }
             switch await task.result {
-            case .success(_):
-                success(account: vm.account)
+            case .success(let wallet):
+                if let wallet = wallet {
+                    success(wallet: wallet)
+                }
             case .failure(let error):
                 failure(error, account: vm.account)
             }
@@ -340,11 +342,11 @@ extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate
     }
 
     @MainActor
-    func success(account: Account) {
+    func success(wallet: WalletManager) {
         stopLoader()
         dismiss(animated: true) {
             if let credentials = self.credentials {
-                self.delegate?.login(credentials: credentials)
+                self.delegate?.login(credentials: credentials, wallet: wallet)
             }
         }
     }

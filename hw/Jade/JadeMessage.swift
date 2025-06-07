@@ -240,7 +240,7 @@ public struct JadeAuthResponse<T: Codable>: Codable {
 public struct JadeEmpty: Codable {
 }
 
-public struct JadeVersionInfo: Codable {
+public struct JadeVersionInfo: Codable, Equatable {
     enum CodingKeys: String, CodingKey {
         case jadeVersion = "JADE_VERSION"
         case jadeOtaMaxChunk = "JADE_OTA_MAX_CHUNK"

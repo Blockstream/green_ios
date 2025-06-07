@@ -94,7 +94,7 @@ class QRUnlockJadeViewModel {
         try AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoCredentials, credentials: credentials, for: account.keychain)
     }
 
-    func login() async throws {
+    func login() async throws -> WalletManager {
         AnalyticsManager.shared.loginWalletStart()
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: account.keychain)
@@ -114,6 +114,7 @@ class QRUnlockJadeViewModel {
             try await wm.loginWatchonly(credentials: credentials)
         }
         AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly)
+        return wm
     }
 
     func exportPsbt(psbt: String) async throws -> BcurEncodedData {

@@ -7,7 +7,7 @@ import gdk
 import hw
 import core
 
-enum ConnectionState {
+enum ConnectionState: Equatable {
     case watchonly
     case wait
     case scan
@@ -20,6 +20,12 @@ enum ConnectionState {
     case errorWatchonly
     case error(Error?)
     case firmware(String?)
+    static func == (lhs: ConnectionState, rhs: ConnectionState) -> Bool {
+        lhs.value == rhs.value
+    }
+    var value: String? {
+        return String(describing: self).components(separatedBy: "(").first
+    }
 }
 
 class ConnectViewController: HWFlowBaseViewController {
@@ -37,6 +43,7 @@ class ConnectViewController: HWFlowBaseViewController {
     private var selectedItem: ScanListItem?
     private var isJade: Bool { viewModel.isJade }
     private var hasCredentials: Bool { viewModel.account.hasWoCredentials }
+    private var isQRmode: Bool { viewModel.account.uuid == nil }
 
     var state: ConnectionState = .none {
         didSet {
@@ -58,7 +65,6 @@ class ConnectViewController: HWFlowBaseViewController {
         case .wait:
             progressView.isHidden = true
             retryButton.isHidden = false
-            retryButton.setTitle("id_connect_with_bluetooth".localized, for: .normal)
             retryWoButton.isHidden = !hasCredentials
             if hasCredentials {
                 progress("Try Face ID again or enter your PIN to unlock your wallet.")
@@ -127,6 +133,9 @@ class ConnectViewController: HWFlowBaseViewController {
                 title: "id_updating_firmware".localized,
                 subtitle: hash != nil ? "Hash: \(hash ?? "")" : "")
             lblSubtitle.attributedText = text
+        }
+        if isQRmode {
+            retryButton.isHidden = true
         }
     }
 
@@ -284,6 +293,10 @@ class ConnectViewController: HWFlowBaseViewController {
 
     @IBAction func retryBtnTapped(_ sender: Any) {
         setContent()
+        connectViaBle()
+    }
+
+    func connectViaBle() {
         Task {
             await stopScan()
             await startScan()
@@ -441,7 +454,7 @@ extension ConnectViewController: ConnectViewModelDelegate {
         case .poweredOn:
             switch state {
             case .scan:
-                if !viewModel.isScanning {
+                if !viewModel.isScanning || self.viewModel.state == .none {
                     Task { [weak self] in
                         await self?.startScan()
                     }
