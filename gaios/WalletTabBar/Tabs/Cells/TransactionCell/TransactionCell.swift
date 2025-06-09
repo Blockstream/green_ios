@@ -60,7 +60,7 @@ class TransactionCell: UITableViewCell {
             MultiLabelViewModel(
                 txtLeft: model.statusUI().label,
                 txtRight: satoshi != 0 ? fiat : nil,
-                hideBalance: nil,
+                hideBalance: hideBalance,
                 style: model.statusUI().style))
         if !(model.tx.memo?.isEmpty ?? true) {
             if let row = Bundle.main.loadNibNamed("SingleLabelView", owner: self, options: nil)?.first as? SingleLabelView {
