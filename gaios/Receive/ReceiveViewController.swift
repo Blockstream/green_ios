@@ -109,7 +109,7 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func register() {
-        ["AlertCardCell", "ReceiveAddressCell", "AmountCell", "LTInfoCell", "LTNoteCell", "ReceiveAssetCell"].forEach {
+        ["AlertCardCell", "ReceiveAddressCell", "AmountCell", "LTInfoCell", "LTNoteCell", "ReceiveAssetCell", "ChangeAccountCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
@@ -455,7 +455,9 @@ class ReceiveViewController: KeyboardViewController {
             DropAlert().error(message: error.description().localized)
         }
     }
-
+    func onAccountChange() {
+        presentDialogAccountsViewController()
+    }
     @IBAction func btnConfirm(_ sender: Any) {
         if viewModel.satoshi != nil {
             lightningAmountEditing = false
@@ -478,10 +480,6 @@ class ReceiveViewController: KeyboardViewController {
             break
         }
         reload()
-    }
-
-    @IBAction func btnAccount(_ sender: Any) {
-        presentDialogAccountsViewController()
     }
 }
 
@@ -661,50 +659,17 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case ReceiveSection.asset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "ReceiveAssetCell") as? ReceiveAssetCell {
-                let model = viewModel.receiveAssetCellModel
-                cell.configure(model: viewModel.receiveAssetCellModel, onTap: { self.didSelectAssetRow() })
+                cell.configure(model: viewModel.receiveAssetCellModel, onTap: { [weak self] in self?.didSelectAssetRow() })
                 cell.selectionStyle = .none
                 return cell
             }
         case ReceiveSection.account:
-            let cell = UITableViewCell()
-            cell.backgroundColor = UIColor.gBlackBg()
-
-            let label = UILabel()
-            label.setStyle(.sectionTitle)
-            label.text = "id_account".localized
-
-            let button = UIButton(type: .system)
-            button.setStyle(.sectionTitle)
-            button.setTitle(viewModel.account.localizedName, for: .normal)
-            button.addTarget(self, action: #selector(btnAccount(_:)), for: .touchUpInside)
-            button.contentHorizontalAlignment = .right
-
-            // Use SF Symbol for downward chevron and add a space
-            let chevron = UIImageView(image: UIImage(systemName: "chevron.down"))
-            chevron.tintColor = .white
-
-            let rightStack = UIStackView(arrangedSubviews: [button, chevron])
-            rightStack.axis = .horizontal
-            rightStack.spacing = 8 // Add more space between button and chevron
-            rightStack.alignment = .center
-
-            let mainStack = UIStackView(arrangedSubviews: [label, rightStack])
-            mainStack.axis = .horizontal
-            mainStack.spacing = 8
-            mainStack.alignment = .center
-            mainStack.distribution = .equalSpacing
-
-            cell.contentView.addSubview(mainStack)
-            mainStack.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                mainStack.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 25),
-                mainStack.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -25),
-                mainStack.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8),
-                mainStack.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8)
-            ])
-            cell.selectionStyle = .none
-            return cell
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "ChangeAccountCell") as? ChangeAccountCell {
+                cell.configure(name: viewModel.account.localizedName,
+                               onTap: { [weak self] in self?.onAccountChange() })
+                cell.selectionStyle = .none
+                return cell
+            }
         case ReceiveSection.amount:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AmountCell") as? AmountCell {
                 let model = viewModel.amountCellModel
