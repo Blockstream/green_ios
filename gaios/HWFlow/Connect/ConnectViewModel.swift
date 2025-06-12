@@ -199,15 +199,25 @@ class ConnectViewModel: NSObject {
         let wm = WalletManager(account: account, prominentNetwork: account.networkType)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = HwPopupResolver()
-        let credentials = try? AuthenticationTypeHandler.getCredentials(
-            method: .AuthKeyWoCredentials,
-            for: account.keychain)
+        
+        var credentials: Credentials?
+        if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: account.keychain) {
+            credentials = try? AuthenticationTypeHandler.getCredentials(
+                method: .AuthKeyWoCredentials,
+                for: account.keychain)
+        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain) {
+            let session = wm.prominentSession!
+            let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain)
+            AnalyticsManager.shared.loginWalletStart()
+            let method: AuthenticationTypeHandler.AuthType = enableBio ? .AuthKeyBiometric : .AuthKeyPIN
+            let data = try AuthenticationTypeHandler.getPinData(method: method, for: account.keychain)
+            try await session.connect()
+            let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
+            credentials = try await session.decryptWithPin(decrypt)
+        }
         guard let credentials = credentials else {
             throw HWError.Declined("")
         }
-        //let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(
-        ///    method: .AuthKeyLightning,
-        //    for: account.keychain)
         updateState?(.login)
         _ = try await wm.loginWatchonly(
             credentials: credentials,

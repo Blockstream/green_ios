@@ -155,7 +155,7 @@ class EditProtectionViewController: UIViewController {
     func disableBiometricAuthentication() async {
         guard let keychain = WalletManager.current?.account.keychain else { return }
         _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyBiometric, for: keychain)
-        try? AuthenticationTypeHandler.removePrivateKey(forNetwork: keychain)
+        AuthenticationTypeHandler.removePrivateKey(forNetwork: keychain)
         UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey\(keychain)")
     }
 }

@@ -42,7 +42,7 @@ class ConnectViewController: HWFlowBaseViewController {
 
     private var selectedItem: ScanListItem?
     private var isJade: Bool { viewModel.isJade }
-    private var hasCredentials: Bool { viewModel.account.hasWoCredentials }
+    private var hasCredentials: Bool { viewModel.account.hasWoCredentials || viewModel.account.hasBioPin }
     private var isQRmode: Bool { viewModel.account.uuid == nil }
 
     var state: ConnectionState = .none {

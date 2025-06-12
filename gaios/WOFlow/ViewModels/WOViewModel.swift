@@ -57,9 +57,11 @@ class WOViewModel {
     func loginSinglesig(for account: Account) async throws {
         AnalyticsManager.shared.loginWalletStart()
         let wm = WalletsRepository.shared.getOrAdd(for: account)
-        let existCredentials = AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: account.keychain)
-        if existCredentials {
+        if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: account.keychain) {
             let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
+            try await wm.loginWatchonly(credentials: credentials)
+        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: account.keychain) {
+            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
             try await wm.loginWatchonly(credentials: credentials)
         } else {
             let session = wm.prominentSession!

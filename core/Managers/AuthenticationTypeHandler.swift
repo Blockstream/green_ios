@@ -11,7 +11,7 @@ public class AuthenticationTypeHandler {
         case LockedOut
         case NotSupported
         case PasscodeNotSet
-        case KeychainError(_ status: OSStatus)
+        case KeychainError(_ action: String, _ status: OSStatus)
         case ServiceNotAvailable(_ desc: String)
         case SecurityError(_ desc: String)
 
@@ -27,13 +27,9 @@ public class AuthenticationTypeHandler {
                     return "id_your_ios_device_might_not_be"
                 case .PasscodeNotSet:
                     return "id_set_up_a_passcode_for_your_ios"
-                case .KeychainError(let status):
-                    if #available(iOS 11.3, *) {
-                        let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString
-                        return "Operation failed: \(status) \(text))"
-                    } else {
-                        return "Operation failed: \(status). Check the error message through https://osstatus.com."
-                    }
+                case .KeychainError(let action, let status):
+                    let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString
+                    return "Operation \(action) fail: \(status) \(text))"
                 case .ServiceNotAvailable(let desc), .SecurityError(let desc):
                     return desc
                 case .DeniedByUser:
@@ -52,6 +48,7 @@ public class AuthenticationTypeHandler {
         case AuthKeyPrivate = "com.blockstream.green.auth_key_private" // for biometric private key
         case AuthKeyLightning = "com.blockstream.green.auth_key_credentials" // for lightning credentials
         case AuthKeyWoCredentials = "com.blockstream.green.auth_key_wo_credentials" // for wathonly credentials
+        case AuthKeyWoBioCredentials = "com.blockstream.green.auth_key_wo_bio_credentials" // for wathonly credentials with bio auth
     }
 
     static let PrivateKeyPathSize = 32
@@ -84,16 +81,8 @@ public class AuthenticationTypeHandler {
 
     fileprivate static func describeKeychainError(_ status: OSStatus) -> OSStatus {
         if status != errSecSuccess && status != errSecDuplicateItem {
-            if #available(iOS 11.3, *) {
-                let err = SecCopyErrorMessageString(status, nil)
-#if DEBUG
-                logger.error("Operation failed: \(String(describing: err), privacy: .public)")
-#endif
-            } else {
-#if DEBUG
-                logger.error("Operation failed: \(status, privacy: .public). Check the error message through https://osstatus.com.")
-#endif
-            }
+            let err = SecCopyErrorMessageString(status, nil)
+            logger.error("AUTH error \(status, privacy: .public): \(String(describing: err), privacy: .public)")
         }
         return status
     }
@@ -101,9 +90,7 @@ public class AuthenticationTypeHandler {
     fileprivate static func describeSecurityError(_ error: CFError) -> String {
         let err = CFErrorCopyDescription(error)
         let errorString = String(describing: err!)
-#if DEBUG
-        logger.error("Operation failed: \(errorString, privacy: .public)")
-#endif
+        logger.error("AUTH error: \(errorString, privacy: .public)")
         return errorString
     }
 
@@ -133,6 +120,7 @@ public class AuthenticationTypeHandler {
 
     static func removeAuthKeyBiometricPrivateKey(network: String) throws {
         let label = "AuthKeyBiometricPrivateKey\(network)"
+        UserDefaults.standard.removeObject(forKey: label)
         if removeAuth(method: .AuthKeyPrivate, for: label) == false {
             throw AuthError.SecurityError("Bio key not found")
         }
@@ -144,14 +132,20 @@ public class AuthenticationTypeHandler {
 
     static func getAuthKeyBiometricPrivateKey(network: String) throws -> String {
         let label = "AuthKeyBiometricPrivateKey\(network)"
-        let res = try get_(method: .AuthKeyPrivate, forNetwork: label)
-        if let value = res[label] as? String {
+        let res = try? get_(method: .AuthKeyPrivate, forNetwork: label)
+        if let value = res?[label] as? String {
             return value
         }
         // migration from legacy local userdefaults
         if let privateKey = UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey\(network)") {
             // overwrite value on UserDefault with appgroup
-            try? setAuthKeyBiometricPrivateKey(network: network, value: privateKey)
+            do {
+                try setAuthKeyBiometricPrivateKey(network: network, value: privateKey)
+                UserDefaults.standard.removeObject(forKey: "AuthKeyBiometricPrivateKey\(network)")
+                logger.info("Migration BiometricPrivateKey successfull")
+            } catch {
+                logger.error("Migration BiometricPrivateKey failed: \(error.description(), privacy: .public)")
+            }
             return privateKey
         }
         throw AuthError.SecurityError("Bio key not found")
@@ -190,7 +184,7 @@ public class AuthenticationTypeHandler {
         var privateKey: CFTypeRef?
         let status = callWrapper(fun: SecItemCopyMatching(q as CFDictionary, &privateKey))
         guard status == errSecSuccess else {
-            throw AuthError.KeychainError(status)
+            throw AuthError.KeychainError("getPrivateKey", status)
         }
         // swiftlint:disable force_cast
         return privateKey as! SecKey
@@ -265,6 +259,16 @@ public class AuthenticationTypeHandler {
                 q[kSecAttrAccessible] = kSecAttrAccessibleAfterFirstUnlock
             case .AuthKeyPIN, .AuthKeyWoCredentials:
                 q[kSecAttrAccessible] = kSecAttrAccessibleWhenUnlocked
+            case .AuthKeyWoBioCredentials:
+                let access = SecAccessControlCreateWithFlags(
+                    nil, // Use the default allocator.
+                    kSecAttrAccessibleWhenUnlocked, // the item isn’t eligible for the iCloud keychain and won’t be included if the user restores a device backup to a new device.
+                    .userPresence, // request biometric authentication, or to fall back on the device passcode, whenever the item is later read from the keychain.
+                    nil) // Ignore any error.
+                let context = LAContext()
+                context.touchIDAuthenticationAllowableReuseDuration = 10
+                q[kSecAttrAccessControl] = access
+                q[kSecUseAuthenticationUI] = kSecUseAuthenticationUI
             }
         }
         return q
@@ -278,6 +282,12 @@ public class AuthenticationTypeHandler {
             kSecReturnData: kCFBooleanTrue ?? true]
         if version == 1 {
             q[kSecAttrAccessGroup] = Bundle.main.appGroup
+            if method == .AuthKeyWoBioCredentials {
+                let context = LAContext()
+                context.localizedReason = "Access your mnemonic on the keychain"
+                context.touchIDAuthenticationAllowableReuseDuration = 10
+                q[kSecUseAuthenticationContext] = context
+            }
         }
         return q
     }
@@ -290,12 +300,17 @@ public class AuthenticationTypeHandler {
             kSecReturnData: kCFBooleanTrue ?? true]
         if version == 1 {
             q[kSecAttrAccessGroup] = Bundle.main.appGroup
+            if method == .AuthKeyWoBioCredentials {
+                let context = LAContext()
+                context.interactionNotAllowed = true
+                q[kSecUseAuthenticationContext] = context
+            }
         }
         return q
     }
 
     fileprivate static func set(method: AuthType, data: [String: Any], forNetwork: String) throws {
-        if AuthType.AuthKeyBiometric == method && !supportsPasscodeAuthentication() {
+        if [AuthType.AuthKeyBiometric, AuthType.AuthKeyWoBioCredentials].contains(method) && !supportsPasscodeAuthentication() {
             throw AuthError.PasscodeNotSet
         }
         guard let data = try? JSONSerialization.data(withJSONObject: data) else {
@@ -309,7 +324,7 @@ public class AuthenticationTypeHandler {
             status = callWrapper(fun: SecItemAdd(qAdd as CFDictionary, nil))
         }
         if status != errSecSuccess {
-            throw AuthError.KeychainError(status)
+            throw AuthError.KeychainError("set", status)
         }
     }
 
@@ -318,7 +333,7 @@ public class AuthenticationTypeHandler {
         var result: CFTypeRef?
         let status = callWrapper(fun: SecItemCopyMatching(q as CFDictionary, &result))
         guard status == errSecSuccess, result != nil, let resultData = result as? Data else {
-            throw AuthError.KeychainError(status)
+            throw AuthError.KeychainError("get", status)
         }
         guard let data = try? JSONSerialization.jsonObject(with: resultData, options: []) as? [String: Any] else {
             throw AuthError.ServiceNotAvailable("Operation failed: Invalid json on serialization.")
@@ -353,7 +368,7 @@ public class AuthenticationTypeHandler {
         var result: CFTypeRef?
         let status = callWrapper(fun: SecItemCopyMatching(q as CFDictionary, &result))
         if status != errSecSuccess && status != errSecInteractionNotAllowed {
-            throw AuthError.KeychainError(status)
+            throw AuthError.KeychainError("exist", status)
         }
     }
 
@@ -371,20 +386,16 @@ public class AuthenticationTypeHandler {
         }
     }
 
-    public static func removePrivateKey(forNetwork: String) throws {
-        guard let privateKeyLabel = try? getAuthKeyBiometricPrivateKey(network: forNetwork) else {
-            throw AuthError.ServiceNotAvailable("Operation failed: Key not found.")
+    public static func removePrivateKey(forNetwork: String) {
+        if let privateKeyLabel = try? getAuthKeyBiometricPrivateKey(network: forNetwork) {
+            let q: [CFString: Any] = [kSecClass: kSecClassKey,
+                                      kSecAttrKeyType: ECCKeyType,
+                                      kSecAttrKeySizeInBits: ECCKeySizeInBits,
+                                      kSecAttrLabel: privateKeyLabel,
+                                      kSecReturnRef: true]
+            let status = callWrapper(fun: SecItemDelete(q as CFDictionary))
         }
-        let q: [CFString: Any] = [kSecClass: kSecClassKey,
-                                  kSecAttrKeyType: ECCKeyType,
-                                  kSecAttrKeySizeInBits: ECCKeySizeInBits,
-                                  kSecAttrLabel: privateKeyLabel,
-                                  kSecReturnRef: true]
-        let status = callWrapper(fun: SecItemDelete(q as CFDictionary))
-        if status != errSecSuccess {
-            throw AuthError.KeychainError(status)
-        }
-        try removeAuthKeyBiometricPrivateKey(network: forNetwork)
+        try? removeAuthKeyBiometricPrivateKey(network: forNetwork)
     }
 
     public static func removeAuth(method: AuthType, for label: String) -> Bool {
@@ -427,7 +438,7 @@ public class AuthenticationTypeHandler {
     }
 
     public static func setCredentials(method: AuthType, credentials: Credentials, for label: String) throws {
-        guard [AuthType.AuthKeyLightning, AuthType.AuthKeyWoCredentials].contains(method) else {
+        guard [AuthType.AuthKeyLightning, AuthType.AuthKeyWoCredentials, AuthType.AuthKeyWoBioCredentials].contains(method) else {
             throw AuthError.SecurityError("Invalid method")
         }
         try AuthenticationTypeHandler.setAuth(method: method, data: credentials, for: label)
@@ -444,7 +455,7 @@ public class AuthenticationTypeHandler {
         return try getAuth(method: method, for: label)
     }
     public static func getCredentials(method: AuthType, for label: String) throws -> Credentials {
-        guard [AuthType.AuthKeyLightning, AuthType.AuthKeyWoCredentials].contains(method) else {
+        guard [AuthType.AuthKeyLightning, AuthType.AuthKeyWoCredentials, AuthType.AuthKeyWoBioCredentials].contains(method) else {
             throw AuthError.SecurityError("Invalid method")
         }
         return try getAuth(method: method, for: label)
