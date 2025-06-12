@@ -39,6 +39,14 @@ Generate new certificates
 
 Development release
 
+### ios prod_release
+
+```sh
+[bundle exec] fastlane ios prod_release
+```
+
+Production release
+
 ### ios build_unsigned_debug
 
 ```sh

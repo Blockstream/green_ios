@@ -287,6 +287,7 @@ upload_apple_store_production:
       - prod
   script:
     - fastlane upload_apple_store
+  timeout: 2 hours
 
 
 # GCLOUD
