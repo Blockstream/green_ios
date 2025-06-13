@@ -39,7 +39,7 @@ class FooterQrCell: UICollectionReusableView {
         bip85View.isHidden = false
         infoPanel.cornerRadius = 5.0
         infoPanel.backgroundColor = UIColor.gGreenFluo().withAlphaComponent(0.2)
-        lblBip85.text = "This is your BIP85 derived recovery phrase only for your Lightning account.\n\nWARNING: You can't fully restore your wallet with that.".localized
+        lblBip85.text = "id_this_is_your_bip85_derived".localized
     }
 
     @IBAction func btnLearnMore(_ sender: Any) {

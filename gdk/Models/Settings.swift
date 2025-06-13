@@ -190,7 +190,6 @@ public class Settings: Codable {
         return self.pricing["currency"]!
     }
 
-
     public static func from(_ data: [String: Any]) -> Settings? {
         if let json = try? JSONSerialization.data(withJSONObject: data, options: []) {
             return try? JSONDecoder().decode(Settings.self, from: json)

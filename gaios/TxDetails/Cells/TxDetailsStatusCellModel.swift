@@ -45,7 +45,7 @@ class TxDetailsStatusCellModel {
     var txUnconfirmedStatus: String {
         switch transaction.type {
         case .redeposit:
-            return "Redepositing".localized
+            return "id_redepositing".localized
         case .incoming:
             return "id_incoming".localized
         case .outgoing:

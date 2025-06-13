@@ -163,11 +163,11 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
     func updateCopy() {
         if session.gdkNetwork.liquid {
-            lbl2faEmptyStateTitle.text = "You don’t have any Liquid 2FA Protected accounts"
-            lbl2faEmptyStateHint.text = "Create a Liquid 2FA protected account if you need to secure more assets, other than Bitcoin."
+            lbl2faEmptyStateTitle.text = "id_you_dont_have_any_liquid_2fa".localized
+            lbl2faEmptyStateHint.text = "id_create_a_liquid_2fa_protected".localized
         } else {
-            lbl2faEmptyStateTitle.text = "You don’t have any Bitcoin 2FA Protected accounts"
-            lbl2faEmptyStateHint.text = "Create a Bitcoin 2FA protected account"
+            lbl2faEmptyStateTitle.text = "id_you_dont_have_any_bitcoin_2fa".localized
+            lbl2faEmptyStateHint.text = "id_create_a_bitcoin_2fa_protected".localized
         }
     }
 
@@ -396,7 +396,7 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
                newCsv != session.settings?.csvtime ?? 0 {
                 setCsvTimeLock(csv: csvTypes[index])
             } else {
-                self.showAlert(title: "Error".localized, message: "Select a new value to change csv")
+                self.showAlert(title: "id_error".localized, message: "id_select_a_new_value_to_change_csv".localized)
             }
         }
     }

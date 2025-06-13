@@ -77,13 +77,13 @@
 		<true/>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Green uses Bluetooth for communication with hardware wallets</string>
+	<string>Blockstream uses Bluetooth for communication with hardware wallets</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Green uses bluetooth to connect to hardware wallets</string>
+	<string>Blockstream uses bluetooth to connect to hardware wallets</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We use the camera to scan QR codes</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Green uses biometric authentication to allow easy access to the wallet</string>
+	<string>Blockstream uses biometric authentication to allow easy access to the wallet</string>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>Enable push notifications for seamless lightning payments. No need to keep your app open to receive.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

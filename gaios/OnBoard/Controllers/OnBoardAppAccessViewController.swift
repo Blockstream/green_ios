@@ -24,13 +24,13 @@ class OnBoardAppAccessViewController: UIViewController {
     }
 
     func setContent() {
-        lblHead.text = "APP ACCESS".localized
-        lblTitle.text = "Select your unlock method".localized
-        lblHint.text = "You need an unlock method to access your wallet and funds. ".localized
-        lblTitleBio.text = hasTouchID ? "TouchID".localized : "FaceID".localized
-        lblHintBio.text =  hasTouchID ? "Device access using TouchID.".localized : "Device access using FaceID.".localized
-        lblTitlePin.text = "PIN".localized
-        lblHintPin.text = "Unlock your wallet using PIN.".localized
+        lblHead.text = "id_app_access".localized
+        lblTitle.text = "id_select_your_unlock_method".localized
+        lblHint.text = "id_you_need_an_unlock_method_to".localized
+        lblTitleBio.text = hasTouchID ? "id_touchid".localized : "id_faceid".localized
+        lblHintBio.text =  hasTouchID ? "id_device_access_using_touchid".localized : "id_device_access_using_faceid".localized
+        lblTitlePin.text = "id_pin".localized
+        lblHintPin.text = "id_unlock_your_wallet_using_pin".localized
         let icName = hasTouchID ? "touchid" : "faceid"
         iconBio.image = UIImage(systemName: icName)?.maskWithColor(color: UIColor.gGrayTxt())
     }

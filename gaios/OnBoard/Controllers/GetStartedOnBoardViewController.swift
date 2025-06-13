@@ -18,9 +18,9 @@ class GetStartedOnBoardViewController: UIViewController {
 
     var actionToButton: ActionToButton?
 
-    let strIAgree = "By using the Blockstream app, you agree to the Terms & Conditions and Privacy Policy.".localized
-    let strTerms = "Terms & Conditions".localized
-    let strPrivacy = "Privacy Policy".localized
+    let strIAgree = "id_by_using_the_blockstream_app".localized
+    let strTerms = "id_terms__conditions".localized
+    let strPrivacy = "id_privacy_policy".localized
 
     var acceptedTerms: Bool {
         get { UserDefaults.standard.bool(forKey: AppStorageConstants.acceptedTerms.rawValue) == true }
@@ -42,7 +42,7 @@ class GetStartedOnBoardViewController: UIViewController {
     func setContent() {
         lblHint.text = "id_everything_you_need_to_take".localized
         btnGetStarted.setTitle("id_get_started".localized, for: .normal)
-        btnConnectJade.setTitle("Connect Jade".localized, for: .normal)
+        btnConnectJade.setTitle("id_connect_jade".localized, for: .normal)
         lblTitle.attributedText = textWithLineSpacing(text: "id_simple__secure_selfcustody".localized, spacing: 0)
     }
 

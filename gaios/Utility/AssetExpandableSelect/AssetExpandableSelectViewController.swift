@@ -38,7 +38,7 @@ class AssetExpandableSelectViewController: KeyboardViewController {
 
     func setContent() {
         title = "id_select_asset".localized
-        searchField.attributedPlaceholder = NSAttributedString(string: "Search Asset".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.4)])
+        searchField.attributedPlaceholder = NSAttributedString(string: "id_search_asset".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.4)])
     }
 
     func setStyle() {

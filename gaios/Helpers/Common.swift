@@ -39,7 +39,7 @@ class Common {
         if currentStr.isEmpty {
             return "id_add_note".localized
         } else {
-            return "Edit Note".localized
+            return "id_edit_note".localized
         }
     }
 }

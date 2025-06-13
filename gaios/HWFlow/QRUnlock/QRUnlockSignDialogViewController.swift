@@ -101,7 +101,7 @@ class QRUnlockSignDialogViewController: UIViewController {
         lblHint.text = "id_unlock_your_jade_to_continue".localized
 
         btnLearn.setTitle("id_learn_more".localized, for: .normal)
-        btnConnect.setTitle("Connect Jade via Bluetooth or USB".localized, for: .normal)
+        btnConnect.setTitle("id_connect_jade".localized, for: .normal)
         btnUnlocked.setTitle("id_jade_already_unlocked".localized, for: .normal)
         btnUnlock.setTitle("id_qr_pin_unlock".localized, for: .normal)
     }

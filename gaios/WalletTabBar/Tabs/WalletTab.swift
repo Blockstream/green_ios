@@ -9,13 +9,13 @@ enum WalletTab: Int, CaseIterable {
     var tabName: String {
         switch self {
         case .home:
-            "Home".localized
+            "id_home".localized
         case .transact:
-            "Transact".localized
+            "id_transact".localized
         case .security:
-            "Security".localized
+            "id_security".localized
         case .settings:
-            "Settings".localized
+            "id_settings".localized
         }
     }
     var tabIcon: UIImage {

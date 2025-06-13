@@ -109,11 +109,11 @@ class TwoFactorAuthViewController: KeyboardViewController {
         lblTitle.text = commontitle
         btnHelp.setTitle("id_help".localized, for: .normal)
         btnCancel.setTitle("id_cancel".localized, for: .normal)
-        lblInfoTitle.text = "Are you not receiving your 2FA code?".localized
-        lblInfoHint.text = "Try again, using another 2FA method.".localized
-        btnInfoEnableCall.setTitle("Enable 2FA Call method".localized, for: .normal)
-        btnInfoRetry.setTitle("Try Again".localized, for: .normal)
-        btnInfoSupport.setTitle("Contact Support".localized, for: .normal)
+        lblInfoTitle.text = "id_are_you_not_receiving_your_2fa".localized
+        lblInfoHint.text = "id_try_again_using_another_2fa".localized
+        btnInfoEnableCall.setTitle("id_enable_2fa_call_method".localized, for: .normal)
+        btnInfoRetry.setTitle("id_try_again".localized, for: .normal)
+        btnInfoSupport.setTitle("id_contact_support".localized, for: .normal)
         updateAttempts()
     }
 

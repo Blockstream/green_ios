@@ -41,9 +41,9 @@ class SetupNewViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = ""
-        lblSubtitle.text = "Create a new wallet to begin your bitcoin journey."
-        btnCta1.setTitle("Setup Mobile Wallet".localized, for: .normal)
-        btnCta2.setStyle(.underline(txt: "Restore from backup".localized, color: UIColor.gAccent()))
+        lblSubtitle.text = "id_create_a_new_wallet_to_begin".localized
+        btnCta1.setTitle("id_setup_mobile_wallet".localized, for: .normal)
+        btnCta2.setStyle(.underline(txt: "id_restore_from_backup".localized, color: UIColor.gAccent()))
         let riveView = RiveModel.createWallet.createRiveView()
         animateView.addSubview(riveView)
         riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)

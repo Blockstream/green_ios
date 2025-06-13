@@ -55,7 +55,7 @@ class SelectProviderCell: UITableViewCell {
             bestView.isHidden = true
             bg.borderColor = .white.withAlphaComponent(0.07)
         }
-        lblReceive.text = "You receive".localized
+        lblReceive.text = "id_you_receive".localized
         lblAmount.text = String(format: "%.8f BTC", model.quote.destinationAmount)
     }
     private func getInitials(from name: String) -> String {

@@ -8,7 +8,6 @@ class DeviceCell: UITableViewCell {
     @IBOutlet weak var lblSubtitle: UILabel!
     @IBOutlet weak var imgIcon: UIImageView!
 
-
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -29,6 +28,6 @@ class DeviceCell: UITableViewCell {
 
     func configure(text: String) {
         lblTitle.text = text
-        lblSubtitle.text = "Found via Bluetooth".localized
+        lblSubtitle.text = "id_found_via_bluetooth".localized
     }
 }

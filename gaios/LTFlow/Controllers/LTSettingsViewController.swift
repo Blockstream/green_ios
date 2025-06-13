@@ -47,11 +47,11 @@ class LTSettingsViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Lightning Network".localized
-        lblSubtitle.text = "Your Lightning account is set".localized
+        lblTitle.text = "id_lightning_network".localized
+        lblSubtitle.text = "id_your_lightning_account_is_set".localized
         btnMnemonic.setTitle("id_show_recovery_phrase".localized, for: .normal)
         btnCloseChannel.setTitle("id_empty_lightning_account".localized, for: .normal)
-        btnDisable.setTitle("Disable Lightning".localized, for: .normal)
+        btnDisable.setTitle("id_disable_lightning".localized, for: .normal)
         btnCloseChannel.isHidden = viewModel.channelsBalance ?? 0 == 0
         btnSweep.isHidden = viewModel.onchainBalanceSatoshi ?? 0 == 0
         if hideActions {

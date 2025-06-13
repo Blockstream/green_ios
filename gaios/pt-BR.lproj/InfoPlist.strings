@@ -1,4 +1,4 @@
-NSFaceIDUsageDescription = "A Green usa autenticação biométrica para facilitar o acesso à carteira";
-NSBluetoothAlwaysUsageDescription = "A Green usa Bluetooth para comunicação com carteiras físicas";
-NSBluetoothPeripheralUsageDescription = "A Green usa bluetooth para conectar-se a carteiras físicas";
+NSFaceIDUsageDescription = "Blockstream uses biometric authentication to allow easy access to the wallet";
+NSBluetoothAlwaysUsageDescription = "Blockstream uses Bluetooth for communication with hardware wallets";
+NSBluetoothPeripheralUsageDescription = "Blockstream uses Bluetooth to connect to hardware wallets";
 NSCameraUsageDescription = "Usamos a câmera para ler códigos QR";

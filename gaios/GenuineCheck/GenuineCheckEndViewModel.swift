@@ -37,13 +37,13 @@ class GenuineCheckEndViewModel {
     var title: String {
         switch state {
         case .cancel:
-            return "Genuine check canceled".localized
+            return "id_genuine_check_canceled".localized
         case .genuine:
-            return "Your Jade is genuine!".localized
+            return "id_your_jade_is_genuine".localized
         case .notGenuine:
-            return "This Jade is not genuine".localized
+            return "id_this_jade_is_not_genuine".localized
         case .progress:
-            return "Authenticate your Jade".localized
+            return "id_authenticate_your_jade".localized
         case .exit:
             return "id_error".localized
         }
@@ -51,31 +51,31 @@ class GenuineCheckEndViewModel {
     var hint: String {
         switch state {
         case .cancel:
-            return "We were unable to complete the genuine check because it was canceled on Jade.".localized
+            return "id_we_were_unable_to_complete_the".localized
         case .genuine:
-            return "Your Jade Plus has been verified and was manufactured by Blockstream.".localized
+            return "id_your_jade_plus_has_been".localized
         case .notGenuine:
-            return "This device was not manufactured by Blockstream. It could be DIY hardware or possibly a malicious clone. Please contact support for more assistance.".localized
+            return "id_this_device_was_not".localized
         case .progress:
-            return "Perform a Genuine Check to ensure that the Jade you received was manufactured by Blockstream.".localized
+            return "id_perform_a_genuine_check_to".localized
         case .exit:
             return ""
         }
     }
     var btnDIY: String {
-        return "Continue as DIY".localized
+        return "id_continue_as_diy".localized
     }
     var btnSupport: String {
-        return "Contact Support".localized
+        return "id_contact_support".localized
     }
     var btnContinue: String {
-        return "Continue with Jade".localized
+        return "id_continue_with_jade".localized
     }
     var btnCancel: String {
-        return "Skip".localized
+        return "id_skip".localized
     }
     var btnRetry: String {
-        return "Retry".localized
+        return "id_try_again".localized
     }
     var lblInfo: String {
         return "id_confirm_on_your_device".localized

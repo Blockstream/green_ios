@@ -120,7 +120,7 @@ class LTInvitationViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Enable Experimental Feature".localized
+        lblTitle.text = "id_enable_experimental_features".localized
         lblHint.text = "Paste or type your code"
         btnConfirm.setTitle("Confirm", for: .normal)
     }

@@ -60,15 +60,15 @@ class PinServerWarnViewController: UIViewController {
     }
 
     func setContent() {
-        lblAlertHead.text = "Warning!".localized
-        lblAlertTitle.text = "Connection Blocked".localized
+        lblAlertHead.text = "id_warning".localized
+        lblAlertTitle.text = "id_connection_blocked".localized
 
         lblAdvHead.text = "Connection attempt to:\n".localized + domains.joined(separator: ", ")
-        lblAdvTitle.text = "This is not the default blind PIN oracle".localized
-        btnSupport.setTitle("Contact Support".localized, for: .normal)
-        btnAdvanced.setTitle("Advanced".localized, for: .normal)
-        btnConnect.setTitle("Allow Non-Default Connection".localized, for: .normal)
-        lblAskTitle.text = "Don't ask again for this oracle".localized
+        lblAdvTitle.text = "id_this_is_not_the_default_blind".localized
+        btnSupport.setTitle("id_contact_support".localized, for: .normal)
+        btnAdvanced.setTitle("id_advanced".localized, for: .normal)
+        btnConnect.setTitle("id_allow_nondefault_connection".localized, for: .normal)
+        lblAskTitle.text = "id_dont_ask_me_again_for_this".localized
         btnClose.setImage(UIImage(named: "cancel")?.maskWithColor(color: .white), for: .normal)
     }
 
@@ -106,9 +106,9 @@ class PinServerWarnViewController: UIViewController {
         askView.isHidden = !showAdvanced
 
         if showAdvanced {
-            lblAlertHint.text = "If you did not change your oracle settings on Jade, do not proceed and contact Blockstream support.".localized
+            lblAlertHint.text = "id_if_you_did_not_change_your".localized
         } else {
-            lblAlertHint.text = "Jade is trying to connect to a non-default blind PIN oracle. Contact support immediately for further information.".localized
+            lblAlertHint.text = "id_jade_is_trying_to_connect_to_a".localized
         }
     }
 

@@ -5,9 +5,9 @@ struct WelcomeViewModel {
     let hint: String
     let nextButtonTitle: String
     init() {
-        self.title = "Welcome to Blockstream!".localized
-        self.hint = "Your wallet has been created.".localized
-        self.nextButtonTitle = "Continue".localized
+        self.title = "id_welcome_to_blockstream".localized
+        self.hint = "id_your_wallet_has_been_created".localized
+        self.nextButtonTitle = "id_continue".localized
     }
 }
 class WelcomeView: UIView {

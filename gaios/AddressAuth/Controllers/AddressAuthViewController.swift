@@ -57,14 +57,14 @@ class AddressAuthViewController: KeyboardViewController {
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(callPullToRefresh(_:)), for: .valueChanged)
-        searchField.attributedPlaceholder = NSAttributedString(string: "Search", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.4)])
+        searchField.attributedPlaceholder = NSAttributedString(string: "id_search".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.4)])
     }
 
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
         settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         settingsBtn.tintColor = UIColor.gAccent()
-        settingsBtn.setTitle("Export".localized, for: .normal)
+        settingsBtn.setTitle("id_export".localized, for: .normal)
         settingsBtn.addTarget(self, action: #selector(exportBtnTapped), for: .touchUpInside)
         // navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
     }

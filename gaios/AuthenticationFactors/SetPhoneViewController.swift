@@ -45,14 +45,14 @@ class SetPhoneViewController: KeyboardViewController {
         }
     }
 
-    let strIAgree = "By continuing you agree to Blockstream's Terms of Service and Privacy Policy".localized
-    let strTerms = "Terms of Service".localized
-    let strPrivacy = "Privacy Policy".localized
+    let strIAgree = "id_by_continuing_you_agree_to".localized
+    let strTerms = "id_terms_of_service".localized
+    let strPrivacy = "id_privacy_policy".localized
 
-    let strFrequency = "Message frequency varies according to the number of 2FA SMS requests you make.".localized
+    let strFrequency = "id_message_frequency_varies".localized
 
-    let strHelp = "For help visit help.blockstream.com To unsubscribe turn off SMS 2FA from the app. Standard messages and data rates may apply.".localized
-    let strBlockcom = "help.blockstream.com".localized
+    let strHelp = "id_for_help_visit".localized
+    let strBlockcom = "id_helpblockstreamcom".localized
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,8 +82,8 @@ class SetPhoneViewController: KeyboardViewController {
     func setContent() {
 
         iconNetwork.image = icon
-        title = "Two-Factor Setup".localized
-        lblTitle.text = "Multisig".localized
+        title = "id_twofactor_setup".localized
+        lblTitle.text = "id_multisig".localized
         lblHint.text = "id_insert_your_phone_number_to".localized
         countryCodeField.attributedPlaceholder = NSAttributedString(string: "id_country".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
         textField.attributedPlaceholder = NSAttributedString(string: "id_phone_number".localized.capitalized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])

@@ -31,7 +31,7 @@ class AssetSelectViewController: UIViewController {
     }
 
     func setContent() {
-        searchField.attributedPlaceholder = NSAttributedString(string: "Search Asset", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.4)])
+        searchField.attributedPlaceholder = NSAttributedString(string: "id_search_asset".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.4)])
     }
 
     func setStyle() {

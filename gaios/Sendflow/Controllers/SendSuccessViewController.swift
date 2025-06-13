@@ -40,9 +40,9 @@ class SendSuccessViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Transaction successful!".localized
+        lblTitle.text = "id_transaction_successful".localized
         btnDone.setTitle("id_done".localized, for: .normal)
-        btnShare.setTitle("Share Link".localized, for: .normal)
+        btnShare.setTitle("id_share_link".localized, for: .normal)
 
         if isLightning ?? false {
             btnTxId.isHidden = true
@@ -56,7 +56,7 @@ class SendSuccessViewController: UIViewController {
         } else {
             btnTxId.setTitle("\("id_transaction_id".localized):", for: .normal)
             lblAddress.text = sendTransactionSuccess.txHash
-            btnShare.setTitle("Share Link".localized, for: .normal)
+            btnShare.setTitle("id_share_link".localized, for: .normal)
         }
     }
 

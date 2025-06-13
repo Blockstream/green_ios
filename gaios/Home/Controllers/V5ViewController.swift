@@ -10,9 +10,9 @@ class V5ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        lblTitle.text = "Green is now the Blockstream app".localized
-        lblHint.text = "We’ve redesigned the app to make it faster, easier, and even more secure. All your settings and funds are right where you left them.".localized
-        btnGetStarted.setTitle("Get Started".localized, for: .normal)
+        lblTitle.text = "id_green_is_now_the_blockstream_app".localized
+        lblHint.text = "id_weve_redesigned_the_app_to_make".localized
+        btnGetStarted.setTitle("id_get_started".localized, for: .normal)
         lblTitle.setStyle(.subTitle)
         lblHint.setStyle(.txtCard)
         btnGetStarted.setStyle(.primary)

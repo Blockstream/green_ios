@@ -46,7 +46,7 @@ class SendFailViewController: UIViewController {
         lblTitle.text = "id_transaction_failed".localized
         errorTextView.text = error.description().localized
         btnAgain.setTitle("id_try_again".localized, for: .normal)
-        btnSupport.setTitle("Contact Support".localized, for: .normal)
+        btnSupport.setTitle("id_contact_support".localized, for: .normal)
     }
 
     func setStyle() {

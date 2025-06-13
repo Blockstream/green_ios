@@ -60,7 +60,7 @@ class HomeViewController: UIViewController {
 
     func setContent() {
         lblNewWallet.text = "id_setup_a_new_wallet".localized
-        lblWallets.text = "My Wallets".localized
+        lblWallets.text = "id_my_wallets".localized
     }
 
     func setStyle() {
@@ -429,7 +429,7 @@ extension HomeViewController: DialogRenameViewControllerDelegate, DialogDeleteVi
     func didDelete(_ index: String?) {
         if let index = index, let account = AccountsRepository.shared.get(for: index) {
             Task {
-                self.startLoader(message: "Removing wallet…".localized)
+                self.startLoader(message: "id_removing_wallet".localized)
                 await AccountsRepository.shared.remove(account)
                 await MainActor.run {
                     self.stopLoader()

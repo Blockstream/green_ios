@@ -37,12 +37,12 @@ class WalletListCell: UITableViewCell {
         lblTitle.setStyle(.txtBigger)
         lblHint.setStyle(.txtCard)
         account = item
-        lblHint.text = "Mobile Wallet".localized
+        lblHint.text = "id_mobile_wallet".localized
         if account?.isHW ?? false {
-            lblHint.text = "Hardware Wallet".localized
+            lblHint.text = "id_hardware_wallet".localized
         }
         if account?.isWatchonly ?? false {
-            lblHint.text = "Watch-only".localized
+            lblHint.text = "id_watchonly".localized
         }
         if let ephemeralId = item.ephemeralId {
             lblHint.text = "BIP39 #\( ephemeralId )"

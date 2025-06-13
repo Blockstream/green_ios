@@ -155,7 +155,7 @@ class SecuritySelectViewModel {
             }
             return account
         } else {
-           throw GaError.GenericError("Invalid session")
+            throw GaError.GenericError("id_invalid_session".localized)
         }
     }
 
@@ -173,7 +173,7 @@ class SecuritySelectViewModel {
             let credentials = try await prominentSession.getCredentials(password: "")
             return try await registerSession(session: session, credentials: credentials)
         } else {
-            throw GaError.GenericError("Invalid session")
+            throw GaError.GenericError("id_invalid_session".localized)
         }
     }
 

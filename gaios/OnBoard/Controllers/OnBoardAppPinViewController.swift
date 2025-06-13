@@ -17,12 +17,12 @@ class OnBoardAppPinViewController: UIViewController {
     }
 
     func setContent() {
-        lblHead.text = "PIN".localized
-        lblTitle.text = "Enable PIN to protect your wallet".localized
-        lblHint1.text = "This ensures a secure way to access your wallet.".localized
-        lblHint2.text = "Warning: If you forget your PIN and have not enabled biometrics or a recovery method, you will lose access to funds.".localized
-        btnPin.setTitle("Setup PIN".localized, for: .normal)
-        btnMore.setTitle("Learn more".localized, for: .normal)
+        lblHead.text = "id_pin".localized
+        lblTitle.text = "id_enable_pin_to_protect_your".localized
+        lblHint1.text = "id_this_ensures_a_secure_way_to".localized
+        lblHint2.text = "id_warning_if_you_forget_your_pin".localized
+        btnPin.setTitle("id_setup_pin".localized, for: .normal)
+        btnMore.setTitle("id_learn_more".localized, for: .normal)
     }
 
     func setStyle() {

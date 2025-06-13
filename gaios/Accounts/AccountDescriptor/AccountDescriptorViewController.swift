@@ -19,7 +19,7 @@ class AccountDescriptorViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "Watch-only".localized
+        title = "id_watchonly".localized
         register()
         setContent()
     }

@@ -37,8 +37,8 @@ class ShowMnemonicsViewController: UIViewController {
         }
         NotificationCenter.default.addObserver(forName: UIApplication.userDidTakeScreenshotNotification, object: nil, queue: OperationQueue.main) { notification in
             let alert = UIAlertController(title: "Warning", message: "We prevent sensitive information from being copied to the clipboard or captured in a screenshot. Please copy it manually.", preferredStyle: .alert)
-            
-            let ok = UIAlertAction(title: "OK", style: .default, handler: { action in
+
+            let ok = UIAlertAction(title: "id_ok".localized, style: .default, handler: { action in
             })
             alert.addAction(ok)
             DispatchQueue.main.async(execute: {
@@ -84,9 +84,9 @@ class ShowMnemonicsViewController: UIViewController {
 
     func setContent() {
         // title = "id_recovery_phrase".localized
-        lblInfo.text = "RECOVERY METHOD".localized
-        lblTitle.text = "Recovery Phrase Check".localized
-        lblHint.text = "Make sure to be in a private and safe space".localized
+        lblInfo.text = "id_recovery_method".localized.uppercased()
+        lblTitle.text = "id_recovery_phrase_check".localized
+        lblHint.text = "id_make_sure_to_be_in_a_private".localized
     }
     func setStyle() {
         lblInfo.setStyle(.txtSmaller)

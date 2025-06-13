@@ -78,7 +78,7 @@ class SendAddressInputViewModel {
 
     private func parseGdk(for session: SessionManager, input: String) async throws -> CreateTx? {
         guard let prominentSession = wm?.prominentSession else {
-            throw TransactionError.invalid(localizedDescription: "Invalid session")
+            throw TransactionError.invalid(localizedDescription: "id_invalid_session".localized)
         }
         let feeAsset = session.gdkNetwork.getFeeAsset()
         let res = try await prominentSession.parseTxInput(input, satoshi: nil, assetId: feeAsset, network: session.networkType)
@@ -188,7 +188,7 @@ class SendAddressInputViewModel {
             return
         }
         if txType == .psbt {
-            throw TransactionError.invalid(localizedDescription: "Invalid psbt".localized)
+            throw TransactionError.invalid(localizedDescription: "id_invalid_psbt".localized)
         }
         throw TransactionError.invalid(localizedDescription: "id_invalid_address".localized)
     }

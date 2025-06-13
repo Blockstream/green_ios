@@ -72,7 +72,7 @@ class LangSelectViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Language".localized
+        lblTitle.text = "id_language".localized
     }
 
     func setStyle() {
@@ -139,9 +139,9 @@ class LangSelectViewController: UIViewController {
 
     func showChangeLangAlert(_ idx: Int) {
         if let newLang = viewModel.newLang(idx) {
-            let alert = UIAlertController(title: "Change Language to \(newLang.name)".localized, message: "The app will be reinitiated".localized, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Cancel".localized, style: .cancel, handler: nil))
-            alert.addAction(UIAlertAction(title: "Ok".localized, style: .default, handler: { [weak self] _ in
+            let alert = UIAlertController(title: "Change Language to \(newLang.name)".localized, message: "id_the_app_will_be_restarted".localized, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel, handler: nil))
+            alert.addAction(UIAlertAction(title: "id_ok".localized, style: .default, handler: { [weak self] _ in
                 self?.viewModel.update(idx)
                 self?.tableView.reloadData {
                     self?.reInit()
@@ -152,9 +152,9 @@ class LangSelectViewController: UIViewController {
     }
 
     func showResetToSystemLanguage() {
-        let alert = UIAlertController(title: "Reset language to system default".localized, message: "The app will be reinitiated".localized, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Cancel".localized, style: .cancel, handler: nil))
-        alert.addAction(UIAlertAction(title: "Ok".localized, style: .default, handler: { [weak self] _ in
+        let alert = UIAlertController(title: "id_reset_language_to_system_default".localized, message: "id_the_app_will_be_restarted".localized, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "id_ok".localized, style: .default, handler: { [weak self] _ in
             self?.viewModel.resetToSystemLanguage()
             self?.tableView.reloadData {
                 self?.reInit()
@@ -185,7 +185,7 @@ extension LangSelectViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch indexPath.section {
         case LangSelectSection.reset.rawValue:
-            let model = LangCellModel(title: "Reset to system default".localized, hint: "", isCurrent: false)
+            let model = LangCellModel(title: "id_reset_to_system_default".localized, hint: "", isCurrent: false)
             if let cell = tableView.dequeueReusableCell(withIdentifier: LangCell.identifier, for: indexPath) as? LangCell {
                 cell.configure(model)
                 cell.selectionStyle = .none

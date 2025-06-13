@@ -218,17 +218,17 @@ extension DialogNodeViewController: UITableViewDelegate, UITableViewDataSource {
             case .channelsBalance:
                 cell.configureAmount("id_account_balance".localized, viewModel.channelsBalance, hideBalance)
             case .inboundLiquidity:
-                cell.configureAmount("Inbound Liquidity".localized, viewModel.inboundLiquidity, hideBalance)
+                cell.configureAmount("id_inbound_liquidity".localized, viewModel.inboundLiquidity, hideBalance)
             case .maxPayble:
-                cell.configureAmount("Max Payable Amount".localized, viewModel.maxPayble, hideBalance)
+                cell.configureAmount("id_max_payable_amount".localized, viewModel.maxPayble, hideBalance)
             case .maxSinglePaymentAmount:
-                cell.configureAmount("Max Single Payment Amount".localized, viewModel.maxSinglePaymentAmount, hideBalance)
+                cell.configureAmount("id_max_single_payment_amount".localized, viewModel.maxSinglePaymentAmount, hideBalance)
             case .maxReceivable:
-                cell.configureAmount("Max Receivable Amount".localized, viewModel.maxReceivable, hideBalance)
+                cell.configureAmount("id_max_receivable_amount".localized, viewModel.maxReceivable, hideBalance)
             case .connectedPeers:
-                cell.configure("Connected Peers".localized, viewModel.connectedPeers, true)
+                cell.configure("id_connected_peers".localized, viewModel.connectedPeers, true)
             case .blockHeight:
-                cell.configure("Block Height".localized, "\(viewModel.blockHeight ?? 0)", false)
+                cell.configure("id_block_height".localized, "\(viewModel.blockHeight ?? 0)", false)
             }
             return cell
         }

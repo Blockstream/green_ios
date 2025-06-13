@@ -36,40 +36,40 @@ class EditProtectionViewController: UIViewController {
         switch protectionType {
         case .pin:
             icon.image = UIImage(named: "ic_edit_protection_pin")
-            lblTitle.text = "PIN".localized
-            lblHint.text = "Warning: If you forget your PIN and have not enabled biometrics or a recovery method, you will lose access to funds.".localized
+            lblTitle.text = "id_pin".localized
+            lblHint.text = "id_warning_if_you_forget_your_pin".localized
             lblHint.isHidden = false
             switch protectionAction {
             case .enable:
-                btnNext.setTitle("Enable".localized, for: .normal)
+                btnNext.setTitle("id_enable".localized, for: .normal)
             case .disable:
                 break
             case .change:
-                btnNext.setTitle("Change PIN".localized, for: .normal)
+                btnNext.setTitle("id_change_pin".localized, for: .normal)
             }
         case .faceID:
             icon.image = UIImage(systemName: "faceid")
             icon.tintColor = .white
-            lblTitle.text = "FaceID".localized
+            lblTitle.text = "id_faceid".localized
             lblHint.isHidden = true
             switch protectionAction {
             case .enable:
-                btnNext.setTitle("Enable".localized, for: .normal)
+                btnNext.setTitle("id_enable".localized, for: .normal)
             case .disable:
-                btnNext.setTitle("Disable".localized, for: .normal)
+                btnNext.setTitle("id_disable".localized, for: .normal)
             case .change:
                 break
             }
         case .touchID:
             icon.image = UIImage(systemName: "touchid")
             icon.tintColor = .white
-            lblTitle.text = "Touch ID".localized
+            lblTitle.text = "id_touch_id".localized
             lblHint.isHidden = true
             switch protectionAction {
             case .enable:
-                btnNext.setTitle("Enable".localized, for: .normal)
+                btnNext.setTitle("id_enable".localized, for: .normal)
             case .disable:
-                btnNext.setTitle("Disable".localized, for: .normal)
+                btnNext.setTitle("id_disable".localized, for: .normal)
             case .change:
                 break
             }
@@ -108,8 +108,8 @@ class EditProtectionViewController: UIViewController {
     func changeBiometricAuthentication(enable: Bool) async {
         if !enable && !(WalletManager.current?.account.hasManualPin ?? false) {
             showAlert(
-                title: (protectionType == .faceID ? "Face ID" : "Touch ID"),
-                message: "Enable PIN before disabling " + (protectionType == .faceID ? "Face ID" : "Touch ID"))
+                title: (protectionType == .faceID ? "id_face_id".localized : "id_touch_id".localized),
+                message: "Enable PIN before disabling " + (protectionType == .faceID ? "id_face_id".localized : "id_touch_id".localized))
             return
         }
         let task = Task.detached { [weak self] in

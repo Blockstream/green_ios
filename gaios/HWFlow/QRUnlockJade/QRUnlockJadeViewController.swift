@@ -89,9 +89,9 @@ class QRUnlockJadeViewController: UIViewController {
         btnNext.isHidden = !vm.showQRCode()
         progress.isHidden = true
         lblStep.isHidden = false
-        lblUserHelpTitle.text = "Import PubKey".localized
+        lblUserHelpTitle.text = "id_import_pubkey".localized
         lblUserHelpHint.text = "id_navigate_on_your_jade_to".localized
-        btnUserHelpScan.setTitle("Scan PubKey".localized, for: .normal)
+        btnUserHelpScan.setTitle("id_scan_pubkey".localized, for: .normal)
         btnUserHelpLearn.setTitle("id_learn_more".localized, for: .normal)
     }
 

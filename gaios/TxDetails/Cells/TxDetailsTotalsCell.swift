@@ -45,7 +45,7 @@ class TxDetailsTotalsCell: UITableViewCell {
 
     func setContent() {
         lblSumFeeKey.text = "id_network_fee".localized
-        lblSumAmountKey.text = "Recipient Receives".localized
+        lblSumAmountKey.text = "id_recipient_receives".localized
         lblSumTotalKey.text = "id_total_spent".localized
     }
 

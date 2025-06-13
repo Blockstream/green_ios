@@ -32,8 +32,8 @@ class ReEnable2faSuccessViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "2FA Reactivated!".localized
-        lblHint.text = "Your coins are protected by 2FA again!".localized
+        lblTitle.text = "id_2fa_reactivated".localized
+        lblHint.text = "id_your_coins_are_protected_by_2fa".localized
         btnDone.setTitle("id_done".localized, for: .normal)
     }
 

@@ -34,7 +34,7 @@ class QRUnlockJadeViewModel {
         case .handshakeInitReply:
             return "\("id_step".localized) 2".uppercased()
         case .xpub:
-            return "Export Xpub".localized.uppercased()
+            return "id_export_xpub".localized.uppercased()
         }
     }
 

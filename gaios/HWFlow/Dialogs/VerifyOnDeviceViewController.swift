@@ -91,7 +91,7 @@ class HWDialogVerifyOnDeviceViewController: UIViewController {
         copyView.isHidden = false
         lblTitle.text = "id_verify_on_device".localized
         if viewModel.isRedeposit {
-            lblTitle.text = "Verify redeposit address".localized
+            lblTitle.text = "id_verify_redeposit_address".localized
             copyView.isHidden = true
         }
         lblHint.text = "id_please_verify_that_the_address".localized

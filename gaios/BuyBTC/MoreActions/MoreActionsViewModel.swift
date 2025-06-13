@@ -6,11 +6,11 @@ enum BuyMoreActions: CaseIterable {
     var title: String {
         switch self {
         case .verify:
-            return "Verify Address".localized
+            return "id_verify_address".localized
         }
     }
 }
 class MoreActionsViewModel {
-    var title = "More actions".localized
+    var title = "id_more_actions".localized
     var actions = BuyMoreActions.allCases
 }

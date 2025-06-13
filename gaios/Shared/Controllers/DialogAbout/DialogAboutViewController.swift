@@ -174,7 +174,7 @@ class DialogAboutViewController: KeyboardViewController {
         var msg = "ID not available"
         if let uuid = UserDefaults.standard.string(forKey: AppStorageConstants.analyticsUUID.rawValue) {
             UIPasteboard.general.string = uuid
-            msg = "UUID copied to clipboard".localized
+            msg = "id_uuid_copied_to_clipboard".localized
         }
         DropAlert().info(message: msg, delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
@@ -230,7 +230,7 @@ extension DialogAboutViewController: UITableViewDelegate, UITableViewDataSource 
             case 0:
                 cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "id_give_us_your_feedback".localized))
             case 1:
-                cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "Get Support".localized))
+                cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "id_get_support".localized))
             case 2:
                 cell.configure(model: DialogListCellModel(type: .list, icon: nil, title: "id_visit_the_blockstream_help".localized))
             case 3:

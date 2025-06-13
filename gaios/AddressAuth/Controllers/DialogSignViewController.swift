@@ -95,12 +95,12 @@ class DialogSignViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Authenticate Address"
+        lblTitle.text = "id_authenticate_address".localized
         btnPaste.setTitle("id_paste".localized, for: .normal)
-        btnSign.setTitle("Sign message", for: .normal)
-        btnCopy.setTitle("Copy Signature", for: .normal)
+        btnSign.setTitle("id_sign_message".localized, for: .normal)
+        btnCopy.setTitle("id_copy_signature".localized, for: .normal)
         lblSign.text = ""
-        lblSignMessage.text = "This is the signature for the message signed by the address for proof of ownership.".localized
+        lblSignMessage.text = "id_this_is_the_signature_for_the".localized
     }
 
     func setStyle() {

@@ -67,9 +67,9 @@ class ConnectViewController: HWFlowBaseViewController {
             retryButton.isHidden = false
             retryWoButton.isHidden = !hasCredentials
             if hasCredentials {
-                progress("Try Face ID again or enter your PIN to unlock your wallet.")
+                progress("id_try_face_id_again_or_enter_your".localized)
             } else {
-                progress("Enter your PIN to unlock your wallet.")
+                progress("id_enter_your_pin".localized)
             }
         case .scan:
             progressView.isHidden = false
@@ -117,7 +117,7 @@ class ConnectViewController: HWFlowBaseViewController {
             progressView.isHidden = true
             retryButton.isHidden = false
             retryWoButton.isHidden = !hasCredentials
-            lblSubtitle.text = "Try Face ID again or connect with Bluetooth to access your wallet.".localized
+            lblSubtitle.text = "id_try_face_id_again_or_connect".localized
         case .error(let err):
             progressView.isHidden = true
             retryButton.isHidden = false

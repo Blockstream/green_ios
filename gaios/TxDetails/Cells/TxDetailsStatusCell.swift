@@ -274,7 +274,7 @@ class TxDetailsStatusCell: UITableViewCell {
             lblSpv.text = "id_not_on_longest_chain".localized
         default:
             lblSpv.textColor = UIColor.gW60()
-            lblSpv.text = "Verifying…".localized
+            lblSpv.text = "id_verifying".localized
         }
     }
 }

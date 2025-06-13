@@ -45,7 +45,7 @@ enum WalletPrefs: Int, CaseIterable {
         case .archive:
             return "id_view_archived_accounts".localized
         case .contact:
-            return "Get Support".localized
+            return "id_get_support".localized
         }
     }
 

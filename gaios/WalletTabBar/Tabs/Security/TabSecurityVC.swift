@@ -287,7 +287,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
 
         case .header:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
-                cell.configure(title: "Security".localized, icon: walletModel.headerIcon, tab: .security, onTap: {[weak self] in
+                cell.configure(title: "id_security".localized, icon: walletModel.headerIcon, tab: .security, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
                 })
                 cell.selectionStyle = .none
@@ -399,11 +399,11 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
 
         switch TabSecuritySection(rawValue: section) {
         case .jade:
-            return jadeCellModel.count > 0 ? sectionHeader("Your Jade".localized) : nil
+            return jadeCellModel.count > 0 ? sectionHeader("id_your_jade".localized) : nil
         case .unlock:
-            return unlockCellModel.count > 0 ? sectionHeader("View Balance".localized) : nil
+            return unlockCellModel.count > 0 ? sectionHeader("id_view_balance".localized) : nil
         case .recovery:
-            return recoveryCellModel.count > 0 ? sectionHeader("Recovery method".localized) : nil
+            return recoveryCellModel.count > 0 ? sectionHeader("id_recovery_method".localized) : nil
         default:
             return nil
         }

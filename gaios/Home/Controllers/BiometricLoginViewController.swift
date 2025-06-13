@@ -30,8 +30,8 @@ class BiometricLoginViewController: UIViewController {
 
     func setContent() {
         titleLabel.text = account.name.localized
-        subtitleLabel.text = "Try Face ID again or enter your PIN to unlock your wallet.".localized
-        let attrTitle = NSAttributedString(string: "Type PIN".localized, attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
+        subtitleLabel.text = "id_try_face_id_again_or_enter_your".localized
+        let attrTitle = NSAttributedString(string: "id_type_pin".localized, attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
         pinButton.setAttributedTitle(attrTitle, for: .normal)
         pinButton.isHidden = !account.hasManualPin
         biometricButton.setTitle("", for: .normal)
@@ -129,7 +129,7 @@ class BiometricLoginViewController: UIViewController {
         case .DeniedByUser:
             presentAlertDialogFaceId()
         case .LockedOut:
-            presentBioAuthError("Too many attempts. Retry later".localized)
+            presentBioAuthError("id_too_many_attempts_retry_later".localized)
         case .CanceledByUser:
             break
         case .KeychainError:
@@ -137,12 +137,12 @@ class BiometricLoginViewController: UIViewController {
         case .SecurityError(let desc):
             presentBioAuthError(desc)
         case .PasscodeNotSet:
-            presentBioAuthError("Passcode not set".localized, enableReset: false)
+            presentBioAuthError("id_passcode_not_set".localized, enableReset: false)
         case .NotSupported:
-            presentBioAuthError("Auth not supported".localized, enableReset: false)
+            presentBioAuthError("id_auth_not_supported".localized, enableReset: false)
         case .ServiceNotAvailable:
             if AuthenticationTypeHandler.biometryType == .faceID || AuthenticationTypeHandler.biometryType == .touchID {
-                let method = AuthenticationTypeHandler.biometryType == .faceID ? "Face ID" : "Touch ID"
+                let method = AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id".localized : "id_touch_id".localized
                 let msg = "\(method) is not available.  It may have been set in a version prior to 4.1.8 and became unavailable after the app was uninstalled. Use your PIN to access and enable faceID again."
                 presentBioAuthError(msg.localized, enableReset: false)
             } else {
@@ -217,7 +217,7 @@ class BiometricLoginViewController: UIViewController {
     func presentAlertDialogFaceId() {
         let msg = "Biometric access disabled. Enable it from iOS settings"
         let alert = UIAlertController(title: "id_warning".localized, message: msg, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Open Settings".localized, style: .default) { _ in
+        alert.addAction(UIAlertAction(title: "id_open_settings".localized, style: .default) { _ in
             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
         })
         alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .destructive) { _ in })

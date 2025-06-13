@@ -25,7 +25,7 @@ enum AccountPrefs {
         case .nodeInfo:
             return "id_node_info".localized
         case .background:
-            return "Enable background payment".localized
+            return "id_enable_background_payment".localized
         case .logout:
             return "id_logout".localized
         case .settings:

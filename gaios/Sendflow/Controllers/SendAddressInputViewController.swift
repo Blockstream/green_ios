@@ -70,7 +70,7 @@ class SendAddressInputViewController: KeyboardViewController {
         if viewModel.txType == .sweep {
             lblPlaceholder.text = "id_enter_a_private_key_to_sweep".localized
         } else {
-            lblPlaceholder.text = "Enter an address or invoice".localized
+            lblPlaceholder.text = "id_enter_an_address_or_invoice".localized
         }
         addressTextView.textContainer.maximumNumberOfLines = 8
         addressTextView.textContainer.lineBreakMode = .byTruncatingTail

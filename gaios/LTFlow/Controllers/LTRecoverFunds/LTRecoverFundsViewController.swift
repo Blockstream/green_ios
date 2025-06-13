@@ -139,7 +139,7 @@ class LTRecoverFundsViewController: KeyboardViewController {
         case .sweep:
             title = "id_sweep".localized
         case .sendAll:
-            title = "Empty Lightning Account".localized
+            title = "id_empty_lightning_account".localized
         }
         squareSliderView.delegate = self
     }
@@ -210,7 +210,7 @@ class LTRecoverFundsViewController: KeyboardViewController {
                 vc.viewModel = AlertViewModel(title: "id_sweep".localized,
                                               hint: "id_transaction_sent".localized)
             case .sendAll:
-                vc.viewModel = AlertViewModel(title: "Empty Lightning Account".localized,
+                vc.viewModel = AlertViewModel(title: "id_empty_lightning_account".localized,
                                               hint: "id_transaction_sent".localized)
             }
             vc.delegate = self
@@ -336,7 +336,7 @@ extension LTRecoverFundsViewController: UITableViewDelegate, UITableViewDataSour
         case .fee:
             return headerView("id_network_fee".localized)
         case .summary:
-            return headerView("Amount to be refounded".localized)
+            return headerView("id_amount_to_be_refunded".localized)
         case .error:
             return nil
         default:

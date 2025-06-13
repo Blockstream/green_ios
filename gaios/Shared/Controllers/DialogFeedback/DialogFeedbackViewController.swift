@@ -115,7 +115,7 @@ class DialogFeedbackViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = isLightningScope ? "Send Error Report" : "id_give_us_your_feedback".localized
+        lblTitle.text = isLightningScope ? "id_send_error_report".localized : "id_give_us_your_feedback".localized
         btnSend.setTitle("id_send".localized, for: .normal)
         btnCopy.setTitle("id_copy".localized, for: .normal)
         emailField.attributedPlaceholder = NSAttributedString(

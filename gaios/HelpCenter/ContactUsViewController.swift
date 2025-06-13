@@ -77,19 +77,19 @@ class ContactUsViewController: KeyboardViewController {
     }
 
     func setContent() {
-        title = "Contact Us".localized
-        lblModalTitle.text = "Contact Us".localized
-        lblHint.text = "Please be as detailed as possible when describing the issue.".localized
+        title = "id_contact_us".localized
+        lblModalTitle.text = "id_contact_us".localized
+        lblHint.text = "id_please_be_as_detailed_as".localized
         btnSubmit.setTitle("id_submit".localized, for: .normal)
-        emailField.attributedPlaceholder = NSAttributedString(string: "Email address".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.4)])
-        lblPlaceMessage.text = "Issue description".localized
+        emailField.attributedPlaceholder = NSAttributedString(string: "id_email_address".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.4)])
+        lblPlaceMessage.text = "id_issue_description".localized
         lblLogs.text = "id_share_logs".localized
-        lblTor.text = "I understand that asking for support through Tor will reduce my anonymity".localized
-        lblPubkey.text = "Share pubkey/descriptors".localized
-        lblSettings.text = "Share App Settings".localized
+        lblTor.text = "id_i_understand_that_asking_for".localized
+        lblPubkey.text = "id_share_pubkeydescriptors".localized
+        lblSettings.text = "id_share_app_settings".localized
         btnScreenRecord.setTitle("Take a screen recording".localized, for: .normal)
-        btnScreenshot.setTitle("Take a screenshot".localized, for: .normal)
-        btnGallery.setTitle("Upload from gallery".localized, for: .normal)
+        btnScreenshot.setTitle("id_take_a_screenshot".localized, for: .normal)
+        btnGallery.setTitle("id_upload_from_gallery".localized, for: .normal)
         btnCopy.setTitle("id_copy_to_clipboard".localized, for: .normal)
         [btnScreenRecord, btnScreenshot, btnGallery].forEach {
             $0?.isHidden = true
@@ -157,7 +157,7 @@ class ContactUsViewController: KeyboardViewController {
             stopLoader()
             switch res {
             case .success:
-                let viewModel = AlertViewModel(title: "Support Request Created".localized,
+                let viewModel = AlertViewModel(title: "id_support_request_created".localized,
                                                hint: "You will receive an email from Blockstream Support")
                 let storyboard = UIStoryboard(name: "Alert", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "AlertViewController") as? AlertViewController {

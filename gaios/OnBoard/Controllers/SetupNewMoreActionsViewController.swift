@@ -6,12 +6,12 @@ enum SetupNewMoreActions: CaseIterable {
     var title: String {
         switch self {
         case .watchonly:
-            return "Set up watch-only".localized
+            return "id_set_up_watchonly".localized
         }
     }
 }
 class SetupNewMoreActionsViewModel {
-    var title = "More actions".localized
+    var title = "id_more_actions".localized
     var actions = SetupNewMoreActions.allCases
 }
 

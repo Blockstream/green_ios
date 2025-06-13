@@ -193,11 +193,11 @@ class SendAmountViewController: KeyboardViewController {
     func setContent() {
         title = "id_amount".localized
         btnNext.setTitle("id_next".localized, for: .normal)
-        lblPayRequestTitle.text = "Payment request of".localized
+        lblPayRequestTitle.text = "id_payment_request_of".localized
         lblMultiAssetTitle.text = ""
         lblMultiAssetHint.text = "id_multiple_assets".localized
-        lblMultiAssetInfo.text = "The amount can’t be changed.".localized
-        lblRedepositNoEdit.text = "The amount can’t be changed.".localized
+        lblMultiAssetInfo.text = "id_the_amount_cant_be_changed".localized
+        lblRedepositNoEdit.text = "id_the_amount_cant_be_changed".localized
 
         lblWithdrawTitle.text = String(format: "id_you_are_redeeming_funds_from_s".localized, "\n\(withdrawData?.domain ?? "")")
     }

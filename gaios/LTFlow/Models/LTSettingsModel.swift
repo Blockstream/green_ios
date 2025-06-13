@@ -36,37 +36,37 @@ struct LTSettingsViewModel {
                 hiddenIcon: true)
         case .inboundLiquidity:
             return LTSettingCellModel(
-                title: "Inbound Liquidity".localized,
+                title: "id_inbound_liquidity".localized,
                 subtitle: nil,
                 value: inboundLiquidity,
                 hiddenIcon: true)
         case .maxPayble:
             return LTSettingCellModel(
-                title: "Max Payable Amount".localized,
+                title: "id_max_payable_amount".localized,
                 subtitle: nil,
                 value: maxPayble,
                 hiddenIcon: true)
         case .maxSinglePaymentAmount:
             return LTSettingCellModel(
-                title: "Max Payment Amount".localized,
+                title: "id_max_payment_amount".localized,
                 subtitle: "Single",
                 value: maxSinglePaymentAmount,
                 hiddenIcon: true)
         case .maxReceivable:
             return LTSettingCellModel(
-                title: "Max Receivable Amount".localized,
+                title: "id_max_receivable_amount".localized,
                 subtitle: nil,
                 value: maxReceivable,
                 hiddenIcon: true)
         case .onchainBalanceSatoshi:
             return LTSettingCellModel(
-                title: "Onchain Balance Satoshi".localized,
+                title: "id_onchain_balance_satoshi".localized,
                 subtitle: nil,
                 value: onchainBalanceSatoshiText,
                 hiddenIcon: true)
         case .blockHeight:
             return LTSettingCellModel(
-                title: "Block Height".localized,
+                title: "id_block_height".localized,
                 subtitle: nil,
                 value: "\(blockHeight ?? 0)",
                 hiddenIcon: true)

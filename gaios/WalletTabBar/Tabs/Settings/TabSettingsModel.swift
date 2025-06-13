@@ -70,7 +70,7 @@ class TabSettingsModel {
 
     func getHeader() -> [SettingsItemData] {
         let header = SettingsItemData(
-            title: "Settings",
+            title: "id_settings".localized,
             subtitle: "",
             section: .header,
             type: .header)
@@ -217,7 +217,7 @@ class TabSettingsModel {
 
     func createSubaccountAmp() async throws {
         guard let session = wm?.liquidMultisigSession else {
-            throw GaError.GenericError("Invalid session".localized)
+            throw GaError.GenericError("id_invalid_session".localized)
         }
         try await session.connect()
         if !session.logged {
@@ -245,8 +245,8 @@ class TabSettingsModel {
 
     func dialogAccountsModel() -> DialogAccountsViewModel {
         return DialogAccountsViewModel(
-            title: "Account Selector",
-            hint: "Select the desired account you want to get AMP ID.".localized,
+            title: "id_account_selector".localized,
+            hint: "id_select_an_account_to_get_the".localized,
             isSelectable: true,
             assetId: nil,
             accounts: getSubaccountsAmp(),

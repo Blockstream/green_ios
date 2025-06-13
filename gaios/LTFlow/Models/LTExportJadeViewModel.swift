@@ -16,7 +16,7 @@ class LTExportJadeViewModel {
 
     func reply(publicKey: String, encrypted: String) async throws -> Credentials {
         guard let session = wm?.prominentSession else {
-            throw HWError.Abort("Invalid session")
+            throw HWError.Abort("id_invalid_session".localized)
         }
         guard let privateKey = privateKey else {
             throw HWError.Abort("Invalid private key")

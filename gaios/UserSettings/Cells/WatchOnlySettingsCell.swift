@@ -84,7 +84,7 @@ class WatchOnlySinglesigSettingsCell: UITableViewCell {
 
     @IBAction func btnQR(_ sender: Any) {
         let qrInfo = QRDialogInfo(item: viewModel?.subtitle ?? "",
-                                  title: viewModel?.isExtended == true ? "Extended Public Key" : "Output Descriptor",
+                                  title: viewModel?.isExtended == true ? "id_extended_public_key".localized : "id_output_descriptors".localized,
                                   hint: viewModel?.title ?? "")
         onQR?(qrInfo)
     }

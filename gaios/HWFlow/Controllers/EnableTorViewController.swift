@@ -38,9 +38,9 @@ class EnableTorViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Do you want to enable Tor to connect to the PIN oracle server?".localized
-        btnConnect.setTitle("Enable Tor".localized, for: .normal)
-        btnClose.setTitle("Cancel".localized, for: .normal)
+        lblTitle.text = "id_do_you_want_to_enable_tor_to".localized
+        btnConnect.setTitle("id_enable_tor".localized, for: .normal)
+        btnClose.setTitle("id_cancel".localized, for: .normal)
     }
 
     func setStyle() {

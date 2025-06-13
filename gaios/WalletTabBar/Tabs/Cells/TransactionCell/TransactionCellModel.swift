@@ -33,16 +33,16 @@ class TransactionCellModel {
         switch tx.type {
         case .redeposit:
             // For redeposits we show fees paid in btc
-            self.status = tx.isPending(block: blockHeight) ? "Redepositing" : "Redeposited"
+            self.status = tx.isPending(block: blockHeight) ? "id_redepositing".localized : "id_redeposited".localized
             icon = UIImage(named: "ic_tx_received")!
         case .incoming:
             self.status = tx.isPending(block: blockHeight) ? "id_receiving".localized : "id_received".localized
             icon = UIImage(named: "ic_tx_received")!
         case .outgoing:
-            self.status = tx.isPending(block: blockHeight) ? "Sending" : "id_sent".localized
+            self.status = tx.isPending(block: blockHeight) ? "id_sending".localized : "id_sent".localized
             icon = UIImage(named: "ic_tx_sent")!
         case .mixed:
-            self.status = tx.isPending(block: blockHeight) ? "Swapping" : "Swap"
+            self.status = tx.isPending(block: blockHeight) ? "id_swap_in_progress".localized : "id_swap".localized
             icon = UIImage(named: "ic_tx_swap")!
         }
         //if tx.isPending(block: blockHeight) { icon = UIImage(named: "ic_tx_hourglass")! }
@@ -51,7 +51,7 @@ class TransactionCellModel {
     func statusUI() -> PendingStateUI {
         if tx.isMeldPayment ?? false {
             return PendingStateUI(style: .pending,
-                                  label: "Processing payment".localized,
+                                  label: "id_processing_payment".localized,
                                   progress: nil)
         } else if tx.isLightningSwap ?? false {
             if tx.isInProgressSwap ?? false {
@@ -64,7 +64,7 @@ class TransactionCellModel {
                                       progress: nil)
             } else {
                 return PendingStateUI(style: .swapFailure,
-                                      label: "Failed".localized,
+                                      label: "id_failed".localized,
                                       progress: nil)
             }
         } else if tx.isUnconfirmed(block: blockHeight) {

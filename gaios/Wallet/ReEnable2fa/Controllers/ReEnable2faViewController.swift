@@ -37,7 +37,7 @@ class ReEnable2faViewController: UIViewController {
 
     func setContent() {
         lblHint1.text = "id_some_coins_in_your_wallet".localized
-        lblHint1.text = "2FA Protected accounts are 2-of-2 wallets needing the user’s key and Blockstream’s 2FA signature. After a ~1-year timelock, they become 1-of-1, disabling 2FA, to ultimately keep you in control. Redeposit your coins to reactivate 2FA protection.".localized
+        lblHint1.text = "id_2fa_protected_accounts_are_2of2".localized
         lblHint2.text = ""
         btnLearnmore.setTitle("id_learn_more".localized, for: .normal)
     }

@@ -107,12 +107,12 @@ class SendHWConfirmViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Confirm transaction on your device".localized
+        lblTitle.text = "id_confirm_transaction_details_on".localized
         lblAddressTitle.text = "id_address".localized
 
         lblSumFeeKey.text = "id_network_fee".localized
         lblSumFeeValue.text = viewModel.feeText
-        lblSumAmountKey.text = "Recipient Receives"
+        lblSumAmountKey.text = "id_recipient_receives".localized
         lblSumAmountValue.text = viewModel.amountText
         lblSumTotalKey.text = "Total Spent"
         lblSumTotalValue.text = viewModel.totalText

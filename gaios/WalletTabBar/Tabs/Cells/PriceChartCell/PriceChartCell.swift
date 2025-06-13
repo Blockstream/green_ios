@@ -41,7 +41,7 @@ class PriceChartCell: UITableViewCell {
         super.awakeFromNib()
         bg.setStyle(CardStyle.defaultStyle)
         btnBuy.setStyle(.primary)
-        btnBuy.setTitle("Buy Now".localized, for: .normal)
+        btnBuy.setTitle("id_buy_now".localized, for: .normal)
         btnBuy.setTitleColor(UIColor.gBlackBg(), for: .normal)
         btnBuy.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .medium)
         [btnD, btnW, btnM, btnY, btnYTD, btnAll].forEach {
@@ -61,7 +61,7 @@ class PriceChartCell: UITableViewCell {
         lblGain.textColor = UIColor.gGreenMatrix()
         lblQuote.setStyle(.txt)
         lblNoData.setStyle(.txtSmaller)
-        lblNoData.text = "No data available, try later".localized
+        lblNoData.text = "id_no_data_available_try_again".localized
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

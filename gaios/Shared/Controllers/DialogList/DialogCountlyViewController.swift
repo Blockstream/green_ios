@@ -213,7 +213,7 @@ class DialogCountlyViewController: UIViewController {
         var msg = "ID not available"
         if let uuid = UserDefaults.standard.string(forKey: AppStorageConstants.analyticsUUID.rawValue) {
             UIPasteboard.general.string = uuid
-            msg = "UUID copied to clipboard".localized
+            msg = "id_uuid_copied_to_clipboard".localized
         }
         DropAlert().info(message: msg, delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)

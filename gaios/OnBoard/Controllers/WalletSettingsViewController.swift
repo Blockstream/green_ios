@@ -141,8 +141,8 @@ class WalletSettingsViewController: KeyboardViewController {
         btnAnalytics.setTitle("id_more_info".localized, for: .normal)
         lblExperimentalTitle.text = "id_enable_experimental_features".localized
         lblExperimentalHint.text = "id_experimental_features_might".localized
-        lblLangTitle.text = "Language".localized
-        lblLangHint.text = "Current language".localized
+        lblLangTitle.text = "id_language".localized
+        lblLangHint.text = "id_current_language".localized
         lblProxyTitle.text = "id_connect_through_a_proxy".localized
         lblProxyHint.text = ""
         fieldProxyIp.placeholder = "id_server_ip_and_port_ipport".localized

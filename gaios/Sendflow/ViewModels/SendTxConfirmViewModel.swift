@@ -108,8 +108,8 @@ class SendTxConfirmViewModel {
     var feeText: String? { isFiat ? feeFiatText : feeDenomText }
     var totalText: String? { isFiat ? totalFiatText : totalDenomText }
     var conversionText: String? { isFiat ? totalDenomText : totalFiatText }
-    var addressTitle: String { isLightning ? "id_recipient" : isConsolitating ? "Your Redeposit Address" : "id_address" }
-    var amountTitle: String { isWithdraw ? "id_amount_to_receive" : isConsolitating ? "Redepositing" : "Recipient Receives" }
+    var addressTitle: String { isLightning ? "id_recipient".localized : isConsolitating ? "id_your_redeposit_address".localized : "id_address".localized }
+    var amountTitle: String { isWithdraw ? "id_amount_to_receive".localized : isConsolitating ? "id_redepositing".localized : "id_recipient_receives".localized }
     var recipientReceivesHidden: Bool { isConsolitating }
     var verifyAddressState: VerifyAddressState
 
@@ -169,10 +169,10 @@ class SendTxConfirmViewModel {
 
     func sendPsbt() async throws -> SendTransactionSuccess {
         guard let session = session else {
-            throw TransactionError.invalid(localizedDescription: "Invalid session")
+            throw TransactionError.invalid(localizedDescription: "id_invalid_session".localized)
         }
         guard let psbt = signedPsbt else {
-            throw TransactionError.invalid(localizedDescription: "Invalid psbt")
+            throw TransactionError.invalid(localizedDescription: "id_invalid_psbt".localized)
         }
         return try await session.broadcastTransaction(BroadcastTransactionParams(psbt: psbt, memo: transaction?.memo, simulateOnly: false))
     }
@@ -239,24 +239,24 @@ class SendTxConfirmViewModel {
 
     func withdrawLnurl(desc: String) async throws -> LnUrlWithdrawSuccessData? {
         guard let withdrawData = withdrawData else {
-            throw TransactionError.failure(localizedDescription: "No data found", paymentHash: "")
+            throw TransactionError.failure(localizedDescription: "id_data_not_available".localized, paymentHash: "")
         }
         let res = try wm?.lightningSession?.lightBridge?.withdrawLnurl(requestData: withdrawData, amount: withdrawAmount, description: desc)
         switch res {
         case .errorStatus(let data):
             throw TransactionError.failure(localizedDescription: data.reason.localized, paymentHash: "")
         case .timeout(let data):
-            throw TransactionError.failure(localizedDescription: "Timeout", paymentHash: "")
+            throw TransactionError.failure(localizedDescription: "id_timeout".localized, paymentHash: "")
         case .ok(let data):
             return data
         case .none:
-            throw TransactionError.failure(localizedDescription: "No data found", paymentHash: "")
+            throw TransactionError.failure(localizedDescription: "id_data_not_available".localized, paymentHash: "")
         }
     }
 
     func validateHW(_ address: Address) async throws -> Bool {
         guard let subaccount = subaccount else {
-            throw GaError.GenericError("Invalid subaccount".localized)
+            throw GaError.GenericError("id_invalid_subaccount".localized)
         }
         return try await BleHwManager.shared.validateAddress(account: subaccount, address: address)
     }

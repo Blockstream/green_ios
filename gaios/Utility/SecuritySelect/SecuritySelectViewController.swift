@@ -229,7 +229,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         // Derive key from jade for lightning wallet
         if AccountsRepository.shared.current?.isJade ?? false && policy == .Lightning {
             if WalletManager.current?.lightningSession?.logged ?? false {
-                self.showError("You already have a lightning account. Only one per wallet can be created".localized)
+                self.showError("id_you_already_have_a_lightning".localized)
                 return
             }
             ltExportJadeViewController()

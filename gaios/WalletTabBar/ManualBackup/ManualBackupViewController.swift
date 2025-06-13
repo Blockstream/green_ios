@@ -17,15 +17,15 @@ class ManualBackupViewController: UIViewController {
 
         setContent()
         setStyle()
-        title = "Back Up Your Wallet".localized
+        title = "id_back_up_your_wallet".localized
         navigationItem.backButtonTitle = "id_back".localized
     }
 
     func setContent() {
-        lblTitle.text = "Manual Backup".localized
-        lblInfo1.text = "Offline, written backup".localized
-        lblInfo2.text = "Access wallet on a new device".localized
-        lblInfo3.text = "Instant recovery".localized
+        lblTitle.text = "id_manual_backup".localized
+        lblInfo1.text = "id_offline_written_backup".localized
+        lblInfo2.text = "id_access_wallet_on_a_new_device".localized
+        lblInfo3.text = "id_instant_recovery".localized
         btnNext.setTitle("Back Up Recovery Phrase", for: .normal)
     }
 

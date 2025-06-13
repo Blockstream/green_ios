@@ -14,16 +14,16 @@ class ActionsSheetViewModel {
         return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigFeatureOnOffRamps) as? Bool ?? false
     }
 
-    let actionBuyCellModel = ActionsSheetCellModel(title: "Buy".localized,
+    let actionBuyCellModel = ActionsSheetCellModel(title: "id_buy_btc".localized,
                                                    hint: "BTC".localized,
                                                    icon: UIImage(named: "ic_dialog_main_actions_buy")!,
                                                    type: ActionsSheetType.buy)
-    let actionTransfertCellModel = ActionsSheetCellModel(title: "Account Transfer".localized,
-                                                   hint: "Move across accounts".localized,
+    let actionTransfertCellModel = ActionsSheetCellModel(title: "id_account_transfer".localized,
+                                                   hint: "id_move_across_accounts".localized,
                                                    icon: UIImage(named: "ic_dialog_main_actions_transfer")!,
                                                    type: ActionsSheetType.transfer)
-    let actionQRCellModel = ActionsSheetCellModel(title: "QR Scanner".localized,
-                                                   hint: "Scan QR code".localized,
+    let actionQRCellModel = ActionsSheetCellModel(title: "id_qr_scanner".localized,
+                                                   hint: "id_scan_qr_code".localized,
                                                    icon: UIImage(named: "ic_dialog_main_actions_scan")!,
                                                    type: ActionsSheetType.scan)
     var cellModels: [ActionsSheetCellModel] {

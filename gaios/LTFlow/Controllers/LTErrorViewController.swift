@@ -44,10 +44,10 @@ class LTErrorViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = "id_error".localized
-        lblHint1.text = "An unidentified error occured. The following error log can help you identify the issue:"
+        lblHint1.text = "An unidentified error occured. The following error log can help you identify the issue:".localized
         lblHint2.text = errorStr
-        btnReport.setTitle("Report", for: .normal)
-        btnDone.setTitle("OK", for: .normal)
+        btnReport.setTitle("id_report".localized, for: .normal)
+        btnDone.setTitle("id_ok", for: .normal)
     }
 
     func setStyle() {

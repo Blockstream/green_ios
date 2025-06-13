@@ -18,7 +18,7 @@ class SecurityLevelCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         btnCompare.setStyle(.outlined)
-        btnCompare.setTitle("Compare Security Levels".localized, for: .normal)
+        btnCompare.setTitle("id_compare_security_levels".localized, for: .normal)
         lblHint1.setStyle(.title)
         lblHint1.font = UIFont.systemFont(ofSize: 28, weight: .medium)
         lblHint2.setStyle(.txtCard)
@@ -29,14 +29,14 @@ class SecurityLevelCell: UITableViewCell {
     }
     func setContent() {
         if isHW {
-            lblHint1.text = "Hardware".localized
-            lblHint2.text = "Security Level: 2".localized
+            lblHint1.text = "id_hardware".localized
+            lblHint2.text = "id_security_level_2".localized
             icon.isHidden = true
             iconPlus.isHidden = false
             btnCompare.isHidden = true
         } else {
-            lblHint1.text = "Mobile".localized
-            lblHint2.text = "Security Level: 1".localized
+            lblHint1.text = "id_mobile".localized
+            lblHint2.text = "id_security_level_1".localized
             icon.isHidden = false
             iconPlus.isHidden = true
             btnCompare.isHidden = false

@@ -97,7 +97,7 @@ class AlertCardCell: UITableViewCell {
             lblTitle.text = "id_2fa_expired".localized
             lblHint.text = "id_show_coins_with_expiring".localized
             btnRight.setTitle("id_learn_more".localized, for: .normal)
-            btnLeft.setTitle("Reactivate 2FA".localized, for: .normal)
+            btnLeft.setTitle("id_reactivate_2fa".localized, for: .normal)
             styleWarn()
         case .systemMessage(let system):
             lblTitle.text = "id_system_message".localized
@@ -142,7 +142,7 @@ class AlertCardCell: UITableViewCell {
             let errorString: String = {
                 switch error {
                 case LoginError.connectionFailed(let txt):
-                    return (txt ?? "") + "\n\n" + "Ensure your app is up to date.".localized
+                    return (txt ?? "") + "\n\n" + "id_ensure_your_app_is_up_to_date".localized
                 case LoginError.walletNotFound(let txt):
                     return txt ?? ""
                 case LoginError.hostUnblindingDisabled(_):
@@ -183,14 +183,14 @@ class AlertCardCell: UITableViewCell {
             btnsContainer.isHidden = true
         case .reEnable2fa:
             lblTitle.text = "id_reenable_2fa".localized
-            lblHint.text = "Some coins are no longer 2FA protected.".localized
+            lblHint.text = "id_some_coins_are_no_longer_2fa".localized
             btnRight.setTitle("id_reenable_2fa".localized, for: .normal)
             btnLeft.isHidden = true
             styleWarn()
         case .backup:
-            lblTitle.text = "Back Up Your Wallet Now".localized
-            lblHint.text = "Don't lose access to your funds.".localized
-            btnLeft.setTitle("Backup Now".localized, for: .normal)
+            lblTitle.text = "id_back_up_your_wallet_now".localized
+            lblHint.text = "id_dont_lose_access_to_your_funds".localized
+            btnLeft.setTitle("id_backup_now".localized, for: .normal)
             btnRight.isHidden = true
             btnDismiss.isHidden = onDismiss == nil
             styleWarn()

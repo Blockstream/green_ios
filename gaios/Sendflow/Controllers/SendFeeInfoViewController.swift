@@ -76,9 +76,9 @@ class SendFeeInfoViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Network Fee".localized
-        lblHint.text = "Fees are not collected by Blockstream, but by Bitcoin miners, Liquid functionaries, and Lightning nodes, who include or secure transactions onto the blockchain, granting 24/7 worldwide service availability.\n\nBecause blockchain space, or lightning network liquidity, is limited, network operators will give priority to transactions paying higher fees, especially in periods of intense traffic.".localized
-        btnFeeInfo.setStyle(.underline(txt: "Read more".localized, color: UIColor.gAccent()))
+        lblTitle.text = "v".localized
+        lblHint.text = "id_fees_are_not_collected_by".localized
+        btnFeeInfo.setStyle(.underline(txt: "id_read_more".localized, color: UIColor.gAccent()))
     }
 
     func setStyle() {

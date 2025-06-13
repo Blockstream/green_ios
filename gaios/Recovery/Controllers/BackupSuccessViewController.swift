@@ -21,8 +21,8 @@ class BackupSuccessViewController: UIViewController {
         }
     }
     func setContent() {
-        lblTitle.text = "Great! You successfully backed up your recovery phrase.".localized
-        lblHint.text = "Keep your recovery phrase fully offline and stored somewhere secret. Anyone with a copy of these words can steal your funds.".localized
+        lblTitle.text = "id_great_you_successfully_backed".localized
+        lblHint.text = "id_keep_your_recovery_phrase_fully".localized
         btnNext.setTitle("id_done".localized, for: .normal)
     }
     func setStyle() {

@@ -1,4 +1,4 @@
-NSFaceIDUsageDescription = "Green использует биометрическую аутентификацию, чтобы обеспечить легкий доступ к кошельку";
-NSBluetoothAlwaysUsageDescription = "Green использует Bluetooth для связи с аппаратными кошельками";
-NSBluetoothPeripheralUsageDescription = "Green использует Bluetooth для подключения к аппаратным кошелькам";
+NSFaceIDUsageDescription = "Blockstream uses biometric authentication to allow easy access to the wallet";
+NSBluetoothAlwaysUsageDescription = "Blockstream uses Bluetooth for communication with hardware wallets";
+NSBluetoothPeripheralUsageDescription = "Blockstream uses Bluetooth to connect to hardware wallets";
 NSCameraUsageDescription = "Мы используем камеру для сканирования QR-кодов";

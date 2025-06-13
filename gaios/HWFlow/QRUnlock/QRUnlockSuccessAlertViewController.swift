@@ -36,11 +36,11 @@ class QRUnlockSuccessAlertViewController: UIViewController {
             imgBio.image = UIImage(systemName: "faceid")
             imgBio.tintColor = .white
             btnBio.setTitle("id_enable_face_id".localized, for: .normal)
-            lblTitle.text = String(format: "id_use_s_for_quick_access".localized, "Face ID")
+            lblTitle.text = String(format: "id_use_s_for_quick_access".localized, "id_face_id".localized)
         } else if AuthenticationTypeHandler.biometryType == .touchID {
             imgBio.image = UIImage(named: "ic_airgap_biometrics")!
             btnBio.setTitle("id_enable_touch_id".localized, for: .normal)
-            lblTitle.text = String(format: "id_use_s_for_quick_access".localized, "Touch ID")
+            lblTitle.text = String(format: "id_use_s_for_quick_access".localized, "id_touch_id".localized)
         } else {
             imgBio.image = UIImage(named: "ic_airgap_biometrics")!
             btnBio.setTitle("id_touchface_id_not_available".localized, for: .normal)
@@ -56,7 +56,7 @@ class QRUnlockSuccessAlertViewController: UIViewController {
     }
 
     func setContent() {
-        lblHint.text = "Access your wallet to check your wallet balance and transactions.\n\nSign transactions offline using your Jade.".localized
+        lblHint.text = "id_access_your_wallet_to_check".localized
     }
 
     func setStyle() {

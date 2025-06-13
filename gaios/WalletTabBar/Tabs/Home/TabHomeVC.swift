@@ -150,7 +150,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
 
         case .header:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
-                cell.configure(title: "Home".localized, icon: walletModel.headerIcon, tab: .home, onTap: {[weak self] in
+                cell.configure(title: "id_home".localized, icon: walletModel.headerIcon, tab: .home, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
                 })
                 cell.selectionStyle = .none
@@ -379,9 +379,9 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
 
         switch TabHomeSection(rawValue: section) {
         case .assets:
-            return sectionHeader("Assets".localized)
+            return sectionHeader("id_assets".localized)
         case .chart:
-            return sectionHeader("Bitcoin Price".localized)
+            return sectionHeader("id_bitcoin_price".localized)
         default:
             return nil
         }
@@ -391,7 +391,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
         switch TabHomeSection(rawValue: section) {
         case .assets:
             if walletModel.walletAssetCellModels.count == 0 {
-                return sectionFooter("You don’t have any assets yet.".localized)
+                return sectionFooter("id_you_dont_have_any_assets_yet".localized)
             }
             return nil
         default:

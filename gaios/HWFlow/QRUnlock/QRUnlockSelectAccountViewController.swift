@@ -43,7 +43,7 @@ class QRUnlockSelectAccountViewController: UIViewController {
     }
 
     func setContent() {
-        title = "Select Your Account Type".localized
+        title = "id_select_your_account_type".localized
         btnAdvanced.setTitle( visibilityState ? "id_hide_advanced_options".localized : "id_show_advanced_options".localized, for: .normal)
     }
 

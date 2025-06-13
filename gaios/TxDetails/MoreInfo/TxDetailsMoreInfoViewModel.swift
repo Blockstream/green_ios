@@ -14,29 +14,29 @@ class TxDetailsMoreInfoViewModel {
         var list: [TxDetailsMoreInfoCellModel] = []
 
         if let destinationPubkey = transaction.destinationPubkey {
-            list.append(TxDetailsMoreInfoCellModel(title: "Destination Public Key".localized,
+            list.append(TxDetailsMoreInfoCellModel(title: "id_destination_public_key".localized,
                                        hint: destinationPubkey))
         }
         if let paymentHash = transaction.paymentHash {
-            list.append(TxDetailsMoreInfoCellModel(title: "Payment Hash".localized,
+            list.append(TxDetailsMoreInfoCellModel(title: "id_payment_hash".localized,
                                                    hint: paymentHash))
         }
         if let paymentPreimage = transaction.paymentPreimage {
-            list.append(TxDetailsMoreInfoCellModel(title: "Payment Pre Image".localized,
+            list.append(TxDetailsMoreInfoCellModel(title: "id_payment_preimage".localized,
                                                    hint: paymentPreimage))
         }
         if let invoice = transaction.invoice {
-            list.append(TxDetailsMoreInfoCellModel(title: "Invoice".localized,
+            list.append(TxDetailsMoreInfoCellModel(title: "id_invoice".localized,
                                                    hint: invoice))
         }
 
         if let fundingTxid = transaction.fundingTxid {
-            list.append(TxDetailsMoreInfoCellModel(title: "Funding Transaction Id".localized,
+            list.append(TxDetailsMoreInfoCellModel(title: "id_funding_transaction_id".localized,
                                                    hint: fundingTxid))
         }
 
         if let closingTxid = transaction.closingTxid {
-            list.append(TxDetailsMoreInfoCellModel(title: "Closing Transaction Id".localized,
+            list.append(TxDetailsMoreInfoCellModel(title: "id_closing_transaction_id".localized,
                                                    hint: closingTxid))
         }
 

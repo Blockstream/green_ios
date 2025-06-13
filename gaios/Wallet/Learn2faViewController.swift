@@ -130,7 +130,7 @@ class Learn2faViewController: UIViewController {
 
     @IBAction func BtnUndoReset(_ sender: Any) {
         let alertTitle = isDisputeActive ? "id_undo_2fa_dispute".localized : "id_dispute_twofactor_reset".localized
-        let alertMsg = isDisputeActive ? "Provide the email you previously used to dispute" : ""
+        let alertMsg = isDisputeActive ? "id_provide_the_email_you".localized : ""
         let alert = UIAlertController(title: alertTitle, message: alertMsg, preferredStyle: .alert)
         alert.addTextField { (textField) in textField.placeholder = "id_email".localized }
         alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in })

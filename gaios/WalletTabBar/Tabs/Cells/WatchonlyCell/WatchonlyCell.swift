@@ -12,9 +12,9 @@ class WatchonlyCell: UITableViewCell {
 
     override func prepareForReuse() {}
 
-    let strWo = "In a watch-only wallet, you don’t have access to the private keys, so you can’t send funds - you can only view your balance and transaction history. Learn more about watch-only."
+    let strWo = "In a watch-only wallet, you don’t have access to the private keys, so you can’t send funds - you can only view your balance and transaction history. Learn more about watch-only.".localized
     let strSend = "you can’t send funds".localized
-    let strMore = "Learn more".localized
+    let strMore = "id_learn_more".localized
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -27,7 +27,7 @@ class WatchonlyCell: UITableViewCell {
     }
     func configure(onLearnMore: (() -> Void)?) {
         self.onLearnMore = onLearnMore
-        lblTitle.text = "Watch-Only".localized
+        lblTitle.text = "id_watchonly".localized
         setStyle()
     }
     func setStyle() {

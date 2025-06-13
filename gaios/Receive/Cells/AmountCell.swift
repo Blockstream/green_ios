@@ -58,7 +58,7 @@ class AmountCell: UITableViewCell {
             $0?.text = ""
         }
         lblToReceiveTitle.text = "id_amount_to_receive".localized
-        lblMoreInfo.text = "For more information,".localized
+        lblMoreInfo.text = "id_for_more_information".localized
         btnFeeInfo.setStyle(.underline(txt: "id_read_more".localized, color: .white))
         lblToReceiveHint.text = ""
         lblInfo.text = ""
@@ -170,7 +170,7 @@ class AmountCell: UITableViewCell {
     func errorState(text: String) {
         bg.borderColor = UIColor.gRedWarn()
         infoPanel.backgroundColor = UIColor.gRedWarn()
-        btnFeeInfo.setStyle(.underline(txt: "read more".localized, color: .white))
+        btnFeeInfo.setStyle(.underline(txt: "id_read_more".localized, color: .white))
         lblInfo.text = text
         lblInfo.isHidden = false
         btnFeeInfo.isHidden = false
@@ -224,7 +224,7 @@ class AmountCell: UITableViewCell {
             [lblInfo, lblMoreInfo].forEach {
                 $0?.textColor = .white
             }
-            btnFeeInfo.setStyle(.underline(txt: "read more".localized, color: .white))
+            btnFeeInfo.setStyle(.underline(txt: "id_read_more".localized, color: .white))
         case .tooHigh:
             let amount = Int64(model.breezSdk?.nodeInfo?.maxReceivableSatoshi ?? 0)
             let text = String(format: "id_you_cannot_receive_more_than_s".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
@@ -236,7 +236,7 @@ class AmountCell: UITableViewCell {
         case .disabled:
             disableState()
         case .disconnected:
-            let text = "No LSP connected".localized
+            let text = "id_no_lsp_connected".localized
             errorState(text: text)
         case .invalidBuy:
             lblInfo.text = model.message(.invalidBuy) ?? ""

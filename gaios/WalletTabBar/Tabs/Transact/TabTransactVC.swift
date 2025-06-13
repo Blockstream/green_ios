@@ -116,7 +116,7 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .header:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
-                cell.configure(title: "Transact".localized, icon: walletModel.headerIcon, tab: .transact, onTap: {[weak self] in
+                cell.configure(title: "id_transact".localized, icon: walletModel.headerIcon, tab: .transact, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
                 })
                 cell.selectionStyle = .none
@@ -187,7 +187,7 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
 
         switch TabTransactSection(rawValue: section) {
         case .transactions:
-            return sectionHeader("Transactions".localized)
+            return sectionHeader("id_transactions".localized)
         default:
             return nil
         }
@@ -197,7 +197,7 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
         switch TabTransactSection(rawValue: section) {
         case .transactions:
             if walletModel.txCellModels.count == 0 && !walletTab.isReloading {
-                return sectionFooter("You don't have any transactions yet.".localized)
+                return sectionFooter("id_you_dont_have_any_transactions".localized)
             }
             return nil
         default:

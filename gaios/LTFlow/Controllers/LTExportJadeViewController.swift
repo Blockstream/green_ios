@@ -33,16 +33,16 @@ class LTExportJadeViewController: UIViewController {
     }
 
     func setContent() {
-        title = "Export Lightning Key".localized
-        subtitleLabel.text = "Scan QR with Jade".localized
-        descriptionLabel.text = "Securely import from your Jade a dedicated key for lightning.".localized
+        title = "id_export_lightning_key".localized
+        subtitleLabel.text = "id_scan_qr_with_jade".localized
+        descriptionLabel.text = "id_securely_import_from_your_jade".localized
         nextButton.setTitle("id_next".localized, for: .normal)
         let tapQRcodeSmall = UITapGestureRecognizer(target: self, action: #selector(showQRFullScreen))
         qrCodeImageView.addGestureRecognizer(tapQRcodeSmall)
         qrCodeImageView.isUserInteractionEnabled = true
         qrCodeImageView.contentMode = .scaleAspectFit
         btnLearnMore.setTitle("id_learn_more".localized, for: .normal)
-        btnQREnlarge.setTitle("Increase QR Size".localized, for: .normal)
+        btnQREnlarge.setTitle("id_increase_qr_size".localized, for: .normal)
     }
 
     func setStyle() {

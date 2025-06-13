@@ -40,10 +40,10 @@ class PinCreateViewController: HWFlowBaseViewController {
 
     func setContent() {
         imgDevice.image = JadeAsset.img(.selectDual, nil)
-        lblStepNumber.text = "SETUP YOUR JADE"
-        lblStepTitle.text = "Create a PIN"
-        lblStepHint.text = "Enter and confirm a unique PIN that will be entered to unlock Jade."
-        lblWarn.text = "If you forget your PIN, you will need to restore with your recovery phrase"
+        lblStepNumber.text = "id_setup_your_jade".localized.uppercased()
+        lblStepTitle.text = "id_create_a_pin".localized
+        lblStepHint.text = "id_enter_and_confirm_a_unique_pin".localized
+        lblWarn.text = "id_if_you_forget_your_pin_you_will".localized
         btnContinue.setTitle("id_continue".localized, for: .normal)
     }
 

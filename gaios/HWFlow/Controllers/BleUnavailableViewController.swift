@@ -50,10 +50,10 @@ class BleUnavailableViewController: UIViewController {
         btnCancel.setTitle("id_cancel".localized, for: .normal)
         switch state {
         case .unauthorized:
-            lblTitle.text = "Grant Green Bluetooth permission".localized
-            btnSettings.setTitle("Open Permissions".localized, for: .normal)
+            lblTitle.text = "id_grant_green_bluetooth_permission".localized
+            btnSettings.setTitle("id_open_permissions".localized, for: .normal)
         case .other, .powerOff:
-            lblTitle.text = "Enable Bluetooth from iOS settings to continue".localized
+            lblTitle.text = "id_enable_bluetooth_from_ios".localized
             btnSettings.isHidden = true
         }
     }

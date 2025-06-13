@@ -27,10 +27,10 @@ class LTCreateViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Lightning Network".localized
-        lblSubtitle.text = "Lightning Network not enabled".localized
-        lblDescription.text = "To use faster and cheaper Bitcoin transactions, you need to enable the Lightning Network on your device".localized
-        btnNext.setTitle("Enable Lightning".localized, for: .normal)
+        lblTitle.text = "id_lightning_network".localized
+        lblSubtitle.text = "id_lightning_network_not_enabled".localized
+        lblDescription.text = "id_to_use_faster_and_cheaper".localized
+        btnNext.setTitle("id_enable_lightning".localized, for: .normal)
     }
 
     func setStyle() {

@@ -94,12 +94,12 @@ class BuyBTCViewController: KeyboardViewController {
         })
     }
     func setContent() {
-        title = "Buy BTC".localized
-        lblSection1.text = "Amount".localized
-        lblSection2.text = "Exchange".localized
-        lblSection3.text = "Account".localized
-        btnNext.setTitle("Buy Bitcoin".localized, for: .normal)
-        lblNoQuotes.text = "No quotes available for this amount".localized
+        title = "id_buy_btc".localized
+        lblSection1.text = "id_amount".localized
+        lblSection2.text = "id_exchange".localized
+        lblSection3.text = "id_account".localized
+        btnNext.setTitle("id_buy_btc".localized, for: .normal)
+        lblNoQuotes.text = "id_no_quotes_available_for_this".localized
     }
     func setStyle() {
         [bgAmount, bgProvider].forEach {
@@ -133,9 +133,9 @@ class BuyBTCViewController: KeyboardViewController {
         btnLeftBackup.setTitleColor(UIColor.gBlackBg(), for: .normal)
         lblTitleBackup.setStyle(.txtBigger)
         lblHintBackup.setStyle(.txtCard)
-        lblTitleBackup.text = "Back Up Your Wallet Now".localized
-        lblHintBackup.text = "Don't lose access to your funds.".localized
-        btnLeftBackup.setTitle("Backup Now".localized, for: .normal)
+        lblTitleBackup.text = "id_back_up_your_wallet_now".localized
+        lblHintBackup.text = "id_dont_lose_access_to_your_funds".localized
+        btnLeftBackup.setTitle("id_backup_now".localized, for: .normal)
         btnRightBackup.isHidden = true
         iconWarnBackup.image = UIImage(named: "ic_card_warn")
         if BackupHelper.shared.needsBackup(walletId: viewModel.wm.account.id) && BackupHelper.shared.isDismissed(walletId: viewModel.wm.account.id, position: .buy) == false {

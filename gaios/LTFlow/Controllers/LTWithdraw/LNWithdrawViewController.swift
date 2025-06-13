@@ -42,7 +42,7 @@ class LTWithdrawViewController: KeyboardViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        squareSliderView.slideStr = "Slide to redeem".localized
+        squareSliderView.slideStr = "id_slide_to_redeem".localized
         squareSliderView.reset()
         squareSliderView.isActive(amount != nil)
         for cell in tableView.visibleCells {
@@ -90,7 +90,7 @@ class LTWithdrawViewController: KeyboardViewController {
                 case .errorStatus(let data):
                     DropAlert().error(message: data.reason)
                 case .timeout(let data):
-                    DropAlert().error(message: "Timeout".localized)
+                    DropAlert().error(message: "id_timeout".localized)
                 case .none:
                     DropAlert().error(message: "id_operation_failure".localized)
                 }

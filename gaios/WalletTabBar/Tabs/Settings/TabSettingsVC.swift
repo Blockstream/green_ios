@@ -66,7 +66,7 @@ class TabSettingsVC: TabViewController {
     }
     func comingSoon() {
         let alert = UIAlertController(title: "Coming soon...", message: "", preferredStyle: UIAlertController.Style.alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertAction.Style.default, handler: nil))
+        alert.addAction(UIAlertAction(title: "id_ok".localized, style: UIAlertAction.Style.default, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
 }
@@ -86,7 +86,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
 
         case .header:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
-                cell.configure(title: "Settings".localized, icon: walletModel.headerIcon, tab: .settings, onTap: {[weak self] in
+                cell.configure(title: "id_settings".localized, icon: walletModel.headerIcon, tab: .settings, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
                 })
                 cell.selectionStyle = .none
@@ -131,7 +131,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
         case .wallet:
             return sectionHeader("id_wallet".localized)
         case .twoFactor:
-            return sectionHeader("2FA Account".localized)
+            return sectionHeader("id_2fa_account".localized)
         case .about:
             return sectionHeader("id_about".localized)
         }
@@ -233,10 +233,10 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogActionsViewController") as? DialogActionsViewController {
             vc.viewModel = DialogActionsViewModel(
-                title: "Create an AMP Account".localized,
-                description: "AMP accounts allow you to send, receive, and store managed assets issued on the Liquid Network.".localized,
-                confirm: "Create an AMP Account".localized,
-                link: "Learn More".localized)
+                title: "id_create_an_amp_account".localized,
+                description: "id_amp_accounts_allow_you_to_send".localized,
+                confirm: "id_create_an_amp_account".localized,
+                link: "id_learn_more".localized)
             vc.delegate = { action in
                 switch action {
                 case .confirm:
@@ -262,9 +262,9 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogActionsViewController") as? DialogActionsViewController {
             vc.viewModel = DialogActionsViewModel(
                 title: subaccount.name,
-                description: "Your AMP account is set up and ready to be used. Copy your AMP ID and share it with your security token issuer to receive authorization to move funds.".localized,
-                confirm: "Copy AMP ID".localized,
-                link: "Learn More".localized)
+                description: "id_your_amp_account_is_set_up_and".localized,
+                confirm: "id_copy_amp_id".localized,
+                link: "id_learn_more".localized)
             vc.delegate = { action in
                 switch action {
                 case .confirm:

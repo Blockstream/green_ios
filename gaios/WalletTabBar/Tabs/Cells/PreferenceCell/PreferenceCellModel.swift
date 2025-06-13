@@ -37,15 +37,15 @@ class PreferenceCellModel {
     var title: String {
         switch self.type {
         case .bio:
-            return hasTouchID ? "TouchID" : "FaceID"
+            return hasTouchID ? "id_touchid".localized : "id_faceid".localized
         case .pin:
-            return "PIN".localized
+            return "id_pin".localized
         case .genuineCheck:
-            return "Genuine Check".localized
+            return "id_genuine_check".localized
         case .fwUpdate:
-            return "Firmware Update".localized
+            return "id_firmware_update".localized
         case .recoveryPhrase:
-            return "Manual Backup".localized
+            return "id_manual_backup".localized
         }
     }
     var hint: String {

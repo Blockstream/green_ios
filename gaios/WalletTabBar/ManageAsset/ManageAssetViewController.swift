@@ -378,9 +378,9 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
 
         switch sections[section] {
         case .transactions:
-            return sectionHeader("Transactions".localized)
+            return sectionHeader("id_transactions".localized)
         case .accounts:
-            return sectionHeader("Accounts".localized)
+            return sectionHeader("id_accounts".localized)
         default:
             return nil
         }
@@ -390,7 +390,7 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
         switch sections[section] {
         case .transactions:
             if viewModel.txCellModels.count == 0 && !isReloading {
-                return sectionFooter("You don't have any transactions yet.".localized)
+                return sectionFooter("id_you_dont_have_any_transactions".localized)
             }
             return nil
         default:
@@ -469,11 +469,11 @@ extension ManageAssetViewController {
     func buyScreen() {
         AnalyticsManager.shared.buyInitiate(account: AccountsRepository.shared.current)
         if !getCountlyRemoteConfigEnableBuyIosUk() && checkUKRegion() {
-            showAlert(title: "Buy Bitcoin".localized, message: "Feature unavailable in the UK. Coming soon.")
+            showAlert(title: "Buy Bitcoin".localized, message: "id_feature_unavailable_in_the_uk".localized)
             return
         }
         if getBitcoinSubaccounts().isEmpty {
-            showAlert(title: "Buy Bitcoin".localized, message: "Feature unavailable for Liquid accounts.")
+            showAlert(title: "Buy Bitcoin".localized, message: "id_feature_unavailable_for_liquid".localized)
             return
         }
         let storyboard = UIStoryboard(name: "BuyBTCFlow", bundle: nil)

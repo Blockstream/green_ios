@@ -84,10 +84,10 @@ class GenuineCheckDialogViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "New Jade Plus Connected".localized
-        lblHint.text = "A new device has been detected, please set it up to start using it.".localized
-        btnNext.setTitle("Genuine Check".localized, for: .normal)
-        lblInfo.text = "Genuine Check is mandatory for first time Jade connection. This way we make sure that you have a safe Jade.".localized
+        lblTitle.text = "id_new_jade_plus_connected".localized
+        lblHint.text = "id_a_new_device_has_been_detected".localized
+        btnNext.setTitle("id_genuine_check".localized, for: .normal)
+        lblInfo.text = "id_genuine_check_is_mandatory_for".localized
     }
 
     func setStyle() {

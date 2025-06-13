@@ -19,7 +19,7 @@ class AccountArchiveViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "Archived Accounts".localized
+        title = "id_archived_accounts".localized
         register()
         setContent()
         AnalyticsManager.shared.recordView(.archivedAccounts, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
@@ -49,8 +49,9 @@ class AccountArchiveViewController: UIViewController {
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
         settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
-        settingsBtn.setTitle("Unarchive".localized, for: .normal)
+        settingsBtn.setTitle("id_unarchive".localized, for: .normal)
         settingsBtn.addTarget(self, action: #selector(unarchive), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
         if viewModel.list.count == 0 {
             settingsBtn.tintColor = UIColor.gGrayTxt()
             settingsBtn.isEnabled = false
@@ -58,7 +59,6 @@ class AccountArchiveViewController: UIViewController {
             settingsBtn.tintColor = UIColor.gAccent()
             settingsBtn.isEnabled = true
         }
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
     }
     @objc func unarchive() {
         Task {
@@ -69,6 +69,7 @@ class AccountArchiveViewController: UIViewController {
                 viewModel.list = []
                 tableView.reloadData()
                 self.delegate?.archiveDidChange()
+                self.loadNavigationBtns()
             }
         }
     }

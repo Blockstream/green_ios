@@ -7,7 +7,7 @@ public extension AnalyticsManager {
     static let countlyRemoteConfigFeatureOnOffRamps = "feature_on_off_ramps"
     static let countlyRemoteConfigBuyDefaultValues = "buy_default_values"
     static let countlyRemoteConfigEnableBuyIosUk = "enable_buy_ios_uk"
-    
+
     static let strNetworks = "wallet_networks"
     static let strNetwork = "account_network"
     static let strSecurity = "security"

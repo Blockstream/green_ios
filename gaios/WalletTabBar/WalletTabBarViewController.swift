@@ -310,7 +310,7 @@ extension WalletTabBarViewController: UITabBarControllerDelegate {
          if selectedIndex == 3 {
              // return false for no action
 //             if let nv = parent as? UINavigationController {
-//                 nv.navigationBar.topItem?.title = "Transact"
+//                 nv.navigationBar.topItem?.title = "id_transact".localized
 //             }
 //             settingsBtnTapped(self)
 //             return false

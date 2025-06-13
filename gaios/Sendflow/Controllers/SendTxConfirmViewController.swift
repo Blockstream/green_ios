@@ -91,7 +91,7 @@ class SendTxConfirmViewController: UIViewController {
 
         lblSumFeeKey.text = "id_network_fee".localized
         lblSumFeeValue.text = ""
-        lblSumAmountKey.text = "Recipient Receives".localized
+        lblSumAmountKey.text = "id_recipient_receives".localized
         lblSumAmountValue.text = ""
         lblSumTotalKey.text = "id_total_spent".localized
         lblSumTotalValue.text = ""
@@ -153,7 +153,7 @@ class SendTxConfirmViewController: UIViewController {
         case .unverified:
             btnVerifyAddress.borderColor = .white
             btnVerifyAddress.setImage(UIImage(), for: .normal)
-            btnVerifyAddress.setTitle("Verify address on device".localized, for: .normal)
+            btnVerifyAddress.setTitle("id_verify_address_on_device".localized, for: .normal)
         case .verified:
             btnVerifyAddress.isUserInteractionEnabled = false
             btnVerifyAddress.borderColor = .gray
@@ -250,7 +250,7 @@ class SendTxConfirmViewController: UIViewController {
             addressTextView.textContainer.lineBreakMode = .byTruncatingMiddle
         } else if viewModel.multiAddressees {
             payRequestByStack.isHidden = true
-            addressTextView.text = "Multiple addresses".localized
+            addressTextView.text = "id_multiple_addresses".localized
             lblAssetName.text = "id_multiple_assets".localized
             amountCard.isHidden = true
             amountMultiAddrCard.isHidden = false
@@ -727,7 +727,7 @@ extension SendTxConfirmViewController: QRPsbtAquireViewControllerDelegate {
             viewModel.signedPsbt = psbt
             send()
         } else {
-            DropAlert().error(message: "Invalid psbt")
+            DropAlert().error(message: "id_invalid_psbt".localized)
         }
         UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
     }

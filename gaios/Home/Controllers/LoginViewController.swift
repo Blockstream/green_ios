@@ -472,8 +472,8 @@ class LoginViewController: UIViewController {
     }
 
     func showEmergencyDialog() {
-        let alert = UIAlertController(title: "Emergency Recovery Phrase Restore".localized,
-                                      message: "If for any reason you can't login into your wallet, you can recover your recovery phrase using your PIN/Biometrics.".localized,
+        let alert = UIAlertController(title: "id_emergency_recovery_phrase".localized,
+                                      message: "id_if_for_any_reason_you_cant".localized,
                                       preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { (_: UIAlertAction) in })
         alert.addAction(UIAlertAction(title: "id_ok".localized, style: .default) { (_: UIAlertAction) in
@@ -534,7 +534,7 @@ extension LoginViewController: DialogRenameViewControllerDelegate, DialogDeleteV
     }
     func didDelete(_ index: String?) {
         Task {
-            self.startLoader(message: "Removing wallet…".localized)
+            self.startLoader(message: "id_removing_wallet".localized)
             await AccountsRepository.shared.remove(account)
             await MainActor.run {
                 self.stopLoader()

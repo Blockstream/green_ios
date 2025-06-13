@@ -81,7 +81,7 @@ class TxDetailsMoreInfoViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "More Details".localized
+        lblTitle.text = "id_more_details".localized
     }
 
     func setStyle() {

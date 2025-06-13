@@ -35,7 +35,7 @@ class Reactivate2faViewController: UIViewController {
         lblReactHint.text = "Funds with expired 2FA are re-deposited to yourself in a new transaction, and as such is subject to the usual transaction fees."
         lblExpTitle.text = "Is 2FA expiring too often?"
         lblExpHint.text = "2FA on your funds expires %d months after receiving funds.This includes any change of outgoing transactions.\n\nIf you don't regularly spend, you might consider setting a longer 2FA expiry time from settings"
-        btnReactivate.setTitle("Reactivate 2FA", for: .normal)
+        btnReactivate.setTitle("id_reactivate_2fa".localized, for: .normal)
     }
 
     func setStyle() {

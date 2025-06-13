@@ -39,8 +39,8 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
         lblSlide2Hint.text = "id_your_bitcoin_and_liquid_assets".localized
         lblSlide3Title.text = "id_offline_key_storage".localized
         lblSlide3Hint.text = "id_jade_is_an_isolated_device_not".localized
-        lblSlide4Title.text = "Fully air-gapped with QR".localized
-        lblSlide4Hint.text = "QR Mode allows you to communicate with Green using Jade's camera and QR codes (instead of USB or Bluetooth).".localized
+        lblSlide4Title.text = "id_fully_airgapped_with_qr".localized
+        lblSlide4Hint.text = "id_qr_mode_allows_you_to".localized
     }
 
     func setStyle() {

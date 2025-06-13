@@ -1,4 +1,4 @@
-NSFaceIDUsageDescription = "Green은 생체 인증으로 간편한 지갑 액세스를 지원합니다";
-NSBluetoothAlwaysUsageDescription = "Green은 Bluetooth를 통해 하드웨어 지갑과 연결됩니다.";
-NSBluetoothPeripheralUsageDescription = "Green은 Bluetooth를 통해 하드웨어 지갑과 연결됩니다.";
+NSFaceIDUsageDescription = "Blockstream uses biometric authentication to allow easy access to the wallet";
+NSBluetoothAlwaysUsageDescription = "Blockstream uses Bluetooth for communication with hardware wallets";
+NSBluetoothPeripheralUsageDescription = "Blockstream uses Bluetooth to connect to hardware wallets";
 NSCameraUsageDescription = "Green은 카메라를 사용하여 QR 코드를 스캔합니다.";

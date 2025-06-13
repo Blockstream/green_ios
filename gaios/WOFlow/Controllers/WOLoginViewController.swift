@@ -218,7 +218,7 @@ class WOLoginViewController: KeyboardViewController {
         case .DeniedByUser:
             presentAlertDialogFaceId()
         case .LockedOut:
-            showError("Too many attempts. Retry later".localized)
+            showError("id_too_many_attempts_retry_later".localized)
         case .CanceledByUser:
             break
         case .KeychainError:
@@ -226,12 +226,12 @@ class WOLoginViewController: KeyboardViewController {
         case .SecurityError(let desc):
             showError(desc)
         case .PasscodeNotSet:
-            showError("Passcode not set".localized)
+            showError("id_passcode_not_set".localized)
         case .NotSupported:
-            showError("Auth not supported".localized)
+            showError("id_auth_not_supported".localized)
         case .ServiceNotAvailable:
             if AuthenticationTypeHandler.biometryType == .faceID || AuthenticationTypeHandler.biometryType == .touchID {
-                let method = AuthenticationTypeHandler.biometryType == .faceID ? "Face ID" : "Touch ID"
+                let method = AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id".localized : "id_touch_id".localized
                 let msg = "\(method) is not available.  It may have been set in a version prior to 4.1.8 and became unavailable after the app was uninstalled. Use your PIN to access and enable faceID again."
                 showError(msg.localized)
             } else {
@@ -243,7 +243,7 @@ class WOLoginViewController: KeyboardViewController {
     func presentAlertDialogFaceId() {
         let msg = "Biometric access disabled. Enable it from iOS settings"
         let alert = UIAlertController(title: "id_warning".localized, message: msg, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Open Settings".localized, style: .default) { _ in
+        alert.addAction(UIAlertAction(title: "id_open_settings".localized, style: .default) { _ in
             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
         })
         alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .destructive) { _ in })

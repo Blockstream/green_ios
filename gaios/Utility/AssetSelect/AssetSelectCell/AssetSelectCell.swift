@@ -33,7 +33,7 @@ class AssetSelectCell: UITableViewCell {
         }
         // Any AMP asset
         if model.anyAmp {
-            self.lblAsset.text = "Receive any Amp Asset".localized
+            self.lblAsset.text = "id_receive_any_amp_asset".localized
             self.imgView?.image = UIImage(named: "default_asset_amp_icon")!
             return
         }

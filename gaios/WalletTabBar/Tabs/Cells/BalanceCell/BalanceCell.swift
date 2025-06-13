@@ -29,7 +29,7 @@ class BalanceCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        lblBalanceTitle.text = "Total Bitcoin Balance".localized
+        lblBalanceTitle.text = "id_total_bitcoin_balance".localized
         btnExchange.setImage(UIImage(named: "ic_coins_exchange")?.maskWithColor(color: .white.withAlphaComponent(0.4)), for: .normal)
         lblLoadingAssets.text = "id_loading_assets".localized
         [lblBalanceTitle, lblBalanceFiat].forEach { $0?.setStyle(.txtSectionHeader) }

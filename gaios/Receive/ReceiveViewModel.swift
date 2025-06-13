@@ -90,7 +90,7 @@ class ReceiveViewModel {
 
     func validateHW() async throws -> Bool {
         guard let address = address else {
-            throw GaError.GenericError("Invalid address".localized)
+            throw GaError.GenericError("id_invalid_address".localized)
         }
         return try await BleHwManager.shared.validateAddress(account: account, address: address)
     }
@@ -286,8 +286,8 @@ class ReceiveViewModel {
 
     func dialogAccountsModel() -> DialogAccountsViewModel {
         return DialogAccountsViewModel(
-            title: "Account Selector",
-            hint: "Select the desired account you want to receive your funds.".localized,
+            title: "id_account_selector".localized,
+            hint: "id_choose_which_account_you_want".localized,
             isSelectable: true,
             assetId: asset,
             accounts: getAccounts(),

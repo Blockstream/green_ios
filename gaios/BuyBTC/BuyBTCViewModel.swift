@@ -50,8 +50,8 @@ class BuyBTCViewModel {
     var defaultProvider: String?
     var dialogAccountsModel: DialogAccountsViewModel {
         return DialogAccountsViewModel(
-            title: "Account Selector",
-            hint: "Select the desired account you want to receive your bitcoin.".localized,
+            title: "id_account_selector".localized,
+            hint: "id_choose_which_account_you_want".localized,
             isSelectable: true,
             assetId: AssetInfo.btcId,
             accounts: getAccounts(),
@@ -129,7 +129,7 @@ class BuyBTCViewModel {
     func widget(quote: MeldQuoteItem, amountStr: String) async throws -> String {
         let amt = amountStr.replacingOccurrences(of: ",", with: ".")
         guard let addressStr = address?.address else {
-           throw GaError.GenericError("Invalid address")
+            throw GaError.GenericError("id_invalid_address".localized)
         }
         let sessionParams = MeldSessionParams(
             serviceProvider: quote.serviceProvider,
@@ -158,7 +158,7 @@ class BuyBTCViewModel {
     }
     func validateHW() async throws -> Bool {
         guard let address else {
-            throw GaError.GenericError("Invalid address".localized)
+            throw GaError.GenericError("id_invalid_address".localized)
         }
         return try await BleHwManager.shared.validateAddress(account: account, address: address)
     }

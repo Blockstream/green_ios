@@ -93,17 +93,17 @@ class DialogCompareSecurityViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Security Level".localized
-        segmentedControl .setTitle("Mobile".localized, forSegmentAt: 0)
-        segmentedControl .setTitle("Hardware".localized, forSegmentAt: 1)
+        lblTitle.text = "id_security_level".localized
+        segmentedControl .setTitle("id_mobile".localized, forSegmentAt: 0)
+        segmentedControl .setTitle("id_hardware".localized, forSegmentAt: 1)
         switch state {
         case .mobile:
-            lblHint1.text = "Mobile".localized
-            lblHint2.text = "Security Level: 1".localized
-            lblInfo1.text = "Ideal for small amounts of bitcoin".localized
-            lblInfo2.text = "Convenient spending".localized
-            lblInfo3.text = "Keys stored on mobile device".localized
-            btnCta1.setTitle("Selected".localized, for: .normal)
+            lblHint1.text = "id_mobile".localized
+            lblHint2.text = "id_security_level_1".localized
+            lblInfo1.text = "id_ideal_for_small_amounts_of".localized
+            lblInfo2.text = "id_convenient_spending".localized
+            lblInfo3.text = "id_keys_stored_on_mobile_device".localized
+            btnCta1.setTitle("id_selected".localized, for: .normal)
             btnCta1.setStyle(.primaryDisabled)
             btnCta2.alpha = 0
             btnCta2.isEnabled = false
@@ -111,14 +111,14 @@ class DialogCompareSecurityViewController: UIViewController {
             iconPlus.isHidden = true
             ilSecLevel.image = UIImage(named: "il_sec_lev_mobile")
         case .hardware:
-            lblHint1.text = "Hardware".localized
-            lblHint2.text = "Security Level: 2".localized
-            lblInfo1.text = "Ideal for long-term bitcoin storage".localized
-            lblInfo2.text = "Mitigates common attacks risks".localized
-            lblInfo3.text = "Keys stored on specialized device".localized
-            btnCta1.setTitle("Setup Hardware Wallet".localized, for: .normal)
+            lblHint1.text = "id_hardware".localized
+            lblHint2.text = "id_security_level_2".localized
+            lblInfo1.text = "id_ideal_for_longterm_bitcoin".localized
+            lblInfo2.text = "id_mitigates_common_attacks_risks".localized
+            lblInfo3.text = "id_keys_stored_on_specialized".localized
+            btnCta1.setTitle("id_setup_hardware_wallet".localized, for: .normal)
             btnCta1.setStyle(.primary)
-            btnCta2.setStyle(.underline(txt: "Don’t have one? Buy a Jade".localized, color: UIColor.gAccent()))
+            btnCta2.setStyle(.underline(txt: "id_dont_have_one_buy_a_jade".localized, color: UIColor.gAccent()))
             btnCta2.alpha = 1
             btnCta2.isEnabled = true
             icon.isHidden = true
