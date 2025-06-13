@@ -114,7 +114,7 @@ class AccountNavigator {
             appDelegate.resolve2faOff()
             appDelegate.window?.endEditing(true)
         }
-        let wallets = AccountsRepository.shared.accounts.filter { $0.hidden == false}
+        let wallets = AccountsRepository.shared.accounts
         if wallets.isEmpty {
             // if there are no wallets
             navStarted()
