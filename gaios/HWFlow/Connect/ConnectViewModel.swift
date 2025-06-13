@@ -201,10 +201,13 @@ class ConnectViewModel: NSObject {
         wm.hwInterfaceResolver = HwPopupResolver()
         
         var credentials: Credentials?
+        
         if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: account.keychain) {
-            credentials = try? AuthenticationTypeHandler.getCredentials(
-                method: .AuthKeyWoCredentials,
-                for: account.keychain)
+            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
+            try await wm.loginWatchonly(credentials: credentials)
+        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: account.keychain) {
+            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
+            try await wm.loginWatchonly(credentials: credentials)
         } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain) {
             let session = wm.prominentSession!
             let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain)

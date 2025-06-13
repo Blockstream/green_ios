@@ -153,18 +153,34 @@ class WOLoginViewController: KeyboardViewController {
         return false
     }
 
+    func hasBiometricAuthenticationType() -> Bool {
+        if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: account.keychain) {
+            return true
+        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain) {
+            return true
+        } else {
+            return false
+        }
+    }
+
     func loginSinglesig() async throws {
+        if hasBiometricAuthenticationType() {
+            try await viewModel.loginSinglesig(for: self.account)
+            return
+        }
         switch AuthenticationTypeHandler.biometryType {
         case .faceID, .touchID:
             let evaluate = try? await authenticated()
             if evaluate ?? false {
                 try await viewModel.loginSinglesig(for: self.account)
+            } else {
+                throw AuthenticationTypeHandler.AuthError.DeniedByUser
             }
         default:
             try await viewModel.loginSinglesig(for: self.account)
         }
     }
-    
+
     func loginMultisig() async throws {
         let password = self.passwordTextField.text ?? ""
         try await self.viewModel.loginMultisig(for: self.account, password: password)

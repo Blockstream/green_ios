@@ -42,7 +42,7 @@ class ConnectViewController: HWFlowBaseViewController {
 
     private var selectedItem: ScanListItem?
     private var isJade: Bool { viewModel.isJade }
-    private var hasCredentials: Bool { viewModel.account.hasWoCredentials || viewModel.account.hasBioPin }
+    private var hasCredentials: Bool { viewModel.account.hasWoCredentials || viewModel.account.hasWoBioCredentials || viewModel.account.hasBioPin }
     private var isQRmode: Bool { viewModel.account.uuid == nil }
 
     var state: ConnectionState = .none {
@@ -148,17 +148,7 @@ class ConnectViewController: HWFlowBaseViewController {
         if viewModel.autologin {
             if hasCredentials {
                 Task { [weak self] in
-                    switch AuthenticationTypeHandler.biometryType {
-                    case .faceID, .touchID:
-                        let evaluate = try? await self?.authenticated()
-                        if evaluate ?? false {
-                            await self?.loginBiometric()
-                        } else {
-                            self?.state = .errorWatchonly
-                        }
-                    default:
-                        await self?.loginBiometric()
-                    }
+                    await self?.loginSinglesig()
                 }
             } else {
                 Task { [weak self] in
@@ -177,6 +167,24 @@ class ConnectViewController: HWFlowBaseViewController {
             return try await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Authentication")
         }
         return false
+    }
+
+    func loginSinglesig() async {
+        if self.viewModel.account.hasBioPin {
+            await loginBiometric()
+            return
+        }
+        switch AuthenticationTypeHandler.biometryType {
+        case .faceID, .touchID:
+            let evaluate = try? await authenticated()
+            if evaluate ?? false {
+                await loginBiometric()
+            } else {
+                state = .errorWatchonly
+            }
+        default:
+            await loginBiometric()
+        }
     }
 
     @MainActor
