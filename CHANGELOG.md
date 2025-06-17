@@ -3,10 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [5.0.4] - 2025-06-18
 
 ### Added
 - Reuse a buy provider that led to a successful purchase
+
+### Changed
+- Fixes on Watch Only jade wallet
 
 ## [5.0.3] - 2025-06-17
 
