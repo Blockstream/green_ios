@@ -89,8 +89,11 @@ public class AccountsRepository {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         try? await wm.unregisterLightning()
         await wm.removeLightning()
-        account.removePinKeychainData()
         account.removeBioKeychainData()
+        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyPIN, for: account.keychain)
+        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyBiometric, for: account.keychain)
+        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyWoBioCredentials, for: account.keychain)
+        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyWoCredentials, for: account.keychain)
         accounts.removeAll(where: { $0.id == account.id})
     }
 
