@@ -117,7 +117,7 @@ class ScanViewController: HWFlowBaseViewController {
 
     func setStyle() {
         btnTroubleshoot.setStyle(.inline)
-        btnConnectQr.setStyle(.outlinedWhite)
+        btnConnectQr.setStyle(.inline)
     }
 
     func next() {

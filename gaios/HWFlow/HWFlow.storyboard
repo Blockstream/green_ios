@@ -703,14 +703,14 @@
                                     <action selector="btnTroubleshoot:" destination="23i-a9-QU1" eventType="touchUpInside" id="rkt-T2-64O"/>
                                 </connections>
                             </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iBJ-HF-oHA" userLabel="Btn Connet Via QR">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iBJ-HF-oHA" userLabel="Btn Connet Via QR">
                                 <rect key="frame" x="20" y="744" width="374" height="50"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="9nY-6t-tsj"/>
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="-10" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                <state key="normal" title="btn_connect_via_qr" image="ic_qr_mode_mini">
+                                <state key="normal" title="btn_connect_via_qr">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
@@ -1676,7 +1676,6 @@
         <image name="ic_checkbox_on" width="12" height="12"/>
         <image name="ic_logo_blockstream" width="156" height="35"/>
         <image name="ic_pinserver_warn" width="70" height="70"/>
-        <image name="ic_qr_mode_mini" width="29" height="29"/>
         <image name="il_jade_normal_v1" width="880" height="880"/>
         <image name="il_jade_select_v1" width="880" height="880"/>
         <image name="il_jade_welcome_2" width="440" height="440"/>
