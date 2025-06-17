@@ -171,19 +171,23 @@ class ConnectViewController: HWFlowBaseViewController {
 
     func loginSinglesig() async {
         if self.viewModel.account.hasBioPin {
-            await loginBiometric()
-            return
-        }
-        switch AuthenticationTypeHandler.biometryType {
-        case .faceID, .touchID:
-            let evaluate = try? await authenticated()
-            if evaluate ?? false {
-                await loginBiometric()
-            } else {
-                state = .errorWatchonly
+            await loginBiometric(method: .AuthKeyBiometric)
+        } else if self.viewModel.account.hasManualPin {
+            await loginBiometric(method: .AuthKeyPIN)
+        } else if self.viewModel.account.hasWoBioCredentials {
+            await loginBiometric(method: .AuthKeyWoBioCredentials)
+        } else {
+            switch AuthenticationTypeHandler.biometryType {
+            case .faceID, .touchID:
+                let evaluate = try? await authenticated()
+                if evaluate ?? false {
+                    await loginBiometric(method: .AuthKeyWoCredentials)
+                } else {
+                    state = .errorWatchonly
+                }
+            default:
+                await loginBiometric(method: .AuthKeyWoCredentials)
             }
-        default:
-            await loginBiometric()
         }
     }
 
@@ -292,10 +296,7 @@ class ConnectViewController: HWFlowBaseViewController {
 
     @IBAction func retryWoBtnTapped(_ sender: Any) {
         Task {
-            let evalute = try? await authenticated()
-            if evalute ?? false {
-                await self.loginBiometric()
-            }
+            await self.loginSinglesig()
         }
     }
 
@@ -311,9 +312,9 @@ class ConnectViewController: HWFlowBaseViewController {
         }
     }
 
-    func loginBiometric() async {
+    func loginBiometric(method: AuthenticationTypeHandler.AuthType) async {
         let task = Task.detached { [weak self] in
-            try await self?.viewModel.loginJadeWatchonly()
+            try await self?.viewModel.loginJadeWatchonly(method: method)
         }
         switch await task.result {
         case .success:

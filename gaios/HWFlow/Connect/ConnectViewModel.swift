@@ -193,38 +193,33 @@ class ConnectViewModel: NSObject {
         }
     }
 
-    func loginJadeWatchonly() async throws {
+    func loginJadeWatchonly(method: AuthenticationTypeHandler.AuthType) async throws {
         updateState?(.watchonly)
         AnalyticsManager.shared.loginWalletStart()
         let wm = WalletManager(account: account, prominentNetwork: account.networkType)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = HwPopupResolver()
-        
-        var credentials: Credentials?
-        
-        if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: account.keychain) {
+        switch method {
+        case .AuthKeyWoCredentials:
             let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
+            updateState?(.login)
             try await wm.loginWatchonly(credentials: credentials)
-        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: account.keychain) {
+        case .AuthKeyWoBioCredentials:
             let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
+            updateState?(.login)
             try await wm.loginWatchonly(credentials: credentials)
-        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain) {
+        case .AuthKeyBiometric, .AuthKeyPIN:
             let session = wm.prominentSession!
-            let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain)
             AnalyticsManager.shared.loginWalletStart()
-            let method: AuthenticationTypeHandler.AuthType = enableBio ? .AuthKeyBiometric : .AuthKeyPIN
             let data = try AuthenticationTypeHandler.getPinData(method: method, for: account.keychain)
             try await session.connect()
             let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
-            credentials = try await session.decryptWithPin(decrypt)
-        }
-        guard let credentials = credentials else {
+            let credentials = try await session.decryptWithPin(decrypt)
+            updateState?(.login)
+            try await wm.loginWatchonly(credentials: credentials)
+        default:
             throw HWError.Declined("")
         }
-        updateState?(.login)
-        _ = try await wm.loginWatchonly(
-            credentials: credentials,
-            lightningCredentials: nil)
         AccountsRepository.shared.current = wm.account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)
