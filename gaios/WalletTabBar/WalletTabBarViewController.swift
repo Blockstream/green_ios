@@ -99,14 +99,14 @@ class WalletTabBarViewController: UITabBarController {
             UIApplication.shared.delegate?.window??.rootViewController?.present(alert, animated: true, completion: nil)
         }
     }
-    
+
     @objc func switchNetwork() {
         let storyboard = UIStoryboard(name: "DrawerNetworkSelection", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DrawerNetworkSelection") as? DrawerNetworkSelectionViewController {
             vc.transitioningDelegate = self
             vc.modalPresentationStyle = .custom
             vc.delegate = self
-            //navigationController?.pushViewController(vc, animated: true)
+            // navigationController?.pushViewController(vc, animated: true)
             present(vc, animated: true, completion: nil)
         }
     }
@@ -291,7 +291,7 @@ class WalletTabBarViewController: UITabBarController {
     func getCountlyRemoteConfigEnableBuyIosUk() -> Bool {
         return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigEnableBuyIosUk) as? Bool ?? false
     }
-    
+
     func getBitcoinSubaccounts() -> [WalletItem] {
         WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }

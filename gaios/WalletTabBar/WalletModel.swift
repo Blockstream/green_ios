@@ -87,8 +87,10 @@ class WalletModel {
     }
     
     func fetchBalances(discovery: Bool) async throws {
-        let subaccounts = try await wm?.subaccounts(discovery)
-        if let balances = try await wm?.balances(subaccounts: subaccounts ?? []) {
+        var subaccounts: [WalletItem] = try await wm?.subaccounts(discovery) ?? []
+        // to skip hidden accounts coins 
+        subaccounts = subaccounts.filter { !($0.hidden) }
+        if let balances = try await wm?.balances(subaccounts: subaccounts) {
             cachedBalance = AssetAmountList(balances)
         }
         self.callAnalytics(subaccounts)

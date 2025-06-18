@@ -425,8 +425,9 @@ extension TabSettingsVC: DenominationExchangeViewControllerDelegate {
 
 extension TabSettingsVC: AccountArchiveViewControllerDelegate {
     func archiveDidChange() {
-        viewModel.load()
-        tableView.reloadData()
+        Task { [weak self] in
+            await self?.walletTab.reload(discovery: false)
+        }
     }
 }
 
