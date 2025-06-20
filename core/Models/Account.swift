@@ -109,6 +109,9 @@ public struct Account: Codable, Equatable {
 
     public var isHW: Bool { isJade || isLedger }
 
+    public func hasAuthentication(_ method: AuthenticationTypeHandler.AuthType) -> Bool {
+        AuthenticationTypeHandler.findAuth(method: method, forNetwork: keychain)
+    }
     public var hasManualPin: Bool {
         get {
             return AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: keychain)

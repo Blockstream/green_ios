@@ -52,7 +52,6 @@ class LoginViewController: UIViewController {
         }
     }
     private var showLockPage: Bool {
-        !emergencyRestore &&
         (account.attempts >= self.MAXATTEMPTS  || account.hasPin == false)
     }
     @IBAction func tap1(_ sender: Any) {
@@ -178,7 +177,7 @@ class LoginViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(progressTor), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
-        updateAttemptsLabel()
+        reload()
         reloadPin()
     }
 
@@ -219,7 +218,7 @@ class LoginViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             
-            vc.viewModel = DialogListViewModel(title: "More Options", type: .loginPrefs, items: LoginPrefs.getItems(isWatchOnly: false))
+            vc.viewModel = DialogListViewModel(title: "More Options", type: .loginPrefs, items: LoginPrefs.getItems(isWatchOnly: false, isLocked: showLockPage))
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
@@ -261,7 +260,7 @@ class LoginViewController: UIViewController {
             credentials.bip39Passphrase = bip39passphrase
             successDecrypt(credentials)
         case .failure(let error):
-            failure(error: error, enableFailingCounter: false)
+            failure(error: error, enableFailingCounter: true)
         }
     }
     
@@ -385,8 +384,8 @@ class LoginViewController: UIViewController {
             WalletsRepository.shared.delete(for: account)
             self.reload()
         } else {
+            self.reload()
             self.pinCode = ""
-            self.updateAttemptsLabel()
             self.reloadPin()
         }
     }
@@ -404,25 +403,17 @@ class LoginViewController: UIViewController {
     }
 
     func reload() {
-        let showLockPage = !emergencyRestore && (account.attempts >= self.MAXATTEMPTS  || account.hasPin == false)
         cardEnterPin.isHidden = showLockPage
         lblTitle.isHidden = showLockPage
         cardWalletLock.isHidden = !showLockPage
-        attempts.isHidden = emergencyRestore || account.attempts == 0
-        attemptsView.isHidden = emergencyRestore || account.attempts == 0
-    }
-
-    func updateAttemptsLabel() {
-        let pinattempts = account.attempts
-        if pinattempts == MAXATTEMPTS {
-            reload()
-        } else if MAXATTEMPTS - pinattempts == 1 {
+        attempts.isHidden = account.attempts == 0
+        attemptsView.isHidden = account.attempts == 0
+        if account.attempts == MAXATTEMPTS {
+        } else if MAXATTEMPTS - account.attempts == 1 {
             attempts.text = "id_last_attempt_if_failed_you_will".localized
         } else {
-            attempts.text = String(format: "id_attempts_remaining_d".localized, MAXATTEMPTS - pinattempts)
+            attempts.text = String(format: "id_attempts_remaining_d".localized, MAXATTEMPTS - account.attempts)
         }
-        attempts.isHidden = emergencyRestore || pinattempts == 0
-        attemptsView.isHidden = emergencyRestore || pinattempts == 0
     }
 
     func tapNumber(_ number: String) {
@@ -583,7 +574,8 @@ extension LoginViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .loginPrefs:
-            switch LoginPrefs(rawValue: index) {
+            let items = LoginPrefs.getPrefs(isWatchOnly: account.isWatchonly, isLocked: showLockPage)
+            switch items[index] {
             case .emergency:
                 showEmergencyDialog()
             case .passphrase:
@@ -592,8 +584,6 @@ extension LoginViewController: DialogListViewControllerDelegate {
                 walletRename()
             case .delete:
                 walletDelete()
-            case .none:
-                break
             }
         default:
             break

@@ -5,7 +5,7 @@ enum LoginPrefs: Int, CaseIterable {
     case emergency
     case edit
     case delete
-
+    
     var name: String {
         switch self {
         case .passphrase:
@@ -18,7 +18,7 @@ enum LoginPrefs: Int, CaseIterable {
             return "id_remove_wallet".localized
         }
     }
-
+    
     var icon: UIImage {
         switch self {
         case .passphrase:
@@ -32,10 +32,13 @@ enum LoginPrefs: Int, CaseIterable {
         }
     }
 
-    static func getItems(isWatchOnly: Bool) -> [DialogListCellModel] {
-        var items: [DialogListCellModel] = []
+    static func getPrefs(isWatchOnly: Bool, isLocked: Bool) -> [LoginPrefs] {
+        return isWatchOnly || isLocked ? [.edit, .delete] : LoginPrefs.allCases
+    }
 
-        let data: [LoginPrefs] = isWatchOnly ? [.edit, .delete] : LoginPrefs.allCases
+    static func getItems(isWatchOnly: Bool, isLocked: Bool) -> [DialogListCellModel] {
+        var items: [DialogListCellModel] = []
+        let data = getPrefs(isWatchOnly: isWatchOnly, isLocked: isLocked)
         data.forEach {
             items.append(DialogListCellModel(type: .list,
                                              icon: $0.icon,

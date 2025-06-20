@@ -1,4 +1,4 @@
-GA_APP_NAME = Blockstream
+GA_APP_NAME = BlksDev
 GA_APP_BUNDLE_ID = io.blockstream.greendev
 GA_APP_ICON = AppIcon
 COUNTLY_APP_HOST = https:\/\/countly.blockstream.com
