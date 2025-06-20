@@ -42,9 +42,10 @@ class OnboardViewModel {
         // Avoid to restore an existing wallets
         let xpub = try await getXpubHashId(session: wm.prominentSession!, credentials: credentials)
         let prevAccounts = AccountsRepository.shared.find(xpubHashId: xpub ?? "")?
-            .filter { $0.networkType == wm.account.networkType &&
-                !$0.isHW && !$0.isWatchonly } ?? []
-        if let prevAccount = prevAccounts.first, prevAccount.id != wm.account.id {
+            .filter {
+                $0.networkType == wm.account.networkType &&
+                !$0.isHW && !$0.isWatchonly && $0.id != wm.account.id && $0.id != OnboardViewModel.restoreAccountId } ?? []
+        if !prevAccounts.isEmpty {
             throw LoginError.walletsJustRestored()
         }
     }
