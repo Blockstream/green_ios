@@ -149,6 +149,8 @@ class ConnectViewModel: NSObject {
         // login
         updateState?(.login)
         let wm = try await bleHwManager.login(account: account)
+        // use updated account
+        self.account = wm.account
         AccountsRepository.shared.current = account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)
@@ -187,6 +189,8 @@ class ConnectViewModel: NSObject {
         // login
         updateState?(.login)
         let wm = try await bleHwManager.login(account: account)
+        // use updated account
+        self.account = wm.account
         AccountsRepository.shared.current = account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)

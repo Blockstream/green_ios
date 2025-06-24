@@ -1,5 +1,7 @@
 import Foundation
 import UIKit
+import core
+
 class Promo: Decodable {
     let is_visible: Bool?
     let id: String?
@@ -21,6 +23,7 @@ class Promo: Decodable {
     var overline_small: String?
     var overline_large: String?
     let video_large: String?
+    let target: String?
 
     var thumb: UIImage? {
         if let imgData {
@@ -40,6 +43,29 @@ class Promo: Decodable {
         overline_large = overline_large?.htmlDecoded
     }
     func isVisible() -> Bool {
+        let hwVisibleWallets = AccountsRepository.shared.hwVisibleAccounts
+        if let target {
+            // jade plus users only
+            if target == "jadeplus_user" {
+                let v_2s = hwVisibleWallets.filter { ($0.boardType == .v2) }.count
+                if v_2s == 0 {
+                    return false
+                }
+            } else if target == "only_sww" {
+                // if user has hw, don't show
+                if hwVisibleWallets.count > 0 {
+                    return false
+                }
+            } else if target == "jade_user" {
+                // if user has v1 but not v2 dont' show
+                let v_1s = hwVisibleWallets.filter { ($0.boardType == .v1 || $0.boardType == .v1_1) }.count
+                let v_2s = hwVisibleWallets.filter { ($0.boardType == .v2) }.count
+                if v_1s > 0 && v_2s == 0 {
+                } else {
+                    return false
+                }
+            }
+        }
         if is_visible == true &&
             id?.isEmpty == false &&
             screens?.isEmpty == false {
