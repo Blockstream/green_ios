@@ -5,49 +5,6 @@ default_platform(:ios)
 
 platform :ios do
 
-  desc "Get certificates"
-  lane :certificates do
-    sync_code_signing(
-      type: "development",
-      app_identifier: ['io.blockstream.greendev', 'io.blockstream.greendev.NotificationService'],
-      force_for_new_devices: true,
-      readonly: true
-    )
-    sync_code_signing(
-      type: "adhoc",
-      app_identifier: ['io.blockstream.greendev', 'io.blockstream.greendev.NotificationService'],
-      force_for_new_devices: true,
-      readonly: true
-    )
-    sync_code_signing(
-      type: "appstore",
-      app_identifier: ['io.blockstream.green', 'io.blockstream.green.NotificationService'],
-      readonly: true
-    )
-  end
-
-  desc "Generate new certificates"
-  lane :generate_new_certificates do
-    sync_code_signing(
-      type: "development",
-      app_identifier: ['io.blockstream.greendev', 'io.blockstream.greendev.NotificationService'],
-      force_for_new_devices: true,
-      readonly: false
-    )
-    sync_code_signing(
-      type: "adhoc",
-      app_identifier: ['io.blockstream.greendev', 'io.blockstream.greendev.NotificationService'],
-      force_for_new_devices: true,
-      readonly: false
-    )
-    sync_code_signing(
-      type: "appstore",
-      app_identifier: ['io.blockstream.green', 'io.blockstream.green.NotificationService'],
-      force_for_new_devices: true,
-      readonly: false
-    )
-  end
-
   desc "Development release"
   lane :dev_release do
   
@@ -67,11 +24,20 @@ platform :ios do
       output_name: "Green-dev.ipa",
       disable_package_automatic_updates: true,
       export_method: "ad-hoc",
+      export_team_id: "D9W37S9468",
       export_options: {
         provisioningProfiles: {
           "io.blockstream.greendev" => "match AdHoc io.blockstream.greendev",
           "io.blockstream.greendev.NotificationService" => "match AdHoc io.blockstream.greendev.NotificationService"
         }
+      }
+    )
+    resign(
+      ipa: "./dev/Green-dev.ipa",
+      signing_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)",
+      provisioning_profile: {
+        "io.blockstream.green" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/aca2f9e9-b91a-4d52-a484-a8dcdc0423e3.mobileprovision",
+        "io.blockstream.green.NotificationService" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/d4e9c171-bb09-49e5-97cc-fd23abceeff4.mobileprovision"
       }
     )
   end
@@ -95,11 +61,20 @@ platform :ios do
       output_name: "Green.ipa",
       disable_package_automatic_updates: true,
       export_method: "app-store",
+      export_team_id: "D9W37S9468",
       export_options: {
         provisioningProfiles: {
           "io.blockstream.green" => "match AppStore io.blockstream.green",
           "io.blockstream.green.NotificationService" => "match AppStore io.blockstream.green.NotificationService"
         }
+      }
+    )
+    resign(
+      ipa: "./prod/Green.ipa",
+      signing_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)",
+      provisioning_profile: {
+        "io.blockstream.green" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/4d77aeda-c66b-4e3b-ae12-a63caf942b94.mobileprovision",
+        "io.blockstream.green.NotificationService" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/660c3b5b-778f-4d53-80ed-a48ca740ed34.mobileprovision"
       }
     )
   end
@@ -123,125 +98,6 @@ platform :ios do
     )
   end
 
-  desc "Build unsigned dev release"
-  lane :build_unsigned_dev_release do
-    build_ios_app(
-      configuration: "Staging",
-      scheme: "gaios",
-      project: "gaios.xcodeproj",
-      clean: true,
-      output_directory: "./dev",
-      output_name: "Green-dev.ipa",
-      include_symbols: true,
-      include_bitcode: false,
-      build_path: "./dev",
-      archive_path: "./dev/Green.xcarchive",
-      export_method: "ad-hoc",
-      disable_package_automatic_updates: true,
-      skip_codesigning: true,
-      skip_package_ipa: true
-    )
-  end
-
-  desc "Build unsigned prod release"
-  lane :build_unsigned_prod_release do
-    build_ios_app(
-      configuration: "Release",
-      scheme: "gaios",
-      project: "gaios.xcodeproj",
-      clean: true,
-      output_directory: "./prod",
-      output_name: "Green.ipa",
-      include_symbols: true,
-      include_bitcode: false,
-      build_path: "./prod",
-      archive_path: "./prod/Green.xcarchive",
-      export_method: "app-store",
-      disable_package_automatic_updates: true,
-      skip_codesigning: true,
-      skip_package_ipa: true
-    )
-  end
-
-  desc "Sign dev release"
-  lane :sign_dev_release do
-
-    update_code_signing_settings(
-      use_automatic_signing: false,
-      path: "gaios.xcodeproj",
-      code_sign_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)"
-    )
-
-    build_ios_app(
-      configuration: "Staging",
-      scheme: "gaios",
-      project: "gaios.xcodeproj",
-      clean: true,
-      output_directory: "./dev",
-      output_name: "Green-dev.ipa",
-      build_path: "./dev",
-      archive_path: "./dev/Green.xcarchive",
-      export_method: "ad-hoc",
-      export_team_id: "D9W37S9468",
-      disable_package_automatic_updates: true,
-      skip_build_archive: true,
-      export_options: {
-         provisioningProfiles: {  
-          "io.blockstream.greendev" => "match AdHoc io.blockstream.greendev", 
-          "io.blockstream.greendev.NotificationService" => "match AdHoc io.blockstream.greendev.NotificationService"
-        }
-      }
-    )
-    resign(
-      ipa: "./dev/Green.ipa",
-      signing_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)",
-      provisioning_profile: {
-        "io.blockstream.green" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/aca2f9e9-b91a-4d52-a484-a8dcdc0423e3.mobileprovision",
-        "io.blockstream.green.NotificationService" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/d4e9c171-bb09-49e5-97cc-fd23abceeff4.mobileprovision"
-      }
-    )
-  end
-
-  desc "Sign prod release"
-  lane :sign_prod_release do
-
-    update_code_signing_settings(
-      use_automatic_signing: false,
-      path: "gaios.xcodeproj",
-      code_sign_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)"
-    )
-
-    build_ios_app(
-      configuration: "Release",
-      scheme: "gaios",
-      project: "gaios.xcodeproj",
-      clean: true,
-      output_directory: "./prod",
-      output_name: "Green.ipa",
-      build_path: "./prod",
-      archive_path: "./prod/Green.xcarchive",
-      export_method: "app-store",
-      export_team_id: "D9W37S9468",
-      disable_package_automatic_updates: true,
-      skip_build_archive: true,
-      export_options: {
-        provisioningProfiles: { 
-          "io.blockstream.green" => "match AppStore io.blockstream.green", 
-          "io.blockstream.green.NotificationService" => "match AppStore io.blockstream.green.NotificationService"
-        }
-      }
-    )
-    resign(
-      ipa: "./prod/Green.ipa",
-      signing_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)",
-      provisioning_profile: {
-        "io.blockstream.green" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/4d77aeda-c66b-4e3b-ae12-a63caf942b94.mobileprovision",
-        "io.blockstream.green.NotificationService" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/660c3b5b-778f-4d53-80ed-a48ca740ed34.mobileprovision"
-      }
-    )
-
-  end
-
   desc "Upload apple store"
   lane :upload_apple_store do
     upload_to_testflight(
@@ -251,13 +107,5 @@ platform :ios do
       username: ENV['FASTLANE_USER'],
       skip_waiting_for_build_processing: true
     )
-  end
-  
-
-  desc "Run UI tests"
-  lane :ui_tests do
-    run_tests(workspace: "gaios.xcworkspace",
-              devices: ["iPhone 11"],
-              scheme: "gaios")
   end
 end

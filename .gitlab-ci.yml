@@ -1,9 +1,7 @@
 stages:
     - format
     - build
-    - sign
     - distribute_qa
-    - upload
     - deploy
 
 # FORMAT
@@ -33,7 +31,7 @@ build_strings:
     paths:
       - translations
   tags:
-    - osx
+    - mini
   variables:
     TX_TOKEN: $TX_TOKEN
   script:
@@ -42,7 +40,7 @@ build_strings:
     - cp -rf gaios/*.lproj translations
     - rm -rf translations/Base.lproj
 
-build_unsigned_debug:
+unsigned_debug:
   stage: build
   when: manual
   extends: .setup_env
@@ -59,7 +57,7 @@ development:
   stage: build
   extends: .setup_env
   tags:
-    - osx-m1
+    - mini
   artifacts:
     name: "green-ios-development-$CI_COMMIT_REF_NAME"
     expire_in: 1 day
@@ -78,7 +76,7 @@ production:
   when: manual
   extends: .setup_env
   tags:
-    - osx-m1
+    - osx-ia
   artifacts:
     name: "green-ios-production-$CI_COMMIT_REF_NAME"
     expire_in: 1 day
@@ -93,78 +91,6 @@ production:
     - ruby --version && gem --version && fastlane --version
     - fastlane prod_release
 
-build_dev_release:
-  stage: build
-  when: manual
-  extends: .setup_env
-  tags:
-    - mini
-  artifacts:
-    name: "green-ios-dev-$CI_COMMIT_REF_NAME"
-    expire_in: 1 day
-    when: on_success
-    paths:
-      - dev
-  variables:
-    GDK_COMMIT: latest
-  script:
-    - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
-    - ./tools/fetch_gdk_binaries.sh $GDK_OPT
-    - fastlane build_unsigned_dev_release
-
-build_prod_release:
-  stage: build
-  when: manual
-  extends: .setup_env
-  tags:
-    - mini
-  artifacts:
-    name: "green-ios-$CI_COMMIT_REF_NAME"
-    expire_in: 1 day
-    when: on_success
-    paths:
-      - prod
-  variables:
-    GDK_COMMIT: latest
-  script:
-    - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
-    - ./tools/fetch_gdk_binaries.sh $GDK_OPT
-    - fastlane build_unsigned_prod_release
-  
-# SIGN
-
-sign_dev_release:
-  stage: sign
-  needs: ["build_dev_release"]
-  tags:
-    - osxsigner
-  artifacts:
-    name: "green-ios-dev-$CI_COMMIT_REF_NAME"
-    expire_in: 1 day
-    when: on_success
-    paths:
-      - dev
-  script:
-    - fastlane sign_dev_release
-  after_script:
-    - rm -rf dev/Green.xcarchive
-
-sign_prod_release:
-  stage: sign
-  needs: ["build_prod_release"]
-  tags:
-    - osxsigner
-  artifacts:
-    name: "green-ios-$CI_COMMIT_REF_NAME"
-    expire_in: 1 day
-    when: on_success
-    paths:
-      - prod
-  script:
-    - fastlane sign_prod_release
-  after_script:
-    - rm -rf prod/Green.xcarchive
-
 # UPLOAD
 .distribute: &distribute
   - ./tools/distribute.sh --app **/*.ipa --dest $FOLDER --url $LINK
@@ -175,31 +101,11 @@ sign_prod_release:
   - COUNTLY_UPLOADER=$(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1)
   - find ./tmp -name \*.dSYM -exec $COUNTLY_UPLOADER $COUNTLY_APP_HOST $COUNTLY_APP_KEY {} \;
 
-distribute_dev:
-  stage: distribute_qa
-  needs: ["sign_dev_release"]
-  tags:
-    - osxsigner
-  artifacts:
-    name: "green-ios-dev-$CI_COMMIT_REF_NAME"
-    expire_in: 1 day
-    when: on_success
-    paths:
-      - dev
-  variables:
-    COUNTLY_APP_KEY: $COUNTLY_APP_KEY_DEV
-    COUNTLY_APP_HOST: $COUNTLY_APP_HOST
-    FOLDER: "dev"
-    LINK: "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev"
-  script:
-    - *upload_countly
-    - *distribute
-  
 distribute_development:
   stage: distribute_qa
   needs: ["development"]
   tags:
-    - osxsigner
+    - mini
   artifacts:
     name: "green-ios-development-$CI_COMMIT_REF_NAME"
     expire_in: 1 day
@@ -215,32 +121,11 @@ distribute_development:
     - *upload_countly
     - *distribute
 
-distribute_prod:
-  stage: distribute_qa
-  needs: 
-  needs: ["sign_prod_release"]
-  tags:
-    - osxsigner
-  artifacts:
-    name: "green-ios-$CI_COMMIT_REF_NAME"
-    expire_in: 1 day
-    when: on_success
-    paths:
-      - prod
-  variables:
-    COUNTLY_APP_KEY: $COUNTLY_APP_KEY_PROD
-    COUNTLY_APP_HOST: $COUNTLY_APP_HOST
-    FOLDER: "prod"
-    LINK: "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod"
-  script:
-    - *upload_countly
-    - *distribute
-
 distribute_production:
   stage: distribute_qa
   needs: ["production"]
   tags:
-    - osxsigner
+    - mini
   artifacts:
     name: "green-ios-production-$CI_COMMIT_REF_NAME"
     expire_in: 1 day
@@ -258,27 +143,12 @@ distribute_production:
 
 # STORE
 
-upload_apple_store_prod:
-  when: manual
-  stage: deploy
-  needs: ["distribute_prod"]
-  tags:
-    - osxsigner
-  artifacts:
-    name: "green-ios-$CI_COMMIT_REF_NAME"
-    expire_in: 1 day
-    when: on_success
-    paths:
-      - prod
-  script:
-    - fastlane upload_apple_store
-
-upload_apple_store_production:
+upload_apple_store:
   when: manual
   stage: deploy
   needs: ["distribute_production"]
   tags:
-    - osx-m1
+    - osx-ia
   artifacts:
     name: "green-ios-production-$CI_COMMIT_REF_NAME"
     expire_in: 1 day
@@ -286,7 +156,7 @@ upload_apple_store_production:
     paths:
       - prod
   script:
-    - fastlane upload_apple_store
+    - fastlane upload_apple_store --verbose
   timeout: 2 hours
 
 
@@ -301,36 +171,12 @@ upload_apple_store_production:
     - gsutil cp -r $CI_PROJECT_DIR/$FOLDER gs://$URLPATH
     - echo "https://storage.googleapis.com/$URLPATH/index.html"
 
-cp_gcloud_dev:
-  image: blockstream/gcloud-docker-tf:1.1.7
-  needs: ["distribute_dev"]
-  tags:
-    - ga
-  stage: upload
-  variables:
-    FOLDER: "dev"
-    URLPATH: "green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev"
-  script:
-    - *cp_gcloud
-  
-cp_gcloud_prod:
-  image: blockstream/gcloud-docker-tf:1.1.7
-  needs: ["distribute_prod"]
-  tags:
-    - ga
-  stage: upload
-  variables:
-    FOLDER: "prod"
-    URLPATH: "green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod"
-  script:
-    - *cp_gcloud
-
 cp_gcloud_development:
   image: blockstream/gcloud-docker-tf:1.1.7
   needs: ["distribute_development"]
   tags:
     - ga
-  stage: upload
+  stage: deploy
   variables:
     FOLDER: "dev"
     URLPATH: "green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev"
@@ -342,7 +188,7 @@ cp_gcloud_production:
   needs: ["distribute_production"]
   tags:
     - ga
-  stage: upload
+  stage: deploy
   variables:
     FOLDER: "prod"
     URLPATH: "green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod"
