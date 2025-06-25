@@ -3,10 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [5.0.6] - 2025-07-02
 
-### Changed
-- Update on emergency restore wallet
+### Fixed
+- Fix recovery phrase check in login view
+- Fix restore after all PIN attempts failed
+- Fix faceID login for some old wallets
 
 ## [5.0.4] - 2025-06-18
 
