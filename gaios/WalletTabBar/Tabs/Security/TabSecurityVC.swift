@@ -10,10 +10,11 @@ class TabSecurityVC: TabViewController {
     var backupCardCellModel = [AlertCardCellModel]()
     var unlockCellModel: [PreferenceCellModel] {
         var list = [PreferenceCellModel]()
-        let hasBiometricUnlock = walletModel.wm?.account.hasBioPin == true || walletModel.wm?.account.hasWoCredentials == true
+        let hasBiometricUnlock = walletModel.wm?.account.hasBioPin == true || walletModel.wm?.account.hasWoBioCredentials == true
         let hasManualPin = walletModel.wm?.account.hasManualPin == true
         let isWatchonly = walletModel.wm?.isWatchonly ?? false
-        if !isWatchonly {
+        let isHW = walletModel.wm?.isHW ?? false
+        if !isWatchonly && !isHW {
             list.append(PreferenceCellModel(preferenceType: .bio, state: hasBiometricUnlock ? .on : .off))
             list.append(PreferenceCellModel(preferenceType: .pin, state: hasManualPin ? .on : .off))
         }
