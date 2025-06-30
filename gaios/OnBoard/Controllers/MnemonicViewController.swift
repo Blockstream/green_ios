@@ -176,7 +176,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     }
 
     func restoreWallet(mnemonic: String, password: String?) async {
-        startLoader()
+        startLoader(message: "id_restoring_your_wallet".localized, isRive: true)
         let task = Task.detached { [weak self] in
             let credentials = Credentials(mnemonic: mnemonic, password: password)
             OnboardViewModel.credentials = credentials
