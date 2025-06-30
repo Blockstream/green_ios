@@ -137,11 +137,17 @@ class BiometricLoginViewController: UIViewController {
         case .SecurityError(let desc):
             presentBioAuthError(desc)
         case .PasscodeNotSet:
-            presentBioAuthError("Passcode not set".localized)
+            presentBioAuthError("Passcode not set".localized, enableReset: false)
         case .NotSupported:
-            presentBioAuthError("Auth not supported".localized)
+            presentBioAuthError("Auth not supported".localized, enableReset: false)
         case .ServiceNotAvailable:
-            presentBioAuthError("Service not available".localized)
+            if AuthenticationTypeHandler.biometryType == .faceID || AuthenticationTypeHandler.biometryType == .touchID {
+                let method = AuthenticationTypeHandler.biometryType == .faceID ? "Face ID" : "Touch ID"
+                let msg = "\(method) is not available.  It may have been set in a version prior to 4.1.8 and became unavailable after the app was uninstalled. Use your PIN to access and enable faceID again."
+                presentBioAuthError(msg.localized, enableReset: false)
+            } else {
+                presentBioAuthError("Access method not supported".localized, enableReset: false)
+            }
         }
     }
 

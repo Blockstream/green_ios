@@ -203,9 +203,52 @@ class WOLoginViewController: KeyboardViewController {
             AnalyticsManager.shared.importWallet(account: account)
         case .failure(let error):
             stopLoader()
-            showError(error)
+            if let error = error as? AuthenticationTypeHandler.AuthError {
+                failureAuthError(error: error)
+            } else {
+                showError(error)
+            }
             AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: error.description())
             WalletsRepository.shared.delete(for: self.account)
+        }
+    }
+
+    func failureAuthError(error: AuthenticationTypeHandler.AuthError) {
+        switch error {
+        case .DeniedByUser:
+            presentAlertDialogFaceId()
+        case .LockedOut:
+            showError("Too many attempts. Retry later".localized)
+        case .CanceledByUser:
+            break
+        case .KeychainError:
+            showError(error.description())
+        case .SecurityError(let desc):
+            showError(desc)
+        case .PasscodeNotSet:
+            showError("Passcode not set".localized)
+        case .NotSupported:
+            showError("Auth not supported".localized)
+        case .ServiceNotAvailable:
+            if AuthenticationTypeHandler.biometryType == .faceID || AuthenticationTypeHandler.biometryType == .touchID {
+                let method = AuthenticationTypeHandler.biometryType == .faceID ? "Face ID" : "Touch ID"
+                let msg = "\(method) is not available.  It may have been set in a version prior to 4.1.8 and became unavailable after the app was uninstalled. Use your PIN to access and enable faceID again."
+                showError(msg.localized)
+            } else {
+                showError("Access method not supported".localized)
+            }
+        }
+    }
+
+    func presentAlertDialogFaceId() {
+        let msg = "Biometric access disabled. Enable it from iOS settings"
+        let alert = UIAlertController(title: "id_warning".localized, message: msg, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Open Settings".localized, style: .default) { _ in
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+        })
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .destructive) { _ in })
+        DispatchQueue.main.async {
+            self.present(alert, animated: true, completion: nil)
         }
     }
 
