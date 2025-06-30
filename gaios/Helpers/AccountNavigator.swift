@@ -125,22 +125,31 @@ class AccountNavigator {
         }
     }
 
+    private static var firstInitialization: Bool {
+        get { !UserDefaults.standard.bool(forKey: AppStorageConstants.firstInitialization.rawValue) }
+        set { UserDefaults.standard.set(newValue, forKey: AppStorageConstants.firstInitialization.rawValue) }
+    }
+
+    private static var v5Triggered: Bool {
+        get { !UserDefaults.standard.bool(forKey: AppStorageConstants.v5Triggered.rawValue) }
+        set { UserDefaults.standard.set(newValue, forKey: AppStorageConstants.v5Triggered.rawValue) }
+    }
+
     @MainActor
     static func navFirstPage() {
         let wallets = AccountsRepository.shared.accounts
+        let showV5UpgradeScreen = !firstInitialization && !v5Triggered
+        v5Triggered = true
+        firstInitialization = true
         if wallets.isEmpty {
             // if there are no wallets
-            UserDefaults.standard.set(true, forKey: AppStorageConstants.v5Treiggered.rawValue)
             navStarted()
-        } else if wallets.count == 1, let walletId = wallets.first?.id {
-            if UserDefaults.standard.bool(forKey: AppStorageConstants.v5Treiggered.rawValue) != true {
-                navV5()
-            } else {
-                navLogin(accountId: walletId)
-            }
+        } else if showV5UpgradeScreen {
+            // show v5 upgrade screen
+            navV5()
         } else {
-            if UserDefaults.standard.bool(forKey: AppStorageConstants.v5Treiggered.rawValue) != true {
-                navV5()
+            if wallets.count == 1, let walletId = wallets.first?.id {
+                navLogin(accountId: walletId)
             } else {
                 navHome()
             }

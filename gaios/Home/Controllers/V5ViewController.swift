@@ -16,7 +16,7 @@ class V5ViewController: UIViewController {
         lblTitle.setStyle(.subTitle)
         lblHint.setStyle(.txtCard)
         btnGetStarted.setStyle(.primary)
-        UserDefaults.standard.set(true, forKey: AppStorageConstants.v5Treiggered.rawValue)
+        UserDefaults.standard.set(true, forKey: AppStorageConstants.v5Triggered.rawValue)
     }
 
     override func viewWillAppear(_ animated: Bool) {
