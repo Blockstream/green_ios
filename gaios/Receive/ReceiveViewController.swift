@@ -44,8 +44,8 @@ class ReceiveViewController: KeyboardViewController {
     var viewModel: ReceiveViewModel!
     weak var verifyOnDeviceViewController: HWDialogVerifyOnDeviceViewController?
 
-    var hideVerify: Bool {
-        return !(viewModel.wm.account.isJade && !viewModel.wm.isWatchonly && !viewModel.account.isLightning)
+    var showVerify: Bool {
+        return viewModel.wm.account.isJade && !viewModel.account.isLightning
     }
 
     override func viewDidLoad() {
@@ -122,7 +122,7 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func setStyle() {
-        btnShare.setStyle(hideVerify ? .primary : .outlined)
+        btnShare.setStyle(!showVerify ? .primary : .outlined)
         btnShare.setTitleColor(.white, for: .normal)
         btnOnChain.semanticContentAttribute = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
         btnVerify.setStyle(.primary)
@@ -156,7 +156,7 @@ class ReceiveViewController: KeyboardViewController {
             btnConfirm.isHidden = true
             btnShare.isHidden = false
         }
-        btnVerify.isHidden = hideVerify
+        btnVerify.isHidden = !showVerify
         btnOnChain.setTitle(viewModel.type == .bolt11 ? "id_show_onchain_address".localized : "id_show_lightning_invoice".localized, for: .normal)
         accountStack.isHidden = true
         reloadNavigationBtns()
