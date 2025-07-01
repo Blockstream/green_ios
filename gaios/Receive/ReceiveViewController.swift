@@ -212,13 +212,25 @@ class ReceiveViewController: KeyboardViewController {
 
     @MainActor
     func error(_ err: Error) {
-         let msg = err.description()
+        var msg = err.description()
         if msg.contains("Swap in progress") {
-            showError("id_there_is_already_a_swap_in".localized)
-            return
+            msg = "id_there_is_already_a_swap_in"
         }
+        let alert = UIAlertController(
+            title: "id_error".localized,
+            message: msg.localized,
+            preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "id_contact_support".localized, style: .default) { _ in
+            self.presentDialogErrorViewController(error: err)
+        })
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in })
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    @MainActor
+    func presentDialogErrorViewController(error: Error) {
         let request = ZendeskErrorRequest(
-            error: msg.localized,
+            error: error.description().localized,
             network: viewModel.account.networkType,
             paymentHash: nil,
             screenName: "Receive")
