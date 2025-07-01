@@ -97,9 +97,14 @@ class BalanceCell: UITableViewCell {
     }
 
     func refreshVisibility() {
-        model == nil ? loader.startAnimating() : loader.stopAnimating()
+        let idle = model == nil || self.model?.value == "--"
+        if idle {
+            loader.startAnimating()
+        } else {
+            loader.stopAnimating()
+        }
         btnExchangeAlign.constant = model == nil ? 0 : -8
-        lblBalanceValue.isHidden = model == nil
+        lblBalanceValue.isHidden = idle
         lblBalanceFiat.isHidden = true // model == nil
         if hideBalance {
             lblBalanceValue.attributedText = Common.obfuscate(color: .white, size: 24, length: 5)
