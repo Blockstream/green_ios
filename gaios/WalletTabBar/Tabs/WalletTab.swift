@@ -1,10 +1,10 @@
 import UIKit
 
 enum WalletTab: Int, CaseIterable {
-    case home
-    case transact
-    case security
-    case settings
+    case home = 0
+    case transact = 1
+    case security = 2
+    case settings = 3
 
     var tabName: String {
         switch self {

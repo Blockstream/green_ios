@@ -133,7 +133,9 @@ class WalletTabBarViewController: UITabBarController {
         self.setViewControllers(viewControllers, animated: false)
         delegate = self
     }
-
+    func changeTab(_ tab: WalletTab) {
+        self.selectedIndex = tab.rawValue
+    }
     func setSecurityState(_ state: SecurityState) {
         walletModel.securityState = state
         switch state {

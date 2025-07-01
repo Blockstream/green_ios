@@ -128,7 +128,7 @@ class BuyBTCViewModel {
                          "walletAddress",
                          "sourceCurrencyCode"],
             paymentMethodType: "CARD",
-            // redirectUrl: "",
+            redirectUrl: ExternalUrls.buyBTCMeldRedirectWeb,
             sourceAmount: amt,
             sourceCurrencyCode: currency ?? "USD",
             walletAddress: addressStr)

@@ -34,6 +34,7 @@ class BrowserViewController: UIViewController, WKNavigationDelegate, WKUIDelegat
             let frame = CGRect(x: 0.0, y: 0.0, width: layoutView.frame.size.width, height: layoutView.frame.size.height)
             webView = WKWebView(frame: frame, configuration: webViewConfiguration)
             webView?.uiDelegate = self
+            webView?.navigationDelegate = self
             if let webView = webView {
                 self.layoutView.addSubview(webView)
             }
@@ -79,5 +80,19 @@ class BrowserViewController: UIViewController, WKNavigationDelegate, WKUIDelegat
 
     override var prefersStatusBarHidden: Bool {
         return true
+    }
+}
+extension BrowserViewController {
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        if let path = navigationAction.request.url?.absoluteString {
+            if path == ExternalUrls.buyBTCMeldRedirectScheme {
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0) {
+                    self.dismiss(.close)
+                }
+                decisionHandler(.cancel)
+                return
+            }
+        }
+        decisionHandler(.allow)
     }
 }

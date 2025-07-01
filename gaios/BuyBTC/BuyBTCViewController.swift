@@ -345,7 +345,10 @@ class BuyBTCViewController: KeyboardViewController {
                 if res == true {
                     await MainActor.run {
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, userInfo: nil)
-                        _ = self?.navigationController?.popViewController(animated: true)
+                        if let vc = self?.navigationController?.viewControllers.first as? WalletTabBarViewController {
+                            vc.changeTab(.transact)
+                        }
+                        self?.navigationController?.popViewController(animated: true)
                     }
                 }
             }

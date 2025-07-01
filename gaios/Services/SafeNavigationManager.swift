@@ -6,7 +6,7 @@ class SafeNavigationManager {
 
     static let shared = SafeNavigationManager()
 
-    public func navigate(_ urlString: String?, exitApp: Bool = false, title: String? = nil, completion: (()->())? = nil) {
+    public func navigate(_ urlString: String?, exitApp: Bool = false, title: String? = nil, completion: (() -> Void)? = nil) {
         guard let urlString = urlString, let url = URL(string: urlString) else {
             return
         }
@@ -17,7 +17,7 @@ class SafeNavigationManager {
         confirm(url, exitApp: exitApp)
     }
 
-    private func confirm(_ url: URL, exitApp: Bool, title: String? = nil, completion: (()->())? = nil) {
+    private func confirm(_ url: URL, exitApp: Bool, title: String? = nil, completion: (() -> Void)? = nil) {
         guard GdkSettings.read()?.tor ?? false else {
             browse(url, exitApp: exitApp, title: title, completion: completion)
             return
@@ -51,7 +51,7 @@ class SafeNavigationManager {
         appDelegate?.navigateWindow?.makeKeyAndVisible()
     }
 
-    private func browse(_ url: URL, exitApp: Bool, title: String? = nil, completion: (()->())? = nil) {
+    private func browse(_ url: URL, exitApp: Bool, title: String? = nil, completion: (() -> Void)? = nil) {
 
         if exitApp == true {
             if UIApplication.shared.canOpenURL(url) {

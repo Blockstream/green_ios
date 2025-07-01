@@ -42,7 +42,7 @@ struct MeldSessionParams: Codable {
     let destinationCurrencyCode: String
     let lockFields: [String]
     let paymentMethodType: String
-    // let redirectUrl: String
+    let redirectUrl: String
     let sourceAmount: String
     let sourceCurrencyCode: String
     let walletAddress: String
