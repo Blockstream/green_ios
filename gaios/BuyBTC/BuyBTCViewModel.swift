@@ -114,7 +114,10 @@ class BuyBTCViewModel {
             defaultProvider = try? await meld.getLastUsedProvider(customerId: customerId) ?? ""
         }
     }
-
+    func redirectUrl() -> String {
+        return (Bundle.main.infoDictionary?["MELD_REDIRECT_URL"] as? String ?? "")
+            .replacingOccurrences(of: "\\", with: "")
+    }
     func widget(quote: MeldQuoteItem, amountStr: String) async throws -> String {
         let amt = amountStr.replacingOccurrences(of: ",", with: ".")
         guard let addressStr = address?.address else {
@@ -128,7 +131,7 @@ class BuyBTCViewModel {
                          "walletAddress",
                          "sourceCurrencyCode"],
             paymentMethodType: "CARD",
-            redirectUrl: ExternalUrls.buyBTCMeldRedirectWeb,
+            redirectUrl: redirectUrl(),
             sourceAmount: amt,
             sourceCurrencyCode: currency ?? "USD",
             walletAddress: addressStr)

@@ -67,6 +67,8 @@
 	<string>$(COUNTLY_APP_KEY)</string>
 	<key>COUNTLY_APP_MAX_OFFSET</key>
 	<string>$(COUNTLY_APP_MAX_OFFSET)</string>
+	<key>MELD_REDIRECT_URL</key>
+	<string>$(MELD_REDIRECT_URL)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

@@ -49,7 +49,6 @@ enum ExternalUrls {
     static let qrModeAirGapUsage = URL(string: "https://help.blockstream.com/hc/en-us/sections/10426339090713-Air-gapped-Usage")!
     static let qrModeAirGapSupport = URL(string: "https://help.blockstream.com/hc/en-us/articles/20272957303577-Add-Jade-to-a-QR-supported-app")!
     static let buyJadePlus = URL(string: "https://store.blockstream.com/products/jade-plus")!
-    static let buyBTCMeldRedirectWeb = "https://green-webhooks.dev.blockstream.com/thank-you"
     static let buyBTCMeldRedirectScheme = "blockstream://redirect/transactions"
 }
 

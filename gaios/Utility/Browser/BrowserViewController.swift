@@ -86,9 +86,7 @@ extension BrowserViewController {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         if let path = navigationAction.request.url?.absoluteString {
             if path == ExternalUrls.buyBTCMeldRedirectScheme {
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0) {
-                    self.dismiss(.close)
-                }
+                dismiss(.close)
                 decisionHandler(.cancel)
                 return
             }

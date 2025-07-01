@@ -11,3 +11,4 @@ ZENDESK_CLIENT_ID = mobile_sdk_client_c4a1061d1cbd813b98e3
 APPGROUP = group.io.blockstream.green.notification
 GOOGLE_SERVICE_INFO = GoogleService-Prod-Info
 NOTIFICATION_SERVICE = https:\/\/green-notify.blockstream.com
+MELD_REDIRECT_URL = https:\/\/green-webhooks.blockstream.com/thank-you
