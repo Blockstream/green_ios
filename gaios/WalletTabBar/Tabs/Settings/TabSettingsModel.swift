@@ -188,17 +188,12 @@ class TabSettingsModel {
     }
 
     func load() {
-        if isWatchonly || isHW {
+        if isWatchonly || wm?.hasMultisig ?? false == false {
             sections = [.header, .general, .wallet, .about ]
             items = [.header: getHeader(), .general: getGeneral(), .wallet: getWallet(), .about: getAbout()]
         } else {
-            if wm?.hasMultisig ?? false == false {
-                sections = [.header, .general, .wallet, .about ]
-                items = [.header: getHeader(), .general: getGeneral(), .wallet: getWallet(), .about: getAbout()]
-            } else {
-                sections = [.header, .general, .wallet, .twoFactor, .about ]
-                items = [.header: getHeader(), .general: getGeneral(), .wallet: getWallet(), .twoFactor: getTwoFactor(), .about: getAbout()]
-            }
+            sections = [.header, .general, .wallet, .twoFactor, .about ]
+            items = [.header: getHeader(), .general: getGeneral(), .wallet: getWallet(), .twoFactor: getTwoFactor(), .about: getAbout()]
         }
         cellModels = items.mapValues { $0.map { TabSettingsCellModel($0) } }
     }
