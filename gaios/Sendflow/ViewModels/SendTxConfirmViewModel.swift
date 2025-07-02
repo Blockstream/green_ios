@@ -18,9 +18,10 @@ class SendTxConfirmViewModel {
     var wm: WalletManager? { WalletManager.current }
     var denominationType: DenominationType
     var isFiat = false
+    var isJade: Bool { wm?.account.isJade ?? false }
     var session: SessionManager? {
         guard let subaccount = subaccount else { return nil }
-        if let wm = wm, wm.account.isJade && wm.isWatchonly {
+        if isJade && BleHwManager.shared.walletManager != nil {
             if BleHwManager.shared.isConnected() {
                 return BleHwManager.shared.walletManager?.getSession(for: subaccount)
             }
