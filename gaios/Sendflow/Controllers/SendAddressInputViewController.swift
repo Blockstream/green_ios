@@ -171,6 +171,16 @@ class SendAddressInputViewController: KeyboardViewController {
     @MainActor
     func next() {
         guard let createTx = viewModel.createTx else { return }
+
+        //from ManageAsset screen
+        if let account = viewModel.preferredAccount, let assetId = viewModel.assetId {
+            viewModel.createTx?.subaccount = account
+            if viewModel.createTx?.isLiquid ?? false {
+                viewModel.createTx?.assetId = assetId
+            }
+            presentSendAmountViewController()
+            return
+        }
         if viewModel.txType == .sweep {
             presentSendAmountViewController()
             return

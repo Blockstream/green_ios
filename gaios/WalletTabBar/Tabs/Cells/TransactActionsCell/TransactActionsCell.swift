@@ -51,6 +51,7 @@ class TransactActionsCell: UITableViewCell {
         lblBuy.text = TransactActions.buy.name
         lblSend.text = TransactActions.send.name
         lblReceive.text = TransactActions.receive.name
+        controlBuy.isHidden = onBuy == nil
     }
     @objc func didTapBuy() {
         controlBuy.pressAnimate { [weak self] in

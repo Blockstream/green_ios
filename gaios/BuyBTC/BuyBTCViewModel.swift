@@ -57,10 +57,18 @@ class BuyBTCViewModel {
             accounts: getAccounts(),
             hideBalance: hideBalance)
     }
-    init(currency: String?,
+    var allowChange = true
+
+    init(account: WalletItem? = nil,
+         currency: String?,
          hideBalance: Bool = false) {
-        self.account = BuyBTCViewModel.defaultAccount ?? BuyBTCViewModel.getBitcoinSubaccounts().first!
-        self.asset = account.gdkNetwork.getFeeAsset()
+        if let account {
+            self.account = account
+            self.allowChange = false
+        } else {
+            self.account = BuyBTCViewModel.defaultAccount ?? BuyBTCViewModel.getBitcoinSubaccounts().first!
+        }
+        self.asset = self.account.gdkNetwork.getFeeAsset()
         self.meld = Meld()
         self.inputDenomination = WalletManager.current?.prominentSession?.settings?.denomination ?? .Sats
         self.hideBalance = hideBalance
@@ -190,11 +198,9 @@ class BuyBTCViewModel {
             UserDefaults.standard.set(newValue?.id, forKey: label)
         }
     }
-    
     func getBitcoinSubaccounts() -> [WalletItem] {
         wm.subaccounts.filter { !$0.hidden && !$0.networkType.liquid && !$0.networkType.lightning }.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 })
     }
-    
     func getAccounts() -> [WalletItem] {
         return getBitcoinSubaccounts()
     }

@@ -670,15 +670,17 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case ReceiveSection.asset:
+            let action: (() -> Void)? = viewModel.allowChange ? { [weak self] in self?.didSelectAssetRow() } : nil
             if let cell = tableView.dequeueReusableCell(withIdentifier: "ReceiveAssetCell") as? ReceiveAssetCell {
-                cell.configure(model: viewModel.receiveAssetCellModel, onTap: { [weak self] in self?.didSelectAssetRow() })
+                cell.configure(model: viewModel.receiveAssetCellModel, onTap: action)
                 cell.selectionStyle = .none
                 return cell
             }
         case ReceiveSection.account:
+            let action: (() -> Void)? = viewModel.allowChange ? { [weak self] in self?.onAccountChange() } : nil
             if let cell = tableView.dequeueReusableCell(withIdentifier: "ChangeAccountCell") as? ChangeAccountCell {
                 cell.configure(name: viewModel.account.localizedName,
-                               onTap: { [weak self] in self?.onAccountChange() })
+                               onTap: action)
                 cell.selectionStyle = .none
                 return cell
             }

@@ -22,7 +22,6 @@ class TransactionCellModel {
     var assetAmountList: AssetAmountList {
         get { AssetAmountList(amounts) }
     }
-
     init(tx: Transaction, blockHeight: UInt32) {
         self.tx = tx
         self.blockHeight = blockHeight
@@ -46,6 +45,7 @@ class TransactionCellModel {
             self.status = tx.isPending(block: blockHeight) ? "Swapping" : "Swap"
             icon = UIImage(named: "ic_tx_swap")!
         }
+        //if tx.isPending(block: blockHeight) { icon = UIImage(named: "ic_tx_hourglass")! }
     }
 
     func statusUI() -> PendingStateUI {

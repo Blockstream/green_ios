@@ -4,6 +4,7 @@ class ChangeAccountCell: UITableViewCell {
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var lblAccount: UILabel!
     @IBOutlet weak var lblName: UILabel!
+    @IBOutlet weak var iconDisclose: UIImageView!
 
     class var identifier: String { return String(describing: self) }
 
@@ -20,6 +21,7 @@ class ChangeAccountCell: UITableViewCell {
         lblAccount.text = "id_account".localized
         self.lblName.text = name
         self.onTap = onTap
+        self.iconDisclose.isHidden = onTap == nil
     }
     @IBAction func tap(_ sender: Any) {
         self.onTap?()

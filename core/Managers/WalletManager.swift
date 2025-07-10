@@ -524,7 +524,36 @@ public class WalletManager {
             }
         }
     }
-
+    public func allTransactions(subaccounts: [WalletItem]) async throws -> [Transaction] {
+        return try await withThrowingTaskGroup(of: [Transaction].self, returning: [Transaction].self) { group in
+            for subaccount in subaccounts {
+                group.addTask {
+                    let txs = try await self.allBySubaccount(subaccount)
+                    return txs
+                }
+            }
+            return try await group.reduce(into: [Transaction]()) { partial, res in
+                partial += res
+            }.sorted(by: { $0 > $1 })
+        }
+    }
+    func allBySubaccount(_ subaccount: WalletItem) async throws -> [Transaction] {
+        let offset = 30
+        var page = 0
+        var end: Bool = false
+        var transactions: [Transaction] = []
+        while end == false {
+            let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: page * offset, count: offset)
+            let list = txs?.list.map { Transaction($0.details, subaccountId: subaccount.id) } ?? []
+            transactions.append(contentsOf: list)
+            if list.count < offset {
+                end = true
+            } else {
+                page += 1
+            }
+        }
+        return transactions
+    }
     public func bitcoinBlockHeight() -> UInt32? {
         return bitcoinSubaccounts.first?.session?.blockHeight
     }

@@ -9,6 +9,7 @@ class SendAddressInputViewModel {
     var preferredAccount: WalletItem?
     var createTx: CreateTx?
     var txType: TxType?
+    var assetId: String?
 
     var wm: WalletManager? { WalletManager.current }
     var settings: Settings? { wm?.prominentSession?.settings }
@@ -36,11 +37,16 @@ class SendAddressInputViewModel {
     var isBip21Liquid: Bool { (input ?? "").starts(with: "liquidnetwork:") }
     var isBip21Lightning: Bool { (input ?? "").starts(with: "lightning:") }
 
-    init(input: String? = nil, preferredAccount: WalletItem? = nil, createTx: CreateTx? = nil, txType: TxType? = nil) {
+    init(input: String? = nil,
+         preferredAccount: WalletItem? = nil,
+         createTx: CreateTx? = nil,
+         txType: TxType? = nil,
+         assetId: String? = nil) {
         self.input = input
         self.preferredAccount = preferredAccount
         self.createTx = createTx
         self.txType = txType
+        self.assetId = assetId
     }
 
     private func parseLightning() async throws -> CreateTx? {

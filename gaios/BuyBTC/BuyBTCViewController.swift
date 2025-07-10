@@ -103,8 +103,6 @@ class BuyBTCViewController: KeyboardViewController {
     }
     func setStyle() {
         [bgAmount, bgProvider].forEach {
-//            $0.cornerRadius = 4.0
-//            $0.backgroundColor = UIColor.gGrayPanel()
             $0?.setStyle(CardStyle.lightStyle)
         }
         [lblSection1, lblSection2, lblSection3].forEach {
@@ -112,8 +110,6 @@ class BuyBTCViewController: KeyboardViewController {
             $0?.textColor = UIColor.gGrayTxt()
         }
         [btnTier1, btnTier2, btnTier3].forEach {
-//            $0?.cornerRadius = 6.0
-//            $0?.backgroundColor = UIColor.gGrayPanel()
             $0?.setStyle(CardStyle.lightStyle)
             $0?.setTitleColor(.white, for: .normal)
             $0?.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
@@ -185,6 +181,8 @@ class BuyBTCViewController: KeyboardViewController {
             lblDenom.text = "\(String(format: "%.8f", quotes[selectedIndex].destinationAmount)) BTC"
         }
         btnAccount.setTitle(viewModel.account.localizedName, for: .normal)
+        btnAccount.setImage(UIImage(named: viewModel.allowChange ? "ic_amount_drop_down" : ""), for: .normal)
+        btnAccount.isEnabled = viewModel.allowChange
         setBackupCard()
     }
     func tiersState() {

@@ -30,6 +30,7 @@ class ReceiveViewModel {
     var state: AmountCellState = .disabled
     var wm: WalletManager { WalletManager.current! }
     var backupCardCellModel = [AlertCardCellModel]()
+    var allowChange = true
 
     static func getLightningSubaccounts() -> [WalletItem] {
         if let subaccount = WalletManager.current?.lightningSubaccount {
@@ -48,10 +49,16 @@ class ReceiveViewModel {
         WalletManager.current?.liquidAmpSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
 
-    init() {
-        self.account = ReceiveViewModel.defaultAccount ?? ReceiveViewModel.getBitcoinSubaccounts().first ??  ReceiveViewModel.getLiquidSubaccounts().first!
-        self.asset = account.gdkNetwork.getFeeAsset()
-        self.type = account.gdkNetwork.lightning ? .bolt11 : .address
+    init(_ waParam: (wallet: WalletItem, assetId: String)? = nil) {
+        if let waParam = waParam {
+            self.account = waParam.wallet
+            self.asset = waParam.assetId
+            self.allowChange = false
+        } else {
+            self.account = ReceiveViewModel.defaultAccount ?? ReceiveViewModel.getBitcoinSubaccounts().first ??  ReceiveViewModel.getLiquidSubaccounts().first!
+            self.asset = self.account.gdkNetwork.getFeeAsset()
+        }
+        self.type = self.account.gdkNetwork.lightning ? .bolt11 : .address
         self.inputDenomination = wm.prominentSession?.settings?.denomination ?? .Sats
     }
 

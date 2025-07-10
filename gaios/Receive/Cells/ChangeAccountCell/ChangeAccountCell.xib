@@ -21,38 +21,39 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QNX-w7-Hb8">
                         <rect key="frame" x="25" y="5" width="304" height="108"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="chevron.down" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="OD3-aI-KfZ">
-                                <rect key="frame" x="284" y="49.333333333333329" width="20" height="10"/>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="20" id="HXV-XK-B5N"/>
-                                    <constraint firstAttribute="height" constant="20" id="M0V-Ew-rY7"/>
-                                </constraints>
-                            </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="249" verticalHuggingPriority="252" text="lbl_account" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tiD-WM-kgf">
-                                <rect key="frame" x="0.0" y="45.666666666666664" width="193.33333333333334" height="17"/>
+                                <rect key="frame" x="0.0" y="45.666666666666664" width="203.33333333333334" height="17"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_name" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ilm-WP-YVU">
-                                <rect key="frame" x="213.33333333333334" y="45.666666666666664" width="60.666666666666657" height="17"/>
-                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="5VP-yl-8c8">
+                                <rect key="frame" x="213.33333333333334" y="44" width="90.666666666666657" height="20"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_name" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ilm-WP-YVU">
+                                        <rect key="frame" x="0.0" y="0.0" width="60.666666666666664" height="20"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="chevron.down" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="OD3-aI-KfZ">
+                                        <rect key="frame" x="70.666666666666657" y="5.3333333333333321" width="20" height="10"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="20" id="HXV-XK-B5N"/>
+                                            <constraint firstAttribute="height" constant="20" id="M0V-Ew-rY7"/>
+                                        </constraints>
+                                    </imageView>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="Ilm-WP-YVU" firstAttribute="centerY" secondItem="QNX-w7-Hb8" secondAttribute="centerY" id="4GD-S0-RBL"/>
                             <constraint firstItem="tiD-WM-kgf" firstAttribute="centerY" secondItem="QNX-w7-Hb8" secondAttribute="centerY" id="4tW-JO-t1p"/>
+                            <constraint firstAttribute="trailing" secondItem="5VP-yl-8c8" secondAttribute="trailing" id="5tv-Vx-3PY"/>
                             <constraint firstItem="tiD-WM-kgf" firstAttribute="leading" secondItem="QNX-w7-Hb8" secondAttribute="leading" id="7Jn-h2-SYO"/>
-                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="Ilm-WP-YVU" secondAttribute="bottom" constant="20" id="Vo2-84-4du"/>
-                            <constraint firstAttribute="trailing" secondItem="OD3-aI-KfZ" secondAttribute="trailing" id="ZuR-A7-COg"/>
-                            <constraint firstItem="OD3-aI-KfZ" firstAttribute="leading" secondItem="Ilm-WP-YVU" secondAttribute="trailing" constant="10" id="fhy-lC-ovL"/>
-                            <constraint firstItem="Ilm-WP-YVU" firstAttribute="leading" secondItem="tiD-WM-kgf" secondAttribute="trailing" constant="20" id="hd5-9g-o4l"/>
-                            <constraint firstItem="Ilm-WP-YVU" firstAttribute="top" relation="greaterThanOrEqual" secondItem="QNX-w7-Hb8" secondAttribute="top" constant="20" id="v3E-d8-3OM"/>
-                            <constraint firstItem="OD3-aI-KfZ" firstAttribute="centerY" secondItem="QNX-w7-Hb8" secondAttribute="centerY" id="yDK-P2-8En"/>
+                            <constraint firstItem="5VP-yl-8c8" firstAttribute="leading" secondItem="tiD-WM-kgf" secondAttribute="trailing" constant="10" id="X0c-xF-zdl"/>
+                            <constraint firstItem="5VP-yl-8c8" firstAttribute="centerY" secondItem="QNX-w7-Hb8" secondAttribute="centerY" id="lOH-tc-OaG"/>
                         </constraints>
                     </view>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dan-i2-WCd">
@@ -79,6 +80,7 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="bg" destination="QNX-w7-Hb8" id="jHp-mq-SOr"/>
+                <outlet property="iconDisclose" destination="OD3-aI-KfZ" id="V9e-uI-QJs"/>
                 <outlet property="lblAccount" destination="tiD-WM-kgf" id="mW9-Sd-wI6"/>
                 <outlet property="lblName" destination="Ilm-WP-YVU" id="SEA-vS-4JV"/>
             </connections>

@@ -408,6 +408,13 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
 
     func didSelectAssetRowAt(indexPath: IndexPath) {
         let model = walletModel.walletAssetCellModels[indexPath.row]
+        let storyboard = UIStoryboard(name: "ManageAsset", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ManageAssetViewController") as? ManageAssetViewController {
+            vc.viewModel = ManageAssetViewModel(assetId: model.assetId, walletModel: walletModel)
+            navigationController?.pushViewController(vc, animated: true)
+        }
+        /* legacy action
+        let model = walletModel.walletAssetCellModels[indexPath.row]
         let name = WalletManager.current?.info(for: model.assetId).name ?? ""
         let dialogModel = DialogAccountsViewModel(
             title: name,
@@ -417,6 +424,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
             accounts: walletModel.accountsBy(model.assetId),
             hideBalance: walletModel.hideBalance)
         accountsScreen(model: dialogModel)
+         */
     }
 }
 extension TabHomeVC {

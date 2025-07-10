@@ -129,17 +129,27 @@ class WalletModel {
             cachedTransactions[account] = (cachedTransactions[account] ?? []) + [pagetxs]
         }
         // get meld transactions
-        if let xpub = wm.account.xpubHashId, Meld.needFetchingTxs(xpub: xpub) && reset {
+        if let cachedMeldTransactions = try? await getMeldTransactions(wm.bitcoinSubaccounts.first) {
+            self.cachedMeldTransactions = cachedMeldTransactions
+        }
+        fetchingTxs = false
+    }
+    func getMeldTransactions(_ subaccount: WalletItem?) async throws -> [Transaction] {
+        guard let wm, let subaccount else {
+            return []
+        }
+        if let xpub = wm.account.xpubHashId, Meld.needFetchingTxs(xpub: xpub) {
             let meld = Meld()
             let meldTxs = try? await meld.getPendingTransactions(xpub: xpub)
             if let meldTxs = meldTxs {
                 Meld.enableFetchingTxs(xpub: xpub, enable: !meldTxs.isEmpty)
-                self.cachedMeldTransactions = meldTxs.map({ Transaction($0.details, subaccountId: wm.bitcoinSubaccounts.first?.id) })
+                let cachedMeldTransactions = meldTxs.map({ Transaction($0.details, subaccountId: subaccount.id) })
                 logger.info("cachedMeldTransactions")
                 logger.info("\(self.cachedMeldTransactions.debugDescription)")
+                return cachedMeldTransactions
             }
         }
-        fetchingTxs = false
+        return []
     }
     
     var pages: Int {
