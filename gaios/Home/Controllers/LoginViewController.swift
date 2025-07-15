@@ -336,7 +336,7 @@ class LoginViewController: UIViewController {
         case TwoFactorCallError.failure(let msg):
             if msg.contains("id_connection_failed") {
                 DropAlert().error(message: msg.localized)
-            } else if msg.contains("login failed") || msg.contains("id_invalid_pin") {
+            } else if msg.contains("id_invalid_pin") {
                 if enableFailingCounter {
                     wrongPin()
                 }
