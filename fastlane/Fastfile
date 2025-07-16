@@ -36,8 +36,8 @@ platform :ios do
       ipa: "./dev/Green-dev.ipa",
       signing_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)",
       provisioning_profile: {
-        "io.blockstream.green" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/aca2f9e9-b91a-4d52-a484-a8dcdc0423e3.mobileprovision",
-        "io.blockstream.green.NotificationService" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/d4e9c171-bb09-49e5-97cc-fd23abceeff4.mobileprovision"
+        "io.blockstream.greendev" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/c303d3f8-1d76-4f7d-878a-d59965eef289.mobileprovision",
+        "io.blockstream.greendev.NotificationService" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/81d5e586-e2e0-4d4e-ad5d-efedfad945d9.mobileprovision"
       }
     )
   end
