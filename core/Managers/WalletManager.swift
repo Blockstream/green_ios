@@ -304,31 +304,28 @@ public class WalletManager {
     async throws {
         let loginTask: ((_ session: SessionManager) async throws -> ()) = { [self] session in
             do {
-                logger.info("WM login \(session.networkType.rawValue, privacy: .public) begin")
                 let credentials = session.networkType == .lightning ? lightningCredentials : credentials
                 try await loginSession(session: session, credentials: credentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
-                logger.info("WM login \(session.networkType.rawValue, privacy: .public) success")
+                logger.info("WM \(session.networkType.rawValue, privacy: .public) login")
             } catch {
-                logger.info("WM login \(session.networkType.rawValue, privacy: .public) failure: \(error, privacy: .public)")
+                logger.info("WM \(session.networkType.rawValue, privacy: .public) failure: \(error, privacy: .public)")
                 try? await session.disconnect()
                 await failureSessionsError.add(for: session.networkType, error: error)
             }
         }
         await failureSessionsError.reset()
         let sessions = self.sessions.values.filter { !$0.logged }
-        logger.info("WM login start: \(sessions.count) sessions")
+        logger.info("WM login: \(sessions.count) sessions")
         await withTaskGroup(of: Void.self) { group in
             for session in sessions {
                 group.addTask(priority: .high) { try? await loginTask(session) }
             }
         }
-        logger.info("WM login end: \(self.activeSessions.count) sessions")
+        logger.info("WM sessions: \(self.activeSessions.count)")
         if self.activeSessions.count == 0 {
             throw LoginError.failed()
         }
-        logger.info("WM subaccounts")
         _ = try await self.subaccounts()
-        logger.info("WM sessions: \(self.activeSessions.count)")
         logger.info("WM subaccounts: \(self.subaccounts.count)")
         if fullRestore {
             logger.info("WM syncSettings")

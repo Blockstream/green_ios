@@ -201,22 +201,22 @@ class WalletTabBarViewController: UITabBarController {
 
         isReloading = false
         self.updateTabs([.home, .transact])
+        logger.info("reload discovery \(discovery, privacy: .public)")
     }
 
     func reloadChart() async {
-        logger.error("chart: before")
         let currency = walletModel.currency ?? "USD"
         do {
             try await Api.shared.fetch(currency: currency.lowercased())
         } catch {
-            logger.error("chart: Failed to fetch price for \(currency): \(error)")
+            logger.error("chart: Failed to fetch price for \(currency, privacy: .public): \(error, privacy: .public)")
             return
         }
         if let price = Api.shared.priceCache, let error = price.error {
-            logger.error("chart: Failed to fetch price for \(currency): \(error)")
+            logger.error("chart: Failed to fetch price for \(currency, privacy: .public): \(error, privacy: .public)")
             try? await Api.shared.fetch(currency: "USD".lowercased())
         }
-        logger.error("chart: \(Api.shared.priceCache?.dayData.last?.value ?? 0.0)")
+        logger.info("bitcoin price: \(Api.shared.priceCache?.dayData.last?.value ?? 0.0)")
     }
 
     @MainActor

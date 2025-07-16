@@ -657,9 +657,7 @@ extension SessionManager {
                 let data = notification?[event.rawValue] as? [String: Any] else {
             return
         }
-        #if DEBUG
         log("newNotification", notification ?? [:])
-        #endif
         switch event {
         case .Block:
             guard let height = data["block_height"] as? UInt32 else { break }

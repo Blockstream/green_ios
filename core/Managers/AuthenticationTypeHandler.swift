@@ -82,7 +82,9 @@ public class AuthenticationTypeHandler {
     fileprivate static func describeKeychainError(_ status: OSStatus) -> OSStatus {
         if status != errSecSuccess && status != errSecDuplicateItem {
             let err = SecCopyErrorMessageString(status, nil)
+#if DEBUG
             logger.error("AUTH error \(status, privacy: .public): \(String(describing: err), privacy: .public)")
+#endif
         }
         return status
     }
@@ -90,7 +92,9 @@ public class AuthenticationTypeHandler {
     fileprivate static func describeSecurityError(_ error: CFError) -> String {
         let err = CFErrorCopyDescription(error)
         let errorString = String(describing: err!)
+#if DEBUG
         logger.error("AUTH error: \(errorString, privacy: .public)")
+#endif
         return errorString
     }
 
