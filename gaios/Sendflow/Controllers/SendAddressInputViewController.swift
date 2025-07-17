@@ -170,7 +170,6 @@ class SendAddressInputViewController: KeyboardViewController {
 
     // swiftlint:disable cyclomatic_complexity
     @MainActor
-    // swiftlint:disable cyclomatic_complexity
     func next() {
         guard let createTx = viewModel.createTx else { return }
         if createTx.txType == .sweep {
@@ -188,7 +187,7 @@ class SendAddressInputViewController: KeyboardViewController {
                 // open LNURL-Auth page
                 presentLtAuthViewController(requestData: data)
             case .lnUrlWithdraw(let data):
-//                presentLtWithdrawViewController(requestData: data)
+                //                presentLtWithdrawViewController(requestData: data)
                 presentSendForWithdraw(requestData: data)
             default:
                 if createTx.anyAmounts ?? false {
@@ -229,24 +228,24 @@ class SendAddressInputViewController: KeyboardViewController {
                 viewModel.createTx?.subaccount = account
                 if let assetId = viewModel.assetId ?? viewModel.createTx?.assetId {
                     viewModel.createTx?.assetId = assetId
-                }
-                presentSendAmountViewController()
-            } else if viewModel.liquidSubaccountsWithFunds.count == 1,
-                let subaccount = viewModel.liquidSubaccountsWithFunds.first {
-                // preselect the liquid subaccount: go in amount screen
-                if let assetId = viewModel.assetId ?? viewModel.createTx?.assetId {
-                    viewModel.createTx?.assetId = assetId
-                    viewModel.createTx?.subaccount = subaccount
                     presentSendAmountViewController()
-                } else if subaccount.manyAssets == 1 {
-                    viewModel.createTx?.subaccount = subaccount
-                    presentSendAmountViewController()
+                } else if viewModel.liquidSubaccountsWithFunds.count == 1,
+                          let subaccount = viewModel.liquidSubaccountsWithFunds.first {
+                    // preselect the liquid subaccount: go in amount screen
+                    if let assetId = viewModel.assetId ?? viewModel.createTx?.assetId {
+                        viewModel.createTx?.assetId = assetId
+                        viewModel.createTx?.subaccount = subaccount
+                        presentSendAmountViewController()
+                    } else if subaccount.manyAssets == 1 {
+                        viewModel.createTx?.subaccount = subaccount
+                        presentSendAmountViewController()
+                    } else {
+                        presentAccountAssetViewController()
+                    }
                 } else {
+                    // open liquid subaccount selection: go in account/asset screen
                     presentAccountAssetViewController()
                 }
-            } else {
-                // open liquid subaccount selection: go in account/asset screen
-                presentAccountAssetViewController()
             }
         }
     }

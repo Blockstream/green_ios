@@ -488,7 +488,7 @@ extension ManageAssetViewController {
         let sendAddressInputViewModel = SendAddressInputViewModel(
             input: nil,
             preferredAccount: viewModel.account,
-            txType: .transaction,
+            txType: nil,
             assetId: viewModel.assetId)
 
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)

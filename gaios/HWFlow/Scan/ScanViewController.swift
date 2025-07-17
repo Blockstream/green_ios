@@ -234,7 +234,7 @@ extension ScanViewController: QRUnlockInfoAlertViewControllerDelegate {
         case .alreadyUnlocked:
             let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadeViewController") as? QRUnlockJadeViewController {
-                vc.vm = QRUnlockJadeViewModel(scope: .xpub, testnet: false)
+                vc.vm = QRUnlockJadeViewModel(scope: .xpub, testnet: false, askXpub: true)
                 vc.delegate = self
                 vc.forceUserhelp = true
                 vc.modalPresentationStyle = .overFullScreen
@@ -247,9 +247,10 @@ extension ScanViewController: QRUnlockInfoAlertViewControllerDelegate {
 }
 
 extension ScanViewController: QRUnlockJadeViewControllerDelegate {
-    func signerFlow() {
+    func unlock() {
+        
     }
-
+    
     func login(credentials: gdk.Credentials, wallet: WalletManager) {
         AccountsRepository.shared.current = wallet.account
         AccountNavigator.navLogged(accountId: wallet.account.id)

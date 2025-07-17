@@ -7,7 +7,7 @@ import hw
 protocol QRUnlockJadeViewControllerDelegate: AnyObject {
     func login(credentials: Credentials, wallet: WalletManager)
     func abort()
-    func signerFlow()
+    func unlock()
 }
 class QRUnlockJadeViewController: UIViewController {
 
@@ -43,8 +43,6 @@ class QRUnlockJadeViewController: UIViewController {
     /// debug only
     var runCount = 0
     var isStarted = false
-
-    var requireSignerFlow = false
     var forceUserhelp = false
 
     enum Theme {
@@ -247,8 +245,14 @@ class QRUnlockJadeViewController: UIViewController {
                 await onScanHandshakeInit(result)
             }
         case .handshakeInitReply:
-            vm.scope = .xpub
-            refresh()
+            if vm.askXpub {
+                vm.scope = .xpub
+                refresh()
+            } else {
+                dismiss(animated: true) {
+                    self.delegate?.unlock()
+                }
+            }
         case .xpub:
             guard let bcur = result.bcur else {
                 startCapture()
@@ -289,11 +293,17 @@ class QRUnlockJadeViewController: UIViewController {
     }
 
     @IBAction func btnNext(_ sender: Any) {
-
-        if requireSignerFlow == true {
-            self.delegate?.signerFlow()
-        } else {
-            presentUserHelp()
+        switch vm.scope {
+        case .handshakeInitReply:
+            if vm.askXpub {
+                presentUserHelp()
+            } else {
+                dismiss(animated: true) {
+                    self.delegate?.unlock()
+                }
+            }
+        default:
+            break
         }
     }
 

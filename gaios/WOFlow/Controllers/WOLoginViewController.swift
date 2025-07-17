@@ -201,7 +201,6 @@ class WOLoginViewController: KeyboardViewController {
         }
         switch await task.result {
         case .success:
-            stopLoader()
             AccountNavigator.navLogged(accountId: account.id)
             AnalyticsManager.shared.importWallet(account: account)
         case .failure(let error):

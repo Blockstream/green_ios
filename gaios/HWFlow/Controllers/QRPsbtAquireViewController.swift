@@ -2,70 +2,66 @@ import Foundation
 import UIKit
 import core
 import gdk
+import greenaddress
 
 protocol QRPsbtAquireViewControllerDelegate: AnyObject {
-    func didScan(value: ScanResult, index: Int?)
-    func didStop()
+    func didCancel()
+    func didSign(psbt: String)
 }
 
 class QRPsbtAquireViewController: UIViewController {
 
-    @IBOutlet weak var bgLayer: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
-
-    @IBOutlet weak var btnBack: UIButton!
-    @IBOutlet weak var lblNavTitle: UILabel!
-    @IBOutlet weak var btnTrouble: UIButton!
     @IBOutlet weak var lblStep: UILabel!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var qrScanView: QRCodeReaderView!
     @IBOutlet weak var progress: UIProgressView!
     @IBOutlet weak var imgStep: UIImageView!
-    
+    @IBOutlet weak var btnImport: UIButton!
     weak var delegate: QRPsbtAquireViewControllerDelegate?
-
-    var index: Int?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        updateNavigationItem()
         setContent()
         setStyle()
-        navigationController?.isNavigationBarHidden = true
         qrScanView.delegate = self
         AnalyticsManager.shared.recordView(.camera)
+        view.backgroundColor = UIColor.gBlackBg()
+//        view.alpha = 0.0
     }
 
     func setContent() {
-        btnBack.setTitle("id_back".localized, for: .normal)
-        btnBack.setImage(UIImage(named: "ic_qr_nav_back")?.maskWithColor(color: .white), for: .normal)
-        lblNavTitle.text = "id_scan_qr_with_jade".localized
+        title = "id_scan_qr_with_jade".localized
         lblStep.text = "\("id_step".localized) 2".uppercased()
-        lblTitle.text = "id_scan_qr_with_jade".localized
+        lblTitle.text = "id_scan_qr_on_jade".localized
         lblHint.text = "id_import_signed_transaction".localized
+        btnImport.setTitle("Import from file", for: .normal)
     }
 
     func setStyle() {
         progress.isHidden = true
-
-        btnBack.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        lblNavTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblStep.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblStep.textColor = UIColor.gAccent()
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         lblHint.setStyle(.txtCard)
-        btnTrouble.setImage(UIImage(named: "ic_help")?.maskWithColor(color: UIColor.gAccent()), for: .normal)
         qrScanView.layer.masksToBounds = true
         qrScanView.borderWidth = 10.0
         qrScanView.borderColor = UIColor.gGrayCamera()
         qrScanView.cornerRadius = 10.0
         imgStep.image = UIImage(named: "ic_qr_scan_square")?.maskWithColor(color: UIColor.gAccent())
+        btnImport.setStyle(.outlinedWhite)
     }
 
     override func viewDidAppear(_ animated: Bool) {
-
-        self.startCapture()
+//        UIView.animate(withDuration: 0.3) {
+//            self.view.alpha = 1.0
+//            self.view.layoutIfNeeded()
+//        }
+        Task.detached(priority: .medium) { [weak self] in
+            await self?.startCapture()
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -73,13 +69,8 @@ class QRPsbtAquireViewController: UIViewController {
         qrScanView.stopScan()
     }
 
-    func dismiss(_ action: DialogScanAction) {
-        switch action {
-        case .scan(let result):
-            self.delegate?.didScan(value: result, index: self.index)
-        case .stop:
-            self.delegate?.didStop()
-        }
+    func dismiss(animated: Bool) {
+        navigationController?.popToViewController(ofClass: SendTxConfirmViewController.self)
     }
 
     private func startCapture() {
@@ -95,12 +86,54 @@ class QRPsbtAquireViewController: UIViewController {
         qrScanView.startScan()
     }
 
-    @IBAction func btnBack(_ sender: Any) {
-        dismiss(.stop)
+    func updateNavigationItem() {
+        let helpBtn = UIButton(type: .system)
+        helpBtn.setStyle(.inline)
+        helpBtn.setImage(UIImage(named: "ic_help"), for: .normal)
+        helpBtn.addTarget(self, action: #selector(helpBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: helpBtn)]
     }
 
-    @IBAction func btnTrouble(_ sender: Any) {
+    @objc func helpBtnTapped(_ sender: Any) {
         SafeNavigationManager.shared.navigate(ExternalUrls.qrModeScanWithJade)
+    }
+
+    @IBAction func importBtnTapped(_ sender: Any) {
+        let documentPickerViewController =  UIDocumentPickerViewController(forOpeningContentTypes: [.text, .data, .item], asCopy: false)
+        documentPickerViewController.delegate = self
+        present(documentPickerViewController, animated: true)
+    }
+
+    func validatePsbt(psbt: Data) throws -> String {
+        if Wally.psbtIsBytes(psbt.bytes) {
+            let wallyPsbt = try Wally.psbtFromBytes(psbt.bytes)
+            return try Wally.psbtToBase64(wallyPsbt)
+        } else if let txt = String(data: psbt, encoding: .utf8) {
+            let txt = txt.replacingOccurrences(of: "\n", with: "").replacingOccurrences(of: "\r", with: "")
+            if Wally.psbtIsBase64(txt) {
+                return txt
+            }
+        }
+        throw GaError.GenericError("Not a valid PSBT")
+    }
+}
+extension QRPsbtAquireViewController: UIDocumentPickerDelegate {
+    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        delegate?.didCancel()
+    }
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
+        do {
+            guard url.startAccessingSecurityScopedResource() else { return }
+            defer { url.stopAccessingSecurityScopedResource() }
+            let data = try Data(contentsOf: url)
+            let psbt = try validatePsbt(psbt: data)
+            DispatchQueue.main.async {
+                self.delegate?.didSign(psbt: psbt)
+                self.dismiss(animated: true)
+            }
+        } catch {
+            showError(error.description().localized)
+        }
     }
 }
 
@@ -114,8 +147,18 @@ extension QRPsbtAquireViewController: QRCodeReaderDelegate {
 
     func onQRCodeReadSuccess(result: ScanResult) {
         qrScanView.stopScan()
-        DispatchQueue.main.async {
-            self.dismiss(.scan(result: result))
+        do {
+            guard let psbt = result.bcur?.psbt,
+                  Wally.psbtIsBase64(psbt)
+            else {
+                throw GaError.GenericError("Not a valid PSBT")
+            }
+            DispatchQueue.main.async {
+                self.delegate?.didSign(psbt: psbt)
+                self.dismiss(animated: true)
+            }
+        } catch {
+            showError(error.description().localized)
         }
     }
 }

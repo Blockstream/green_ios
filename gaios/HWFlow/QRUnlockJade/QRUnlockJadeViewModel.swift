@@ -17,10 +17,12 @@ class QRUnlockJadeViewModel {
     var testnet: Bool
     let account: Account
     var jade: QRJadeManager
+    var askXpub: Bool
 
-    init(scope: QRUnlockScope, testnet: Bool) {
+    init(scope: QRUnlockScope, testnet: Bool, askXpub: Bool) {
         self.scope = scope
         self.testnet = testnet
+        self.askXpub = askXpub
         self.account = Account(name: "Jade", network: testnet ? .testnetSS : .bitcoinSS, isJade: true, watchonly: true)
         jade = QRJadeManager(testnet: testnet)
     }

@@ -177,6 +177,18 @@ class SendTxConfirmViewModel {
         return try await session.broadcastTransaction(BroadcastTransactionParams(psbt: psbt, memo: transaction?.memo, simulateOnly: false))
     }
 
+    func signPsbt() async throws {
+        guard let session = session else {
+            throw TransactionError.invalid(localizedDescription: "Invalid session")
+        }
+        guard let psbt = unsignedPsbt else {
+            throw TransactionError.invalid(localizedDescription: "Invalid psbt")
+        }
+        let utxos = try await session.getUtxos(GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 0))
+        let res = try await session.signPsbt(params: SignPsbtParams(psbt: psbt, utxos: utxos.unspentOutputs))
+        self.signedPsbt = res.psbt
+    }
+
     func send() async throws -> SendTransactionSuccess {
         AnalyticsManager.shared.startSendTransaction()
         AnalyticsManager.shared.startFailedTransaction()
@@ -187,6 +199,9 @@ class SendTxConfirmViewModel {
             sendAll: sendAll)
         do {
             if signedPsbt != nil {
+                sendTransaction = try await sendPsbt()
+            } else if unsignedPsbt != nil {
+                try await signPsbt()
                 sendTransaction = try await sendPsbt()
             } else {
                 sendTransaction = try await sendTx()

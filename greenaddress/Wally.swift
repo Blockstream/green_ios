@@ -260,29 +260,65 @@ public class Wally {
         return String(cString: resultPtr)
     }
     
-    public static func isPsbtFinalized(_ psbt: String) -> Bool? {
+    public static func psbtFromBase64(_ psbt: String) throws -> UnsafeMutablePointer<green.wally_psbt> {
         var wallyPsbt: UnsafeMutablePointer<green.wally_psbt>?
-        var finalized: Int = 0
-        
-        if wally_psbt_from_base64(psbt, UInt32(WALLY_PSBT_PARSE_FLAG_STRICT), &wallyPsbt) != WALLY_OK {
-            return nil
+        guard wally_psbt_from_base64(psbt, UInt32(WALLY_PSBT_PARSE_FLAG_STRICT), &wallyPsbt) == WALLY_OK,
+              let wallyPsbt = wallyPsbt else {
+            throw GaError.GenericError("Wally error: psbt from base64")
         }
-        if wally_psbt_is_finalized(wallyPsbt, &finalized) != WALLY_OK {
-            return nil
+        return wallyPsbt
+    }
+
+    public static func psbtFromBytes(_ binary: [UInt8]) throws -> UnsafeMutablePointer<green.wally_psbt> {
+        var wallyPsbt: UnsafeMutablePointer<green.wally_psbt>?
+        guard wally_psbt_from_bytes(binary, binary.count, UInt32(WALLY_PSBT_PARSE_FLAG_STRICT), &wallyPsbt) == WALLY_OK,
+              let wallyPsbt = wallyPsbt else {
+            throw GaError.GenericError("Wally error: psbt from bytes")
+        }
+        return wallyPsbt
+    }
+
+    public static func psbtIsFinalized(_ wallyPsbt: UnsafeMutablePointer<green.wally_psbt>) throws -> Bool {
+        var finalized: Int = 0
+        guard wally_psbt_is_finalized(wallyPsbt, &finalized) == WALLY_OK else {
+            throw GaError.GenericError("Wally error: psbt is finalized")
         }
         return finalized == 1
     }
-
-    public static func isPsbtElements(_ psbt: String) -> Bool? {
-        var wallyPsbt: UnsafeMutablePointer<green.wally_psbt>?
+    public static func psbtIsElements(_ wallyPsbt: UnsafeMutablePointer<green.wally_psbt>) throws -> Bool {
         var elements: Int = 0
-        if wally_psbt_from_base64(psbt, UInt32(WALLY_PSBT_PARSE_FLAG_STRICT), &wallyPsbt) != WALLY_OK {
-            return nil
-        }
-        if wally_psbt_is_elements(wallyPsbt, &elements) != WALLY_OK {
-            return nil
+        guard wally_psbt_is_elements(wallyPsbt, &elements) == WALLY_OK else {
+            throw GaError.GenericError("Wally error: psbt is elements")
         }
         return elements == 1
+    }
+
+    public static func psbtIsBase64(_ psbt: String) -> Bool {
+        (try? psbtFromBase64(psbt)) != nil
+    }
+
+    public static func psbtIsBytes(_ psbt: [UInt8]) -> Bool {
+        (try? psbtFromBytes(psbt)) != nil
+    }
+
+    public static func psbtSetVersion(_ psbt: UnsafeMutablePointer<green.wally_psbt>, version: UInt32 = UInt32(WALLY_PSBT_VERSION_0)) throws {
+        wally_psbt_set_version(psbt, 0, version)
+    }
+    public static func psbtGetVersion(_ psbt: UnsafeMutablePointer<green.wally_psbt>) throws -> Int {
+        var version: Int = 0
+        guard wally_psbt_get_version(psbt, &version) == WALLY_OK else {
+            throw GaError.GenericError("Wally error: psbt get version")
+        }
+        return version
+    }
+
+    public static func psbtToBase64(_ psbt: UnsafeMutablePointer<green.wally_psbt>) throws -> String {
+        var wallyPsbtPtr: UnsafeMutablePointer<CChar>?
+        guard wally_psbt_to_base64(psbt, 0, &wallyPsbtPtr) == WALLY_OK,
+              let wallyPsbtPtr = wallyPsbtPtr else {
+            throw GaError.GenericError("Wally error: psbt to base64")
+        }
+        return String(cString: wallyPsbtPtr)
     }
 
     public static func descriptorParse(_ descriptor: String, network: UInt32) -> OpaquePointer? {

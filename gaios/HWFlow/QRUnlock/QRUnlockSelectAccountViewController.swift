@@ -169,7 +169,7 @@ extension QRUnlockSelectAccountViewController: UITableViewDelegate, UITableViewD
         case .policy:
             let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadeViewController") as? QRUnlockJadeViewController {
-                vc.vm = QRUnlockJadeViewModel(scope: .oracle, testnet: false)
+                vc.vm = QRUnlockJadeViewModel(scope: .oracle, testnet: false, askXpub: true)
                 navigationController?.pushViewController(vc, animated: true)
             }
         default:

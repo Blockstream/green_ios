@@ -269,7 +269,7 @@ extension JadeWaitViewController: QRUnlockInfoAlertViewControllerDelegate {
         case .alreadyUnlocked:
             let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadeViewController") as? QRUnlockJadeViewController {
-                vc.vm = QRUnlockJadeViewModel(scope: .xpub, testnet: false)
+                vc.vm = QRUnlockJadeViewModel(scope: .xpub, testnet: false, askXpub: true)
                 vc.delegate = self
                 vc.forceUserhelp = true
                 vc.modalPresentationStyle = .overFullScreen
@@ -282,12 +282,10 @@ extension JadeWaitViewController: QRUnlockInfoAlertViewControllerDelegate {
 }
 
 extension JadeWaitViewController: QRUnlockJadeViewControllerDelegate {
-    func signerFlow() {
+    func unlock() {
+        // nothing
     }
-
-    func signPsbt(_ psbt: String) {
-    }
-
+    
     func login(credentials: gdk.Credentials, wallet: core.WalletManager) {
         AccountsRepository.shared.current = wallet.account
         AccountNavigator.navLogged(accountId: wallet.account.id)

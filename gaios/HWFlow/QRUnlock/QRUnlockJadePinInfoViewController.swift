@@ -66,7 +66,7 @@ class QRUnlockJadePinInfoViewController: UIViewController {
     func next() {
         let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadeViewController") as? QRUnlockJadeViewController {
-            vc.vm = QRUnlockJadeViewModel(scope: .oracle, testnet: testnet)
+            vc.vm = QRUnlockJadeViewModel(scope: .oracle, testnet: testnet, askXpub: true)
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             present(vc, animated: true)
@@ -74,10 +74,8 @@ class QRUnlockJadePinInfoViewController: UIViewController {
     }
 }
 extension QRUnlockJadePinInfoViewController: QRUnlockJadeViewControllerDelegate {
-    func signerFlow() {
-    }
-
-    func signPsbt(_ psbt: String) {
+    func unlock() {
+        // nothing
     }
 
     func login(credentials: gdk.Credentials, wallet: WalletManager) {

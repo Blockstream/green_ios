@@ -149,7 +149,7 @@ class SendAddressInputViewModel {
     }
 
     private func parsePsbt(for session: SessionManager, input: String) async throws -> CreateTx? {
-        let tx = try await wm?.prominentSession?.psbtGetDetails(params: PsbtGetDetailParams(psbt:  input, utxos: [:]))
+        let tx = try await wm?.prominentSession?.psbtGetDetails(params: PsbtGetDetailParams(psbt: input, utxos: [:]))
         return CreateTx(txType: .psbt, psbt: input)
     }
 
@@ -230,24 +230,35 @@ class SendAddressInputViewModel {
             funded: true,
             showBalance: true)
     }
-    
+
     func sendPsbtConfirmViewModel() async throws -> SendTxConfirmViewModel {
-        var subaccount = preferredAccount ?? wm?.bitcoinSubaccounts.first
-        if Wally.isPsbtElements(createTx?.psbt ?? "") ?? false {
-            subaccount = wm?.liquidSubaccounts.first
+        guard let psbt = createTx?.psbt else {
+            throw GaError.GenericError("Empty Psbt")
+        }
+        let wallyPsbt = try Wally.psbtFromBase64(psbt)
+        let isFinalized = try Wally.psbtIsFinalized(wallyPsbt)
+        let isPset = try Wally.psbtIsElements(wallyPsbt)
+        var subaccount = isPset ? wm?.liquidSubaccounts.first : wm?.bitcoinSubaccounts.first
+        if let preferredAccount = preferredAccount {
+            if preferredAccount.networkType.liquid && isPset {
+                subaccount = preferredAccount
+            } else if !preferredAccount.networkType.liquid && !isPset {
+                subaccount = preferredAccount
+            }
         }
         let session = subaccount?.session
-        var tx = try await session?.psbtGetDetails(params: PsbtGetDetailParams(psbt:  createTx?.psbt, utxos: [:]))
+        var tx = try await session?.psbtGetDetails(params: PsbtGetDetailParams(psbt: psbt, utxos: [:]))
         let addressee = tx?.transactionOutputs?.map { Addressee.from(address: $0.address ?? "", satoshi: $0.satoshi, assetId: $0.assetId) }
         tx?.addressees = addressee ?? []
         tx?.subaccountId = subaccount?.id
+        let denomination = wm?.prominentSession?.settings?.denomination
         return SendTxConfirmViewModel(
             transaction: tx,
             subaccount: subaccount,
-            denominationType: wm?.prominentSession?.settings?.denomination ?? .Sats,
+            denominationType: denomination ?? .Sats,
             isFiat: false,
             txType: .psbt,
-            unsignedPsbt: nil,
-            signedPsbt: createTx?.psbt)
+            unsignedPsbt: isFinalized ? nil : psbt,
+            signedPsbt: isFinalized ? psbt : nil)
     }
 }
