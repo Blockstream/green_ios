@@ -73,8 +73,8 @@ extension TabViewController {
     func sendScreen(_ walletModel: WalletModel) {
         let sendAddressInputViewModel = SendAddressInputViewModel(
             input: nil,
-            preferredAccount: ReceiveViewModel.defaultAccount,
-            txType: walletModel.isSweepEnabled() ? .sweep : .transaction)
+            preferredAccount: nil,
+            txType: .transaction)
 
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendAddressInputViewController") as? SendAddressInputViewController {

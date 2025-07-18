@@ -115,14 +115,6 @@ class ManageAssetViewModel {
         fetchingTxs = false
     }
 
-    func isSweepEnabled() -> Bool {
-        if watchOnly {
-            let notMultisigBitcoinNetworks = subaccounts.filter { $0.networkType.singlesig || $0.networkType.liquid }
-            return notMultisigBitcoinNetworks.isEmpty
-        }
-        return false
-    }
-
     func accounts() -> [WalletItem] {
         subaccounts.filter({ $0.satoshi?.keys.contains(assetId) ?? false })
     }

@@ -22,7 +22,7 @@ class SendAddressInputViewModel {
 
     var bitcoinSubaccountsWithFunds: [WalletItem] { wm?.bitcoinSubaccountsWithFunds ?? [] }
     var liquidSubaccountsWithFunds: [WalletItem] {
-        if let assetId = createTx?.assetId, createTx?.bip21 ?? false {
+        if let assetId = createTx?.assetId {
             return wm?.liquidSubaccountsWithAssetIdFunds(assetId: assetId) ?? []
         } else {
             return wm?.liquidSubaccountsWithFunds ?? []
@@ -36,6 +36,9 @@ class SendAddressInputViewModel {
     var isBip21Bitcoin: Bool { (input ?? "").starts(with: "bitcoin:") }
     var isBip21Liquid: Bool { (input ?? "").starts(with: "liquidnetwork:") }
     var isBip21Lightning: Bool { (input ?? "").starts(with: "lightning:") }
+    
+    var bitcoinSession: SessionManager? { bitcoinSinglesigSession ?? bitcoinMultisigSession }
+    var liquidSession: SessionManager? { liquidSinglesigSession ?? liquidMultisigSession }
 
     init(input: String? = nil,
          preferredAccount: WalletItem? = nil,
@@ -50,26 +53,34 @@ class SendAddressInputViewModel {
     }
 
     private func parseLightning() async throws -> CreateTx? {
-        guard let input = input else { return nil }
-        let res = try? await lightningSession?.parseTxInput(input, satoshi: nil, assetId: nil, network: lightningSession?.networkType)
+        guard let input = input, let lightningSession = lightningSession else {
+            return nil
+        }
+        if let account = preferredAccount, !account.networkType.lightning {
+            return nil
+        }
+        let res = try? await lightningSession.parseTxInput(input, satoshi: nil, assetId: nil, network: lightningSession.networkType)
         if res?.isValid ?? false {
             var addressee = res?.addressees.first
             let anyAmounts = addressee?.satoshi ?? 0 == 0
             if anyAmounts == true {
                 addressee?.satoshi = nil
             }
-            let lightningType = lightningSession?.lightBridge?.parseBoltOrLNUrl(input: input)
+            let lightningType = lightningSession.lightBridge?.parseBoltOrLNUrl(input: input)
             let txType: TxType = { switch lightningType {
                 case .bolt11(_): return .bolt11
                 default: return .lnurl
             }}()
             return CreateTx(addressee: addressee, subaccount: wm?.lightningSubaccount, error: res?.errors.first, anyAmounts: anyAmounts, lightningType: lightningType, txType: txType)
         } else {
-            throw TransactionError.invalid(localizedDescription: res?.errors.first ?? "id_operation_failure")
+            if isBip21Lightning || preferredAccount?.networkType.lightning ?? false {
+                throw TransactionError.invalid(localizedDescription: res?.errors.first ?? "id_invalid_address")
+            }
+            return nil
         }
     }
 
-    private func parsePrivatekey() async throws -> CreateTx?  {
+    private func parsePrivatekey() async throws -> CreateTx? {
         guard let account = preferredAccount, let input = self.input else {
             throw TransactionError.invalid(localizedDescription: "Invalid input")
         }
@@ -77,60 +88,72 @@ class SendAddressInputViewModel {
     }
 
     private func parseGdk(for session: SessionManager, input: String) async throws -> CreateTx? {
-        guard let prominentSession = wm?.prominentSession else {
-            throw TransactionError.invalid(localizedDescription: "id_invalid_session".localized)
-        }
-        let feeAsset = session.gdkNetwork.getFeeAsset()
-        let res = try await prominentSession.parseTxInput(input, satoshi: nil, assetId: feeAsset, network: session.networkType)
-        if res.isValid {
-            var addressee = res.addressees.first
+        let feeAsset = session.gdkNetwork.getFeeAssetOrNull()
+        let res = try await wm?.prominentSession?.parseTxInput(input, satoshi: 1_000_000, assetId: feeAsset, network: session.networkType)
+        if res?.isValid ?? false {
+            var addressee = res?.addressees.first
             addressee?.bip21 = isBip21Bitcoin || isBip21Liquid
-            if let amount = addressee?.bip21Params?.amount,
-                let assetId = addressee?.assetId {
+            addressee?.satoshi = nil
+            if let amount = addressee?.bip21Params?.amount {
+                let assetId = addressee?.bip21Params?.assetid ?? session.gdkNetwork.getFeeAsset()
                 addressee?.satoshi = Balance.from(amount, assetId: assetId, denomination: .BTC)?.satoshi
             }
+            let assetId = addressee?.bip21Params?.assetid ?? addressee?.assetId
+            if let assetId = assetId, assetId != "btc" {
+                addressee?.assetId = assetId
+            } else {
+                addressee?.assetId = session.gdkNetwork.getFeeAssetOrNull()
+            }
             return CreateTx(addressee: addressee, txType: .transaction)
-        } else if let error = res.errors.first {
-            if "id_no_amount_specified" == error {
-                var addressee = res.addressees.first
-                addressee?.bip21 = isBip21Bitcoin || isBip21Liquid
-                return CreateTx(addressee: addressee, txType: .transaction)
+        } else {
+            if session.networkType.liquid && isBip21Liquid {
+                throw TransactionError.invalid(localizedDescription: "id_invalid_address")
+            } else if session.networkType.bitcoin && isBip21Bitcoin {
+                throw TransactionError.invalid(localizedDescription: "id_invalid_address")
             }
-            if !isBip21Liquid && "id_invalid_asset_id" == error {
-                var addressee = res.addressees.first
-                addressee?.bip21 = isBip21Bitcoin || isBip21Liquid
-                return CreateTx(addressee: addressee, txType: .transaction)
-            }
-            throw TransactionError.invalid(localizedDescription: error)
+            return nil
         }
-        return nil
     }
 
     private func parseGdkBitcoin() async throws -> CreateTx? {
-        if let session = bitcoinSinglesigSession ?? bitcoinMultisigSession, let input = self.input {
-            return try await parseGdk(for: session, input: input)
+        guard let session = preferredAccount?.session ?? bitcoinSession,
+              let input = self.input, session.networkType.bitcoin else {
+            return nil
         }
-        return nil
+        let res = try await parseGdk(for: session, input: input)
+        if let preferredAccount = preferredAccount, !preferredAccount.networkType.bitcoin && res != nil {
+            throw TransactionError.invalid(localizedDescription: "Select a Bitcoin account")
+        }
+        return res
     }
 
     private func parseGdkLiquid() async throws -> CreateTx? {
-        if let session = liquidSinglesigSession ?? liquidMultisigSession, let input = self.input {
-            return try await parseGdk(for: session, input: input)
+        guard let session = preferredAccount?.session ?? liquidSession,
+                let input = self.input, session.networkType.liquid else {
+            return nil
         }
-        return nil
+        guard let res = try await parseGdk(for: session, input: input) else {
+            return nil
+        }
+        if let preferredAccount = preferredAccount, !preferredAccount.networkType.liquid {
+            throw TransactionError.invalid(localizedDescription: "Select a Liquid account")
+        }
+        if let assetId = assetId, assetId != res.assetId {
+            throw TransactionError.invalid(localizedDescription: "Asset mismatch")
+        }
+        return res
     }
-    
+
     private func parsePsbt(for session: SessionManager, input: String) async throws -> CreateTx? {
         let tx = try await wm?.prominentSession?.psbtGetDetails(params: PsbtGetDetailParams(psbt:  input, utxos: [:]))
         return CreateTx(txType: .psbt, psbt: input)
-        
     }
+
     private func parsePsbtBitcoin() async throws -> CreateTx? {
         if let session = bitcoinSinglesigSession ?? bitcoinMultisigSession, let input = self.input {
             return try await parsePsbt(for: session, input: input)
         }
         return nil
-        
     }
     private func parsePsbtLiquid() async throws -> CreateTx? {
         if let session = liquidSinglesigSession ?? liquidMultisigSession, let input = self.input {
@@ -149,34 +172,18 @@ class SendAddressInputViewModel {
             createTx = try await parsePrivatekey()
             return
         }
-        do {
-            if let res = try await parseGdkBitcoin() {
-                createTx = res
-                return
-            }
-        } catch {
-            if isBip21Bitcoin {
-                throw error
-            }
+        if let res = try await parseGdkBitcoin() {
+            createTx = res
+            return
         }
-        do {
-            if let res = try await parseGdkLiquid() {
-                createTx = res
-                return
-            }
-        } catch {
-            if isBip21Liquid {
-                throw error
-            }
+        if let res = try await parseGdkLiquid() {
+            createTx = res
+            return
         }
-        do {
+        if lightningSession?.logged ?? false {
             if let res = try await parseLightning() {
                 createTx = res
                 return
-            }
-        } catch {
-            if isBip21Lightning {
-                throw error
             }
         }
         if let res = try? await parsePsbtBitcoin() {
@@ -186,9 +193,6 @@ class SendAddressInputViewModel {
         if let res = try? await parsePsbtLiquid() {
             createTx = res
             return
-        }
-        if txType == .psbt {
-            throw TransactionError.invalid(localizedDescription: "id_invalid_psbt".localized)
         }
         throw TransactionError.invalid(localizedDescription: "id_invalid_address".localized)
     }
@@ -224,7 +228,10 @@ class SendAddressInputViewModel {
     }
     
     func sendPsbtConfirmViewModel() async throws -> SendTxConfirmViewModel {
-        let subaccount = Wally.isPsbtElements(createTx?.psbt ?? "") ?? false ? wm?.liquidSubaccounts.first : wm?.bitcoinSubaccounts.first
+        var subaccount = preferredAccount ?? wm?.bitcoinSubaccounts.first
+        if Wally.isPsbtElements(createTx?.psbt ?? "") ?? false {
+            subaccount = wm?.liquidSubaccounts.first
+        }
         let session = subaccount?.session
         var tx = try await session?.psbtGetDetails(params: PsbtGetDetailParams(psbt:  createTx?.psbt, utxos: [:]))
         let addressee = tx?.transactionOutputs?.map { Addressee.from(address: $0.address ?? "", satoshi: $0.satoshi, assetId: $0.assetId) }

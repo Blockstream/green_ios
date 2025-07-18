@@ -332,13 +332,6 @@ class WalletModel {
         }
         return true
     }
-    func isSweepEnabled() -> Bool {
-        if watchOnly {
-            let notMultisigBitcoinNetworks = subaccounts.filter { $0.networkType.singlesig || $0.networkType.liquid }
-            return notMultisigBitcoinNetworks.isEmpty
-        }
-        return false
-    }
     func accountsBy(_ assetId: String?) -> [WalletItem] {
         subaccounts.filter({ $0.satoshi?.keys.contains(assetId ?? $0.gdkNetwork.policyAsset ?? AssetInfo.btcId) ?? false })
     }

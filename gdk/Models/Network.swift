@@ -38,6 +38,9 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
     public func getFeeAsset() -> String {
         return self.policyAsset ?? AssetInfo.btcId
     }
+    public func getFeeAssetOrNull() -> String? {
+        return self.policyAsset
+    }
 
     public var electrum: Bool {
         "electrum" == serverType

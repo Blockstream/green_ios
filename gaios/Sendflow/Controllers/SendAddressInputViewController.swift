@@ -171,21 +171,6 @@ class SendAddressInputViewController: KeyboardViewController {
     @MainActor
     func next() {
         guard let createTx = viewModel.createTx else { return }
-
-        //from ManageAsset screen
-        if let account = viewModel.preferredAccount, let assetId = viewModel.assetId {
-            viewModel.createTx?.subaccount = account
-            if viewModel.createTx?.isLiquid ?? false {
-                viewModel.createTx?.assetId = assetId
-            }
-            presentSendAmountViewController()
-            return
-        }
-        if viewModel.txType == .sweep {
-            presentSendAmountViewController()
-            return
-        }
-
         if createTx.txType == .psbt {
             presentSendPsbtConfirmViewController()
         } else if createTx.isLightning {
@@ -215,6 +200,12 @@ class SendAddressInputViewController: KeyboardViewController {
             } else if viewModel.bitcoinSubaccountsWithFunds.isEmpty {
                 // check there are any bitcoin funds: display dialog
                 enableError(true, text: "id_insufficient_funds".localized)
+            } else if let account = viewModel.preferredAccount {
+                viewModel.createTx?.subaccount = account
+                if let assetId = viewModel.assetId, assetId != AssetInfo.btcId {
+                    viewModel.createTx?.assetId = viewModel.assetId
+                }
+                presentSendAmountViewController()
             } else if viewModel.bitcoinSubaccountsWithFunds.count == 1 {
                 // preselect the bitcoin subaccount: go in amount screen
                 viewModel.createTx?.subaccount = viewModel.bitcoinSubaccountsWithFunds.first
@@ -230,10 +221,17 @@ class SendAddressInputViewController: KeyboardViewController {
             } else if viewModel.liquidSubaccountsWithFunds.isEmpty {
                 // check there are any liquid funds: display dialog
                 enableError(true, text: "id_insufficient_funds".localized)
+            } else if let account = viewModel.preferredAccount {
+                viewModel.createTx?.subaccount = account
+                if let assetId = viewModel.createTx?.assetId {
+                    viewModel.createTx?.assetId = assetId
+                }
+                presentSendAmountViewController()
             } else if viewModel.liquidSubaccountsWithFunds.count == 1,
-                      let subaccount = viewModel.liquidSubaccountsWithFunds.first {
+                let subaccount = viewModel.liquidSubaccountsWithFunds.first {
                 // preselect the liquid subaccount: go in amount screen
-                if let assetId = viewModel.createTx?.assetId, viewModel.createTx?.bip21 ?? false {
+                if let assetId = viewModel.createTx?.assetId {
+                    viewModel.createTx?.assetId = assetId
                     viewModel.createTx?.subaccount = subaccount
                     presentSendAmountViewController()
                 } else if subaccount.manyAssets == 1 {
@@ -339,6 +337,9 @@ class SendAddressInputViewController: KeyboardViewController {
             }
         }
     }
+    @objc func triggerTextChange() {
+        Task { [weak self] in await self?.validate() }
+    }
 }
 
 extension SendAddressInputViewController: UITextViewDelegate {
@@ -351,7 +352,9 @@ extension SendAddressInputViewController: UITextViewDelegate {
     }
 
     func textViewDidChange(_ textView: UITextView) {
-        reload()
+        viewModel.input = addressTextView.text
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.triggerTextChange), object: nil)
+        perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0.3)
     }
 }
 
