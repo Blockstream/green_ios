@@ -38,7 +38,7 @@ class AccountArchivedViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        UIView.animate(withDuration: 0.3) {
+        UIView.animate(withDuration: 0.6) {
             self.view.alpha = 1.0
         }
         let riveView = RiveModel.animationArchived.createRiveView()
@@ -48,7 +48,7 @@ class AccountArchivedViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = "id_account_archived".localized
-        lblHint.text = "id_you_can_still_receive_funds_but".localized
+        lblHint.text = "Account archived This account will no longer be shown in the home or transact tabs.".localized
         btnContinue.setTitle("id_continue".localized, for: .normal)
         btnArchive.setTitle(String(format: "id_see_archived_accounts_s".localized, String(subaccounts.count)), for: .normal)
     }

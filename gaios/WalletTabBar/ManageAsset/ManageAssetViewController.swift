@@ -35,19 +35,19 @@ class ManageAssetViewController: UIViewController {
         Task { [weak self] in
             await self?.reload(discovery: false)
         }
-        if viewModel.account != nil, viewModel.accounts().count > 1 {
-            title = viewModel.account?.localizedName
+        if viewModel.account != nil {
+            loadNavigationBtns()
         }
-        if viewModel.account == nil {
-            let asset = WalletManager.current?.info(for: viewModel.assetId)
-            let name = asset?.name ?? asset?.assetId
-            title = name
-        }
-        loadNavigationBtns()
+        tableView?.refreshControl = UIRefreshControl()
+        tableView?.refreshControl!.tintColor = UIColor.white
+        tableView?.refreshControl!.addTarget(self, action: #selector(pull(_:)), for: .valueChanged)
     }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if viewModel.account == nil {
+            // required to refresh after renaming
+            tableView?.reloadData()
+        }
     }
     deinit {
         notificationObservers.forEach { observer in
@@ -56,9 +56,14 @@ class ManageAssetViewController: UIViewController {
         notificationObservers = []
     }
     func setContent() {
-        tableView?.refreshControl = UIRefreshControl()
-        tableView?.refreshControl!.tintColor = UIColor.white
-        tableView?.refreshControl!.addTarget(self, action: #selector(pull(_:)), for: .valueChanged)
+        if viewModel.account != nil, viewModel.accounts().count > 1 {
+            title = viewModel.account?.localizedName
+        }
+        if viewModel.account == nil {
+            let asset = WalletManager.current?.info(for: viewModel.assetId)
+            let name = asset?.name ?? asset?.assetId
+            title = name
+        }
     }
 
     func register() {
@@ -82,7 +87,14 @@ class ManageAssetViewController: UIViewController {
         }
     }
     @objc func settingsBtnTapped() {
-        showAlert(title: "Settings".localized, message: "Coming soon.")
+//        showAlert(title: "Settings".localized, message: "Coming soon.")
+        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountSettingsViewController") as? AccountSettingsViewController {
+            vc.viewModel = AccountSettingsViewModel(title: "Account Settings".localized, actions: [.rename(current: viewModel.account?.localizedName ?? ""), .watchonly, .archive])
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
     }
     func receive() {
         receiveScreen()
@@ -190,6 +202,46 @@ class ManageAssetViewController: UIViewController {
     func handleForegroundEvent() {
         Task.detached { [weak self] in
             await self?.reload(discovery: false)
+        }
+    }
+    func accountRename(_ name: String) {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRenameViewController") as? DialogRenameViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.isAccountRename = true
+            vc.delegate = self
+            vc.prefill = name
+            present(vc, animated: false, completion: nil)
+        }
+    }
+    func rename(_ name: String) {
+        Task {
+            do {
+                startLoader(message: "Renaming".localized)
+                try await viewModel.renameSubaccount(name: name)
+                stopLoader()
+                setContent()
+            } catch { showError(error) }
+        }
+    }
+    func archive() {
+        Task {
+            do {
+                startLoader(message: "Archiving".localized)
+                try await viewModel.archiveSubaccount()
+                stopLoader()
+//                delegate?.didArchiveAccount()
+                showArchivedSuccess()
+            } catch { showError(error) }
+        }
+    }
+    @MainActor
+    func showArchivedSuccess() {
+        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchivedViewController") as? AccountArchivedViewController {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
         }
     }
 }
@@ -456,6 +508,38 @@ extension ManageAssetViewController: TxDetailsViewControllerDelegate {
     func onMemoEdit() {
         Task { [weak self] in
             await self?.reload(discovery: false)
+        }
+    }
+}
+extension ManageAssetViewController: AccountSettingsViewControllerDelegate {
+    func didSelectAction(_ type: AccountSettingsType) {
+        switch type {
+        case .rename(let current):
+            accountRename(current)
+        case .watchonly:
+            break
+        case .archive:
+            archive()
+        }
+    }
+}
+extension ManageAssetViewController: DialogRenameViewControllerDelegate {
+    func didRename(name: String, index: String?) {
+        rename(name)
+    }
+    func didCancel() {}
+}
+extension ManageAssetViewController: AccountArchivedViewControllerDelegate {
+    func onDismissArchived() {
+        self.navigationController?.popViewController(animated: true)
+    }
+
+    func showArchived() {
+        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController, var viewControllers = navigationController?.viewControllers, let nav = navigationController {
+            viewControllers.removeLast()
+            viewControllers.append(vc)
+            nav.setViewControllers(viewControllers, animated: true)
         }
     }
 }

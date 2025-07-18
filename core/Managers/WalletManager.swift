@@ -463,7 +463,15 @@ public class WalletManager {
         }
         return res
     }
-
+    public func subaccountUpdate(account: WalletItem) async throws -> WalletItem? {
+        let res = try? await account.session?.subaccount(account.pointer)
+        if let res = res, let row = self.subaccounts.firstIndex(where: {$0.pointer == account.pointer && $0.gdkNetwork == account.gdkNetwork}) {
+            res.satoshi = account.satoshi
+            res.hasTxs = account.hasTxs
+            self.subaccounts[row] = res
+        }
+        return res
+    }
     public func balances(subaccounts: [WalletItem]) async throws -> [String: Int64] {
         let balances = await withTaskGroup(of: [String: Int64].self, returning: [[String: Int64]].self) { group in
             for account in subaccounts.enumerated() {

@@ -126,4 +126,20 @@ class ManageAssetViewModel {
     func accounts() -> [WalletItem] {
         subaccounts.filter({ $0.satoshi?.keys.contains(assetId) ?? false })
     }
+    func renameSubaccount(name: String) async throws {
+        guard let account = account, let session = wm?.sessions[account.gdkNetwork.network] else {
+            return
+        }
+        let params = UpdateSubaccountParams(subaccount: account.pointer, name: name)
+        try await session.renameSubaccount(params)
+        self.account = try await wm?.subaccountUpdate(account: account)
+    }
+    func archiveSubaccount() async throws {
+        guard let account = account, let session = wm?.sessions[account.gdkNetwork.network] else {
+            return
+        }
+        let params = UpdateSubaccountParams(subaccount: account.pointer, hidden: true)
+        try await session.updateSubaccount(params)
+        self.account = try await wm?.subaccountUpdate(account: account)
+    }
 }
