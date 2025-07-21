@@ -87,10 +87,13 @@ class ManageAssetViewController: UIViewController {
         }
     }
     @objc func settingsBtnTapped() {
-//        showAlert(title: "Settings".localized, message: "Coming soon.")
+        var actions: [AccountSettingsType] = []
+        actions.append(.rename(current: viewModel.account?.localizedName ?? ""))
+        if viewModel.account?.isSinglesig == true { actions.append(.watchonly) }
+        if viewModel.isFunded == false { actions.append(.archive) }
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountSettingsViewController") as? AccountSettingsViewController {
-            vc.viewModel = AccountSettingsViewModel(title: "Account Settings".localized, actions: [.rename(current: viewModel.account?.localizedName ?? ""), .watchonly, .archive])
+            vc.viewModel = AccountSettingsViewModel(title: "Account Settings".localized, actions: actions)
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
@@ -212,6 +215,14 @@ class ManageAssetViewController: UIViewController {
             vc.delegate = self
             vc.prefill = name
             present(vc, animated: false, completion: nil)
+        }
+    }
+    func showDescriptor() {
+        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountDescriptorViewController") as? AccountDescriptorViewController, let account = viewModel.account {
+            vc.viewModel = AccountDescriptorViewModel(account: account)
+            // vc.delegate = self
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
     func rename(_ name: String) {
@@ -517,7 +528,7 @@ extension ManageAssetViewController: AccountSettingsViewControllerDelegate {
         case .rename(let current):
             accountRename(current)
         case .watchonly:
-            break
+            showDescriptor()
         case .archive:
             archive()
         }

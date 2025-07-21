@@ -126,14 +126,9 @@ class TabSettingsModel {
             subtitle: "",
             section: .wallet,
             type: .rename)
-
-        var archived = 0
-        if let subaccount = WalletManager.current?.subaccounts {
-            archived = subaccount.filter({ $0.hidden }).count
-        }
         let archievedAccounts = SettingsItemData(
             title: SettingsItem.archievedAccounts.string,
-            subtitle: "", // archived == 0 ? "" : String(archived),
+            subtitle: "",
             section: .wallet,
             type: .archievedAccounts)
         var menu = [SettingsItemData]()
@@ -147,8 +142,7 @@ class TabSettingsModel {
             menu += [watchOnly]
         }
         menu += [rename]
-
-        if archived > 0 {
+        if !isWatchonly {
             menu += [archievedAccounts]
         }
         return menu

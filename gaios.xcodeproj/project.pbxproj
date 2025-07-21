@@ -92,6 +92,9 @@
 		3423C6DE27BFDC4B001D9E2C /* AccountCreateRecoveryKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3423C6DD27BFDC4B001D9E2C /* AccountCreateRecoveryKeyViewController.swift */; };
 		3423C6E727C380DD001D9E2C /* DialogMnemonicLengthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3423C6E627C380DD001D9E2C /* DialogMnemonicLengthViewController.swift */; };
 		3423C6E927C39B38001D9E2C /* AccountCreatePublicKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3423C6E827C39B38001D9E2C /* AccountCreatePublicKeyViewController.swift */; };
+		3423CC032E2E3487007CEC13 /* AccountDescriptorCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3423CC022E2E3478007CEC13 /* AccountDescriptorCellModel.swift */; };
+		3423CC052E2E3496007CEC13 /* AccountDescriptorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3423CC042E2E3493007CEC13 /* AccountDescriptorCell.swift */; };
+		3423CC072E2E34B7007CEC13 /* AccountDescriptorCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3423CC062E2E34B7007CEC13 /* AccountDescriptorCell.xib */; };
 		342560A8268B2BB900136ACC /* Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560A7268B2BB900136ACC /* Login.swift */; };
 		342560AC268B4C5300136ACC /* PopoverMenuWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560AB268B4C5300136ACC /* PopoverMenuWallet.swift */; };
 		342560AE268B4EBE00136ACC /* DialogWalletDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560AD268B4EBE00136ACC /* DialogWalletDelete.swift */; };
@@ -480,6 +483,8 @@
 		34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E0CA8D298139B200695304 /* SurveyViewController.swift */; };
 		34E4E8892E293C400061DB16 /* AccountArchiveCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E4E8882E293C370061DB16 /* AccountArchiveCellModel.swift */; };
 		34E4E88B2E293D3B0061DB16 /* AccountArchiveCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34E4E88A2E293D3B0061DB16 /* AccountArchiveCell.xib */; };
+		34E4E88F2E2A45090061DB16 /* AccountDescriptorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E4E88E2E2A44FC0061DB16 /* AccountDescriptorViewController.swift */; };
+		34E4E8912E2A451F0061DB16 /* AccountDescriptorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E4E8902E2A45170061DB16 /* AccountDescriptorViewModel.swift */; };
 		34E8457729DBFA4500B207E7 /* DialogAmountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8457629DBFA4500B207E7 /* DialogAmountViewController.swift */; };
 		34E8457929DC26DD00B207E7 /* LoginPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8457829DC26DD00B207E7 /* LoginPrefs.swift */; };
 		34E8457C29DD6ABB00B207E7 /* DialogPassphraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8457B29DD6ABB00B207E7 /* DialogPassphraseViewController.swift */; };
@@ -1044,6 +1049,9 @@
 		3423C6DD27BFDC4B001D9E2C /* AccountCreateRecoveryKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreateRecoveryKeyViewController.swift; sourceTree = "<group>"; };
 		3423C6E627C380DD001D9E2C /* DialogMnemonicLengthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogMnemonicLengthViewController.swift; sourceTree = "<group>"; };
 		3423C6E827C39B38001D9E2C /* AccountCreatePublicKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreatePublicKeyViewController.swift; sourceTree = "<group>"; };
+		3423CC022E2E3478007CEC13 /* AccountDescriptorCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDescriptorCellModel.swift; sourceTree = "<group>"; };
+		3423CC042E2E3493007CEC13 /* AccountDescriptorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDescriptorCell.swift; sourceTree = "<group>"; };
+		3423CC062E2E34B7007CEC13 /* AccountDescriptorCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccountDescriptorCell.xib; sourceTree = "<group>"; };
 		342560A7268B2BB900136ACC /* Login.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Login.swift; sourceTree = "<group>"; };
 		342560AB268B4C5300136ACC /* PopoverMenuWallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuWallet.swift; sourceTree = "<group>"; };
 		342560AD268B4EBE00136ACC /* DialogWalletDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletDelete.swift; sourceTree = "<group>"; };
@@ -1448,6 +1456,8 @@
 		34E0CA9129829C2A00695304 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		34E4E8882E293C370061DB16 /* AccountArchiveCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountArchiveCellModel.swift; sourceTree = "<group>"; };
 		34E4E88A2E293D3B0061DB16 /* AccountArchiveCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccountArchiveCell.xib; sourceTree = "<group>"; };
+		34E4E88E2E2A44FC0061DB16 /* AccountDescriptorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDescriptorViewController.swift; sourceTree = "<group>"; };
+		34E4E8902E2A45170061DB16 /* AccountDescriptorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDescriptorViewModel.swift; sourceTree = "<group>"; };
 		34E8457629DBFA4500B207E7 /* DialogAmountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAmountViewController.swift; sourceTree = "<group>"; };
 		34E8457829DC26DD00B207E7 /* LoginPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPrefs.swift; sourceTree = "<group>"; };
 		34E8457B29DD6ABB00B207E7 /* DialogPassphraseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogPassphraseViewController.swift; sourceTree = "<group>"; };
@@ -3408,6 +3418,26 @@
 			path = AccountArchive;
 			sourceTree = "<group>";
 		};
+		34E4E88C2E2A44C20061DB16 /* AccountDescriptor */ = {
+			isa = PBXGroup;
+			children = (
+				34E4E88D2E2A44EF0061DB16 /* Cells */,
+				34E4E88E2E2A44FC0061DB16 /* AccountDescriptorViewController.swift */,
+				34E4E8902E2A45170061DB16 /* AccountDescriptorViewModel.swift */,
+			);
+			path = AccountDescriptor;
+			sourceTree = "<group>";
+		};
+		34E4E88D2E2A44EF0061DB16 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				3423CC022E2E3478007CEC13 /* AccountDescriptorCellModel.swift */,
+				3423CC042E2E3493007CEC13 /* AccountDescriptorCell.swift */,
+				3423CC062E2E34B7007CEC13 /* AccountDescriptorCell.xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		34E8457529DBFA1C00B207E7 /* DialogAmount */ = {
 			isa = PBXGroup;
 			children = (
@@ -3647,6 +3677,7 @@
 		6D56C76D235E162A00E4F990 /* Accounts */ = {
 			isa = PBXGroup;
 			children = (
+				34E4E88C2E2A44C20061DB16 /* AccountDescriptor */,
 				34E4E8852E293B8C0061DB16 /* AccountArchive */,
 				34C1A4C62E27A33F00CB83D4 /* AccountSettings */,
 				6D56C771235E27F000E4F990 /* Accounts.storyboard */,
@@ -4657,6 +4688,7 @@
 				34D51B692A77939D00C0AF12 /* DialogInputDenominationFooter.xib in Resources */,
 				34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */,
 				345B28D52DD1D74B0075860A /* animation_02_jade_v1.riv in Resources */,
+				3423CC072E2E34B7007CEC13 /* AccountDescriptorCell.xib in Resources */,
 				3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */,
 				8135873F2DBFCC8C0000116B /* HWDialogs.storyboard in Resources */,
 				34610C5B2B864B84005157C8 /* BleUnavailable.storyboard in Resources */,
@@ -4924,6 +4956,7 @@
 				3465E2142A8F38FD0082D556 /* PinServerWarnViewController.swift in Sources */,
 				81DEB8302CF3966F0084FFF0 /* Data.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
+				34E4E8912E2A451F0061DB16 /* AccountDescriptorViewModel.swift in Sources */,
 				34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */,
 				8135873D2DBFCC460000116B /* HWDialogConnectViewController.swift in Sources */,
 				8173B8EE2AB19DCD00C15C85 /* ZendeskSdk.swift in Sources */,
@@ -4968,6 +5001,7 @@
 				34C8E77629BF868500C84066 /* DeviceCell.swift in Sources */,
 				344915E52A0BA27100D35818 /* LTSuccessViewModel.swift in Sources */,
 				34E8457C29DD6ABB00B207E7 /* DialogPassphraseViewController.swift in Sources */,
+				3423CC052E2E3496007CEC13 /* AccountDescriptorCell.swift in Sources */,
 				3457F4BA2923B0B500EF33B5 /* AccountPrefs.swift in Sources */,
 				81DAEE052DD4110F00635591 /* ReceiveAssetCellModel.swift in Sources */,
 				81DAEE062DD4110F00635591 /* ReceiveAssetCell.swift in Sources */,
@@ -5062,6 +5096,7 @@
 				34927BC72971452300D741DB /* AccountAssetViewController.swift in Sources */,
 				346EB28B2BE8BC400043139F /* SquareSliderView.swift in Sources */,
 				34FE20172A1CADC200301746 /* DialogDetailCell.swift in Sources */,
+				3423CC032E2E3487007CEC13 /* AccountDescriptorCellModel.swift in Sources */,
 				349693C62CFEF613000F308E /* JadeAsset.swift in Sources */,
 				34560B8529BA28F7007E916F /* SetupJadeViewModel.swift in Sources */,
 				342F980E29351444005876A8 /* DialogEnable2faCell.swift in Sources */,
@@ -5325,6 +5360,7 @@
 				81B7FD222A8F959C0024A0E8 /* URLSchemeManager.swift in Sources */,
 				342C11012DA50FF200EC5209 /* SetupNewViewController.swift in Sources */,
 				3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */,
+				34E4E88F2E2A45090061DB16 /* AccountDescriptorViewController.swift in Sources */,
 				34F51A7F2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift in Sources */,
 				81332CC32D55082D00F3520D /* Gdk.swift in Sources */,
 				81DE63462DDE41AF00AB79DB /* DialogActionsViewController.swift in Sources */,

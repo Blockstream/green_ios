@@ -80,6 +80,7 @@ class DialogAccountCell: UITableViewCell {
 
     @IBAction func btnTap(_ sender: Any) {
         if isSelectable {
+            isSelectable = false
             bg.pressAnimate {
                 self.onTap?()
             }

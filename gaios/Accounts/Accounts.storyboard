@@ -430,7 +430,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2Fh-6J-BuC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10177" y="708"/>
+            <point key="canvasLocation" x="9416" y="708"/>
         </scene>
         <!--Account Settings View Controller-->
         <scene sceneID="hQd-Zf-UiZ">
@@ -574,7 +574,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YE0-GW-CUc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1575" y="696"/>
+            <point key="canvasLocation" x="8670" y="708"/>
         </scene>
         <!--Account Archived View Controller-->
         <scene sceneID="ZJv-pY-qK1">
@@ -717,7 +717,45 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jod-FC-4M8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="182.60869565217394" y="1427.6785714285713"/>
+            <point key="canvasLocation" x="10161" y="708"/>
+        </scene>
+        <!--Account Descriptor View Controller-->
+        <scene sceneID="Wez-Rr-h3I">
+            <objects>
+                <viewController storyboardIdentifier="AccountDescriptorViewController" id="r2G-nR-KAa" customClass="AccountDescriptorViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="IF7-oa-hiM">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="X3c-VT-Gi2">
+                                <rect key="frame" x="0.0" y="58" width="414" height="804"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="r2G-nR-KAa" id="UbF-yh-Ri2"/>
+                                    <outlet property="delegate" destination="r2G-nR-KAa" id="bed-gi-HWS"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="jfc-YZ-b2g"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
+                        <constraints>
+                            <constraint firstItem="X3c-VT-Gi2" firstAttribute="leading" secondItem="jfc-YZ-b2g" secondAttribute="leading" id="5nC-oQ-h7L"/>
+                            <constraint firstItem="jfc-YZ-b2g" firstAttribute="trailing" secondItem="X3c-VT-Gi2" secondAttribute="trailing" id="OaR-2e-yv7"/>
+                            <constraint firstItem="jfc-YZ-b2g" firstAttribute="bottom" secondItem="X3c-VT-Gi2" secondAttribute="bottom" id="dPe-B0-fx2"/>
+                            <constraint firstItem="X3c-VT-Gi2" firstAttribute="top" secondItem="jfc-YZ-b2g" secondAttribute="top" constant="10" id="lHh-fN-GpM"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="Qc4-gH-uXW">
+                        <barButtonItem key="backBarButtonItem" title=" " id="KlV-ce-grt"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="tableView" destination="X3c-VT-Gi2" id="UkB-0B-QzS"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="EOs-gX-cvl" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="10897" y="708"/>
         </scene>
     </scenes>
     <resources>

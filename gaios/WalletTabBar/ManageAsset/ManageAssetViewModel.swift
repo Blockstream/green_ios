@@ -96,7 +96,7 @@ class ManageAssetViewModel {
         let txs = try await wm.allTransactions(subaccounts: account == nil ? accounts() : [account!])
         cachedTransactions = txs.filter {
             for amount in $0.amounts where amount.key == assetId {
-                    return true
+                return true
             }
             return false
         }
@@ -141,5 +141,14 @@ class ManageAssetViewModel {
         let params = UpdateSubaccountParams(subaccount: account.pointer, hidden: true)
         try await session.updateSubaccount(params)
         self.account = try await wm?.subaccountUpdate(account: account)
+    }
+    var isFunded: Bool? {
+        if let account {
+            if account.satoshi == nil { return false }
+            if let sats = account.satoshi?[assetId] {
+                return sats > 0
+            }
+        }
+        return nil
     }
 }

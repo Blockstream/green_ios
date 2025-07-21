@@ -16,6 +16,7 @@ enum AlertCardType {
     case lightningServiceDisruption
     case reEnable2fa
     case backup
+    case descriptorInfo
 }
 
 class AlertCardCell: UITableViewCell {
@@ -193,6 +194,13 @@ class AlertCardCell: UITableViewCell {
             btnRight.isHidden = true
             btnDismiss.isHidden = onDismiss == nil
             styleWarn()
+        case .descriptorInfo:
+            lblTitle.isHidden = true
+            lblHint.text = "You can use your descriptor to view your balance in the Blockstream app without the ability to spend.".localized
+            btnLeft.isHidden = true
+            btnRight.isHidden = true
+            btnsContainer.isHidden = true
+            btnDismiss.isHidden = onDismiss == nil
         }
     }
     func styleWarn() {
