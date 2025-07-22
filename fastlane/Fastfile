@@ -36,8 +36,8 @@ platform :ios do
       ipa: "./dev/Green-dev.ipa",
       signing_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)",
       provisioning_profile: {
-        "io.blockstream.greendev" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/c303d3f8-1d76-4f7d-878a-d59965eef289.mobileprovision",
-        "io.blockstream.greendev.NotificationService" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/81d5e586-e2e0-4d4e-ad5d-efedfad945d9.mobileprovision"
+        "io.blockstream.greendev" => "/opt/ios-certs/c303d3f8-1d76-4f7d-878a-d59965eef289.mobileprovision",
+        "io.blockstream.greendev.NotificationService" => "/opt/ios-certs/81d5e586-e2e0-4d4e-ad5d-efedfad945d9.mobileprovision"
       }
     )
   end
@@ -73,8 +73,8 @@ platform :ios do
       ipa: "./prod/Green.ipa",
       signing_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)",
       provisioning_profile: {
-        "io.blockstream.green" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/4d77aeda-c66b-4e3b-ae12-a63caf942b94.mobileprovision",
-        "io.blockstream.green.NotificationService" => "/Users/gitlab-runner/Library/MobileDevice/Provisioning\ Profiles/660c3b5b-778f-4d53-80ed-a48ca740ed34.mobileprovision"
+        "io.blockstream.green" => "/opt/ios-certs/4d77aeda-c66b-4e3b-ae12-a63caf942b94.mobileprovision",
+        "io.blockstream.green.NotificationService" => "/opt/ios-certs/660c3b5b-778f-4d53-80ed-a48ca740ed34.mobileprovision"
       }
     )
   end

@@ -16,7 +16,7 @@ test_format:
   stage: format
   extends: .setup_env
   tags:
-    - mini
+    - osx-m4
   script:
     - fastlane run swiftlint
 
@@ -76,7 +76,7 @@ production:
   when: manual
   extends: .setup_env
   tags:
-    - osx-ia
+    - mini
   artifacts:
     name: "green-ios-production-$CI_COMMIT_REF_NAME"
     expire_in: 1 day
@@ -148,7 +148,7 @@ upload_apple_store:
   stage: deploy
   needs: ["distribute_production"]
   tags:
-    - osx-ia
+    - osx-m4
   artifacts:
     name: "green-ios-production-$CI_COMMIT_REF_NAME"
     expire_in: 1 day
