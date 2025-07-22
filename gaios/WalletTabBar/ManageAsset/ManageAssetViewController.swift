@@ -88,7 +88,9 @@ class ManageAssetViewController: UIViewController {
     }
     @objc func settingsBtnTapped() {
         var actions: [AccountSettingsType] = []
-        actions.append(.rename(current: viewModel.account?.localizedName ?? ""))
+        if !(AccountsRepository.shared.current?.isWatchonly ?? false) {
+            actions.append(.rename(current: viewModel.account?.localizedName ?? ""))
+        }
         if viewModel.account?.isSinglesig == true { actions.append(.watchonly) }
         if viewModel.isFunded == false { actions.append(.archive) }
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
