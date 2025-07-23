@@ -101,7 +101,7 @@ class WalletModel {
     }
     func accountIsFunded(_ subaccount: WalletItem) -> Bool {
         if let satoshi = subaccount.satoshi {
-            for (k, v) in satoshi where v > 0 {
+            for (_, v) in satoshi where v > 0 {
                 return true
             }
         }
@@ -286,7 +286,7 @@ class WalletModel {
         ReEnable2faViewModel(expiredSubaccounts: expiredSubaccounts)
     }
     func callAnalytics(_ subs: [WalletItem]?) {
-        
+
         guard let subs else { return }
         if analyticsDone == true { return }
         analyticsDone = true
