@@ -87,6 +87,10 @@ class ManageAssetViewController: UIViewController {
         }
     }
     @objc func settingsBtnTapped() {
+        if viewModel.account?.isLightning ?? false {
+            openLTSettingsViewController()
+            return
+        }
         var actions: [AccountSettingsType] = []
         if !(AccountsRepository.shared.current?.isWatchonly ?? false) {
             actions.append(.rename(current: viewModel.account?.localizedName ?? ""))
@@ -255,6 +259,17 @@ class ManageAssetViewController: UIViewController {
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: false, completion: nil)
+        }
+    }
+    func openLTSettingsViewController() {
+        guard let lightningSession = viewModel.wm?.lightningSession else {
+            DropAlert().warning(message: "Create a lightning account")
+            return
+        }
+        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LTSettingsViewController") as? LTSettingsViewController {
+            vc.viewModel = LTSettingsViewModel(lightningSession: lightningSession)
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }

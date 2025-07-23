@@ -151,4 +151,12 @@ class ManageAssetViewModel {
         }
         return nil
     }
+    func hasLightning() -> Bool {
+        guard let account = WalletManager.current?.account else {
+            return false
+        }
+        return AuthenticationTypeHandler.findAuth(
+            method: .AuthKeyLightning,
+            forNetwork: account.keychainLightning)
+    }
 }
