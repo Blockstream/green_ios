@@ -62,7 +62,7 @@ class TabSecurityVC: TabViewController {
     }
 
     func register() {
-        ["TabHeaderCell", "SecurityLevelCell", "PreferenceCell", "AlertCardCell"].forEach {
+        ["TabHeaderCell", "SecurityLevelCell", "PreferenceCell", "AlertCardCell", "WatchonlyCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
@@ -90,6 +90,9 @@ class TabSecurityVC: TabViewController {
     }
     func onCompare() {
         securityCompareScreen()
+    }
+    func onLearnMore() {
+        SafeNavigationManager.shared.navigate( ExternalUrls.learnMoreWatchonly )
     }
     func editProtection(type: EditProtectionType, action: EditProtectionAction) {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
@@ -262,7 +265,9 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
         case .header:
             return 1
         case .level:
-            return 1
+            return (walletModel.wm?.isWatchonly == true) ? 0 : 1
+        case .watchonly:
+            return (walletModel.wm?.isWatchonly == true) ? 1 : 0
         case .jade:
             return walletModel.wm?.account.isJade ?? false ? jadeCellModel.count : 0
         case .backup:
@@ -292,6 +297,14 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: SecurityLevelCell.identifier, for: indexPath) as? SecurityLevelCell {
                 cell.configure(isHW: walletModel.wm?.account.isHW == true, onCompare: {[weak self] in
                     self?.onCompare()
+                })
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .watchonly:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: WatchonlyCell.identifier, for: indexPath) as? WatchonlyCell {
+                cell.configure(onLearnMore: {[weak self] in
+                    self?.onLearnMore()
                 })
                 cell.selectionStyle = .none
                 return cell

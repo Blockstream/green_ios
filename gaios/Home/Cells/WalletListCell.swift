@@ -50,7 +50,7 @@ class WalletListCell: UITableViewCell {
         self.indexPath = indexPath
         self.onTap = onTap
         self.onLongpress = onLongpress
-        iconWatchonly.isHidden = !item.isWatchonly
+        iconWatchonly.isHidden = true
     }
     @objc func onLongPressed(sender: UILongPressGestureRecognizer) {
         if sender.state == UIGestureRecognizer.State.began {

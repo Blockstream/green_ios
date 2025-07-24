@@ -356,6 +356,8 @@
 		3499655C29E576300092B5BD /* DialogDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499655B29E576300092B5BD /* DialogDetailViewController.swift */; };
 		3499655F29E5962D0092B5BD /* DialogEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499655E29E5962D0092B5BD /* DialogEditViewController.swift */; };
 		3499656229E5A2620092B5BD /* DialogAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499656129E5A2620092B5BD /* DialogAboutViewController.swift */; };
+		349984162E32253900737E9F /* WatchonlyCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 349984152E32253900737E9F /* WatchonlyCell.xib */; };
+		349984182E32255C00737E9F /* WatchonlyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349984172E32255500737E9F /* WatchonlyCell.swift */; };
 		349C75222796D99E0046DA59 /* AssetsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75212796D99E0046DA59 /* AssetsListViewController.swift */; };
 		349C75242796DBB90046DA59 /* AssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75232796DBB90046DA59 /* AssetCell.swift */; };
 		349D7FED268D9470009E1815 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349D7FEC268D9470009E1815 /* Constants.swift */; };
@@ -1311,6 +1313,8 @@
 		3499655B29E576300092B5BD /* DialogDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogDetailViewController.swift; sourceTree = "<group>"; };
 		3499655E29E5962D0092B5BD /* DialogEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogEditViewController.swift; sourceTree = "<group>"; };
 		3499656129E5A2620092B5BD /* DialogAboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAboutViewController.swift; sourceTree = "<group>"; };
+		349984152E32253900737E9F /* WatchonlyCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WatchonlyCell.xib; sourceTree = "<group>"; };
+		349984172E32255500737E9F /* WatchonlyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchonlyCell.swift; sourceTree = "<group>"; };
 		349C75212796D99E0046DA59 /* AssetsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsListViewController.swift; sourceTree = "<group>"; };
 		349C75232796DBB90046DA59 /* AssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCell.swift; sourceTree = "<group>"; };
 		349D7FEC268D9470009E1815 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -2367,6 +2371,7 @@
 		344D57D62D71BF20009725A3 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				349984142E32250100737E9F /* WatchonlyCell */,
 				81928F8E2DC508080016108E /* SecurityLevelCell */,
 				81928F8D2DC508010016108E /* TabHeaderCell */,
 				81928F8C2DC507F00016108E /* TransactActionsCell */,
@@ -2914,6 +2919,15 @@
 				3499656129E5A2620092B5BD /* DialogAboutViewController.swift */,
 			);
 			path = DialogAbout;
+			sourceTree = "<group>";
+		};
+		349984142E32250100737E9F /* WatchonlyCell */ = {
+			isa = PBXGroup;
+			children = (
+				349984172E32255500737E9F /* WatchonlyCell.swift */,
+				349984152E32253900737E9F /* WatchonlyCell.xib */,
+			);
+			path = WatchonlyCell;
 			sourceTree = "<group>";
 		};
 		349F71E729C218FA007B9154 /* DialogCountly */ = {
@@ -4605,6 +4619,7 @@
 				34D761342A384EF800DE57F5 /* DenominationExchangeFlow.storyboard in Resources */,
 				34145FD52DBA40D100F725E0 /* SelectProviderCell.xib in Resources */,
 				6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */,
+				349984162E32253900737E9F /* WatchonlyCell.xib in Resources */,
 				8114888B2B77F1B7004C7AB6 /* GoogleService-Dev-Info.plist in Resources */,
 				34E0CA8C2981395600695304 /* Survey.storyboard in Resources */,
 				3460D2FF2BC02F8700CB8033 /* PrivacyInfo.xcprivacy in Resources */,
@@ -5087,6 +5102,7 @@
 				340EF8D828B3718D001AE87B /* WalletListCell.swift in Sources */,
 				34675B0A29409D9900771D50 /* Common.swift in Sources */,
 				34C67E7A2924F59700A50F89 /* AccountSelectSubCellModel.swift in Sources */,
+				349984182E32255C00737E9F /* WatchonlyCell.swift in Sources */,
 				671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */,
 				347FD0B125FFA98300BB3FAB /* HomeViewController.swift in Sources */,
 				6D97046E2344146300839598 /* ModalAnimator.swift in Sources */,

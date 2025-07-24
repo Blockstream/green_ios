@@ -20,6 +20,7 @@ enum TabTransactSection: Int, CaseIterable {
 enum TabSecuritySection: Int, CaseIterable {
     case header
     case level
+    case watchonly
     case jade
     case backup
     case unlock
