@@ -269,6 +269,7 @@ class ManageAssetViewController: UIViewController {
         let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTSettingsViewController") as? LTSettingsViewController {
             vc.viewModel = LTSettingsViewModel(lightningSession: lightningSession)
+            vc.hideActions = true
             navigationController?.pushViewController(vc, animated: true)
         }
     }

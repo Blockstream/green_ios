@@ -11,8 +11,6 @@ enum LTSettingsNodeAction {
 
 class LTSettingsViewController: UIViewController {
 
-    @IBOutlet weak var tappableBg: UIView!
-    @IBOutlet weak var handle: UIView!
     @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
@@ -24,9 +22,10 @@ class LTSettingsViewController: UIViewController {
     @IBOutlet weak var btnCloseChannel: UIButton!
     @IBOutlet weak var btnDisable: UIButton!
     @IBOutlet weak var btnSweep: UIButton!
-    
+
     var viewModel: LTSettingsViewModel!
     private var nodeCellTypes: [LTSettingsCellType] { viewModel.cellTypes }
+    var hideActions = false
 
     private var hideBalance: Bool {
         return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
@@ -55,7 +54,11 @@ class LTSettingsViewController: UIViewController {
         btnDisable.setTitle("Disable Lightning".localized, for: .normal)
         btnCloseChannel.isHidden = viewModel.channelsBalance ?? 0 == 0
         btnSweep.isHidden = viewModel.onchainBalanceSatoshi ?? 0 == 0
-        
+        if hideActions {
+            [btnCloseChannel, btnMnemonic, btnDisable, btnSweep].forEach {
+                $0?.isHidden = hideActions
+            }
+        }
     }
 
     func setStyle() {
