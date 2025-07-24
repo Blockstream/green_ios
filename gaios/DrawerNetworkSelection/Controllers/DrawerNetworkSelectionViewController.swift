@@ -16,6 +16,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
     @IBOutlet weak var btnSettings: UIButton!
     @IBOutlet weak var newWalletView: UIView!
     @IBOutlet weak var lblNewWallet: UILabel!
+    @IBOutlet weak var lblWallets: UILabel!
 
     var onSelection: ((Account) -> Void)?
     weak var delegate: DrawerNetworkSelectionDelegate?
@@ -48,12 +49,17 @@ class DrawerNetworkSelectionViewController: UIViewController {
 
     func setContent() {
         lblNewWallet.text = "id_setup_a_new_wallet".localized
+        lblWallets.text = "My Wallets".localized
     }
 
     func setStyle() {
+        if #available(iOS 15.0, *) {
+            tableView.sectionHeaderTopPadding = 0
+        }
         view.backgroundColor = UIColor.gBlackBg()
         tableView.backgroundColor = UIColor.gBlackBg()
         newWalletView.setStyle(CardStyle.defaultStyle)
+        lblWallets.textColor = UIColor.gGrayTxt()
     }
 
     func loadNavigationBtns() {
@@ -176,25 +182,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch HomeSection(rawValue: section) {
-        case .ephWallet:
-            if ephAccounts.isEmpty {
-                return 0.1
-            }
-        case .swWallet:
-            if AccountsRepository.shared.swAccounts.isEmpty {
-                return 0.1
-            }
-        case .hwWallet:
-            if AccountsRepository.shared.hwVisibleAccounts.isEmpty {
-                return 0.1
-            }
-        case .remoteAlerts:
-            return 0.1
-        default:
-            break
-        }
-        return headerH
+        return 0.1
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -202,25 +190,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        switch HomeSection(rawValue: section) {
-        case .swWallet:
-            if AccountsRepository.shared.swAccounts.isEmpty {
-                return nil
-            }
-            return headerView("id_digital_wallets".localized)
-        case .ephWallet:
-            if ephAccounts.isEmpty {
-                return nil
-            }
-            return headerView("id_ephemeral_wallets".localized)
-        case .hwWallet:
-            if AccountsRepository.shared.hwVisibleAccounts.isEmpty {
-                return nil
-            }
-            return headerView("id_hardware_wallets".localized)
-        default:
-            return nil
-        }
+        return nil
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
