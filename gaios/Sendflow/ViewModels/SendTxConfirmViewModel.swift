@@ -136,10 +136,16 @@ class SendTxConfirmViewModel {
               var tx = transaction else {
             throw TransactionError.invalid(localizedDescription: "Invalid transaction")
         }
+        if let error = tx.error {
+            throw TransactionError.invalid(localizedDescription: error)
+        }
         if isLiquid {
             tx = try await session.blindTransaction(tx: tx)
         }
         tx = try await session.signTransaction(tx: tx)
+        if let error = tx.error {
+            throw TransactionError.invalid(localizedDescription: error)
+        }
         self.transaction = tx
         if tx.isSweep {
             return try await session.broadcastTransaction(BroadcastTransactionParams(transaction: tx.transaction))

@@ -36,7 +36,7 @@ class SendAmountViewModel {
     }
 
     var error: String? {
-        if transaction?.txType == .transaction {
+        if createTx.txType == .transaction {
             if !sendAll && (createTx.satoshi ?? 0 == 0) {
                 return nil
             }
@@ -55,6 +55,8 @@ class SendAmountViewModel {
     var amountEditable: Bool {
         if createTx.isLightning {
             return createTx.anyAmounts ?? false
+        } else if createTx.txType == .redepositExpiredUtxos {
+            return true
         } else {
             return createTx.txType == .transaction && !createTx.sendAll
         }
@@ -282,7 +284,7 @@ class SendAmountViewModel {
         case .transaction, .psbt:
             if createTx.sendAll && createTx.satoshi == nil {
                 createTx.satoshi = 0
-            } else if !createTx.sendAll && (createTx.satoshi == nil || createTx.satoshi == 0){
+            } else if !createTx.sendAll && (createTx.satoshi == nil || createTx.satoshi == 0) {
                 return tx
             }
             if let addressee = createTx.addressee {
@@ -330,16 +332,19 @@ class SendAmountViewModel {
             var created = try await session?.createRedepositTransaction(params: crtParams)
             created?.subaccountId = subaccount?.id
             createTx.addressee = created?.addressees.first
+            if let error = tx.error {
+                throw TransactionError.invalid(localizedDescription: error)
+            }
             return created
         }
         if [TxType.transaction, TxType.bumpFee].contains(where: {$0 == createTx.txType }) && tx.utxos == nil {
-            let unspent = try? await session?.getUnspentOutputs(GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 0))
+            let unspent = try await session?.getUnspentOutputs(GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 0))
             tx.utxos = unspent ?? [:]
         }
         self.transaction = tx
         if Task.isCancelled { return nil }
         tx.amounts = [:]
-        var created = try? await session?.createTransaction(tx: tx)
+        var created = try await session?.createTransaction(tx: tx)
         created?.subaccountId = subaccount?.id
         return created
     }

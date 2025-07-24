@@ -120,19 +120,11 @@ class SendAmountViewController: KeyboardViewController {
         } else {
             reload()
             reloadError(false)
-            if viewModel.createTx.isLightning {
-                reloadForLightning()
-            }
 
             Task { [weak self] in
                 await self?.viewModel?.loadFees()
                 await self?.validate()
-                if self?.viewModel.redeposit2faType != nil {
-                    self?.reload()
-                }
-                if let vm = self?.viewModel {
-                    self?.reloadError(vm.error != nil && (vm.createTx.satoshi ?? 0 > 0 || !vm.amountEditable))
-                }
+                self?.reload()
             }
 
         }
@@ -171,6 +163,9 @@ class SendAmountViewController: KeyboardViewController {
         reloadDenomination()
         reloadFee()
         reloadTotal()
+        if viewModel.createTx.isLightning {
+            reloadForLightning()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -496,7 +491,7 @@ class SendAmountViewController: KeyboardViewController {
             case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
                 DropAlert().error(message: "id_you_are_not_connected".localized)
             default:
-                DropAlert().error(message: err.description() ?? "id_operation_failure".localized)
+                DropAlert().error(message: err.description().localized)
             }
         default:
             break
