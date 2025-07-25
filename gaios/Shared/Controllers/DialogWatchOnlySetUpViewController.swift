@@ -16,17 +16,19 @@ enum WatchOnlySetUpAction {
 
 class DialogWatchOnlySetUpViewController: KeyboardViewController {
 
+    @IBOutlet weak var tappableBg: UIView!
+    @IBOutlet weak var handle: UIView!
+    @IBOutlet weak var cardView: UIView!
+    @IBOutlet weak var scrollView: UIScrollView!
+
+    @IBOutlet weak var anchorBottom: NSLayoutConstraint!
+    @IBOutlet weak var btnsStackBottom: NSLayoutConstraint!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var usernameField: UITextField!
     @IBOutlet weak var passwordField: UITextField!
     @IBOutlet weak var btnSave: UIButton!
     @IBOutlet weak var btnDelete: UIButton!
-    @IBOutlet weak var btnDismiss: UIButton!
-    @IBOutlet weak var bgLayer: UIView!
-    @IBOutlet weak var cardView: UIView!
-    @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var btnsStack: UIStackView!
     @IBOutlet weak var lblUsernameError: UILabel!
     @IBOutlet weak var lblPasswordError: UILabel!
     @IBOutlet weak var btnSecure: UIButton!
@@ -39,27 +41,51 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
     var username: String?
     var preDeleteFlag = false
 
+    lazy var blurredView: UIView = {
+        let containerView = UIView()
+        let blurEffect = UIBlurEffect(style: .dark)
+        let customBlurEffectView = CustomVisualEffectView(effect: blurEffect, intensity: 0.4)
+        customBlurEffectView.frame = self.view.bounds
+
+        let dimmedView = UIView()
+        dimmedView.backgroundColor = .black.withAlphaComponent(0.3)
+        dimmedView.frame = self.view.bounds
+        containerView.addSubview(customBlurEffectView)
+        containerView.addSubview(dimmedView)
+        return containerView
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setContent()
         setStyle()
+        view.addSubview(blurredView)
+        view.sendSubviewToBack(blurredView)
         view.alpha = 0.0
+        anchorBottom.constant = -cardView.frame.size.height
+
+        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
+            swipeDown.direction = .down
+            self.view.addGestureRecognizer(swipeDown)
+        let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTap))
+            tappableBg.addGestureRecognizer(tapToClose)
 
         passwordField.isSecureTextEntry = true
         updateSecureBtn()
-
-        view.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.view
-        usernameField.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.usernameField
-        passwordField.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.passwordField
-        btnSave.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.saveBtn
-        btnDelete.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.deleteBtn
-        btnDismiss.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.dismissBtn
-
         AnalyticsManager.shared.recordView(.watchOnlyCredentials)
         load()
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
+        anchorBottom.constant = 0
+        UIView.animate(withDuration: 0.3) {
+            self.view.alpha = 1.0
+            self.view.layoutIfNeeded()
+        }
+        usernameField.becomeFirstResponder()
+    }
     func setContent() {
         lblTitle.text = "id_watchonly_credentials".localized
         lblHint.text = "id_allows_you_to_quickly_check".localized
@@ -69,29 +95,39 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         lblUsernameError.text = "id_at_least_8_characters_required".localized
         lblPasswordError.text = "id_at_least_8_characters_required".localized
     }
-
     func setStyle() {
+        cardView.setStyle(.bottomsheet)
+        handle.cornerRadius = 1.5
+        lblTitle.setStyle(.titleCard)
+        lblHint.setStyle(.txtCard)
         btnDelete.setStyle(.destructiveOutlined)
         usernameField.setLeftPaddingPoints(10.0)
         usernameField.setRightPaddingPoints(10.0)
         passwordField.setLeftPaddingPoints(10.0)
         passwordField.setRightPaddingPoints(10.0)
-        cardView.setStyle(.bottomsheet)
     }
-
     func updateSecureBtn() {
         let img = passwordField.isSecureTextEntry == true ? UIImage(named: "ic_eye")!.maskWithColor(color: UIColor.gAccent()) : UIImage(named: "ic_hide")!.maskWithColor(color: UIColor.gAccent())
         btnSecure.setImage(img, for: .normal)
     }
+    @objc func didTap(gesture: UIGestureRecognizer) {
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        UIView.animate(withDuration: 0.3) {
-            self.view.alpha = 1.0
-        }
-        usernameField.becomeFirstResponder()
+        dismiss(.cancel)
     }
+    override func keyboardWillShow(notification: Notification) {
+        super.keyboardWillShow(notification: notification)
 
+        UIView.animate(withDuration: 0.5, animations: { [unowned self] in
+            let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+            self.btnsStackBottom.constant = keyboardFrame.height
+        })
+    }
+    override func keyboardWillHide(notification: Notification) {
+        super.keyboardWillShow(notification: notification)
+        UIView.animate(withDuration: 0.5, animations: { [unowned self] in
+            self.btnsStackBottom.constant = 36.0
+        })
+    }
     func updateWatchOnly(username: String, password: String, action: WatchOnlySetUpAction) {
         startAnimating()
         Task {
@@ -127,36 +163,30 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
             self.validate()
         }
     }
-
-    override func keyboardWillShow(notification: Notification) {
-        super.keyboardWillShow(notification: notification)
-        UIView.animate(withDuration: 0.5, animations: { [unowned self] in
-            self.buttonConstraint?.isActive = false
-            let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-            self.buttonConstraint = self.btnsStack.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height - 14.0)
-            self.buttonConstraint?.isActive = true
-        })
-    }
-
-    override func keyboardWillHide(notification: Notification) {
-        super.keyboardWillShow(notification: notification)
-        UIView.animate(withDuration: 0.5, animations: { [unowned self] in
-            self.buttonConstraint?.isActive = false
-        })
-    }
-
     func dismiss(_ action: WatchOnlySetUpAction) {
+        anchorBottom.constant = -cardView.frame.size.height
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
+            self.view.layoutIfNeeded()
         }, completion: { _ in
             self.dismiss(animated: false, completion: nil)
             switch action {
-            case .save, .delete:
-                self.delegate?.watchOnlyDidUpdate(action)
             case .cancel:
                 break
+            case .save, .delete:
+                self.delegate?.watchOnlyDidUpdate(action)
             }
         })
+    }
+    @objc func didSwipe(gesture: UIGestureRecognizer) {
+        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
+            switch swipeGesture.direction {
+            case .down:
+                dismiss(.cancel)
+            default:
+                break
+            }
+        }
     }
 
     func validate() {
@@ -204,7 +234,6 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
     }
 
     @IBAction func btnDelete(_ sender: Any) {
-
         if preDeleteFlag {
             updateWatchOnly(username: "", password: "", action: .delete)
         } else {
@@ -213,20 +242,12 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
             btnDelete.setTitleColor(.white, for: .normal)
         }
     }
-
-    @IBAction func btnDismiss(_ sender: Any) {
-
-        dismiss(.cancel)
-    }
-
     @IBAction func usernameDidChange(_ sender: Any) {
         validate()
     }
-
     @IBAction func passwordDidChange(_ sender: Any) {
         validate()
     }
-
     @IBAction func btnSecure(_ sender: Any) {
         passwordField.isSecureTextEntry.toggle()
         updateSecureBtn()

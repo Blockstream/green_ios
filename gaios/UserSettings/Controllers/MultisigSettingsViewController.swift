@@ -81,7 +81,7 @@ extension MultisigSettingsViewController: UITableViewDelegate, UITableViewDataSo
 
 extension MultisigSettingsViewController {
     func openWatchOnly() {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWatchOnlySetUpViewController") as? DialogWatchOnlySetUpViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self

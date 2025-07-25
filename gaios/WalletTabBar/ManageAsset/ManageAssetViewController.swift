@@ -534,7 +534,7 @@ extension ManageAssetViewController {
         WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
     func openWatchOnly(session: SessionManager) {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWatchOnlySetUpViewController") as? DialogWatchOnlySetUpViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self

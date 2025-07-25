@@ -150,7 +150,7 @@ extension WatchOnlySettingsViewController: UITableViewDelegate, UITableViewDataS
 extension WatchOnlySettingsViewController: DialogWatchOnlySetUpViewControllerDelegate {
 
     func openWatchOnly(session: SessionManager) {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWatchOnlySetUpViewController") as? DialogWatchOnlySetUpViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
