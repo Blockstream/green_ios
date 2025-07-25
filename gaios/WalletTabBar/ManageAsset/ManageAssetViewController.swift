@@ -95,7 +95,8 @@ class ManageAssetViewController: UIViewController {
         if !(AccountsRepository.shared.current?.isWatchonly ?? false) {
             actions.append(.rename(current: viewModel.account?.localizedName ?? ""))
         }
-        if viewModel.account?.isSinglesig == true { actions.append(.watchonly) }
+        // if viewModel.account?.isSinglesig == true { actions.append(.watchonly) }
+        actions.append(.watchonly)
         if viewModel.isFunded == false { actions.append(.archive) }
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountSettingsViewController") as? AccountSettingsViewController {
@@ -532,6 +533,15 @@ extension ManageAssetViewController {
     func getBitcoinSubaccounts() -> [WalletItem] {
         WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
+    func openWatchOnly(session: SessionManager) {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWatchOnlySetUpViewController") as? DialogWatchOnlySetUpViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            vc.session = session
+            present(vc, animated: false, completion: nil)
+        }
+    }
 }
 extension ManageAssetViewController: TxDetailsViewControllerDelegate {
     func onMemoEdit() {
@@ -546,7 +556,14 @@ extension ManageAssetViewController: AccountSettingsViewControllerDelegate {
         case .rename(let current):
             accountRename(current)
         case .watchonly:
-            showDescriptor()
+            if viewModel.account?.isSinglesig == true {
+                showDescriptor()
+            } else if viewModel.account?.isMultisig == true {
+                if let network = viewModel.account?.network,
+                   let session = viewModel.wm?.sessions[network] {
+                    openWatchOnly(session: session)
+                }
+            }
         case .archive:
             archive()
         }
@@ -571,4 +588,7 @@ extension ManageAssetViewController: AccountArchivedViewControllerDelegate {
             nav.setViewControllers(viewControllers, animated: true)
         }
     }
+}
+extension ManageAssetViewController: DialogWatchOnlySetUpViewControllerDelegate {
+    func watchOnlyDidUpdate(_ action: WatchOnlySetUpAction) {}
 }
