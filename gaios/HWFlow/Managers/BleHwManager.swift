@@ -293,7 +293,7 @@ class BleHwManager {
         case .Jade:
             _ = try await jade?.ping()
         case .Ledger:
-            break
+            _ = try await ledger?.getLedgerNetwork()
         }
     }
 
@@ -305,13 +305,13 @@ class BleHwManager {
         if let err = err as? DeviceError {
             switch err {
             case DeviceError.dashboard:
-                return BLEManagerError.dashboardErr(txt: String(format: "id_select_the_s_app_on_your_ledger".localized, self.networkLabel(network ?? "mainnet")))
+                return BLEManagerError.dashboardErr(txt: String(format: "id_select_the_s_app_on_your_ledger".localized, "Bitcoin Legacy"))
             case DeviceError.notlegacy_app:
-                return BLEManagerError.dashboardErr(txt: "Install legacy companion app")
+                return BLEManagerError.dashboardErr(txt: "Please install the Bitcoin Legacy app using Ledger Live")
             case DeviceError.outdated_app:
-                return BLEManagerError.outdatedAppErr(txt: "Outdated Ledger app: update the bitcoin app via Ledger Manager")
+                return BLEManagerError.outdatedAppErr(txt: "Outdated Ledger app: update the Bitcoin Legacy app using Ledger Live")
             case DeviceError.wrong_app:
-                return BLEManagerError.wrongAppErr(txt: String(format: "id_select_the_s_app_on_your_ledger".localized, self.networkLabel(network ?? "mainnet")))
+                return BLEManagerError.wrongAppErr(txt: String(format: "id_select_the_s_app_on_your_ledger".localized, "Bitcoin Legacy"))
             }
         }
         if let err = err as? HWError {

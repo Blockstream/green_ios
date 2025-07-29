@@ -13,6 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Wallets list: simplified UI
 - Security tab: improved watch-only
 
+### Fixed
+- Fix supported Ledger companion app
+
 ## [5.0.6] - 2025-07-02
 
 ### Fixed

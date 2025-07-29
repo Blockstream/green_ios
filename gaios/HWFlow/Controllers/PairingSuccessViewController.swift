@@ -135,7 +135,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     @MainActor
     func pushConnectViewController(firstConnection: Bool, testnet: Bool? = nil) {
         Task {
-            var account = try? await bleHwManager.defaultAccount()
+            var account = try await bleHwManager.defaultAccount()
             try? await bleHwManager.disconnect()
             if let testnet = testnet, testnet {
                 account?.networkType = NetworkSecurityCase.testnetSS
