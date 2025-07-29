@@ -62,10 +62,10 @@ class ReceiveAddressCell: UITableViewCell {
         groupedTxt.isHidden = true
         bgCard.borderWidth = 1.0
         bgCard.borderColor = UIColor.gGrayCardBorder()
-        if model.text == model.textNoURI && model.isLightning == false {
+        if !model.isBip21 && !model.isLightning {
             groupedTxt.isHidden = false
             AddressDisplay.configure(
-                address: model.textNoURI ?? "",
+                address: model.text ?? "",
                 textView: groupedTxt,
                 style: .default,
                 truncate: true)

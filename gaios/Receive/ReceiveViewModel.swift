@@ -48,7 +48,7 @@ class ReceiveViewModel {
     static func getLiquidAmpSubaccounts() -> [WalletItem] {
         WalletManager.current?.liquidAmpSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
-
+    
     init(_ waParam: (wallet: WalletItem, assetId: String)? = nil) {
         if let waParam = waParam {
             self.account = waParam.wallet
@@ -61,11 +61,11 @@ class ReceiveViewModel {
         self.type = self.account.gdkNetwork.lightning ? .bolt11 : .address
         self.inputDenomination = wm.prominentSession?.settings?.denomination ?? .Sats
     }
-
+    
     func accountType() -> String {
         return account.localizedName
     }
-
+    
     func newAddress() async throws {
         switch type {
         case .address:
@@ -104,19 +104,21 @@ class ReceiveViewModel {
                                                isDismissible: false)
     }
 
-    func addressToUri(address: String, satoshi: Int64, assetId: String) -> String {
-        var ntwPrefix = "bitcoin"
-        if account.gdkNetwork.liquid {
-            ntwPrefix = account.gdkNetwork.mainnet ? "liquidnetwork" :  "liquidtestnet"
+    func addressToUri(address: String, satoshi: Int64?, assetId: String?) -> String {
+        var params = [String]()
+        if let satoshi = satoshi, satoshi > 0 {
+            let amount = String(format: "%.8f", toBTC(satoshi))
+            params += ["amount=\(amount)"]
         }
-        let amount = String(format: "%.8f", toBTC(satoshi))
-        if satoshi == 0 {
-            return address
-        } else if !account.gdkNetwork.liquid {
-            return "\(ntwPrefix):\(address)?amount=\(amount)"
-        } else {
-            return "\(ntwPrefix):\(address)?amount=\(amount)&assetid=\(assetId)"
+        if let assetId = assetId {
+            if account.gdkNetwork.liquid && satoshi ?? 0 > 0 {
+                params += ["assetid=\(assetId)"]
+            } else if !AssetInfo.baseIds.contains(assetId) {
+                params += ["assetid=\(assetId)"]
+            }
         }
+        let bip21Prefix = account.gdkNetwork.bip21Prefix ?? ""
+        return "\(bip21Prefix):\(address)?\(params.joined(separator: "&"))"
     }
 
     func toBTC(_ satoshi: Int64) -> Double {
@@ -156,42 +158,34 @@ class ReceiveViewModel {
     var noteCellModel: LTNoteCellModel {
         return LTNoteCellModel(note: description ?? "id_note".localized)
     }
+    
+    var isBip21: Bool {
+        return text?.hasPrefix("bitcoin:") ?? false ||
+            text?.hasPrefix("lightning:") ?? false ||
+            text?.hasPrefix("liquidnetwork:") ?? false
+    }
 
     var text: String? {
         switch type {
         case .bolt11:
-            if let txt = invoice?.bolt11 {
-                return "lightning:\( (txt).uppercased() )"
-            }
-            return nil
+            return invoice?.bolt11
         case .swap:
             return swap?.bitcoinAddress
         case .address:
-            var text = address?.address
-            if let address = address?.address, let satoshi = satoshi {
-                text = addressToUri(address: address, satoshi: satoshi, assetId: asset)
+            if !AssetInfo.baseIds.contains(where: { $0 == asset}) {
+                return addressToUri(address: address?.address ?? "", satoshi: satoshi ?? 0, assetId: asset)
+            } else if satoshi != nil {
+                return addressToUri(address: address?.address ?? "", satoshi: satoshi ?? 0, assetId: asset)
+            } else {
+                return address?.address ?? ""
             }
-            return text
-        }
-    }
-
-    var textNoURI: String? {
-        switch type {
-        case .bolt11:
-            if let txt = invoice?.bolt11 {
-                return "\( (txt).uppercased() )"
-            }
-            return nil
-        case .swap:
-            return swap?.bitcoinAddress
-        case .address:
-            return address?.address
         }
     }
 
     var addressCellModel: ReceiveAddressCellModel {
         let nodeState = account.lightningSession?.nodeState
         return ReceiveAddressCellModel(text: text,
+                                       isBip21: isBip21,
                                        type: type,
                                        swapInfo: swap,
                                        satoshi: satoshi,
@@ -199,7 +193,6 @@ class ReceiveViewModel {
                                        inputDenomination: inputDenomination,
                                        nodeState: nodeState,
                                        breezSdk: account.lightningSession?.lightBridge,
-                                       textNoURI: textNoURI,
                                        isLightning: account.gdkNetwork.lightning
         )
     }

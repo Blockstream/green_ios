@@ -346,7 +346,7 @@ class ReceiveViewController: KeyboardViewController {
         let stb = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
             vc.qrTxt = viewModel.text
-            vc.textNoURI = viewModel.textNoURI
+            vc.textNoURI = viewModel.text
             vc.showTxt = true
             vc.showBtn = true
             vc.modalPresentationStyle = .overFullScreen

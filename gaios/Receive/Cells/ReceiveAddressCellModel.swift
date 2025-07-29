@@ -6,6 +6,7 @@ import lightning
 
 struct ReceiveAddressCellModel {
     var text: String?
+    var isBip21: Bool
     var type: ReceiveType
     var swapInfo: SwapInfo?
 
@@ -14,7 +15,6 @@ struct ReceiveAddressCellModel {
     var inputDenomination: DenominationType
     var nodeState: NodeState?
     var breezSdk: LightningBridge?
-    var textNoURI: String?
     let isLightning: Bool
 
     var btc: String? {
