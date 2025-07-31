@@ -48,7 +48,7 @@ class AccountArchivedViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = "id_account_archived".localized
-        lblHint.text = "This account will no longer be shown in the home or transact tabs.".localized
+        lblHint.text = "id_this_account_will_no_longer_be".localized
         btnContinue.setTitle("id_continue".localized, for: .normal)
         btnArchive.setTitle(String(format: "id_see_archived_accounts_s".localized, String(subaccounts.count)), for: .normal)
     }

@@ -39,7 +39,7 @@ class AccountDescriptorCell: UITableViewCell {
     }
     @IBAction func btnQR(_ sender: Any) {
         bg.pressAnimate {
-            let qrInfo = QRDialogInfo(item: self.model.descriptor, title: "Output Descriptor", hint: "")
+            let qrInfo = QRDialogInfo(item: self.model.descriptor, title: "id_output__descriptor".localized, hint: "")
             self.onQR?(qrInfo)
         }
     }

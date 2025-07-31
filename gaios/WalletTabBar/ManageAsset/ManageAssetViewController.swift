@@ -100,7 +100,7 @@ class ManageAssetViewController: UIViewController {
         if viewModel.isFunded == false { actions.append(.archive) }
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountSettingsViewController") as? AccountSettingsViewController {
-            vc.viewModel = AccountSettingsViewModel(title: "Account Settings".localized, actions: actions)
+            vc.viewModel = AccountSettingsViewModel(title: "id_account_settings".localized, actions: actions)
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
@@ -235,7 +235,7 @@ class ManageAssetViewController: UIViewController {
     func rename(_ name: String) {
         Task {
             do {
-                startLoader(message: "Renaming".localized)
+                startLoader(message: "id_renaming".localized)
                 try await viewModel.renameSubaccount(name: name)
                 stopLoader()
                 setContent()
@@ -245,7 +245,7 @@ class ManageAssetViewController: UIViewController {
     func archive() {
         Task {
             do {
-                startLoader(message: "Archiving".localized)
+                startLoader(message: "id_archiving".localized)
                 try await viewModel.archiveSubaccount()
                 stopLoader()
 //                delegate?.didArchiveAccount()
@@ -469,11 +469,11 @@ extension ManageAssetViewController {
     func buyScreen() {
         AnalyticsManager.shared.buyInitiate(account: AccountsRepository.shared.current)
         if !getCountlyRemoteConfigEnableBuyIosUk() && checkUKRegion() {
-            showAlert(title: "Buy Bitcoin".localized, message: "id_feature_unavailable_in_the_uk".localized)
+            showAlert(title: "id_buy_bitcoin".localized, message: "id_feature_unavailable_in_the_uk".localized)
             return
         }
         if getBitcoinSubaccounts().isEmpty {
-            showAlert(title: "Buy Bitcoin".localized, message: "id_feature_unavailable_for_liquid".localized)
+            showAlert(title: "id_buy_bitcoin".localized, message: "id_feature_unavailable_for_liquid".localized)
             return
         }
         let storyboard = UIStoryboard(name: "BuyBTCFlow", bundle: nil)

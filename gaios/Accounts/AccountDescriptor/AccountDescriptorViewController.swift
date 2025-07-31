@@ -134,7 +134,7 @@ extension AccountDescriptorViewController: UITableViewDelegate, UITableViewDataS
         case AccountDescriptorSection.card.rawValue:
             return nil
         case AccountDescriptorSection.descriptor.rawValue:
-            return sectionHeader("Output Descriptor".localized)
+            return sectionHeader("id_output__descriptor".localized)
         default:
             return nil
         }

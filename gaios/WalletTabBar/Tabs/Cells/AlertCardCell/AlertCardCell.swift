@@ -196,7 +196,7 @@ class AlertCardCell: UITableViewCell {
             styleWarn()
         case .descriptorInfo:
             lblTitle.isHidden = true
-            lblHint.text = "You can use your descriptor to view your balance in the Blockstream app without the ability to spend.".localized
+            lblHint.text = "id_you_can_use_your_descriptor_to".localized
             btnLeft.isHidden = true
             btnRight.isHidden = true
             btnsContainer.isHidden = true

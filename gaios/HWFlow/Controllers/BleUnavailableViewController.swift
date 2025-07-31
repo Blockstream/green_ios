@@ -46,11 +46,11 @@ class BleUnavailableViewController: UIViewController {
     }
 
     func setContent() {
-        lblHint.text = "id_green_uses_bluetooth_for".localized
+        lblHint.text = "id_blockstream_uses_bluetooth_for".localized
         btnCancel.setTitle("id_cancel".localized, for: .normal)
         switch state {
         case .unauthorized:
-            lblTitle.text = "id_grant_green_bluetooth_permission".localized
+            lblTitle.text = "id_grant_blockstream_bluetooth".localized
             btnSettings.setTitle("id_open_permissions".localized, for: .normal)
         case .other, .powerOff:
             lblTitle.text = "id_enable_bluetooth_from_ios".localized

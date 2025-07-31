@@ -51,7 +51,7 @@ class TxDetailsStatusCellModel {
         case .outgoing:
             return "id_outgoing".localized
         case .mixed:
-            return "Swapping".localized
+            return "id_swapping".localized
         }
     }
 }

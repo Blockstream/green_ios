@@ -122,7 +122,7 @@ class DialogCountlyViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "id_help_green_improve".localized
+        lblTitle.text = "id_help_us_improve".localized
         lblHint.text = "id_if_you_agree_green_will_collect".localized
         btnDeny.setTitle("id_dont_collect_data".localized, for: .normal)
         btnAllow.setTitle("id_allow_data_collection".localized, for: .normal)

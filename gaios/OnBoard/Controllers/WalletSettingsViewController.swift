@@ -136,7 +136,7 @@ class WalletSettingsViewController: KeyboardViewController {
         lblTorHint.text = "id_private_but_less_stable".localized
         lblTestnetTitle.text = "id_enable_testnet".localized
         lblTestnetHint.text = ""
-        lblAnalyticsTitle.text = "id_help_green_improve".localized
+        lblAnalyticsTitle.text = "id_help_us_improve".localized
         lblAnalyticsHint.text = "id_enable_limited_usage_data".localized
         btnAnalytics.setTitle("id_more_info".localized, for: .normal)
         lblExperimentalTitle.text = "id_enable_experimental_features".localized

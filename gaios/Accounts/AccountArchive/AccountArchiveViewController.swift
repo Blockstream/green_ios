@@ -150,7 +150,7 @@ extension AccountArchiveViewController: UITableViewDelegate, UITableViewDataSour
         switch AccountArchiveSection(rawValue: section) {
         case .account:
             if viewModel.accountCellModels.count == 0 {
-                return sectionFooter("You don't have any archived account.".localized)
+                return sectionFooter("id_you_dont_have_any_archived".localized)
             }
             return nil
         default:

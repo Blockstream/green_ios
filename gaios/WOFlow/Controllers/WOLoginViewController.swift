@@ -235,7 +235,7 @@ class WOLoginViewController: KeyboardViewController {
                 let msg = "\(method) is not available.  It may have been set in a version prior to 4.1.8 and became unavailable after the app was uninstalled. Use your PIN to access and enable faceID again."
                 showError(msg.localized)
             } else {
-                showError("Access method not supported".localized)
+                showError("id_access_method_not_supported".localized)
             }
         }
     }
