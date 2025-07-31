@@ -171,7 +171,9 @@ class SendAddressInputViewController: KeyboardViewController {
     @MainActor
     func next() {
         guard let createTx = viewModel.createTx else { return }
-        if createTx.txType == .psbt {
+        if createTx.txType == .sweep {
+            presentSendAmountViewController()
+        } else if createTx.txType == .psbt {
             presentSendPsbtConfirmViewController()
         } else if createTx.isLightning {
             if let error = createTx.error {

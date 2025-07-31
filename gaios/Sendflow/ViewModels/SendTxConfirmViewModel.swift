@@ -275,6 +275,6 @@ class SendTxConfirmViewModel {
     }
 
     func showSignTransaction() -> Bool {
-        !(wm?.isWatchonly ?? false) || (wm?.isHW ?? false) || importSignedPsbt
+        txType == .sweep || !(wm?.isWatchonly ?? false) || (wm?.isHW ?? false) || importSignedPsbt
     }
 }

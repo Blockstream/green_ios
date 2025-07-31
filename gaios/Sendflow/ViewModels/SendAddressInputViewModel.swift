@@ -81,9 +81,13 @@ class SendAddressInputViewModel {
     }
 
     private func parsePrivatekey() async throws -> CreateTx? {
-        guard let account = preferredAccount, let input = self.input else {
-            throw TransactionError.invalid(localizedDescription: "Invalid input")
+        guard let input = self.input, txType == .sweep else {
+            return nil
         }
+        if let account = preferredAccount, !account.networkType.bitcoin {
+            throw TransactionError.invalid(localizedDescription: "Select a Bitcoin account to sweep")
+        }
+        let account = preferredAccount ?? bitcoinSubaccounts.first
         return CreateTx(subaccount: account, privateKey: input, txType: .sweep)
     }
 
@@ -168,8 +172,8 @@ class SendAddressInputViewModel {
     }
 
     public func parse() async throws {
-        if txType == .sweep {
-            createTx = try await parsePrivatekey()
+        if let res = try await parsePrivatekey() {
+            createTx = res
             return
         }
         if let res = try await parseGdkBitcoin() {
