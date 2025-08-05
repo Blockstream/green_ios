@@ -105,9 +105,11 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch TabSettingsSection(rawValue: section) {
+        switch viewModel.sections[section] {
         case .header:
             return 0.1
+        case .support:
+            return 20
         default:
             return sectionHeaderH
         }
@@ -126,14 +128,14 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
         switch viewModel.sections[section] {
         case .header:
             return nil
-        case .general:
-            return sectionHeader("id_general".localized)
         case .wallet:
-            return sectionHeader("id_wallet".localized)
-        case .twoFactor:
-            return sectionHeader("id_2fa_account".localized)
+            return sectionHeader("Wallet Settings".localized)
+        case .account:
+            return sectionHeader("id_account_settings".localized)
         case .about:
             return sectionHeader("id_about".localized)
+        case .support:
+            return nil
         }
     }
 
@@ -194,6 +196,8 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
             if let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlySettingsViewController") as? WatchOnlySettingsViewController {
                 navigationController?.pushViewController(vc, animated: true)
             }
+        case .createAccount:
+            createAccount()
         case .none:
             break
         }
@@ -337,6 +341,15 @@ extension TabSettingsVC {
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
             vc.delegate = self
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func createAccount() {
+        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
+            vc.viewModel = SecuritySelectViewModel(asset: "btc")
+            //vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
     }

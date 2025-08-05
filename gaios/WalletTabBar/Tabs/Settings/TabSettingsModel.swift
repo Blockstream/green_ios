@@ -19,16 +19,17 @@ enum SettingsItem: String, Codable, CaseIterable {
     case rename = "id_rename_wallet"
     case lightning = "id_lightning"
     case ampID = "id_amp_id"
+    case createAccount = "id_create_account"
 
     var string: String { self.rawValue.localized }
 }
 struct SettingsItemData {
     var title: String
+    var icon: UIImage?
     var subtitle: String
     var attributed: NSMutableAttributedString?
     var section: TabSettingsSection
     var type: SettingsItem
-    var switcher: Bool?
 }
 
 class TabSettingsModel {
@@ -76,61 +77,71 @@ class TabSettingsModel {
             type: .header)
         return [header]
     }
-    func getGeneral() -> [SettingsItemData] {
+    func getWallet() -> [SettingsItemData] {
         guard let settings = settings, let session = session else { return [] }
         let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
-
-        let support = SettingsItemData(
-            title: SettingsItem.support.string,
+        let rename = SettingsItemData(
+            title: "\("id_rename".localized) \"\(AccountsRepository.shared.current?.name ?? "")\"",
             subtitle: "",
-            section: .general,
-            type: .support)
+            section: .wallet,
+            type: .rename)
         let unifiedDenominationExchange = SettingsItemData(
             title: SettingsItem.unifiedDenominationExchange.string,
             subtitle: "",
             attributed: getDenominationExchangeInfo(settings: settings, network: network),
-            section: .general,
+            section: .wallet,
             type: .unifiedDenominationExchange)
         let autolock = SettingsItemData(
             title: SettingsItem.autoLogout.string,
             subtitle: (settings.autolock).string,
-            section: .general,
+            section: .wallet,
             type: .autoLogout)
         let logout = SettingsItemData(
-            title: wm?.account.name.localizedCapitalized ?? "",
-            subtitle: "id_log_out".localized,
-            section: .general,
+            title: "id_log_out".localized,
+            icon: UIImage(named: "ic_logout"),
+            subtitle: "",
+            section: .wallet,
             type: .logout)
         var menu = [SettingsItemData]()
-        menu += [support, unifiedDenominationExchange, autolock, logout]
+        menu += [rename, unifiedDenominationExchange, autolock, logout]
         return menu
     }
-    func getWallet() -> [SettingsItemData] {
+    func getAccount() -> [SettingsItemData] {
         let lightning = SettingsItemData(
             title: SettingsItem.lightning.string,
             subtitle: "",
-            section: .wallet,
+            section: .account,
             type: .lightning)
         let ampID = SettingsItemData(
             title: SettingsItem.ampID.string,
             subtitle: "",
-            section: .wallet,
+            section: .account,
             type: .ampID)
+        let twoFactorAuth = SettingsItemData(
+            title: SettingsItem.twoFactorAuthication.string,
+            subtitle: "",
+            section: .account,
+            type: .twoFactorAuthication)
+        let pgpKey = SettingsItemData(
+            title: SettingsItem.pgpKey.string,
+            subtitle: "",
+            section: .account,
+            type: .pgpKey)
         let watchOnly = SettingsItemData(
             title: SettingsItem.watchOnly.string,
             subtitle: "",
-            section: .wallet,
+            section: .account,
             type: .watchOnly)
-        let rename = SettingsItemData(
-            title: SettingsItem.rename.string,
-            subtitle: "",
-            section: .wallet,
-            type: .rename)
         let archievedAccounts = SettingsItemData(
             title: SettingsItem.archievedAccounts.string,
             subtitle: "",
-            section: .wallet,
+            section: .account,
             type: .archievedAccounts)
+        let createAccount = SettingsItemData(
+            title: SettingsItem.createAccount.string,
+            subtitle: "",
+            section: .account,
+            type: .createAccount)
         var menu = [SettingsItemData]()
         if !isWatchonly && AppSettings.shared.experimental {
             menu += [lightning]
@@ -138,29 +149,11 @@ class TabSettingsModel {
         if !isWatchonlySinglesig {
             menu += [ampID]
         }
-        if !isWatchonly {
-            menu += [watchOnly]
-        }
-        menu += [rename]
-        if !isWatchonly {
-            menu += [archievedAccounts]
-        }
-        return menu
-    }
-    func getTwoFactor() -> [SettingsItemData] {
-        var menu = [SettingsItemData]()
-        let twoFactorAuth = SettingsItemData(
-            title: SettingsItem.twoFactorAuthication.string,
-            subtitle: "",
-            section: .general,
-            type: .twoFactorAuthication)
-        let pgpKey = SettingsItemData(
-            title: SettingsItem.pgpKey.string,
-            subtitle: "",
-            section: .general,
-            type: .pgpKey)
         if !isWatchonly && wm?.hasMultisig ?? false {
             menu += [twoFactorAuth, pgpKey]
+        }
+        if !isWatchonly {
+            menu += [watchOnly, archievedAccounts, createAccount]
         }
         return menu
     }
@@ -170,24 +163,35 @@ class TabSettingsModel {
             subtitle: Common.versionNumber,
             section: .about,
             type: .version)
-        let support = SettingsItemData(
+        let supportId = SettingsItemData(
             title: SettingsItem.supportID.string,
+            icon: UIImage(named: "ic_copy_small"),
             subtitle: "id_copy_support_id".localized,
             section: .about,
             type: .supportID)
         if multiSigSession != nil {
-            return [version, support]
+            return [version, supportId]
         }
         return [version]
     }
-
+    func getSupport() -> [SettingsItemData] {
+        let support = SettingsItemData(
+            title: SettingsItem.support.string,
+            icon: UIImage(named: "ic_contact_support"),
+            subtitle: "",
+            section: .support,
+            type: .support)
+        var menu = [SettingsItemData]()
+        menu += [support]
+        return menu
+    }
     func load() {
-        if isWatchonly || wm?.hasMultisig ?? false == false {
-            sections = [.header, .general, .wallet, .about ]
-            items = [.header: getHeader(), .general: getGeneral(), .wallet: getWallet(), .about: getAbout()]
+        if isWatchonly {
+            sections = [.header, .wallet, .about, .support ]
+                items = [.header: getHeader(), .wallet: getWallet(), .about: getAbout(), .support: getSupport()]
         } else {
-            sections = [.header, .general, .wallet, .twoFactor, .about ]
-            items = [.header: getHeader(), .general: getGeneral(), .wallet: getWallet(), .twoFactor: getTwoFactor(), .about: getAbout()]
+            sections = [.header, .wallet, .account, .about, .support ]
+                items = [.header: getHeader(), .wallet: getWallet(), .account: getAccount(), .about: getAbout(), .support: getSupport()]
         }
         cellModels = items.mapValues { $0.map { TabSettingsCellModel($0) } }
     }

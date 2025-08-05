@@ -24,7 +24,7 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="oOR-uo-0BS">
                                 <rect key="frame" x="20" y="20" width="229" height="46"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wBp-Os-rTR">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wBp-Os-rTR">
                                         <rect key="frame" x="0.0" y="0.0" width="229" height="18"/>
                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -45,30 +45,15 @@
                                     <constraint firstAttribute="width" constant="20" id="myk-kF-sMV"/>
                                 </constraints>
                             </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_copy_new" translatesAutoresizingMaskIntoConstraints="NO" id="Upw-3e-JjS">
-                                <rect key="frame" x="265" y="35" width="16" height="16"/>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="16" id="IBn-2k-B12"/>
-                                    <constraint firstAttribute="height" constant="16" id="fvR-Kj-kXI"/>
-                                </constraints>
-                            </imageView>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q4n-nP-UsV">
-                                <rect key="frame" x="234" y="27.666666666666671" width="51" height="31"/>
-                            </switch>
                         </subviews>
                         <color key="backgroundColor" name="gGrayCard"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="7zo-G2-SjN" secondAttribute="trailing" constant="12" id="2Dr-iV-rMj"/>
-                            <constraint firstAttribute="trailing" secondItem="Q4n-nP-UsV" secondAttribute="trailing" constant="18" id="3pa-hJ-jCn"/>
-                            <constraint firstItem="Q4n-nP-UsV" firstAttribute="centerY" secondItem="9Xm-hp-jIe" secondAttribute="centerY" id="E2Z-Cf-OwN"/>
                             <constraint firstItem="7zo-G2-SjN" firstAttribute="centerY" secondItem="9Xm-hp-jIe" secondAttribute="centerY" id="Tsu-d8-34D"/>
-                            <constraint firstItem="Upw-3e-JjS" firstAttribute="centerY" secondItem="9Xm-hp-jIe" secondAttribute="centerY" id="Upm-aI-LN6"/>
                             <constraint firstAttribute="bottom" secondItem="oOR-uo-0BS" secondAttribute="bottom" constant="20" id="XYk-1R-E62"/>
                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="64" id="ib7-Tk-HIf"/>
                             <constraint firstItem="oOR-uo-0BS" firstAttribute="leading" secondItem="9Xm-hp-jIe" secondAttribute="leading" constant="20" id="qDS-ie-5qU"/>
                             <constraint firstItem="7zo-G2-SjN" firstAttribute="leading" secondItem="oOR-uo-0BS" secondAttribute="trailing" constant="20" id="qwd-cr-NaX"/>
-                            <constraint firstAttribute="trailing" secondItem="Upw-3e-JjS" secondAttribute="trailing" constant="20" id="vik-h4-e71"/>
                             <constraint firstItem="oOR-uo-0BS" firstAttribute="top" secondItem="9Xm-hp-jIe" secondAttribute="top" constant="20" id="wGv-8j-ofF"/>
                             <constraint firstAttribute="trailing" secondItem="oOR-uo-0BS" secondAttribute="trailing" priority="100" constant="20" id="zsv-Jh-v0x"/>
                         </constraints>
@@ -86,17 +71,14 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <connections>
                 <outlet property="bg" destination="9Xm-hp-jIe" id="TEx-ey-STZ"/>
-                <outlet property="copyImg" destination="Upw-3e-JjS" id="uUg-JB-AJW"/>
-                <outlet property="disclosure" destination="7zo-G2-SjN" id="qsi-gC-Qx0"/>
+                <outlet property="icon" destination="7zo-G2-SjN" id="ses-89-bzm"/>
                 <outlet property="lblHint" destination="ZXQ-NZ-3y6" id="cPm-fQ-dLl"/>
                 <outlet property="lblTitle" destination="wBp-Os-rTR" id="5Ab-lK-dCX"/>
-                <outlet property="switcher" destination="Q4n-nP-UsV" id="b8u-xq-qlV"/>
             </connections>
             <point key="canvasLocation" x="46.564885496183201" y="4.2253521126760569"/>
         </tableViewCell>
     </objects>
     <resources>
-        <image name="ic_copy_new" width="16.333333969116211" height="16.333333969116211"/>
         <image name="rightArrow" width="9" height="14"/>
         <namedColor name="gGrayCard">
             <color red="0.094117647058823528" green="0.094117647058823528" blue="0.094117647058823528" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

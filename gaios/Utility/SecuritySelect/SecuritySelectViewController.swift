@@ -81,6 +81,7 @@ class SecuritySelectViewController: UIViewController {
     }
 
     func setStyle() {
+        btnAdvanced.setStyle(.inline)
     }
 
     @IBAction func btnAdvanced(_ sender: Any) {
@@ -165,7 +166,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         case .asset:
             return headerView( "id_asset".localized )
         case .policy:
-            return headerView("id_choose_security_policy".localized )
+            return headerView("Security Policy".localized )
         default:
             return nil
         }
@@ -317,9 +318,9 @@ extension SecuritySelectViewController {
         let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
         section.backgroundColor = UIColor.clear
         let title = UILabel(frame: .zero)
-        title.font = .systemFont(ofSize: 14.0, weight: .semibold)
+        title.setStyle(.txtSectionHeader)
         title.text = txt
-        title.textColor = .white.withAlphaComponent(0.6)
+        title.textColor = UIColor.gGrayTxt()
         title.numberOfLines = 1
 
         title.translatesAutoresizingMaskIntoConstraints = false
@@ -350,7 +351,7 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
         viewModel?.resetSelection()
         viewModel?.asset = assetId
         reloadSections([.asset, .policy], animated: true)
-        navigationController?.popViewController(animated: true)
+        // navigationController?.popViewController(animated: true)
     }
 
     func didSelectAnyAsset(_ type: AnyAssetType) {
@@ -364,7 +365,7 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
             viewModel?.anyLiquidAmpAsset = true
             reloadSections([.asset, .policy], animated: true)
         }
-        navigationController?.popViewController(animated: true)
+        // navigationController?.popViewController(animated: true)
     }
 
     @MainActor

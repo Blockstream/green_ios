@@ -28,12 +28,11 @@ enum TabSecuritySection: Int, CaseIterable {
 }
 enum TabSettingsSection: Int, CaseIterable {
     case header
-    case general
     case wallet
-    case twoFactor
+    case account
     case about
+    case support
 }
-
 class TabViewController: UIViewController {
 
     var sectionHeaderH: CGFloat = 54.0
