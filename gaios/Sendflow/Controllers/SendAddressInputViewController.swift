@@ -225,14 +225,14 @@ class SendAddressInputViewController: KeyboardViewController {
                 enableError(true, text: "id_insufficient_funds".localized)
             } else if let account = viewModel.preferredAccount {
                 viewModel.createTx?.subaccount = account
-                if let assetId = viewModel.createTx?.assetId {
+                if let assetId = viewModel.assetId ?? viewModel.createTx?.assetId {
                     viewModel.createTx?.assetId = assetId
                 }
                 presentSendAmountViewController()
             } else if viewModel.liquidSubaccountsWithFunds.count == 1,
                 let subaccount = viewModel.liquidSubaccountsWithFunds.first {
                 // preselect the liquid subaccount: go in amount screen
-                if let assetId = viewModel.createTx?.assetId {
+                if let assetId = viewModel.assetId ?? viewModel.createTx?.assetId {
                     viewModel.createTx?.assetId = assetId
                     viewModel.createTx?.subaccount = subaccount
                     presentSendAmountViewController()

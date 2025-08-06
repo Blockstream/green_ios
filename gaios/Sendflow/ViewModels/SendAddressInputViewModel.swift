@@ -142,7 +142,7 @@ class SendAddressInputViewModel {
         if let preferredAccount = preferredAccount, !preferredAccount.networkType.liquid {
             throw TransactionError.invalid(localizedDescription: "Select a Liquid account")
         }
-        if let assetId = assetId, assetId != res.assetId {
+        if let assetId = assetId, res.bip21 && assetId != res.assetId {
             throw TransactionError.invalid(localizedDescription: "Asset mismatch")
         }
         return res
