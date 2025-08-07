@@ -278,7 +278,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                                    onDismiss: nil)
                 case .backup:
                     break
-                case .descriptorInfo:
+                case .descriptorInfo, .TFAWarnMulti, .TFAInfoExpire:
                     break
                 }
                 cell.selectionStyle = .none

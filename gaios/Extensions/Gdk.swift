@@ -63,7 +63,7 @@ extension AutoLockType {
 }
 
 extension CsvTime {
-    
+
     public func label() -> String {
         switch self {
         case .Short:
@@ -74,7 +74,6 @@ extension CsvTime {
             return "id_15_months_65535_blocks".localized
         }
     }
-    
     public func description() -> String {
         switch self {
         case .Short:
@@ -83,6 +82,16 @@ extension CsvTime {
             return "id_wallet_coins_will_require".localized
         case .Long:
             return "id_optimal_if_you_rarely_spend".localized
+        }
+    }
+    public func shortLabel() -> String {
+        switch self {
+        case .Short:
+            return "6 months".localized
+        case .Medium:
+            return "12 months".localized
+        case .Long:
+            return "15 months".localized
         }
     }
 }

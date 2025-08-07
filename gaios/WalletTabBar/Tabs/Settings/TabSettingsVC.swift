@@ -349,7 +349,7 @@ extension TabSettingsVC {
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
             vc.viewModel = SecuritySelectViewModel(asset: "btc")
-            //vc.delegate = self
+            // vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -376,9 +376,14 @@ extension TabSettingsVC {
 
     func openTwoFactorAuthentication() {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorAuthenticationViewController") as? TwoFactorAuthenticationViewController {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "TFAViewController") as? TFAViewController {
+            vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
+//        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+//        if let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorAuthenticationViewController") as? TwoFactorAuthenticationViewController {
+//            navigationController?.pushViewController(vc, animated: true)
+//        }
     }
 
     func showDenominationExchange() {
@@ -449,5 +454,10 @@ extension TabSettingsVC: DialogAccountsViewControllerDelegate {
         if let walletItem = walletItem {
             presentDialogAmpId(walletItem)
         }
+    }
+}
+extension TabSettingsVC: TFAViewControllerDelegate {
+    func sendLogout() {
+        walletTab.userLogout()
     }
 }

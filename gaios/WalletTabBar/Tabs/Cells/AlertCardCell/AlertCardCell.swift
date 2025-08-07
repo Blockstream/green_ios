@@ -17,6 +17,8 @@ enum AlertCardType {
     case reEnable2fa
     case backup
     case descriptorInfo
+    case TFAWarnMulti
+    case TFAInfoExpire
 }
 
 class AlertCardCell: UITableViewCell {
@@ -197,6 +199,21 @@ class AlertCardCell: UITableViewCell {
         case .descriptorInfo:
             lblTitle.isHidden = true
             lblHint.text = "id_you_can_use_your_descriptor_to".localized
+            btnLeft.isHidden = true
+            btnRight.isHidden = true
+            btnsContainer.isHidden = true
+            btnDismiss.isHidden = onDismiss == nil
+        case .TFAWarnMulti:
+            lblTitle.isHidden = true
+            lblHint.text = "We recommend you enable more than one 2FA method. If you only set up one  method and lose it, you’ll have to wait at least one year until 2FA expires.".localized
+            btnLeft.isHidden = true
+            btnRight.isHidden = true
+            btnsContainer.isHidden = true
+            btnDismiss.isHidden = onDismiss == nil
+            styleWarn()
+        case .TFAInfoExpire:
+            lblTitle.isHidden = true
+            lblHint.text = "After 2FA expires, you can send funds without your 2FA method or utilize or open source recovery tool.".localized
             btnLeft.isHidden = true
             btnRight.isHidden = true
             btnsContainer.isHidden = true
