@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [5.0.8] - 2025-08-07
+
+### Fixed
+- Liquid Bip21 uri validation
+
 ## [5.0.7] - 2025-07-31
 
 ### Added
