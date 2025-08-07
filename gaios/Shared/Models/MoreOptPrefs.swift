@@ -28,13 +28,16 @@ enum MoreOptPrefs: Int, CaseIterable {
         }
     }
 
-    static func getPrefs(account: WalletItem) -> [MoreOptPrefs] {
+    static func getPrefs(account: WalletItem, assetId: String) -> [MoreOptPrefs] {
 
         let hideSweep = account.gdkNetwork.liquid || account.gdkNetwork.lightning
         let hideSign = account.gdkNetwork.lightning
+        let hideAmountRequest = account.gdkNetwork.lightning || !AssetInfo.baseIds.contains(assetId)
 
-        var prefs: [MoreOptPrefs] = [ .requestAmount ]
-
+        var prefs: [MoreOptPrefs] = []
+        if hideAmountRequest == false {
+            prefs.append(.requestAmount)
+        }
         if hideSweep == false {
             prefs.append(.sweep)
         }
@@ -44,10 +47,13 @@ enum MoreOptPrefs: Int, CaseIterable {
         return prefs
     }
 
-    static func getItems(account: WalletItem) -> [DialogListCellModel] {
-
-        return MoreOptPrefs.getPrefs(account: account).map { DialogListCellModel(type: .list,
-                                                                icon: $0.icon,
-                                                                title: $0.name) }
+    static func getItems(account: WalletItem, assetId: String) -> [DialogListCellModel] {
+        return MoreOptPrefs.getPrefs(account: account, assetId: assetId)
+            .map {
+                DialogListCellModel(
+                    type: .list,
+                    icon: $0.icon,
+                    title: $0.name)
+            }
     }
 }

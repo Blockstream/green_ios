@@ -395,10 +395,11 @@ class ReceiveViewController: KeyboardViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-
-            vc.viewModel = DialogListViewModel(title: "id_more_options".localized,
-                                               type: .moreOptPrefs,
-                                               items: MoreOptPrefs.getItems(account: viewModel.account))
+            let options = MoreOptPrefs.getItems(account: viewModel.account, assetId: viewModel.asset)
+            vc.viewModel = DialogListViewModel(
+                title: "id_more_options".localized,
+                type: .moreOptPrefs,
+                items: options)
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -575,7 +576,7 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
         switch type {
         case .moreOptPrefs:
 
-            if let item = MoreOptPrefs.getPrefs(account: viewModel.account)[safe: index] {
+            if let item = MoreOptPrefs.getPrefs(account: viewModel.account, assetId: viewModel.asset)[safe: index] {
                 switch item {
                 case .requestAmount:
                     optRequestAmount()
