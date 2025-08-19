@@ -142,7 +142,6 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
                                indexPath: indexPath,
-                               onLongpress: nil,
                                onTap: { [weak self] indexPath in self?.onTap(indexPath) }
                 )
                 cell.selectionStyle = .none
@@ -153,7 +152,6 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
                                indexPath: indexPath,
-                               onLongpress: nil,
                                onTap: { [weak self] indexPath in self?.onTap(indexPath) }
                 )
                 cell.selectionStyle = .none
@@ -164,7 +162,6 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
                                indexPath: indexPath,
-                               onLongpress: nil,
                                onTap: { [weak self] indexPath in self?.onTap(indexPath) }
                 )
                 cell.selectionStyle = .none

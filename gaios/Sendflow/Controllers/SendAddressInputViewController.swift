@@ -167,7 +167,6 @@ class SendAddressInputViewController: KeyboardViewController {
         btnPaste.isHidden = !emptyText
         hidePlaceHolder(!emptyText)
     }
-
     // swiftlint:disable cyclomatic_complexity
     @MainActor
     func next() {

@@ -10,7 +10,6 @@ class WalletListCell: UITableViewCell {
     @IBOutlet weak var iconArrow: UIImageView!
     @IBOutlet weak var iconWatchonly: UIImageView!
 
-    var onLongpress: ((IndexPath) -> Void)?
     var onTap: ((IndexPath) -> Void)?
     var indexPath: IndexPath?
 
@@ -19,9 +18,6 @@ class WalletListCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         bg.setStyle(CardStyle.defaultStyle)
-
-        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressed))
-        buttonView.addGestureRecognizer(longPressRecognizer)
     }
     override func prepareForReuse() {
         lblTitle.text = ""
@@ -29,7 +25,6 @@ class WalletListCell: UITableViewCell {
     }
     func configure(item: Account,
                    indexPath: IndexPath,
-                   onLongpress: ((IndexPath) -> Void)? = nil,
                    onTap: ((IndexPath) -> Void)? = nil
     ) {
         lblTitle.text = item.name
@@ -49,15 +44,7 @@ class WalletListCell: UITableViewCell {
         }
         self.indexPath = indexPath
         self.onTap = onTap
-        self.onLongpress = onLongpress
         iconWatchonly.isHidden = true
-    }
-    @objc func onLongPressed(sender: UILongPressGestureRecognizer) {
-        if sender.state == UIGestureRecognizer.State.began {
-            if let indexPath = indexPath {
-                onLongpress?(indexPath)
-            }
-        }
     }
 
     @IBAction func btnTap(_ sender: Any) {

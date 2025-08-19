@@ -145,12 +145,6 @@ class HomeViewController: UIViewController {
         }
     }
 
-    func onTapLongPressOverview(_ indexPath: IndexPath, cell: UITableViewCell) {
-        if let account = getAccountFromTableView(indexPath) {
-            popover(for: cell, account: account)
-        }
-    }
-
     func isOverviewSelected(_ account: Account) -> Bool {
         WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
     }
@@ -218,10 +212,30 @@ class HomeViewController: UIViewController {
 
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let renameRowAction = UIContextualAction(style: .normal, title: "id_rename".localized) { [weak self] (_, _, completed) -> Void in
+            if let account = self?.getAccountFromTableView(indexPath) {
+                self?.walletRename(account.id)
+            }
+            completed(true)
+        }
+        renameRowAction.backgroundColor = UIColor.gAccent()
+        let deleteRowAction = UIContextualAction(style: .destructive, title: "id_remove".localized) { [weak self] (_, _, completed) -> Void in
+            if let account = self?.getAccountFromTableView(indexPath) {
+                self?.walletDelete(account.id)
+            }
+            completed(true)
+        }
+        let configuration = UISwipeActionsConfiguration(actions: [renameRowAction, deleteRowAction])
+        configuration.performsFirstActionWithFullSwipe = false
+        return configuration
+    }
     func numberOfSections(in tableView: UITableView) -> Int {
         return HomeSection.allCases.count
     }
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
         switch HomeSection(rawValue: section) {
@@ -239,7 +253,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             return 0
         }
     }
-
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         switch HomeSection(rawValue: indexPath.section) {
@@ -298,7 +311,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
                                indexPath: indexPath,
-                               onLongpress: { [weak self] indexPath in self?.onTapLongPressOverview(indexPath, cell: cell) },
                                onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
                 cell.selectionStyle = .none
                 return cell
@@ -308,7 +320,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
                                indexPath: indexPath,
-                               onLongpress: nil,
                                onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
                 cell.selectionStyle = .none
                 return cell
@@ -319,7 +330,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.configure(
                     item: account,
                     indexPath: indexPath,
-                    onLongpress: { [weak self] indexPath in self?.onTapLongPressOverview(indexPath, cell: cell) },
                     onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
                 cell.selectionStyle = .none
                 return cell
@@ -330,36 +340,15 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
         return UITableViewCell()
     }
-
-    func popover(for cell: UITableViewCell, account: Account) {
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
-        let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
-        if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuHomeViewController") as? PopoverMenuHomeViewController {
-            popover.delegate = self
-            popover.index = account.id
-            popover.menuOptions = [.edit, .delete]
-            popover.modalPresentationStyle = .popover
-            let popoverPresentationController = popover.popoverPresentationController
-            popoverPresentationController?.backgroundColor = UIColor.customModalDark()
-            popoverPresentationController?.delegate = self
-            popoverPresentationController?.sourceView = cell
-            popoverPresentationController?.sourceRect = cell.bounds
-            present(popover, animated: true)
-        }
-    }
-
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 0.1
     }
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
-
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return nil
     }
-
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     }
 }
@@ -400,20 +389,6 @@ extension HomeViewController: UIPopoverPresentationControllerDelegate {
 
     func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
         return UINavigationController(rootViewController: controller.presentedViewController)
-    }
-}
-
-extension HomeViewController: PopoverMenuHomeDelegate {
-    func didSelectionMenuOption(menuOption: MenuWalletOption, index: String?) {
-        guard let index = index else { return }
-        switch menuOption {
-        case .edit:
-            walletRename(index)
-        case .delete:
-            walletDelete(index)
-        default:
-            break
-        }
     }
 }
 
