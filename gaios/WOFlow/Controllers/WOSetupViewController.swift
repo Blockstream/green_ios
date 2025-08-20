@@ -73,8 +73,8 @@ class WOSetupViewController: KeyboardViewController {
         remView.borderWidth = 1.0
         remView.borderColor = .white.withAlphaComponent(0.7)
         remView.layer.cornerRadius = 5.0
-        [usernameTextField, passwordTextField].forEach{
-            $0?.setStyle(.input)
+        [usernameTextField, passwordTextField].forEach {
+            $0?.setStyle(CardStyle.defaultStyle)
         }
     }
 

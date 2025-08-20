@@ -506,6 +506,7 @@
 		34F36F792E434F9D00791659 /* TFAMethodCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F36F782E434F9C00791659 /* TFAMethodCell.swift */; };
 		34F36F7B2E4361C400791659 /* TFAEmptyCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34F36F7A2E4361C400791659 /* TFAEmptyCell.xib */; };
 		34F36F7D2E4361D200791659 /* TFAEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F36F7C2E4361D100791659 /* TFAEmptyCell.swift */; };
+		34F370072E55B63A00791659 /* WODetailsCompactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F370062E55B62100791659 /* WODetailsCompactViewController.swift */; };
 		34F51A7F2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F51A7D2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift */; };
 		34F51A802A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34F51A7E2A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib */; };
 		34F568982A828D330081BF0C /* LTRecoverFundsAddressCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F568972A828D330081BF0C /* LTRecoverFundsAddressCell.swift */; };
@@ -1497,6 +1498,7 @@
 		34F36F782E434F9C00791659 /* TFAMethodCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TFAMethodCell.swift; sourceTree = "<group>"; };
 		34F36F7A2E4361C400791659 /* TFAEmptyCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TFAEmptyCell.xib; sourceTree = "<group>"; };
 		34F36F7C2E4361D100791659 /* TFAEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TFAEmptyCell.swift; sourceTree = "<group>"; };
+		34F370062E55B62100791659 /* WODetailsCompactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WODetailsCompactViewController.swift; sourceTree = "<group>"; };
 		34F51A7D2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressAuthLoaderCell.swift; sourceTree = "<group>"; };
 		34F51A7E2A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddressAuthLoaderCell.xib; sourceTree = "<group>"; };
 		34F568972A828D330081BF0C /* LTRecoverFundsAddressCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTRecoverFundsAddressCell.swift; sourceTree = "<group>"; };
@@ -2609,6 +2611,7 @@
 				345FC46329ED4A35009FCF43 /* Cells */,
 				345FC45E29ED4998009FCF43 /* WOSelectViewController.swift */,
 				345A7E1029ED7A2F00526CE5 /* WODetailsViewController.swift */,
+				34F370062E55B62100791659 /* WODetailsCompactViewController.swift */,
 				3415862029EE80AC005002D9 /* WOSetupViewController.swift */,
 				3415862229EE9A29005002D9 /* WOLoginViewController.swift */,
 			);
@@ -4998,6 +5001,7 @@
 				348AD31C2BFCAAAF00F560C8 /* ReEnable2faSuccessViewController.swift in Sources */,
 				346EB2842BE8BB480043139F /* SendAddressInputViewController.swift in Sources */,
 				34145FE52DBB727300F725E0 /* SelectCountryViewModel.swift in Sources */,
+				34F370072E55B63A00791659 /* WODetailsCompactViewController.swift in Sources */,
 				34A883A02BA30050004A1826 /* TxDetailsMultiAmountCell.swift in Sources */,
 				344F1C0C26B7CC4D009293E6 /* TwoFaMethodsCell.swift in Sources */,
 				816685D42BEBC12E00B03B02 /* SendAmountViewModel.swift in Sources */,

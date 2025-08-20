@@ -35,9 +35,9 @@ class WOLoginViewController: KeyboardViewController {
         setContent()
         setStyle()
 
-        menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
-        menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
+//        menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
+//        menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
+//        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
 
         loginMSButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         loginSSButton.addTarget(self, action: #selector(click), for: .touchUpInside)
@@ -63,8 +63,8 @@ class WOLoginViewController: KeyboardViewController {
     }
 
     func setStyle() {
-        lblTitle.setStyle(.title)
-        lblHint.setStyle(.txt)
+        lblTitle.setStyle(.txtBigger)
+        lblHint.setStyle(.txtCard)
         lblUsername.setStyle(.sectionTitle)
         lblPassword.setStyle(.sectionTitle)
         loginMSButton.setStyle(.primary)
@@ -78,6 +78,9 @@ class WOLoginViewController: KeyboardViewController {
         passwordTextField.layer.cornerRadius = 5.0
         usernameTextField.leftViewMode = .always
         passwordTextField.leftViewMode = .always
+        [usernameTextField, passwordTextField].forEach {
+            $0?.setStyle(CardStyle.defaultStyle)
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {

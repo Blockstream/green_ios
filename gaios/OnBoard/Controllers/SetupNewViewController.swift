@@ -57,29 +57,14 @@ class SetupNewViewController: UIViewController {
 
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
-        settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
-        settingsBtn.setImage(UIImage(named: "ic_nav_disclose"), for: .normal)
-        settingsBtn.addTarget(self, action: #selector(onMoreActions), for: .touchUpInside)
+        settingsBtn.setStyle(.underline(txt: "Setup Watch Only".localized, color: UIColor.gAccent()))
+        settingsBtn.addTarget(self, action: #selector(onSetup), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
     }
 
-    @objc func onMoreActions() {
-        presentSetupNewMoreActionsViewController()
-    }
-
-    func presentSetupNewMoreActionsViewController() {
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SetupNewMoreActionsViewController") as? SetupNewMoreActionsViewController {
-            vc.viewModel = SetupNewMoreActionsViewModel()
-            vc.delegate = self
-            AnalyticsManager.shared.woWallet()
-            vc.modalPresentationStyle = .overFullScreen
-            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
-        }
-    }
-    func pushWOSelectViewController() {
+    @objc func onSetup() {
         let storyboard = UIStoryboard(name: "WOFlow", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "WOSelectViewController")
+        let vc = storyboard.instantiateViewController(withIdentifier: "WODetailsCompactViewController")
         navigationController?.pushViewController(vc, animated: true)
         AnalyticsManager.shared.woWallet()
     }
@@ -223,10 +208,5 @@ extension SetupNewViewController: DialogListViewControllerDelegate {
         case .none:
             break
         }
-    }
-}
-extension SetupNewViewController: SetupNewMoreActionsViewControllerDelegate {
-    func didSelectAction(_ indexPath: IndexPath) {
-        pushWOSelectViewController()
     }
 }
