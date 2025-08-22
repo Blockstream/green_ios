@@ -182,25 +182,23 @@ public class WalletManager {
             parentWalletId: walletIdentifier)
     }
 
+    
+
     public func loginWatchonly(
         credentials: Credentials,
         lightningCredentials: Credentials? = nil
     ) async throws {
         var loginUserResult: LoginUserResult?
-        if let bitcoinDescriptors = credentials.coreDescriptors?.filter({ !$0.hasPrefix("ct")}), !bitcoinDescriptors.isEmpty {
-            let credentials = Credentials(coreDescriptors: bitcoinDescriptors)
-            try? await bitcoinSinglesigSession?.connect()
-            loginUserResult = try await bitcoinSinglesigSession?.loginUser(credentials)
-        }
-        if let liquidDescriptors = credentials.coreDescriptors?.filter({ $0.hasPrefix("ct")}), !liquidDescriptors.isEmpty {
-            let credentials = Credentials(coreDescriptors: liquidDescriptors)
-            try? await liquidSinglesigSession?.connect()
-            loginUserResult = try await liquidSinglesigSession?.loginUser(credentials)
-        }
-        if let pubKeys = credentials.slip132ExtendedPubkeys, !pubKeys.isEmpty {
-            let session = account.networkType.liquid ? liquidSinglesigSession : bitcoinSinglesigSession
-            try? await session?.connect()
-            loginUserResult = try await session?.loginUser(credentials)
+        let allNetworks: [NetworkSecurityCase] = [.bitcoinSS, .liquidSS, .testnetSS, .testnetLiquidSS]
+        for network in allNetworks {
+            let descriptors = credentials.coreDescriptors?.filter({ Wally.isDescriptor($0, for: network) }) ?? []
+            let keys = credentials.slip132ExtendedPubkeys?.filter({ Wally.isPubKey($0, for: network) }) ?? []
+            if descriptors.isEmpty && keys.isEmpty {
+                continue
+            }
+            let credentials = Credentials(coreDescriptors: descriptors.isEmpty ? nil : descriptors, slip132ExtendedPubkeys: keys.isEmpty ? nil : keys)
+            try? await getSession(for: network)?.connect()
+            loginUserResult = try? await getSession(for: network)?.loginUser(credentials)
         }
         if let username = credentials.username, !username.isEmpty {
             let session = account.networkType.liquid ? liquidMultisigSession : bitcoinMultisigSession

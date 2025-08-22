@@ -812,6 +812,7 @@
 		81F8AC572BC5A4A4002E384D /* ConfirmTransactionTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8AC562BC5A4A4002E384D /* ConfirmTransactionTask.swift */; };
 		81F8AC592BC5A4F4002E384D /* TaskProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8AC582BC5A4F4002E384D /* TaskProtocol.swift */; };
 		81FBCB4E2B012DA8006BFE97 /* LTExportJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FBCB4D2B012DA8006BFE97 /* LTExportJadeViewController.swift */; };
+		81FBF6792E65253100852F93 /* Wally.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FBF6782E65252B00852F93 /* Wally.swift */; };
 		FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7522374F1A0035F95A /* UIButton.swift */; };
 		FF29CA7822374F8D0035F95A /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7722374F8D0035F95A /* UILabel.swift */; };
 /* End PBXBuildFile section */
@@ -1808,6 +1809,7 @@
 		81F8AC562BC5A4A4002E384D /* ConfirmTransactionTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmTransactionTask.swift; sourceTree = "<group>"; };
 		81F8AC582BC5A4F4002E384D /* TaskProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskProtocol.swift; sourceTree = "<group>"; };
 		81FBCB4D2B012DA8006BFE97 /* LTExportJadeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTExportJadeViewController.swift; sourceTree = "<group>"; };
+		81FBF6782E65252B00852F93 /* Wally.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wally.swift; sourceTree = "<group>"; };
 		88A86540174AD367FC26E586 /* libPods-gaiosTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-gaiosTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF29CA7122374E8B0035F95A /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		FF29CA7522374F1A0035F95A /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
@@ -3982,6 +3984,7 @@
 				81961AB329E4B5AF00E9B94D /* WalletItem.swift */,
 				81EA2DCC2B1DE1F600A1F924 /* Errors.swift */,
 				09DA612520E73A2300C3EA03 /* String.swift */,
+				81FBF6782E65252B00852F93 /* Wally.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -5550,6 +5553,7 @@
 				8177EE152B6C933300C2271C /* WalletItem.swift in Sources */,
 				8177EE162B6C933400C2271C /* Errors.swift in Sources */,
 				816E9BDB2BC5199C008DBFA7 /* SerialTasks.swift in Sources */,
+				81FBF6792E65253100852F93 /* Wally.swift in Sources */,
 				8177EE172B6C933400C2271C /* String.swift in Sources */,
 				8177EE182B6C933400C2271C /* AuthenticationTypeHandler.swift in Sources */,
 				8177EE192B6C933400C2271C /* AssetsManager.swift in Sources */,

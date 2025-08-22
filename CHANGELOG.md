@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Improved rename/remove wallet actions in home screen 
+- Improved setup Watch-Only
 - Enable lightning rescan swaps
 - Bump GDK to 0.76.0
 

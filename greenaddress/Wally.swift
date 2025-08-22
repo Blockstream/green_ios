@@ -9,7 +9,19 @@ public class Wally {
     public static let AES_BLOCK_LEN = 16
     public static let HMAC_SHA256_LEN = 32
     public static let EC_PRIVATE_KEY_LEN = 32
+    
+    /*** address-networks Address network constants */
+    public static let WALLY_NETWORK_NONE: UInt32 = 0x00 /** Used for miniscript parsing only */
+    public static let WALLY_NETWORK_BITCOIN_MAINNET: UInt32 = 0x01 /** Bitcoin mainnet */
+    public static let WALLY_NETWORK_BITCOIN_REGTEST: UInt32 = 0xff  /** Bitcoin regtest: Behaves as testnet except for segwit */
+    public static let WALLY_NETWORK_BITCOIN_TESTNET: UInt32 = 0x02 /** Bitcoin testnet */
+    public static let WALLY_NETWORK_LIQUID: UInt32 = 0x03 /** Liquid v1 */
+    public static let WALLY_NETWORK_LIQUID_REGTEST: UInt32 = 0x04 /** Liquid v1 regtest */
+    public static let WALLY_NETWORK_LIQUID_TESTNET: UInt32 = 0x05 /** Liquid v1 testnet */
 
+    /*** miniscript-features Miniscript/Descriptor feature flags */
+    public static let WALLY_MS_IS_DESCRIPTOR: UInt32 = 0x020 /** Contains only descriptor expressions (no miniscript) */
+    
     public static func sigToDer(sig: [UInt8]) throws -> [UInt8] {
         let sigPtr = UnsafePointer(sig)
         let derPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(EC_SIGNATURE_DER_MAX_LEN))
@@ -264,7 +276,6 @@ public class Wally {
     public static func isPsbtElements(_ psbt: String) -> Bool? {
         var wallyPsbt: UnsafeMutablePointer<green.wally_psbt>?
         var elements: Int = 0
-        
         if wally_psbt_from_base64(psbt, UInt32(WALLY_PSBT_PARSE_FLAG_STRICT), &wallyPsbt) != WALLY_OK {
             return nil
         }
@@ -272,5 +283,19 @@ public class Wally {
             return nil
         }
         return elements == 1
+    }
+
+    public static func descriptorParse(_ descriptor: String, network: UInt32) -> OpaquePointer? {
+        var wallyDescriptor: OpaquePointer?
+        if  wally_descriptor_parse(descriptor, nil, network, WALLY_MS_IS_DESCRIPTOR, &wallyDescriptor) != WALLY_OK {
+            return nil
+        }
+        return wallyDescriptor
+    }
+
+    public static func descriptorNetwork(_ wallyDescriptor: OpaquePointer) -> Int32 {
+        var network: Int32 = 0
+        wally_descriptor_get_network(wallyDescriptor, &network)
+        return network
     }
 }

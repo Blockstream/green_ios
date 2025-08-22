@@ -1,9 +1,15 @@
 import UIKit
 import core
 import gdk
+import greenaddress
+import Foundation
 
+enum WOImportType: CaseIterable {
+    case slip132
+    case descriptor
+}
 class WODetailsCompactViewController: KeyboardViewController {
-
+    
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint1: UILabel!
     @IBOutlet weak var lblHint2: UILabel!
@@ -21,10 +27,8 @@ class WODetailsCompactViewController: KeyboardViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setContent()
         setStyle()
-
         textView.delegate = self
         textView.addDoneButtonToKeyboard(myAction: #selector(self.textView.resignFirstResponder))
         textView.textContainer.heightTracksTextView = true
@@ -42,9 +46,9 @@ class WODetailsCompactViewController: KeyboardViewController {
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
         let attributeString = NSMutableAttributedString(
-                string: "Set up with username and password".localized,
-                attributes: attr
-             )
+            string: "Set up with username and password".localized,
+            attributes: attr
+        )
         lblUserPwd.attributedText = attributeString
         lblUserPwd.font = UIFont.systemFont(ofSize: 15.0, weight: .medium)
     }
@@ -88,27 +92,57 @@ class WODetailsCompactViewController: KeyboardViewController {
         present(documentPicker, animated: true)
     }
 
-    func onImport() {
-        //        let account = viewModel.newAccountSinglesig(for: network.gdkNetwork)
-        //        let isXpubs = segment.selectedSegmentIndex == 0
-        //        let keys = textView.text
-        //            .split(whereSeparator: { $0 == "\n" || $0 == " " || ($0 == ","  && isXpubs) })
-        //            .map { $0.trimmingCharacters(in: CharacterSet(charactersIn: " ")) }
-        //        dismissKeyboard()
-        //        self.startLoader(message: "id_logging_in".localized)
-        //        let credentials = self.segment.selectedSegmentIndex == 0 ? Credentials(slip132ExtendedPubkeys: keys) : Credentials(coreDescriptors: keys)
-        //        Task {
-        //            do {
-        //                try await self.viewModel.setupSinglesig(for: account, credentials: credentials)
-        //                try await self.viewModel.loginSinglesig(for: account)
-        //                self.stopLoader()
-        //                success(account: account)
-        //            } catch {
-        //                self.stopLoader()
-        //                failure(error, account: account)
-        //            }
-        //        }
+    func onImport() async {
+        self.startLoader(message: "id_logging_in".localized)
+        let isListOfPubKeys = ["xpub", "ypub", "zpub", "tpub", "upub", "vpub"].contains(textView.text.prefix(4).lowercased())
+        let keys = textView.text
+            .split(whereSeparator: { $0 == "\n" || $0 == " " || (isListOfPubKeys && $0 == ",") })
+                .map { $0.trimmingCharacters(in: CharacterSet.whitespaces) }
+        let allNetworks: [NetworkSecurityCase] = [.bitcoinSS, .liquidSS, .testnetSS, .testnetLiquidSS]
+        let btcNetworks: [NetworkSecurityCase] = [.bitcoinSS, .testnetSS]
+        if isListOfPubKeys {
+            for key in keys {
+                if btcNetworks.filter({ Wally.isPubKey(key, for: $0) }).isEmpty {
+                    stopLoader()
+                    showError("Invalid key \(key)")
+                    return
+                }
+            }
+        } else {
+            for desc in keys {
+                if allNetworks.filter({ Wally.isDescriptor(desc, for: $0) }).isEmpty {
+                    stopLoader()
+                    showError("Invalid descriptor \(desc)")
+                    return
+                }
+            }
+        }
+        let credentials = Credentials(coreDescriptors: isListOfPubKeys ? nil : keys, slip132ExtendedPubkeys: isListOfPubKeys ? keys : nil)
+        let network = isListOfPubKeys ? keys.compactMap { Wally.getNetwork(xpub: $0) }.first : keys.compactMap { Wally.getNetwork(descriptor: $0) }.first
+        let account = viewModel.newAccountSinglesig(for: (network ?? NetworkSecurityCase.bitcoinSS).gdkNetwork)
+        let task = Task {
+            let wm = WalletsRepository.shared.getOrAdd(for: account)
+            try? await wm.getSession(for: network ?? .bitcoinSS)?.connect()
+            let loginUserResult = try await wm.getSession(for: network ?? .bitcoinSS)?.loginUser(credentials)
+            _ = try await wm.subaccounts()
+            try? await wm.loadRegistry()
+            wm.isWatchonly = true
+            wm.account.xpubHashId = loginUserResult?.xpubHashId
+            try await self.viewModel.setupSinglesig(for: wm.account, credentials: credentials)
+            AccountsRepository.shared.current = wm.account
+        }
+        switch await task.result {
+        case .success:
+            logger.info("--> SUCCESS: \(network.debugDescription) \(account.name)")
+            stopLoader()
+            success(account: account)
+        case .failure(let err):
+            logger.error("--> ERROR: \(network.debugDescription) \(account.name)")
+            stopLoader()
+            DropAlert().error(message: err.description().localized)
+        }
     }
+
     @MainActor
     func success(account: Account) {
         stopLoader()
@@ -156,7 +190,9 @@ class WODetailsCompactViewController: KeyboardViewController {
         }
     }
     @IBAction func btnImport(_ sender: Any) {
-        onImport()
+        Task { [weak self] in
+            await self?.onImport()
+        }
     }
     @IBAction func btnUserPwd(_ sender: Any) {
         selectNetwork(singlesig: false)
