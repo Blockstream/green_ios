@@ -19,13 +19,13 @@ class LTSettingsViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
 
     @IBOutlet weak var btnMnemonic: UIButton!
-    @IBOutlet weak var btnCloseChannel: UIButton!
+    @IBOutlet weak var btnEmpty: UIButton!
     @IBOutlet weak var btnDisable: UIButton!
+    @IBOutlet weak var btnSwaps: UIButton!
     @IBOutlet weak var btnSweep: UIButton!
 
     var viewModel: LTSettingsViewModel!
     private var nodeCellTypes: [LTSettingsCellType] { viewModel.cellTypes }
-    var hideActions = false
 
     private var hideBalance: Bool {
         return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
@@ -50,21 +50,18 @@ class LTSettingsViewController: UIViewController {
         lblTitle.text = "id_lightning_network".localized
         lblSubtitle.text = "id_your_lightning_account_is_set".localized
         btnMnemonic.setTitle("id_show_recovery_phrase".localized, for: .normal)
-        btnCloseChannel.setTitle("id_empty_lightning_account".localized, for: .normal)
+        btnEmpty.setTitle("id_empty_lightning_account".localized, for: .normal)
         btnDisable.setTitle("id_disable_lightning".localized, for: .normal)
-        btnCloseChannel.isHidden = viewModel.channelsBalance ?? 0 == 0
+        btnSwaps.setTitle("id_rescan_swaps".localized, for: .normal)
+        btnSweep.setTitle("id_sweep".localized, for: .normal)
         btnSweep.isHidden = viewModel.onchainBalanceSatoshi ?? 0 == 0
-        if hideActions {
-            [btnCloseChannel, btnMnemonic, btnDisable, btnSweep].forEach {
-                $0?.isHidden = hideActions
-            }
-        }
+        btnEmpty.isHidden = viewModel.channelsBalance ?? 0 == 0
     }
 
     func setStyle() {
         lblTitle.setStyle(.title)
         lblSubtitle.setStyle(.txtBigger)
-        [btnCloseChannel, btnMnemonic, btnDisable].forEach({ $0.setStyle(.outlined) })
+        [btnEmpty, btnMnemonic, btnDisable, btnSwaps, btnSweep].forEach({ $0.setStyle(.outlined) })
     }
 
     func register() {
@@ -97,12 +94,33 @@ class LTSettingsViewController: UIViewController {
         }
     }
 
+    @IBAction func btnSwaps(_ sender: Any) {
+        Task { [weak self] in
+            await self?.rescanSwaps()
+        }
+    }
+
     @IBAction func btnDisable(_ sender: Any) {
         Task { [weak self] in
             await self?.disableLightning()
         }
     }
 
+    func rescanSwaps() async {
+        startLoader(message: "id_rescan_swaps_initiated".localized)
+        let task = Task.detached { [weak self] in
+            try await self?.viewModel.rescanSwaps()
+        }
+        switch await task.result {
+        case .success:
+            stopLoader()
+            DropAlert().success(message: "Rescan Swaps completed".localized)
+            tableView.reloadData()
+        case .failure(let error):
+            stopLoader()
+            showError(error)
+        }
+    }
     func disableLightning() async {
         startLoader(message: "Disabling...")
         let task = Task.detached { [weak self] in

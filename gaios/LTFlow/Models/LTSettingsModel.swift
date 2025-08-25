@@ -16,6 +16,7 @@ enum LTSettingsCellType: CaseIterable {
 struct LTSettingsViewModel {
 
     var lightningSession: LightningSessionManager
+    var hideActions: Bool
 
     var cellTypes: [LTSettingsCellType] {
         return LTSettingsCellType.allCases
@@ -119,8 +120,9 @@ struct LTSettingsViewModel {
         return lightningSession.nodeState?.blockHeight
     }
 
-    init(lightningSession: LightningSessionManager) {
+    init(lightningSession: LightningSessionManager, hideActions: Bool) {
         self.lightningSession = lightningSession
+        self.hideActions = hideActions
     }
 
     func asStr(satoshi: UInt64?) -> String {
@@ -136,6 +138,10 @@ struct LTSettingsViewModel {
     func disableLightning() async {
         try? await WalletManager.current?.unregisterLightning()
         await WalletManager.current?.removeLightning()
+    }
+
+    func rescanSwaps() async throws {
+        try await WalletManager.current?.lightningSubaccount?.lightningSession?.lightBridge?.rescanSwaps()
     }
 
     func ltRecoverFundsViewModelSendAll() -> LTRecoverFundsViewModel? {

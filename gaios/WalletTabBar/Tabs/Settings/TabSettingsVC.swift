@@ -361,7 +361,7 @@ extension TabSettingsVC {
         }
         let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTSettingsViewController") as? LTSettingsViewController {
-            vc.viewModel = LTSettingsViewModel(lightningSession: lightningSession)
+            vc.viewModel = LTSettingsViewModel(lightningSession: lightningSession, hideActions: false)
             navigationController?.pushViewController(vc, animated: true)
         }
     }

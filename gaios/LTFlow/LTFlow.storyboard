@@ -1965,7 +1965,7 @@ EE5leHQ
                                                                         <rect key="frame" x="0.0" y="0.0" width="414" height="633"/>
                                                                         <subviews>
                                                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="u61-ae-hrx">
-                                                                                <rect key="frame" x="25" y="0.0" width="364" height="395"/>
+                                                                                <rect key="frame" x="25" y="0.0" width="364" height="335"/>
                                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <connections>
                                                                                     <outlet property="dataSource" destination="YWw-FO-FVV" id="hWZ-t6-OJz"/>
@@ -1973,7 +1973,7 @@ EE5leHQ
                                                                                 </connections>
                                                                             </tableView>
                                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="QI2-nz-UoN">
-                                                                                <rect key="frame" x="0.0" y="403" width="414" height="230"/>
+                                                                                <rect key="frame" x="0.0" y="343" width="414" height="290"/>
                                                                                 <subviews>
                                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Ql-rN-v6g" userLabel="Next">
                                                                                         <rect key="frame" x="25" y="0.0" width="364" height="50"/>
@@ -2000,7 +2000,7 @@ EE5leHQ
                                                                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                         </state>
                                                                                         <connections>
-                                                                                            <action selector="btnCloseChannel:" destination="YWw-FO-FVV" eventType="touchUpInside" id="gqf-Wp-tHP"/>
+                                                                                            <action selector="btnCloseChannel:" destination="YWw-FO-FVV" eventType="touchUpInside" id="kHr-2x-tLz"/>
                                                                                         </connections>
                                                                                     </button>
                                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TOE-Q2-8fb" userLabel="Next">
@@ -2010,15 +2010,29 @@ EE5leHQ
                                                                                             <constraint firstAttribute="height" constant="50" id="s4P-yq-KRn"/>
                                                                                         </constraints>
                                                                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
-                                                                                        <state key="normal" title="btn_sweep_channel">
+                                                                                        <state key="normal" title="btn_rescan_swaps">
                                                                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                         </state>
                                                                                         <connections>
-                                                                                            <action selector="btnSweep:" destination="YWw-FO-FVV" eventType="touchUpInside" id="w4j-ep-Xxc"/>
+                                                                                            <action selector="btnSwaps:" destination="YWw-FO-FVV" eventType="touchUpInside" id="udQ-OO-5Hj"/>
+                                                                                        </connections>
+                                                                                    </button>
+                                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9LF-3X-JSh" userLabel="Next">
+                                                                                        <rect key="frame" x="25" y="180" width="364" height="50"/>
+                                                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                        <constraints>
+                                                                                            <constraint firstAttribute="height" constant="50" id="NIY-mb-Dge"/>
+                                                                                        </constraints>
+                                                                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                                                                        <state key="normal" title="btn_sweep">
+                                                                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                        </state>
+                                                                                        <connections>
+                                                                                            <action selector="btnSweep:" destination="YWw-FO-FVV" eventType="touchUpInside" id="R7N-c9-O7C"/>
                                                                                         </connections>
                                                                                     </button>
                                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MpL-2B-jZL" userLabel="Next">
-                                                                                        <rect key="frame" x="25" y="180" width="364" height="50"/>
+                                                                                        <rect key="frame" x="25" y="240" width="364" height="50"/>
                                                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                         <constraints>
                                                                                             <constraint firstAttribute="height" constant="50" id="b1S-qh-gqq"/>
@@ -2037,7 +2051,9 @@ EE5leHQ
                                                                                     <constraint firstItem="7Ql-rN-v6g" firstAttribute="leading" secondItem="QI2-nz-UoN" secondAttribute="leading" constant="25" id="3a4-Mf-auy"/>
                                                                                     <constraint firstAttribute="trailing" secondItem="TOE-Q2-8fb" secondAttribute="trailing" constant="25" id="B4E-DK-yAQ"/>
                                                                                     <constraint firstAttribute="trailing" secondItem="7Ql-rN-v6g" secondAttribute="trailing" constant="25" id="BJI-aH-qBF"/>
+                                                                                    <constraint firstAttribute="trailing" secondItem="9LF-3X-JSh" secondAttribute="trailing" constant="25" id="QgR-1f-ZwV"/>
                                                                                     <constraint firstItem="TOE-Q2-8fb" firstAttribute="leading" secondItem="QI2-nz-UoN" secondAttribute="leading" constant="25" id="YKm-td-xWB"/>
+                                                                                    <constraint firstItem="9LF-3X-JSh" firstAttribute="leading" secondItem="QI2-nz-UoN" secondAttribute="leading" constant="25" id="aVM-Zu-Dt3"/>
                                                                                     <constraint firstItem="MpL-2B-jZL" firstAttribute="leading" secondItem="QI2-nz-UoN" secondAttribute="leading" constant="25" id="c9y-Vc-uKl"/>
                                                                                     <constraint firstItem="Llq-U6-PSf" firstAttribute="leading" secondItem="QI2-nz-UoN" secondAttribute="leading" constant="25" id="cNp-HZ-PZr"/>
                                                                                     <constraint firstAttribute="trailing" secondItem="MpL-2B-jZL" secondAttribute="trailing" constant="25" id="tu3-MH-e83"/>
@@ -2129,10 +2145,11 @@ EE5leHQ
                     </view>
                     <connections>
                         <outlet property="anchorBottom" destination="r9K-Hk-onG" id="4ti-dW-6kl"/>
-                        <outlet property="btnCloseChannel" destination="Llq-U6-PSf" id="qcl-Pb-bj9"/>
                         <outlet property="btnDisable" destination="MpL-2B-jZL" id="YIX-2U-IjG"/>
+                        <outlet property="btnEmpty" destination="Llq-U6-PSf" id="nq6-IT-BHz"/>
                         <outlet property="btnMnemonic" destination="7Ql-rN-v6g" id="XAq-gL-3Ip"/>
-                        <outlet property="btnSweep" destination="TOE-Q2-8fb" id="KZT-QI-UV0"/>
+                        <outlet property="btnSwaps" destination="TOE-Q2-8fb" id="yQM-H3-W0i"/>
+                        <outlet property="btnSweep" destination="9LF-3X-JSh" id="9j6-1x-imq"/>
                         <outlet property="cardView" destination="sdX-RS-XRm" id="oob-BG-LAa"/>
                         <outlet property="lblSubtitle" destination="p7c-5S-Ykq" id="QJt-eV-iyf"/>
                         <outlet property="lblTitle" destination="vYd-Oc-NG3" id="G5Z-Zs-tPQ"/>

@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Improved rename/remove wallet actions in home screen 
+- Enable lightning rescan swaps
 
 ## [5.0.8] - 2025-08-07
 
