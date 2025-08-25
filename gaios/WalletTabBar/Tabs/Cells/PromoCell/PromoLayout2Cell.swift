@@ -57,7 +57,7 @@ class PromoLayout2Cell: UITableViewCell {
                 icon.image = resized
             }
         }
-        icon.clipsToBounds = true
+        // icon.clipsToBounds = true
     }
 
     func setStyle() {

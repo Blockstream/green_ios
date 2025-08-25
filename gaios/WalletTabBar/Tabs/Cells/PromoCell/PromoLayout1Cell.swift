@@ -45,11 +45,13 @@ class PromoLayout1Cell: UITableViewCell {
         btnAction.setTitle(model.promo.cta_small, for: .normal)
 
         if let thumb = model.promo.thumb {
+            icon.image = thumb
             let w = thumb.size.width
             let h = thumb.size.height
-            if h > 0 {
-                let nW = 150 * w / h
-                let resized = thumb.resize(Int(nW), 150)
+            if w > 0 {
+                let nW = (UIScreen.main.bounds.width - 50)
+                let nH = nW * h / w
+                let resized = thumb.resize(Int(nW), Int(nH))
                 iconWrap.isHidden = false
                 icon.image = resized
             }
