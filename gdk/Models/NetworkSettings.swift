@@ -7,7 +7,6 @@ public struct NetworkSettings: Codable {
         case useTor = "use_tor"
         case proxy
         case userAgent = "user_agent"
-        case spvEnabled = "spv_enabled"
         case electrumUrl = "electrum_url"
         case electrumOnionUrl = "electrum_onion_url"
         case electrumTls = "electrum_tls"
@@ -18,7 +17,6 @@ public struct NetworkSettings: Codable {
     public let useTor: Bool?
     public let proxy: String?
     public let userAgent: String?
-    public let spvEnabled: Bool?
     public let electrumUrl: String?
     public let electrumOnionUrl: String?
     public let electrumTls: Bool?
@@ -29,7 +27,6 @@ public struct NetworkSettings: Codable {
         useTor: Bool? = nil,
         proxy: String? = nil,
         userAgent: String? = nil,
-        spvEnabled: Bool? = nil,
         electrumUrl: String? = nil,
         electrumOnionUrl: String? = nil,
         electrumTls: Bool? = nil,
@@ -38,7 +35,6 @@ public struct NetworkSettings: Codable {
         self.useTor = useTor
         self.proxy = proxy
         self.userAgent = userAgent
-        self.spvEnabled = spvEnabled
         self.electrumUrl = electrumUrl
         self.electrumOnionUrl = electrumOnionUrl
         self.electrumTls = electrumTls

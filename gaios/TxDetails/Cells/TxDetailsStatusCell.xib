@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,24 +18,6 @@
                 <rect key="frame" x="0.0" y="0.0" width="336" height="318"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <stackView opaque="NO" contentMode="scaleToFill" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="0at-7W-yNK">
-                        <rect key="frame" x="232.33333333333334" y="20" width="63.666666666666657" height="20"/>
-                        <subviews>
-                            <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_spv_check" translatesAutoresizingMaskIntoConstraints="NO" id="X1h-FM-SUe">
-                                <rect key="frame" x="-20" y="0.0" width="20" height="20"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="20" id="TMF-Z2-TGk"/>
-                                    <constraint firstAttribute="width" constant="20" id="YpL-ow-p63"/>
-                                </constraints>
-                            </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_spv_state" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DGw-sj-fxO">
-                                <rect key="frame" x="0.0" y="0.0" width="63.666666666666664" height="20"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                    </stackView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gej-HU-mKj">
                         <rect key="frame" x="132" y="44" width="72" height="72"/>
                         <subviews>
@@ -167,7 +149,6 @@
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
                     <constraint firstItem="OWW-PU-8Zk" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="9Df-Y1-NGh"/>
-                    <constraint firstAttribute="trailing" secondItem="0at-7W-yNK" secondAttribute="trailing" constant="40" id="BpK-6p-U4t"/>
                     <constraint firstItem="UJg-Gb-Rby" firstAttribute="top" secondItem="gej-HU-mKj" secondAttribute="bottom" constant="40" id="DRY-eR-d2g"/>
                     <constraint firstItem="UJg-Gb-Rby" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="40" id="E4G-AE-ouO"/>
                     <constraint firstItem="z41-c2-qdm" firstAttribute="top" secondItem="5FM-Xw-A4m" secondAttribute="top" constant="-20" id="FzZ-Yf-c0y"/>
@@ -176,7 +157,6 @@
                     <constraint firstItem="gej-HU-mKj" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="TPV-bb-Yhs"/>
                     <constraint firstAttribute="trailing" secondItem="UJg-Gb-Rby" secondAttribute="trailing" constant="40" id="Uah-1A-zhq"/>
                     <constraint firstItem="5FM-Xw-A4m" firstAttribute="bottom" secondItem="gej-HU-mKj" secondAttribute="bottom" constant="24" id="WtZ-bU-AiX"/>
-                    <constraint firstItem="0at-7W-yNK" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="20" id="bDa-cd-ik3"/>
                     <constraint firstAttribute="bottom" secondItem="OWW-PU-8Zk" secondAttribute="bottom" constant="20" id="nhW-Cg-8NS"/>
                     <constraint firstItem="gej-HU-mKj" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="44" id="q9A-l8-BgE"/>
                     <constraint firstItem="5FM-Xw-A4m" firstAttribute="leading" secondItem="gej-HU-mKj" secondAttribute="leading" constant="40" id="rMX-c1-izS"/>
@@ -186,16 +166,13 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <connections>
                 <outlet property="bgLblStatus" destination="OWW-PU-8Zk" id="3fJ-1j-uED"/>
-                <outlet property="iconSpv" destination="X1h-FM-SUe" id="ts0-6T-Blf"/>
                 <outlet property="iconsStack" destination="RVi-aH-MVb" id="qa7-BN-bUe"/>
                 <outlet property="iconsStackWidth" destination="soS-PX-mu6" id="pHk-fI-TDn"/>
                 <outlet property="iconsView" destination="5FM-Xw-A4m" id="JOT-YI-2TP"/>
-                <outlet property="lblSpv" destination="DGw-sj-fxO" id="ORF-Ds-mzd"/>
                 <outlet property="lblStateDate" destination="EKc-q5-1Vc" id="0bo-qI-sG3"/>
                 <outlet property="lblStateInfo" destination="LFm-BO-f4n" id="uOz-eW-jcj"/>
                 <outlet property="lblStateStatus" destination="dwA-V3-a8a" id="qrY-h4-hWD"/>
                 <outlet property="lblStateTitle" destination="AaA-32-rvU" id="83S-Ja-yys"/>
-                <outlet property="spvStack" destination="0at-7W-yNK" id="Sd6-vy-b2E"/>
                 <outlet property="stateIcon" destination="X2P-xg-Kfq" id="FTC-Pw-20e"/>
                 <outlet property="stateView" destination="gej-HU-mKj" id="ZrH-rB-mUJ"/>
                 <outlet property="swapIconsStack" destination="Xtq-Mj-HRI" id="zUe-MG-xnx"/>
@@ -206,11 +183,10 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="ic_spv_check" width="60" height="60"/>
         <image name="ic_tx_confirmed" width="34.333332061767578" height="25"/>
         <image name="ic_tx_swap_arrow_in" width="12.333333015441895" height="13.666666984558105"/>
         <image name="ic_tx_swap_arrow_out" width="14.333333015441895" height="11.333333015441895"/>
-        <image name="ntw_btc" width="60" height="61"/>
+        <image name="ntw_btc" width="24" height="24"/>
         <namedColor name="gGreenTx">
             <color red="0.039215686274509803" green="0.5725490196078431" blue="0.32156862745098042" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

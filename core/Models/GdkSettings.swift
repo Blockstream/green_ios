@@ -8,7 +8,6 @@ public struct GdkSettings: Codable {
         case proxy
         case socks5Hostname = "socks5_hostname"
         case socks5Port = "socks5_port"
-        case spvEnabled = "spv_enabled"
         case personalNodeEnabled = "personal_node_enabled"
         case btcElectrumSrv = "btc_electrum_srv"
         case liquidElectrumSrv = "liquid_electrum_srv"
@@ -21,7 +20,6 @@ public struct GdkSettings: Codable {
     public let proxy: Bool?
     public let socks5Hostname: String?
     public let socks5Port: String?
-    public let spvEnabled: Bool?
     public let personalNodeEnabled: Bool?
     public let btcElectrumSrv: String?
     public let liquidElectrumSrv: String?
@@ -36,12 +34,11 @@ public struct GdkSettings: Codable {
     public static let liquidTestnetElectrumSrvDefaultEndPoint = "blockstream.info:465"
     public static let defaultGapLimit = 20
 
-    public init(tor: Bool?, proxy: Bool?, socks5Hostname: String?, socks5Port: String?, spvEnabled: Bool?, personalNodeEnabled: Bool?, btcElectrumSrv: String?, liquidElectrumSrv: String?, testnetElectrumSrv: String?, liquidTestnetElectrumSrv: String?, electrumTls: Bool?, gapLimit: Int?) {
+    public init(tor: Bool?, proxy: Bool?, socks5Hostname: String?, socks5Port: String?, personalNodeEnabled: Bool?, btcElectrumSrv: String?, liquidElectrumSrv: String?, testnetElectrumSrv: String?, liquidTestnetElectrumSrv: String?, electrumTls: Bool?, gapLimit: Int?) {
         self.tor = tor
         self.proxy = proxy
         self.socks5Hostname = socks5Hostname
         self.socks5Port = socks5Port
-        self.spvEnabled = spvEnabled
         self.personalNodeEnabled = personalNodeEnabled
         self.btcElectrumSrv = btcElectrumSrv
         self.liquidElectrumSrv = liquidElectrumSrv
@@ -92,7 +89,6 @@ public struct GdkSettings: Codable {
             useTor: gdkSettings?.tor ?? false,
             proxy: (gdkSettings?.proxy ?? false) ? proxyURI : nil,
             userAgent: String(format: "green_ios_%@", version),
-            spvEnabled: (gdkSettings?.spvEnabled ?? false) && !gdkNetwork.liquid,
             electrumUrl: gdkSettings?.personalNodeEnabled ?? false ? electrumUrl : nil,
             electrumOnionUrl: gdkSettings?.personalNodeEnabled ?? false ? electrumUrl : nil,
             electrumTls: gdkSettings?.personalNodeEnabled ?? false ? electrumTls : nil,
@@ -108,7 +104,6 @@ public struct GdkSettings: Codable {
             proxy: current?.proxy,
             socks5Hostname: current?.socks5Hostname,
             socks5Port: current?.socks5Port,
-            spvEnabled: current?.spvEnabled,
             personalNodeEnabled: current?.personalNodeEnabled,
             btcElectrumSrv: current?.btcElectrumSrv,
             liquidElectrumSrv: current?.liquidElectrumSrv,

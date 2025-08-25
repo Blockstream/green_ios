@@ -21,10 +21,6 @@ class TxDetailsStatusCell: UITableViewCell {
     @IBOutlet weak var iconsStackWidth: NSLayoutConstraint!
     @IBOutlet weak var swapIconsStackWidth: NSLayoutConstraint!
 
-    @IBOutlet weak var spvStack: UIStackView!
-    @IBOutlet weak var iconSpv: UIImageView!
-    @IBOutlet weak var lblSpv: UILabel!
-
     class var identifier: String { return String(describing: self) }
 
     var model: TxDetailsStatusCellModel?
@@ -89,14 +85,6 @@ class TxDetailsStatusCell: UITableViewCell {
             }
             stateIcon.image = UIImage(named: "ic_tx_confirmed")!
         }
-
-        if !shouldShowSpvStatus(tx: model.transaction) {
-            spvStack.isHidden = true
-        } else {
-            spvStack.isHidden = false
-            setIconSpv(tx: model.transaction)
-            setLblSpv(transaction: model.transaction)
-        }
     }
 
     func setStyle() {
@@ -115,7 +103,6 @@ class TxDetailsStatusCell: UITableViewCell {
 
     func setAssetIcons() {
         guard let model = model else { return }
-
         for v in iconsStack.subviews { v.removeFromSuperview() }
         for v in swapIconsStack.subviews { v.removeFromSuperview() }
 
@@ -213,68 +200,7 @@ class TxDetailsStatusCell: UITableViewCell {
         stateIcon.rotate()
     }
 
-    func shouldShowSpvStatus(tx: Transaction) -> Bool {
-
-        let appSettings = AppSettings.shared
-        guard let gdkSettings = appSettings.gdkSettings else { return false }
-        if gdkSettings.spvEnabled == false { return false }
-
-        if tx.spvVerified == "disabled" || tx.spvVerified == nil {
-            return false
-        }
-        if tx.blockHeight == 0 {
-            // return false
-        }
-        if let account = subaccount(tx: tx), let session = account.session,
-           Int(session.blockHeight) - Int(tx.blockHeight) + 1 < 6 {
-            return false
-        }
-        return true
-    }
-
     func subaccount(tx: Transaction) -> WalletItem? {
         return WalletManager.current?.subaccounts.filter { $0.id == tx.subaccountId }.first
-    }
-
-    func setIconSpv(tx: Transaction) {
-        switch tx.spvVerified {
-        case "disabled", nil:
-            iconSpv.isHidden = true
-        case "verified":
-            iconSpv.isHidden = false
-            iconSpv.image = UIImage(named: "ic_spv_check")
-            iconSpv.tintColor = UIColor.gAccent()
-        case "in_progress":
-            iconSpv.isHidden = false
-            iconSpv.image = UIImage(named: "ic_spv_progress")
-            iconSpv.tintColor = .white
-        case "not_verified":
-            iconSpv.isHidden = false
-            iconSpv.image = UIImage(named: "ic_spv_warning")
-            iconSpv.tintColor = .red
-        default:
-            iconSpv.isHidden = false
-            iconSpv.image = UIImage(named: "ic_spv_warning")
-            iconSpv.tintColor = .yellow
-        }
-    }
-
-    func setLblSpv(transaction: Transaction) {
-        lblSpv.isHidden = ["disabled", nil].contains(transaction.spvVerified)
-
-        switch transaction.spvVerified {
-        case "verified":
-            lblSpv.textColor = UIColor.gAccent()
-            lblSpv.text = "id_verified".localized
-        case "not_verified":
-            lblSpv.textColor = .red
-            lblSpv.text = "id_invalid_merkle_proof".localized
-        case "not_longest":
-            lblSpv.textColor = .yellow
-            lblSpv.text = "id_not_on_longest_chain".localized
-        default:
-            lblSpv.textColor = UIColor.gW60()
-            lblSpv.text = "id_verifying".localized
-        }
     }
 }

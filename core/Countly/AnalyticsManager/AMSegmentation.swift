@@ -88,9 +88,6 @@ public extension AnalyticsManager {
         if settings?.tor ?? false == true {
             settingsProps.append(AnalyticsManager.strTor)
         }
-        if settings?.spvEnabled ?? false == true {
-            settingsProps.append(AnalyticsManager.strSpv)
-        }
         if AppSettings.shared.testnet {
             settingsProps.append(AnalyticsManager.strTestnet)
         }

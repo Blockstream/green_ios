@@ -80,16 +80,6 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var iconElectrumGapLimit: UIImageView!
     @IBOutlet weak var lblDescElectrumGapLimit: UILabel!
 
-    @IBOutlet weak var cardTxCheck: UIView!
-    @IBOutlet weak var lblTxCheckTitle: UILabel!
-    @IBOutlet weak var lblTxCheckHint: UILabel!
-    @IBOutlet weak var switchTxCheck: UISwitch!
-
-    @IBOutlet weak var cardMulti: UIView!
-    @IBOutlet weak var lblMultiTitle: UILabel!
-    @IBOutlet weak var switchMulti: UISwitch!
-    @IBOutlet weak var lblMultiHint: UILabel!
-
     @IBOutlet weak var btnCancel: UIButton!
     @IBOutlet weak var btnSave: UIButton!
 
@@ -160,10 +150,6 @@ class WalletSettingsViewController: KeyboardViewController {
         fieldSPVliquidServer.placeholder = "id_server_ip_and_port_ipport".localized
         fieldSPVtestnetServer.placeholder = "id_server_ip_and_port_ipport".localized
         lblElectrumTls.text = "id_enable_tls".localized
-        lblTxCheckTitle.text = "id_spv_verification".localized
-        lblTxCheckHint.text = "id_verify_your_bitcoin".localized
-        lblMultiTitle.text = "id_multi_server_validation".localized
-        lblMultiHint.text = "id_double_check_spv_with_other".localized
         lblDescElectrumGapLimit.text = "id_number_of_consecutive_empty".localized
         lblMeldTitle.text = "Meld"
         lblMeldSubtitle.text = "Enable meld sandbox"
@@ -185,13 +171,12 @@ class WalletSettingsViewController: KeyboardViewController {
         }
         lblTitle.setStyle(.title)
         lblHint.setStyle(.txtBigger)
-        [lblTorTitle, lblTestnetTitle, lblAnalyticsTitle, lblExperimentalTitle, lblProxyTitle, lblRememberHWTitle, lblSPVPersonalNodeTitle, lblMultiTitle, lblTxCheckTitle].forEach { $0?.setStyle(.txtBigger)}
-        [lblTorHint, lblTestnetHint, lblAnalyticsHint, lblExperimentalHint, lblProxyHint, lblRememberHWHint, lblSPVPersonalNodeHint, lblMultiHint, lblTxCheckHint].forEach { $0?.setStyle(.txtCard)}
+        [lblTorTitle, lblTestnetTitle, lblAnalyticsTitle, lblExperimentalTitle, lblProxyTitle, lblRememberHWTitle, lblSPVPersonalNodeTitle].forEach { $0?.setStyle(.txtBigger)}
+        [lblTorHint, lblTestnetHint, lblAnalyticsHint, lblExperimentalHint, lblProxyHint, lblRememberHWHint, lblSPVPersonalNodeHint].forEach { $0?.setStyle(.txtCard)}
         btnAnalytics.setStyle(.inline)
         lblSPVTitle.setStyle(.subTitle)
         btnLang.backgroundColor = UIColor.gAccent()
         btnLang.cornerRadius = 4.0
-        cardMulti.isHidden = !Bundle.main.dev
         cardMeld.isHidden = !Bundle.main.dev
     }
 
@@ -214,7 +199,6 @@ class WalletSettingsViewController: KeyboardViewController {
         switchExperimental.setOn(appSettings.experimental, animated: true)
 
         switchTestnet.setOn(appSettings.testnet, animated: true)
-        switchTxCheck.setOn(gdkSettings.spvEnabled ?? false, animated: true)
         switchPSPVPersonalNode.setOn(gdkSettings.personalNodeEnabled ?? false, animated: true)
         switchElectrumTls.setOn(gdkSettings.electrumTls ?? true, animated: true)
 
@@ -305,7 +289,6 @@ class WalletSettingsViewController: KeyboardViewController {
             proxy: switchProxy.isOn,
             socks5Hostname: String(socks5.split(separator: ":").first ?? ""),
             socks5Port: String(socks5.split(separator: ":").last ?? ""),
-            spvEnabled: switchTxCheck.isOn,
             personalNodeEnabled: switchPSPVPersonalNode.isOn,
             btcElectrumSrv: fieldSPVbtcServer.text,
             liquidElectrumSrv: fieldSPVliquidServer.text,
