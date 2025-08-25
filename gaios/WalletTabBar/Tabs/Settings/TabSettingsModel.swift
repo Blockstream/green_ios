@@ -81,8 +81,8 @@ class TabSettingsModel {
         guard let settings = settings, let session = session else { return [] }
         let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
         let rename = SettingsItemData(
-            title: "\("id_rename".localized) \"\(AccountsRepository.shared.current?.name ?? "")\"",
-            subtitle: "",
+            title: "\("id_rename".localized)",
+            subtitle: "\(AccountsRepository.shared.current?.name ?? "")",
             section: .wallet,
             type: .rename)
         let unifiedDenominationExchange = SettingsItemData(
