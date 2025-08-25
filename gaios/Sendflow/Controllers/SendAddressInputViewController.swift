@@ -170,6 +170,7 @@ class SendAddressInputViewController: KeyboardViewController {
 
     // swiftlint:disable cyclomatic_complexity
     @MainActor
+    // swiftlint:disable cyclomatic_complexity
     func next() {
         guard let createTx = viewModel.createTx else { return }
         if createTx.txType == .sweep {

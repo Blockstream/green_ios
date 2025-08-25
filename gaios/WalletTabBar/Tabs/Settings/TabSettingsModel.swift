@@ -153,7 +153,7 @@ class TabSettingsModel {
             menu += [twoFactorAuth, pgpKey]
         }
         if !isWatchonly {
-            menu += [watchOnly, archievedAccounts, createAccount]
+            menu += [watchOnly, archievedAccounts] // , createAccount]
         }
         return menu
     }
