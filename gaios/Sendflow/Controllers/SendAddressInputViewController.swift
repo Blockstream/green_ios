@@ -168,6 +168,7 @@ class SendAddressInputViewController: KeyboardViewController {
         hidePlaceHolder(!emptyText)
     }
 
+    // swiftlint:disable cyclomatic_complexity
     @MainActor
     func next() {
         guard let createTx = viewModel.createTx else { return }

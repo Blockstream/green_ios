@@ -76,7 +76,7 @@ class SendFeeInfoViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "v".localized
+        lblTitle.text = "id_network_fee".localized
         lblHint.text = "id_fees_are_not_collected_by".localized
         btnFeeInfo.setStyle(.underline(txt: "id_read_more".localized, color: UIColor.gAccent()))
     }
