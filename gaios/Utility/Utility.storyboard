@@ -1063,7 +1063,7 @@
                                                                         <subviews>
                                                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="GXP-lT-H1h">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="393" height="523.33333333333337"/>
-                                                                                <color key="backgroundColor" name="gBlackBg"/>
+                                                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <connections>
                                                                                     <outlet property="dataSource" destination="oY5-Jx-eK0" id="Cwj-to-6Zb"/>
                                                                                     <outlet property="delegate" destination="oY5-Jx-eK0" id="qbm-Of-JQC"/>

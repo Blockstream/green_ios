@@ -212,7 +212,7 @@ class SetPhoneViewController: KeyboardViewController {
         }
         view.endEditing(true)
         if method == .sms && ["001", "+1"].contains(countryCode) {
-            showError("SMS delivery is unreliable in the US due to network operator policy changes. You can try to get your 2FA code via call instead.")
+            showError("id_sms_delivery_is_unreliable_in".localized)
             return
         }
         self.startAnimating()
@@ -225,7 +225,7 @@ class SetPhoneViewController: KeyboardViewController {
                 await MainActor.run {
                     self.stopAnimating()
                     if self.isSmsBackup {
-                        DropAlert().success(message: "2FA Call is now enabled")
+                        DropAlert().success(message: "id_2fa_call_is_now_enabled".localized)
                     }
                     self.navigationController?.popViewController(animated: true)
                 }

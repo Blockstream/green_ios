@@ -134,7 +134,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
         case .header:
             return nil
         case .wallet:
-            return sectionHeader("Wallet Settings".localized)
+            return sectionHeader("id_wallet_settings".localized)
         case .account:
             return sectionHeader("id_account_settings".localized)
         case .about:

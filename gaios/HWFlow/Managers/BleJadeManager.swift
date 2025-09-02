@@ -172,7 +172,7 @@ class JadeManager {
             timeoutTask.cancel()
             return version
         } catch {
-            throw BLEManagerError.timeoutErr(txt: "Something went wrong when pairing Jade. Remove your Jade from iOS bluetooth settings and try again.")
+            throw BLEManagerError.timeoutErr(txt: "id_something_went_wrong_when".localized)
         }
     }
 

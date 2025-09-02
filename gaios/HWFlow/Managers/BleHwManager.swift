@@ -298,7 +298,7 @@ class BleHwManager {
     }
 
     func toBleError(_ err: Error, network: String?) -> BLEManagerError {
-        let defaultMsg = "Something went wrong when pairing Jade. Remove your Jade from iOS bluetooth settings and try again."
+        let defaultMsg = "id_something_went_wrong_when".localized
         if let err = err as? BLEManagerError {
             return err
         }

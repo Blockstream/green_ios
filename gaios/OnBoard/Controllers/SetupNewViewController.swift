@@ -57,7 +57,7 @@ class SetupNewViewController: UIViewController {
 
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
-        settingsBtn.setStyle(.underline(txt: "Setup Watch Only".localized, color: UIColor.gAccent()))
+        settingsBtn.setStyle(.underline(txt: "id_setup_watch_only".localized, color: UIColor.gAccent()))
         settingsBtn.addTarget(self, action: #selector(onSetup), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
     }

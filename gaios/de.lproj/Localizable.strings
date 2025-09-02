@@ -101,6 +101,7 @@
 "id_advanced_network_settings" = "Erweiterte Netzwerkeinstellungen";
 "id_advanced_options" = "Advanced options";
 "id_advanced_options_for_your_third" = "Fortgeschrittene Optionen für deinen dritten Wiederherstellungs-Schlüssel";
+"id_after_2fa_expires_you_can_send" = "After 2FA expires, you can send funds without your 2FA method or utilize or open source recovery tool.";
 "id_all" = "Alle";
 "id_all_assets" = "Alle Assets";
 "id_all_coins" = "(Alle Coins)";
@@ -377,6 +378,7 @@
 "id_copy_uri" = "URI kopieren";
 "id_copy_url" = "Copy URL";
 "id_copy_xpub" = "xpub kopieren";
+"id_copying" = "Copying...";
 "id_correct_order" = "richtigen Reihenfolge";
 "id_could_not_recognized_qr_code" = "Could not recognized QR code";
 "id_could_not_recognized_the_uri" = "Could not recognized the URI";
@@ -408,6 +410,7 @@
 "id_custom_network_added_enable_it" = "Eigenes Netzwerk hinzugefügt, aktivieren Sie es in den Netzwerkeinstellungen";
 "id_custom_network_not_found" = "Eigenes Netzwerk nicht gefunden";
 "id_custom_network_with_this_name" = "Eigenes Netzwerk mit diesem Namen bereits vorhanden";
+"id_custom_server_settings" = "Custom Server Settings";
 "id_custom_servers_and_validation" = "Eigene Server und Validierung";
 "id_customize_2fa_expiration_of" = "Eigene 2FA-Ablaufdaten einstellen für deine Coins";
 "id_d6_confirmations" = "%d/6 Bestätigungen";
@@ -453,6 +456,7 @@
 "id_disable_pin_access_for_this" = "PIN-Zugriff für dieses Wallet auf allen Geräten deaktivieren";
 "id_disable_s_twofactor" = "%@ Zwei-Faktor-Authentifizierung deaktivieren";
 "id_disabled" = "Deaktiviert";
+"id_disabling" = "Disabling...";
 "id_disconnect" = "Disconnect";
 "id_display_values_in_s_and" = "Display values in %@ and exchange rate in %@ using %@";
 "id_displays_the_progress_of_spv" = "Zeigt den Fortschritt der SPV-Synchronisation";
@@ -520,6 +524,7 @@
 "id_enable_twofactor_authentication" = "Aktiviere die Zwei-Faktor-Authentifizierung, um deine Wallet vor nicht autorisierten Transaktionen oder Änderungen an kritischen Sicherheitseinstellungen zu schützen";
 "id_enabled" = "Aktiviert";
 "id_enabled_1s" = "Aktiviert: %1$@";
+"id_enabling" = "Enabling...";
 "id_encryption_passphrase" = "Verschlüsselungskennwort";
 "id_enhance_security" = "Sicherheit erhöhen";
 "id_enhanced_privacy" = "verbesserte Privatsphäre";
@@ -614,8 +619,10 @@
 "id_filters" = "Filter";
 "id_finishing_up" = "wird fertiggestellt";
 "id_firmware" = "Firmware";
+"id_firmware_up_to_date" = "Firmware up to date";
 "id_firmware_update" = "Firmware Update";
 "id_firmware_update_completed" = "Firmware-Update abgeschlossen";
+"id_firmware_update_failed" = "Firmware update failed";
 "id_firmware_upgrade" = "Upgrade der Firmware";
 "id_firmware_version_s" = "Firmware-Version: %@";
 "id_follow_the_instructions_of_your" = "Folge den Anweisungen auf deiner Hardware-Wallet, bevor es weitergeht.";
@@ -702,6 +709,7 @@
 "id_i_forgot_my_password" = "Ich habe mein Passwort vergessen";
 "id_i_fund_via_an_onchain_bitcoin" = "(i) Fund via an onchain bitcoin transaction";
 "id_i_lost_my_2fa" = "Ich habe meine 2FA verloren";
+"id_i_lost_my_2fa_method" = "I lost my 2FA method";
 "id_i_secured_the_mnemonic_and_i" = "Ich habe meinen Merksatz gesichert und die AGB gelesen";
 "id_i_typed_all_my_recovery_phrase" = "Ich habe meine Wiederherstellungs-Phrase eingegeben, warum geht es nicht weiter?";
 "id_i_understand_amounts_could_be" = "Ich verstehe, dass die Beträge fehlerhaft sein können";
@@ -711,7 +719,7 @@
 "id_ideal_for_small_amounts_of" = "Ideal for small amounts of bitcoin";
 "id_if_for_any_reason_you_cant" = "Falls du dich aus irgendeinem Grund nicht mehr in deine Wallet einloggen kannst, kannst du deine Wiederherstellungs-Phrase mit PIN/Biometrik wiedererlangen.";
 "id_if_jade_is_already_set_up" = "If Jade is already set up, choose QR Mode > QR PIN Unlock > Continue > Enter your PIN";
-"id_if_you_agree_green_will_collect" = "Wenn du zustimmst, wird Green eine begrenzte Menge an Nutzungsdaten sammeln, um das Benutzererlebnis zu verbessern. Es werden keine sensiblen Nutzer- oder Wallet-Informationen gesammelt.";
+"id_if_you_agree_blockstream_will" = "If you agree, Blockstream will collect limited usage data to optimize the user experience. No sensitive user or wallet info is collected.";
 "id_if_you_are_the_rightful_owner" = "Wenn du der rechtmäßige Besitzer dieses Wallets bist und du noch im Besitz einer aktiven 2FA-Methode bist, kannst du den Reset abbrechen und kannst dieses Wallet ausgeben und entleeren.";
 "id_if_you_did_not_change_your" = "If you did not change your oracle settings on Jade, do not proceed and contact Blockstream support.";
 "id_if_you_did_not_request_the" = "Falls du das Reset nicht angefragt hast und den Reset nicht abbrechen kannst, weil du keinen Zugriff auf eine existierende 2FA-Authentifizierungs-Methode hast, kannst du diesen Reset der 2FA anfechten. Dies wird deine Wallet dauerhaft sperren, aber du kannst diese Aktion ungeschehen machen.";
@@ -828,6 +836,7 @@
 "id_lightning" = "Lightning";
 "id_lightning_account" = "Lightning Account";
 "id_lightning_account_shortcut" = "Lightning Account Shortcut";
+"id_lightning_disabled_successfully" = "Lightning disabled successfully";
 "id_lightning_invoice" = "Lightning Invoice";
 "id_lightning_invoice__lnurl" = "Lightning Invoice / LNURL";
 "id_lightning_invoice_is_expired" = "Lightning invoice is expired";
@@ -1203,6 +1212,7 @@
 "id_request_twofactor_reset" = "Zwei-Faktor Rücksetzung anfragen";
 "id_requested_fee_rate_too_low" = "Angefragte Gebührenrate zu niedrig";
 "id_rescan_swaps" = "Rescan Swaps";
+"id_rescan_swaps_completed" = "Rescan Swaps completed";
 "id_rescan_swaps_initiated" = "Rescan Swaps initiated";
 "id_reset" = "Zurücksetzen";
 "id_reset_language_to_system_default" = "Reset language to system default";
@@ -1243,6 +1253,7 @@
 "id_scan_from_image" = "Scan from Image";
 "id_scan_or_paste_your_extended" = "Scanne oder füge deinen Extended Public Key (xPub/yPub/zPub) ein, um dich in dein Watch-only Wallet einzuloggen.";
 "id_scan_or_paste_your_public" = "Scan or paste your public descriptor to log in to your watch-only account.";
+"id_scan_or_paste_your_xpub_or" = "Scan or paste your xpub or descriptor to set up your watch-only wallet";
 "id_scan_pubkey" = "Scan PubKey";
 "id_scan_qr_code" = "QR-Code scannen";
 "id_scan_qr_on_device" = "Scan QR on Device";
@@ -1266,6 +1277,7 @@
 "id_security_level_1" = "Security Level: 1";
 "id_security_level_1s" = "Security Level %1$@";
 "id_security_level_2" = "Security Level: 2";
+"id_security_policy" = "Security Policy";
 "id_see_archived_accounts_s" = "See Archived Accounts (%@)";
 "id_see_our_privacy_policy_s" = "Siehe unsere Datenschutzerklärung %@";
 "id_see_our_terms_of_service_s" = "Siehe unsere Allgemeinen Geschäftsbedingungen %@";
@@ -1333,6 +1345,8 @@
 "id_set_up_twofactor_authentication" = "Zwei-Faktor Authentifizierung einrichten";
 "id_set_up_watchonly" = "Watch-Only einrichten";
 "id_set_up_watchonly_credentials" = "Watch-Only Ameldedaten für diese Wallet einrichten";
+"id_set_up_watchonly_wallet" = "Set up Watch-only Wallet";
+"id_set_up_with_username_and" = "Set up with username and password";
 "id_set_wallet_name" = "Wallet-Name festlegen";
 "id_set_your_pin_via_qr_on_your" = "Set your PIN via QR on your Jade to get started";
 "id_setting_up_your_wallet" = "Dein Wallet einrichten";
@@ -1348,6 +1362,7 @@
 "id_setup_pin" = "PIN einrichten";
 "id_setup_pin_and_s" = "PIN und %@ einrichten ";
 "id_setup_pin_via_qr" = "Setup PIN via QR";
+"id_setup_watch_only" = "Setup Watch Only";
 "id_setup_your_jade" = "Deine Jade einrichten";
 "id_share" = "Teilen";
 "id_share_address" = "Adresse teilen";
@@ -1393,6 +1408,7 @@
 "id_slide_to_send" = "Schieben um zu Senden";
 "id_slow" = "Langsam";
 "id_sms" = "SMS";
+"id_sms_delivery_is_unreliable_in" = "SMS delivery is unreliable in the US due to network operator policy changes. You can try to get your 2FA code via call instead.";
 "id_snnreset_this_setting_and_then" = "%@.\n\nEinstellung zurücksetzen und dann reaktivieren.";
 "id_socks5_hostname" = "Socks5 Hostname";
 "id_socks5_port" = "Socks5 Port";
@@ -1401,6 +1417,7 @@
 "id_some_coins_are_no_longer_2fa" = "Some coins are no longer 2FA protected.";
 "id_some_coins_in_your_wallet" = "Some coins in your wallet haven't moved for a long time, so 2FA expired to keep you in control. To reactivate 2FA:\n\n• Send normally and refresh the 2FA on change coins (optimizes fees)\n• Redeposit all your expired 2FA coins";
 "id_something_went_wrong" = "da ist was schiefgegangen";
+"id_something_went_wrong_when" = "Something went wrong when pairing Jade. Remove your Jade from iOS bluetooth settings and try again.";
 "id_speed_up_transaction" = "Speed up Transaction";
 "id_spend_your_bitcoin_without_2fa" = "Versende deine Bitcoins bis zu einem bestimmten Schwellenwert ohne 2FA. Nachdem du diesen Betrag an Bitcoins ausgegeben hast, wirst du deinen Schwellenwert erneut setzen müssen, um ohne 2FA versenden zu können.";
 "id_spv_is_always_synchronized_on" = "SPV ist immer auf WiFi und Ethernet Netzwerken synchronisiert. Diese Einstellung synchronisiert auch bei mobilen Datenauschtausch. Eventuelle Zusatskosten können anfallen.";
@@ -1425,6 +1442,7 @@
 "id_step_1s" = "Step %1$@";
 "id_store_it_somewhere_safe" = "Bewahre es an einem sicheren Ort auf.";
 "id_submit" = "Absenden";
+"id_submitting_support_request" = "Submitting support request...";
 "id_success" = "Erfolgreich";
 "id_successfully_sent_your_funds" = "Successfully sent your funds";
 "id_support" = "Support";
@@ -1502,6 +1520,7 @@
 "id_this_device_was_not" = "This device was not manufactured by Blockstream. It could be DIY hardware or possibly a malicious clone. Please contact support for more assistance.";
 "id_this_ensures_a_secure_way_to" = "This ensures a secure way to access your wallet.";
 "id_this_feature_is_coming_soon" = "Diese Funktion kommt bald, bleib dran!";
+"id_this_is_not_a_valid_descriptor" = "This is not a valid descriptor";
 "id_this_is_not_the_default_blind" = "This is not the default blind PIN oracle";
 "id_this_is_the_signature_for_the" = "This is the signature for the message signed by the address for proof of ownership.";
 "id_this_is_your_bip85_derived" = "This is your BIP85 derived recovery phrase only for your Lightning account.\n\nWARNING: You can't fully restore your wallet with that.";
@@ -1667,6 +1686,7 @@
 "id_wallet_not_found" = "Wallet nicht gefunden";
 "id_wallet_overview" = "Wallet Overview";
 "id_wallet_pockets" = "Wallet-Taschen";
+"id_wallet_settings" = "Wallet Settings";
 "id_wallet_transactions" = "Wallet-Transaktionen";
 "id_wallets" = "Wallets";
 "id_warning" = "Achtung!";
@@ -1687,6 +1707,7 @@
 "id_watchonly_mode_cannot_be" = "Der Watch-Only Modus kann bei Liquid nicht aktiviert werden, da deine Gelder streng vertraulich sind.";
 "id_watchonly_wallet" = "Watch-Only Wallet";
 "id_we_could_successfully_verify" = "We could successfully verify your Jade, enjoy the best Blockstream can offer you with your brand new jade.";
+"id_we_recommend_you_enable_more" = "We recommend you enable more than one 2FA method. If you only set up one  method and lose it, you’ll have to wait at least one year until 2FA expires.";
 "id_we_use_the_camera_to_scan_qr" = "Wir verwenden die Kamera um QR-Codes zu scannen";
 "id_we_were_unable_to_complete_the" = "We were unable to complete the genuine check because it was canceled on Jade.";
 "id_we_will_do_our_best_to_find_a" = "Wir werden unser bestes tun, um ein Wallet zu dieser Wiederherstellungs-Phrase zu finden";
@@ -1727,6 +1748,7 @@
 "id_you_are_redeeming_funds_from_s" = "You are redeeming funds from %@";
 "id_you_can_change_these_later_on" = "Du kannst dies später ändern.";
 "id_you_can_empty_your_lightning" = "You can empty your Lightning account when its balance is at least %@ sats, as the process requires an onchain transaction. If your balance is low you should rather send out your funds to another lightning wallet.";
+"id_you_can_receive_a_payment_as" = "You can receive a payment as long as you are connected to the internet";
 "id_you_can_send_up_to" = "You can send up to:";
 "id_you_can_still_receive_funds_but" = "You can still receive funds, but they won't be shown on your total balance.";
 "id_you_can_sweep_s_of_your_funds" = "You can sweep %@ of your funds to your onchain account.";

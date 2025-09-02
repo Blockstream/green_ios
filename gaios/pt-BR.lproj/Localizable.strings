@@ -41,7 +41,7 @@
 "id_a_liquid_account_is_required" = "É necessária uma conta de L-BTC";
 "id_a_new_device_has_been_detected" = "Um novo dispositivo foi detectado. Configure-o para começar a usá-lo.";
 "id_a_new_transaction_has_just" = "Você acabou de receber uma nova transação.";
-"id_a_newer_version_of_blockstream" = "A newer version of Blockstream is now available";
+"id_a_newer_version_of_blockstream" = "Uma nova versão do aplicativo Blockstream está disponível para download";
 "id_a_powerful_hardware_wallet_for" = "Uma carteira física poderosa para proteger seus bitcoins.";
 "id_a_screen_lock_must_be_enabled" = "O bloqueio de tela precisa ser ativado nas configurações do Android";
 "id_a_set_up_funding_fee_of_s_s" = "Uma taxa de configuração de %@ (%@) será aplicada ao valor recebido.";
@@ -49,7 +49,7 @@
 "id_about" = "Sobre";
 "id_accept" = "Aceitar";
 "id_access" = "Acesso";
-"id_access_method_not_supported" = "Access method not supported";
+"id_access_method_not_supported" = "metodo de acesso não suportado";
 "id_access_wallet_on_a_new_device" = "Acessar carteira em um novo dispositivo";
 "id_access_your_wallet_to_check" = "Acesse sua carteira para verificar seu saldo e transações.Assine transações offline usando seu Jade.";
 "id_account" = "Conta";
@@ -101,6 +101,7 @@
 "id_advanced_network_settings" = "Configurações avançadas de rede";
 "id_advanced_options" = "Opções avançadas";
 "id_advanced_options_for_your_third" = "Opções avançadas para sua terceira chave da conta";
+"id_after_2fa_expires_you_can_send" = "After 2FA expires, you can send funds without your 2FA method or utilize or open source recovery tool.";
 "id_all" = "Todas";
 "id_all_assets" = "Todos os ativos";
 "id_all_coins" = "(Todas as moedas)";
@@ -377,6 +378,7 @@
 "id_copy_uri" = "Copiar URI";
 "id_copy_url" = "Copiar URL";
 "id_copy_xpub" = "Copiar xPub";
+"id_copying" = "Copying...";
 "id_correct_order" = "ordem correta";
 "id_could_not_recognized_qr_code" = "Não foi possível reconhecer o código QR";
 "id_could_not_recognized_the_uri" = "Não foi possível reconhecer a URI";
@@ -408,6 +410,7 @@
 "id_custom_network_added_enable_it" = "Rede personalizada adicionada, ative-a nas configurações de rede";
 "id_custom_network_not_found" = "Rede personalizada não encontrada";
 "id_custom_network_with_this_name" = "Já existe uma rede personalizada com este nome";
+"id_custom_server_settings" = "Custom Server Settings";
 "id_custom_servers_and_validation" = "Servidores personalizados e validação";
 "id_customize_2fa_expiration_of" = "Personalize o prazo de vencimento do 2FA";
 "id_d6_confirmations" = "%d/6 confirmações";
@@ -453,6 +456,7 @@
 "id_disable_pin_access_for_this" = "Desativar o acesso por PIN para esta carteira em todos os dispositivos";
 "id_disable_s_twofactor" = "Desativar %@ 2FA";
 "id_disabled" = "Desativado";
+"id_disabling" = "Disabling...";
 "id_disconnect" = "Desconectar";
 "id_display_values_in_s_and" = "Mostrar valores em %@ e a taxa de câmbio em %@ usando o provedor %@";
 "id_displays_the_progress_of_spv" = "Mostra o andamento da sincronização SPV";
@@ -520,6 +524,7 @@
 "id_enable_twofactor_authentication" = "Ative o 2FA para proteger sua carteira de transações não autorizadas ou alterações nas configurações críticas de segurança";
 "id_enabled" = "Ativado";
 "id_enabled_1s" = "Ativado: %1$@";
+"id_enabling" = "Enabling...";
 "id_encryption_passphrase" = "Senha de encriptação";
 "id_enhance_security" = "Ativar 2FA";
 "id_enhanced_privacy" = "Privacidade de tela";
@@ -614,8 +619,10 @@
 "id_filters" = "Filtros";
 "id_finishing_up" = "Finalizando";
 "id_firmware" = "Firmware";
+"id_firmware_up_to_date" = "Firmware up to date";
 "id_firmware_update" = "Atualização de firmware";
 "id_firmware_update_completed" = "Atualização do firmware concluída";
+"id_firmware_update_failed" = "Firmware update failed";
 "id_firmware_upgrade" = "Atualização de firmware";
 "id_firmware_version_s" = "Versão do firmware: %@";
 "id_follow_the_instructions_of_your" = "Siga as instruções da sua carteira física antes de continuar.";
@@ -702,6 +709,7 @@
 "id_i_forgot_my_password" = "Eu esqueci minha senha";
 "id_i_fund_via_an_onchain_bitcoin" = "(i) Depositar via uma transação de bitcoin padrão";
 "id_i_lost_my_2fa" = "Eu perdi o acesso ao 2FA";
+"id_i_lost_my_2fa_method" = "I lost my 2FA method";
 "id_i_secured_the_mnemonic_and_i" = "Eu protegi meu mnemônico e li os termos de serviço";
 "id_i_typed_all_my_recovery_phrase" = "Digitei a frase de recuperação, por que não consigo continuar?";
 "id_i_understand_amounts_could_be" = "Eu entendo que os valores podem estar incorretos";
@@ -711,7 +719,7 @@
 "id_ideal_for_small_amounts_of" = "Ideal para pequenas quantidades de bitcoin";
 "id_if_for_any_reason_you_cant" = "Se por algum motivo você não conseguir acessar sua carteira, você pode recuperar sua frase de recuperação usando seu PIN/biometria.";
 "id_if_jade_is_already_set_up" = "Se o Jade já estiver configurada, escolha o modo QR > Desbloqueio de QR PIN > Continuar > Insira seu PIN";
-"id_if_you_agree_green_will_collect" = "Se você concordar, a Green coletará alguns dados de uso para otimizar a experiência do usuário. Nenhuma informação sensível de usuário ou carteira é coletada.";
+"id_if_you_agree_blockstream_will" = "If you agree, Blockstream will collect limited usage data to optimize the user experience. No sensitive user or wallet info is collected.";
 "id_if_you_are_the_rightful_owner" = "Se você é o proprietário legítimo desta carteira e ainda possui um de seus métodos 2FA ativos, cancele a redefinição para poder movimentar os fundos e esvaziar esta carteira.";
 "id_if_you_did_not_change_your" = "Se você não alterou suas configurações do Oracle na Jade, não prossiga e entre em contato com o suporte da Blockstream.";
 "id_if_you_did_not_request_the" = "Se você não solicitou a redefinição e não pode cancelá-la porque está impossibilitado de acessar os métodos 2FA existentes, conteste essa redefinição. Isso bloqueará permanentemente sua carteira, mas você pode desfazer essa ação.";
@@ -828,6 +836,7 @@
 "id_lightning" = "Rede relâmpago";
 "id_lightning_account" = "Conta relâmpago";
 "id_lightning_account_shortcut" = "Atalho conta relâmpago";
+"id_lightning_disabled_successfully" = "Lightning disabled successfully";
 "id_lightning_invoice" = "Fatura relâmpago";
 "id_lightning_invoice__lnurl" = "Fatura relâmpago / LNURL";
 "id_lightning_invoice_is_expired" = "A fatura relâmpago expirou";
@@ -1203,6 +1212,7 @@
 "id_request_twofactor_reset" = "Solicitar redefinição do 2FA";
 "id_requested_fee_rate_too_low" = "Taxa solicitada baixa demais";
 "id_rescan_swaps" = "Rescan Swaps";
+"id_rescan_swaps_completed" = "Rescan Swaps completed";
 "id_rescan_swaps_initiated" = "Rescan Swaps initiated";
 "id_reset" = "Redefinir";
 "id_reset_language_to_system_default" = "Redefinir o idioma para o padrão do sistema";
@@ -1243,6 +1253,7 @@
 "id_scan_from_image" = "Selecionar código QR";
 "id_scan_or_paste_your_extended" = "Leia ou cole sua chave pública estendida (xPub/yPub/zPub) para acessar sua conta somente leitura.";
 "id_scan_or_paste_your_public" = "Scan or paste your public descriptor to log in to your watch-only account.";
+"id_scan_or_paste_your_xpub_or" = "Scan or paste your xpub or descriptor to set up your watch-only wallet";
 "id_scan_pubkey" = "Escaneie a PubKey";
 "id_scan_qr_code" = "Ler código QR";
 "id_scan_qr_on_device" = "Escaneie o QR Code no dispositivo";
@@ -1266,6 +1277,7 @@
 "id_security_level_1" = "Nível de segurança: 1";
 "id_security_level_1s" = "Nível de segurança: %1$@";
 "id_security_level_2" = "Nível de segurança: 2";
+"id_security_policy" = "Security Policy";
 "id_see_archived_accounts_s" = "Contas arquivadas (%@)";
 "id_see_our_privacy_policy_s" = "Veja nossa política de privacidade %@";
 "id_see_our_terms_of_service_s" = "Veja nossos termos de serviço %@";
@@ -1333,6 +1345,8 @@
 "id_set_up_twofactor_authentication" = "Configurar 2FA";
 "id_set_up_watchonly" = "Configurar acesso ao modo somente leitura";
 "id_set_up_watchonly_credentials" = "Configurar o acesso ao modo somente leitura para as contas desta carteira";
+"id_set_up_watchonly_wallet" = "Set up Watch-only Wallet";
+"id_set_up_with_username_and" = "Set up with username and password";
 "id_set_wallet_name" = "Definir nome da carteira";
 "id_set_your_pin_via_qr_on_your" = "Defina seu PIN via QR na sua Jade para começar";
 "id_setting_up_your_wallet" = "Configurando sua carteira";
@@ -1348,6 +1362,7 @@
 "id_setup_pin" = "Configurar PIN";
 "id_setup_pin_and_s" = "Configurar PIN e %@";
 "id_setup_pin_via_qr" = "Configurar PIN via código QR";
+"id_setup_watch_only" = "Setup Watch Only";
 "id_setup_your_jade" = "Configurar sua Jade";
 "id_share" = "Compartilhar";
 "id_share_address" = "Compartilhar endereço";
@@ -1393,6 +1408,7 @@
 "id_slide_to_send" = "Deslize para enviar";
 "id_slow" = "Lento";
 "id_sms" = "SMS";
+"id_sms_delivery_is_unreliable_in" = "SMS delivery is unreliable in the US due to network operator policy changes. You can try to get your 2FA code via call instead.";
 "id_snnreset_this_setting_and_then" = "%@\n\nRedefina essa configuração e depois a reative.";
 "id_socks5_hostname" = "Nome do host Socks5";
 "id_socks5_port" = "Porta do Socks5";
@@ -1401,6 +1417,7 @@
 "id_some_coins_are_no_longer_2fa" = "Algumas moedas não estão protegidas por 2FA.";
 "id_some_coins_in_your_wallet" = "Algumas moedas na sua carteira não se moveram por um longo período de tempo, então o 2FA expirou para mantê-lo no controle. Para reativar o 2FA:\n\n• Realize uma transação qualquer e atualize o 2FA nas moedas de troca (otimiza taxas)\n• Redeposite todas as suas moedas 2FA expiradas";
 "id_something_went_wrong" = "Algo deu errado";
+"id_something_went_wrong_when" = "Something went wrong when pairing Jade. Remove your Jade from iOS bluetooth settings and try again.";
 "id_speed_up_transaction" = "Acelerar transação";
 "id_spend_your_bitcoin_without_2fa" = "Movimente uma parte dos seus bitcoins sem precisar do 2FA. Se for necessário enviar mais do que o limite escolhido, será preciso alterar a quantia máxima novamente.";
 "id_spv_is_always_synchronized_on" = "SPV sempre sincroniza em redes não-móveis como WiFi e Ethernet. Esta configuração ativa a sincronização também quando estiver usando dados móveis. Isso pode ser caro dependendo do seu plano de dados, portanto, cuidado ao ativar.";
@@ -1425,6 +1442,7 @@
 "id_step_1s" = "Passo %1$@";
 "id_store_it_somewhere_safe" = "Guarde as palavras em algum local seguro.";
 "id_submit" = "Enviar";
+"id_submitting_support_request" = "Submitting support request...";
 "id_success" = "Sucesso";
 "id_successfully_sent_your_funds" = "Seus fundos foram enviados com sucesso";
 "id_support" = "Suporte";
@@ -1502,6 +1520,7 @@
 "id_this_device_was_not" = "Este dispositivo não foi fabricado pela Blockstream. Pode ser um hardware DIY ou possivelmente um clone malicioso. Entre em contato com o suporte para obter mais assistência.";
 "id_this_ensures_a_secure_way_to" = "Isso garante uma maneira segura de acessar sua carteira.";
 "id_this_feature_is_coming_soon" = "Esse recurso estará disponível em breve!";
+"id_this_is_not_a_valid_descriptor" = "This is not a valid descriptor";
 "id_this_is_not_the_default_blind" = "This is not the default blind PIN oracle";
 "id_this_is_the_signature_for_the" = "Esta é a assinatura da mensagem assinada pelo endereço como prova de propriedade.";
 "id_this_is_your_bip85_derived" = "Esta é a sua frase de recuperação derivada do BIP85, apenas para sua conta Lightning.\n\nAVISO: Você não pode restaurar sua carteira completamente com ela.";
@@ -1667,6 +1686,7 @@
 "id_wallet_not_found" = "Carteira não encontrada";
 "id_wallet_overview" = "Wallet Overview";
 "id_wallet_pockets" = "Bolsos de Carteira";
+"id_wallet_settings" = "Wallet Settings";
 "id_wallet_transactions" = "Transações de carteira";
 "id_wallets" = "Carteiras";
 "id_warning" = "Aviso!";
@@ -1687,6 +1707,7 @@
 "id_watchonly_mode_cannot_be" = "O modo somente leitura não pode ser ativado na Liquid pois os saldos são totalmente confidenciais.";
 "id_watchonly_wallet" = "Acesso somente leitura";
 "id_we_could_successfully_verify" = "Verificamos seu Jade com sucesso, aproveite o melhor que a Blockstream pode oferecer a você com seu novo Jade.";
+"id_we_recommend_you_enable_more" = "We recommend you enable more than one 2FA method. If you only set up one  method and lose it, you’ll have to wait at least one year until 2FA expires.";
 "id_we_use_the_camera_to_scan_qr" = "Usamos a câmera para ler códigos QR";
 "id_we_were_unable_to_complete_the" = "Não conseguimos concluir o cheque genuíno porque ele foi cancelado no Jade.";
 "id_we_will_do_our_best_to_find_a" = "Faremos o possível para encontrar uma carteira correspondente a esta frase de recuperação";
@@ -1727,6 +1748,7 @@
 "id_you_are_redeeming_funds_from_s" = "Você está resgatando fundos de %@";
 "id_you_can_change_these_later_on" = "Você pode alterar em outro momento.";
 "id_you_can_empty_your_lightning" = "Você pode esvaziar sua conta relâmpago quando seu saldo for de pelo menos %@ sats, pois o processo requer uma transação na rede principal do bitcoin. Se seu saldo estiver baixo, você deve enviar seus fundos para outra carteira relâmpago.";
+"id_you_can_receive_a_payment_as" = "You can receive a payment as long as you are connected to the internet";
 "id_you_can_send_up_to" = "Você pode enviar até:";
 "id_you_can_still_receive_funds_but" = "Contas arquivadas ainda podem receber fundos, mas os valores não aparecem no seu saldo total.";
 "id_you_can_sweep_s_of_your_funds" = "Você pode resgatar %@ dos seus fundos para sua conta bitcoin.";

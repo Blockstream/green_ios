@@ -203,13 +203,13 @@ extension TFAViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case .reset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TFACell.identifier, for: indexPath) as? TFACell {
-                cell.configure(title: "I lost my 2FA method".localized)
+                cell.configure(title: "id_i_lost_my_2fa_method".localized)
                 cell.selectionStyle = .none
                 return cell
             }
         case .threshold:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TFACell.identifier, for: indexPath) as? TFACell {
-                cell.configure(title: "Two-Factor threshold".localized, hint: viewModel.threshold)
+                cell.configure(title: "id_twofactor_threshold".localized, hint: viewModel.threshold)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -263,13 +263,13 @@ extension TFAViewController: UITableViewDelegate, UITableViewDataSource {
         case .header, .warnMulti, .methods, .empty, .infoExpire, .recActions:
             return nil
         case .networkSelect:
-            return sectionHeader("2FA Methods".localized)
+            return sectionHeader("id_2fa_methods".localized)
         case .reset:
-            return sectionHeader("Request Two-Factor reset".localized)
+            return sectionHeader("id_request_twofactor_reset".localized)
         case .threshold:
-            return sectionHeader("2FA Threshold".localized)
+            return sectionHeader("id_2fa_threshold".localized)
         case .expiry:
-            return sectionHeader("2FA Expiry".localized)
+            return sectionHeader("id_2fa_expiry".localized)
         }
     }
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {

@@ -8,7 +8,7 @@ enum SettingsItem: String, Codable, CaseIterable {
     case header = "id_header"
     case logout = "id_logout"
     case unifiedDenominationExchange = "id_denomination__exchange_rate"
-    case support = "id_support"
+    case support = "id_get_support"
     case archievedAccounts = "id_archived_accounts"
     case watchOnly = "Wallet Details"
     case twoFactorAuthication = "id_twofactor_authentication"

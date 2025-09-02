@@ -42,7 +42,7 @@ class WODetailsViewController: KeyboardViewController {
         segment.setTitleTextAttributes([NSAttributedString.Key.font: font], for: .normal)
         lblCoda.text = "id_log_in_via_watchonly_to_receive".localized
         btnImport.setTitle("id_import".localized, for: .normal)
-        lblError.text = "This is not a valid descriptor"
+        lblError.text = "id_this_is_not_a_valid_descriptor".localized
         btnFile.setTitle("id_import_from_file".localized, for: .normal)
         if network.liquid {
             segment.selectedSegmentIndex = 1

@@ -160,6 +160,8 @@
 		344915ED2A0CE26700D35818 /* ReceiveAddressCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344915EB2A0CE26700D35818 /* ReceiveAddressCell.swift */; };
 		344915EE2A0CE26700D35818 /* ReceiveAddressCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344915EC2A0CE26700D35818 /* ReceiveAddressCell.xib */; };
 		344915F22A0CE29C00D35818 /* ReceiveAddressCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344915F12A0CE29C00D35818 /* ReceiveAddressCellModel.swift */; };
+		344A330C2E7B190300E372AD /* TitleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344A330B2E7B190300E372AD /* TitleCell.xib */; };
+		344A330E2E7B19B200E372AD /* TitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344A330D2E7B19B200E372AD /* TitleCell.swift */; };
 		344B1BBA268C53F1000182B0 /* RecoveryPhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */; };
 		344B1BBC268C5567000182B0 /* Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BBB268C5567000182B0 /* Mnemonic.swift */; };
 		344D57C52D71AA48009725A3 /* WalletTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344D57C42D71AA44009725A3 /* WalletTabBarViewController.swift */; };
@@ -303,6 +305,18 @@
 		3472798D2CD3788F00A272D2 /* Promo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472798C2CD3788F00A272D2 /* Promo.swift */; };
 		3472798F2CD3888600A272D2 /* DebugPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472798E2CD3888600A272D2 /* DebugPrefs.swift */; };
 		3472C39B2B27278F00811453 /* BrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472C39A2B27278F00811453 /* BrowserViewController.swift */; };
+		347372B02E5F344500FE2BEA /* AppSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 347372AF2E5F344500FE2BEA /* AppSettings.storyboard */; };
+		347372B22E5F354700FE2BEA /* AppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347372B12E5F354000FE2BEA /* AppSettingsViewController.swift */; };
+		347372B52E5F39F600FE2BEA /* AppSettingsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 347372B42E5F39F600FE2BEA /* AppSettingsCell.xib */; };
+		347372B72E5F3A0900FE2BEA /* AppSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347372B62E5F3A0400FE2BEA /* AppSettingsCell.swift */; };
+		347372B92E5F3AE000FE2BEA /* AppSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347372B82E5F3AD800FE2BEA /* AppSettingsViewModel.swift */; };
+		347372E52E658E5700FE2BEA /* EditCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 347372E42E658E5700FE2BEA /* EditCell.xib */; };
+		347372E72E658E6300FE2BEA /* EditCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347372E62E658E6000FE2BEA /* EditCell.swift */; };
+		347372EE2E65A65F00FE2BEA /* ElectrumCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 347372ED2E65A65F00FE2BEA /* ElectrumCell.xib */; };
+		347372F02E65A66F00FE2BEA /* ElectrumCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347372EF2E65A66B00FE2BEA /* ElectrumCell.swift */; };
+		347372F22E65B77F00FE2BEA /* ElectrumCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347372F12E65B77900FE2BEA /* ElectrumCellModel.swift */; };
+		347372F52E6700DC00FE2BEA /* ProxyCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 347372F42E6700DC00FE2BEA /* ProxyCell.xib */; };
+		347372F72E6700F000FE2BEA /* ProxyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347372F62E6700EB00FE2BEA /* ProxyCell.swift */; };
 		34742D3C2CE4AB400064F327 /* AssetToBuyCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34742D3B2CE4AB400064F327 /* AssetToBuyCell.xib */; };
 		34742D3E2CE4AB670064F327 /* AssetToBuyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34742D3D2CE4AB670064F327 /* AssetToBuyCell.swift */; };
 		34742D402CE4ABA30064F327 /* AssetToBuyCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34742D3F2CE4ABA30064F327 /* AssetToBuyCellModel.swift */; };
@@ -1134,6 +1148,8 @@
 		344915EB2A0CE26700D35818 /* ReceiveAddressCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveAddressCell.swift; sourceTree = "<group>"; };
 		344915EC2A0CE26700D35818 /* ReceiveAddressCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReceiveAddressCell.xib; sourceTree = "<group>"; };
 		344915F12A0CE29C00D35818 /* ReceiveAddressCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveAddressCellModel.swift; sourceTree = "<group>"; };
+		344A330B2E7B190300E372AD /* TitleCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TitleCell.xib; sourceTree = "<group>"; };
+		344A330D2E7B19B200E372AD /* TitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleCell.swift; sourceTree = "<group>"; };
 		344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryPhrase.swift; sourceTree = "<group>"; };
 		344B1BBB268C5567000182B0 /* Mnemonic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mnemonic.swift; sourceTree = "<group>"; };
 		344D57C42D71AA44009725A3 /* WalletTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTabBarViewController.swift; sourceTree = "<group>"; };
@@ -1290,6 +1306,18 @@
 		3472798C2CD3788F00A272D2 /* Promo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promo.swift; sourceTree = "<group>"; };
 		3472798E2CD3888600A272D2 /* DebugPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugPrefs.swift; sourceTree = "<group>"; };
 		3472C39A2B27278F00811453 /* BrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserViewController.swift; sourceTree = "<group>"; };
+		347372AF2E5F344500FE2BEA /* AppSettings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AppSettings.storyboard; sourceTree = "<group>"; };
+		347372B12E5F354000FE2BEA /* AppSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsViewController.swift; sourceTree = "<group>"; };
+		347372B42E5F39F600FE2BEA /* AppSettingsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AppSettingsCell.xib; sourceTree = "<group>"; };
+		347372B62E5F3A0400FE2BEA /* AppSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsCell.swift; sourceTree = "<group>"; };
+		347372B82E5F3AD800FE2BEA /* AppSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsViewModel.swift; sourceTree = "<group>"; };
+		347372E42E658E5700FE2BEA /* EditCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditCell.xib; sourceTree = "<group>"; };
+		347372E62E658E6000FE2BEA /* EditCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCell.swift; sourceTree = "<group>"; };
+		347372ED2E65A65F00FE2BEA /* ElectrumCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ElectrumCell.xib; sourceTree = "<group>"; };
+		347372EF2E65A66B00FE2BEA /* ElectrumCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElectrumCell.swift; sourceTree = "<group>"; };
+		347372F12E65B77900FE2BEA /* ElectrumCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElectrumCellModel.swift; sourceTree = "<group>"; };
+		347372F42E6700DC00FE2BEA /* ProxyCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProxyCell.xib; sourceTree = "<group>"; };
+		347372F62E6700EB00FE2BEA /* ProxyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyCell.swift; sourceTree = "<group>"; };
 		34742D3B2CE4AB400064F327 /* AssetToBuyCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AssetToBuyCell.xib; sourceTree = "<group>"; };
 		34742D3D2CE4AB670064F327 /* AssetToBuyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetToBuyCell.swift; sourceTree = "<group>"; };
 		34742D3F2CE4ABA30064F327 /* AssetToBuyCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetToBuyCellModel.swift; sourceTree = "<group>"; };
@@ -2788,6 +2816,35 @@
 			path = Browser;
 			sourceTree = "<group>";
 		};
+		347372AE2E5F33C300FE2BEA /* AppSettings */ = {
+			isa = PBXGroup;
+			children = (
+				347372AF2E5F344500FE2BEA /* AppSettings.storyboard */,
+				347372B32E5F35CD00FE2BEA /* Cells */,
+				347372B12E5F354000FE2BEA /* AppSettingsViewController.swift */,
+				347372B82E5F3AD800FE2BEA /* AppSettingsViewModel.swift */,
+			);
+			path = AppSettings;
+			sourceTree = "<group>";
+		};
+		347372B32E5F35CD00FE2BEA /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				344A330D2E7B19B200E372AD /* TitleCell.swift */,
+				344A330B2E7B190300E372AD /* TitleCell.xib */,
+				347372F62E6700EB00FE2BEA /* ProxyCell.swift */,
+				347372F42E6700DC00FE2BEA /* ProxyCell.xib */,
+				347372F12E65B77900FE2BEA /* ElectrumCellModel.swift */,
+				347372EF2E65A66B00FE2BEA /* ElectrumCell.swift */,
+				347372ED2E65A65F00FE2BEA /* ElectrumCell.xib */,
+				347372E62E658E6000FE2BEA /* EditCell.swift */,
+				347372E42E658E5700FE2BEA /* EditCell.xib */,
+				347372B62E5F3A0400FE2BEA /* AppSettingsCell.swift */,
+				347372B42E5F39F600FE2BEA /* AppSettingsCell.xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		34742D3A2CE4AB0B0064F327 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -3683,6 +3740,7 @@
 				34DDD0A7260A484E00020380 /* Shared */,
 				34B826C2260881E000579C0B /* Recovery */,
 				347FD0AB25FFA8E600BB3FAB /* Home */,
+				347372AE2E5F33C300FE2BEA /* AppSettings */,
 				3497935125F8B18C0029ECB1 /* OnBoard */,
 				345E1A80261EE6A500A1D934 /* DrawerNetworkSelection */,
 				6D97046C2344141E00839598 /* ModalPresentation */,
@@ -4769,6 +4827,7 @@
 				34B0D00B2CE2555300A90080 /* ActionsSheetCell.xib in Resources */,
 				34742D3C2CE4AB400064F327 /* AssetToBuyCell.xib in Resources */,
 				34A883A62BA82C11004A1826 /* TxDetailsActionCell.xib in Resources */,
+				347372B52E5F39F600FE2BEA /* AppSettingsCell.xib in Resources */,
 				34B8DA0B2938FBC2001DA9B9 /* AccountCreateFooterView.xib in Resources */,
 				345ADE052D3E560D00E7A20F /* HelpCenter.storyboard in Resources */,
 				342F980C29351415005876A8 /* DialogEnable2faCell.xib in Resources */,
@@ -4785,6 +4844,7 @@
 				34E4E88B2E293D3B0061DB16 /* AccountArchiveCell.xib in Resources */,
 				34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */,
 				209632642D8420C700FC716D /* QuoteCell.xib in Resources */,
+				347372E52E658E5700FE2BEA /* EditCell.xib in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
 				345B28D32DD1D6C30075860A /* animation_01_jade_v1.riv in Resources */,
 				345B28DB2DD1DB1D0075860A /* jadeplus_2.riv in Resources */,
@@ -4796,6 +4856,7 @@
 				346C72612C466D4D00E698E1 /* PromoFlow.storyboard in Resources */,
 				3457F4B32923988600EF33B5 /* DialogListCell.xib in Resources */,
 				3419B44C2BEE302500492198 /* ReEnable2faAccountCell.xib in Resources */,
+				344A330C2E7B190300E372AD /* TitleCell.xib in Resources */,
 				34145FEE2DBB961E00F725E0 /* MoreActionsCell.xib in Resources */,
 				344D57DC2D71BF72009725A3 /* TabHeaderCell.xib in Resources */,
 				34F980AF29151C6600C12D48 /* TransactionCell.xib in Resources */,
@@ -4814,6 +4875,7 @@
 				3428750F2D551DEB003FB5AE /* LangCell.xib in Resources */,
 				3483D09929FBDAF800C85106 /* LTInfoCell.xib in Resources */,
 				34B0D0042CE2553100A90080 /* ActionsSheetFlow.storyboard in Resources */,
+				347372EE2E65A65F00FE2BEA /* ElectrumCell.xib in Resources */,
 				34A883BF2BAB030F004A1826 /* TxDetailsMoreInfoCell.xib in Resources */,
 				34F36F7B2E4361C400791659 /* TFAEmptyCell.xib in Resources */,
 				346EB26C2BE8BB0B0043139F /* SendFlow.storyboard in Resources */,
@@ -4849,6 +4911,7 @@
 				34B385D629B888610097220B /* HWFlow.storyboard in Resources */,
 				344915EE2A0CE26700D35818 /* ReceiveAddressCell.xib in Resources */,
 				3457F4A72923943C00EF33B5 /* Dialogs.storyboard in Resources */,
+				347372F52E6700DC00FE2BEA /* ProxyCell.xib in Resources */,
 				345B28D72DD1D79E0075860A /* animation_03_jade_v1.riv in Resources */,
 				34DDD0A9260A486300020380 /* Shared.storyboard in Resources */,
 				345B28E52DD1E6BB0075860A /* Illustration Recovery Phrase.riv in Resources */,
@@ -4872,6 +4935,7 @@
 				8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */,
 				34F36F772E434F8E00791659 /* TFAMethodCell.xib in Resources */,
 				34BC63612D0979A2001CC38F /* PromoLayout1Cell.xib in Resources */,
+				347372B02E5F344500FE2BEA /* AppSettings.storyboard in Resources */,
 				345B28E72DD1E7090075860A /* Illustration Stars Success.riv in Resources */,
 				6D8099D823021CEF0069A69F /* PopoverMenu.storyboard in Resources */,
 				34204718291B9A8600EDE945 /* PolicyCell.xib in Resources */,
@@ -5148,6 +5212,7 @@
 				81A5919929155F6A001D1A65 /* MultisigSettingsViewController.swift in Sources */,
 				34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */,
 				344EF1C12C10525300689D63 /* TxDetailsTotalsCell.swift in Sources */,
+				347372B22E5F354700FE2BEA /* AppSettingsViewController.swift in Sources */,
 				81E56A692C2476950012A5A3 /* QRUnlockSignDialogViewController.swift in Sources */,
 				34A75B6B292B6BA8007995D7 /* OnBoardInfoCell.swift in Sources */,
 				34C680E82A72778200369639 /* DialogInputDenominationViewController.swift in Sources */,
@@ -5198,8 +5263,10 @@
 				34204726291CE13100EDE945 /* AssetSelectCell.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
 				20E15EE22625AC6300DB8F43 /* MnemonicAuthViewController.swift in Sources */,
+				347372B72E5F3A0900FE2BEA /* AppSettingsCell.swift in Sources */,
 				34E8457929DC26DD00B207E7 /* LoginPrefs.swift in Sources */,
 				34CAEBA3288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift in Sources */,
+				347372F72E6700F000FE2BEA /* ProxyCell.swift in Sources */,
 				811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */,
 				816685D62BEBCC2800B03B02 /* FeeEstimator.swift in Sources */,
 				3407F5CD2A49BBC3005EF8E1 /* LTConfirmingViewController.swift in Sources */,
@@ -5212,6 +5279,7 @@
 				81BAD32D289BD66900FF0F54 /* AccountNavigator.swift in Sources */,
 				346EB2862BE8BB480043139F /* SendSuccessViewController.swift in Sources */,
 				34465BA32D082FDA002E5033 /* GenuineCheckEndViewModel.swift in Sources */,
+				347372F22E65B77F00FE2BEA /* ElectrumCellModel.swift in Sources */,
 				345402E82A1E43D5002CB598 /* DialogDenominationCell.swift in Sources */,
 				34DA78AF2D8098FF0022FBB1 /* DialogAccountCell.swift in Sources */,
 				347FD0A225FF74BA00BB3FAB /* MnemonicCell.swift in Sources */,
@@ -5233,6 +5301,7 @@
 				3403BDAC2630282600118C64 /* Learn2faViewController.swift in Sources */,
 				34D51B6B2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift in Sources */,
 				34955C142B67B8750056DE90 /* HowToSecureCellModel.swift in Sources */,
+				347372E72E658E6300FE2BEA /* EditCell.swift in Sources */,
 				8189230429F67F5500551824 /* WOViewModel.swift in Sources */,
 				818BA7152A2F913C00DFB03A /* CentralManager.swift in Sources */,
 				342F9812293518C6005876A8 /* Enable2faPrefs.swift in Sources */,
@@ -5348,6 +5417,7 @@
 				3418BAE32743BDAD00F9B2D0 /* ArcView.swift in Sources */,
 				344915E32A0A3C8000D35818 /* LTExperimentalViewController.swift in Sources */,
 				34D535E629A77D4B00D3B5C5 /* MoreOptPrefs.swift in Sources */,
+				347372F02E65A66F00FE2BEA /* ElectrumCell.swift in Sources */,
 				34A75B61292B697A007995D7 /* OnBoardInfoViewController.swift in Sources */,
 				34FB697927FEFE5400A13197 /* PopoverMenuUnarchiveViewController.swift in Sources */,
 				348401F72DAE322100A91C65 /* UISegmentedControl.swift in Sources */,
@@ -5368,6 +5438,7 @@
 				34389B632A9754260023DAC3 /* RedeemPrefs.swift in Sources */,
 				3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */,
 				346EB2782BE8BB3A0043139F /* SendFeeCell.swift in Sources */,
+				347372B92E5F3AE000FE2BEA /* AppSettingsViewModel.swift in Sources */,
 				344D57C52D71AA48009725A3 /* WalletTabBarViewController.swift in Sources */,
 				818BA70F2A2F900900DFB03A /* ScanViewController.swift in Sources */,
 				34D648002C7F550E00F3FCB4 /* TwoFactorAuthViewController.swift in Sources */,
@@ -5429,6 +5500,7 @@
 				3445498F29FBF7D9006725D2 /* LTSuccessViewController.swift in Sources */,
 				34A883B22BA85F50004A1826 /* TxDetailsInfoCellModel.swift in Sources */,
 				344D57DB2D71BF72009725A3 /* TabHeaderCell.swift in Sources */,
+				344A330E2E7B19B200E372AD /* TitleCell.swift in Sources */,
 				3470646B2A42C1710096313C /* RecoveryTransactionsViewModel.swift in Sources */,
 				347C037C272838D500C2EEF6 /* ReceiveViewController.swift in Sources */,
 				3457F4B529239F2400EF33B5 /* DialogListCellModel.swift in Sources */,

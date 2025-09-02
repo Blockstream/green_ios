@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -70,8 +70,8 @@
             <connections>
                 <outlet property="bg" destination="635-L7-ihQ" id="cYg-ni-Phn"/>
                 <outlet property="iconCurrent" destination="vYM-M0-7w9" id="lGa-5R-hgw"/>
-                <outlet property="lblLangHint" destination="rgd-Dy-Bba" id="eve-5k-PJy"/>
-                <outlet property="lblLangTtitle" destination="Yxd-AL-3th" id="Svz-j4-fHc"/>
+                <outlet property="lblHint" destination="rgd-Dy-Bba" id="X57-Ep-0oA"/>
+                <outlet property="lblTitle" destination="Yxd-AL-3th" id="LNw-HD-M8q"/>
             </connections>
             <point key="canvasLocation" x="109.9236641221374" y="-6.3380281690140849"/>
         </tableViewCell>

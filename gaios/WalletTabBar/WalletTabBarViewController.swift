@@ -376,12 +376,12 @@ extension WalletTabBarViewController: DrawerNetworkSelectionDelegate {
 
     // accounts drawer: select app settings
     func didSelectSettings() {
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
-            self.navigationController?.pushViewController(viewController: vc, animated: true) {
-                self.presentedViewController?.dismiss(animated: true)
+        let storyboard = UIStoryboard(name: "AppSettings", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AppSettingsViewController") as? AppSettingsViewController {
+            self.navigationController?.pushViewController(viewController: vc, animated: false) {
             }
         }
+        self.presentedViewController?.dismiss(animated: true)
     }
 
     func didSelectAbout() {

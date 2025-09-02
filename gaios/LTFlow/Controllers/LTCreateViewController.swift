@@ -53,7 +53,7 @@ class LTCreateViewController: UIViewController {
     }
 
     func enableLightning() async {
-        startLoader(message: "Enabling...")
+        startLoader(message: "id_enabling".localized)
         let task = Task.detached { [weak self] in
             try await self?.viewModel.enableLightning()
         }

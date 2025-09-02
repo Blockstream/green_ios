@@ -157,12 +157,12 @@ class TabSecurityVC: TabViewController {
             if let version = res.0, let lastFirmware = res.1 {
                 presentUpdateFirmwareViewController(version: version, lastFirmware: lastFirmware)
             } else {
-                DropAlert().error(message: "Firmware update failed")
+                DropAlert().error(message: "id_firmware_update_failed".localized)
             }
         case .failure(let err):
             switch err as? HWError {
             case .some(HWError.NoNewFirmwareFound):
-                DropAlert().success(message: "Firmware up to date")
+                DropAlert().success(message: "id_firmware_up_to_date".localized)
             default:
                 DropAlert().error(message: err.description().localized)
             }

@@ -1,13 +1,11 @@
+//
+
 import UIKit
 
-class TFAHeaderCell: UITableViewCell {
+class TitleCell: UITableViewCell {
 
     @IBOutlet weak var lblTitle: UILabel!
-
     class var identifier: String { return String(describing: self) }
-
-    override func prepareForReuse() {}
-
     override func awakeFromNib() {
         super.awakeFromNib()
         lblTitle.setStyle(.txtBigger)
@@ -15,7 +13,7 @@ class TFAHeaderCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
-    func configure() {
-        lblTitle.text = "id_enable_twofactor_authentication".localized
+    func configure(_ title: String) {
+        self.lblTitle.text = title
     }
 }

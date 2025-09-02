@@ -107,7 +107,7 @@ class QuoteCell: UITableViewCell {
         providerNameLabel.font = Constants.providerNameFont
         
         // Amount title
-        receiveAmountTitleLabel.text = "You Receive:"
+        receiveAmountTitleLabel.text = "id_you_receive".localized + ":"
         receiveAmountTitleLabel.textColor = UIColor.white.withAlphaComponent(Constants.secondaryTextAlpha)
         receiveAmountTitleLabel.font = Constants.receiveAmountTitleFont
         

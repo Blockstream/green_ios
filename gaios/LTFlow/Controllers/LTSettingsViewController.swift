@@ -114,7 +114,7 @@ class LTSettingsViewController: UIViewController {
         switch await task.result {
         case .success:
             stopLoader()
-            DropAlert().success(message: "Rescan Swaps completed".localized)
+            DropAlert().success(message: "id_rescan_swaps_completed".localized)
             tableView.reloadData()
         case .failure(let error):
             stopLoader()
@@ -122,14 +122,14 @@ class LTSettingsViewController: UIViewController {
         }
     }
     func disableLightning() async {
-        startLoader(message: "Disabling...")
+        startLoader(message: "id_disabling".localized)
         let task = Task.detached { [weak self] in
             await self?.viewModel.disableLightning()
         }
         switch await task.result {
         case .success:
             stopLoader()
-            DropAlert().success(message: "Lightning disabled successfully")
+            DropAlert().success(message: "id_lightning_disabled_successfully".localized)
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.newSubaccount.rawValue), object: nil, userInfo: nil)
             navigationController?.popViewController(animated: true)
         case .failure(let error):

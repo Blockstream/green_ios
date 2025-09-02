@@ -9,7 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Export unsigned PSBT and import signed PSBT in watch-only wallets
 
 ### Changed
-- Hide sensitive info in screenshots 
+- Hide sensitive info in screenshots
+- Application settings screen redesign
 
 ## [5.0.9] - 2025-09-08
 

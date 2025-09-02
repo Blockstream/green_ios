@@ -36,7 +36,7 @@ enum AccountPrefs {
     var hint: String? {
         switch self {
         case .background:
-            return "You can receive payment as long as your device connected to the internet"
+            return "You can receive payment as long as your device connected to the internet".localized
         default:
             return nil
         }

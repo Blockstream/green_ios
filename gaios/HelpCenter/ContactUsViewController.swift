@@ -138,7 +138,7 @@ class ContactUsViewController: KeyboardViewController {
     }
 
     @IBAction func btnCopy(_ sender: Any) {
-        startLoader(message: "Copying...")
+        startLoader(message: "id_copying".localized)
         DispatchQueue.main.async {
             UIPasteboard.general.string = self.request.logs(truncated: false)
             self.stopLoader()
@@ -150,7 +150,7 @@ class ContactUsViewController: KeyboardViewController {
         request.email = emailField.text
         request.message = messageTextView.text
         Task {
-            startLoader(message: "Submitting support request...")
+            startLoader(message: "id_submitting_support_request".localized)
             let res = await Task.detached(priority: .background) {
                 try await ZendeskSdk.shared.submitNewTicket(req: self.request)
             }.result
@@ -158,7 +158,7 @@ class ContactUsViewController: KeyboardViewController {
             switch res {
             case .success:
                 let viewModel = AlertViewModel(title: "id_support_request_created".localized,
-                                               hint: "You will receive an email from Blockstream Support")
+                                               hint:"id_you_will_receive_an_email_from".localized)
                 let storyboard = UIStoryboard(name: "Alert", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "AlertViewController") as? AlertViewController {
                     vc.viewModel = viewModel

@@ -262,8 +262,8 @@ class WOLoginViewController: KeyboardViewController {
     }
 
     @IBAction func btnSettings(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController")
+        let storyboard = UIStoryboard(name: "AppSettings", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "AppSettingsViewController")
         navigationController?.pushViewController(vc, animated: true)
     }
 

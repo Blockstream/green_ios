@@ -114,7 +114,7 @@ class SendHWConfirmViewController: UIViewController {
         lblSumFeeValue.text = viewModel.feeText
         lblSumAmountKey.text = "id_recipient_receives".localized
         lblSumAmountValue.text = viewModel.amountText
-        lblSumTotalKey.text = "Total Spent"
+        lblSumTotalKey.text = "id_total_spent".localized
         lblSumTotalValue.text = viewModel.totalText
         lblConversion.text = "≈ \(viewModel?.totalFiatText ?? "")"
         multiAddrView.isHidden = true

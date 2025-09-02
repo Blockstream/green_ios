@@ -106,8 +106,8 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     }
     
     @IBAction func btnAppSettings(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+        let storyboard = UIStoryboard(name: "AppSettings", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AppSettingsViewController") as? AppSettingsViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }

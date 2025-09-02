@@ -36,9 +36,9 @@ class WODetailsCompactViewController: KeyboardViewController {
         refresh()
     }
     func setContent() {
-        lblTitle.text = "Set up Watch-only Wallet".localized
-        lblHint1.text = "In a watch-only wallet, your private keys remain offline for maximum security. This allows you to safely monitor your balance, history and create addresses on the go.".localized
-        lblHint2.text = "Scan or paste your xpub or descriptor to set up your watch-only wallet".localized
+        lblTitle.text = "id_set_up_watchonly_wallet".localized
+        lblHint1.text = "id_in_a_watchonly_wallet_your".localized
+        lblHint2.text = "id_scan_or_paste_your_xpub_or".localized
         btnImport.setTitle("id_import".localized, for: .normal)
         btnFile.setTitle("id_import_from_file".localized, for: .normal)
         let attr: [NSAttributedString.Key: Any] = [
@@ -46,7 +46,7 @@ class WODetailsCompactViewController: KeyboardViewController {
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
         let attributeString = NSMutableAttributedString(
-            string: "Set up with username and password".localized,
+            string: "id_set_up_with_username_and".localized,
             attributes: attr
         )
         lblUserPwd.attributedText = attributeString

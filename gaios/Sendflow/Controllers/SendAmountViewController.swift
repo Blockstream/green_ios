@@ -103,7 +103,7 @@ class SendAmountViewController: KeyboardViewController {
         lblFeeRate.text = ""
         lblTime.text = ""
         lblNtwFee.text = ""
-        lblSumTotalKey.text = "Total Spent"
+        lblSumTotalKey.text = "id_total_spent".localized
         lblSumTotalValue.text = ""
         lblError.text = ""
         amountField.addTarget(self, action: #selector(SendAmountViewController.textFieldDidChange(_:)),

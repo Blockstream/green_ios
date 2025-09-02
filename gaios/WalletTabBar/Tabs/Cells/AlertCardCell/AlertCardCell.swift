@@ -205,7 +205,7 @@ class AlertCardCell: UITableViewCell {
             btnDismiss.isHidden = onDismiss == nil
         case .TFAWarnMulti:
             lblTitle.isHidden = true
-            lblHint.text = "We recommend you enable more than one 2FA method. If you only set up one  method and lose it, you’ll have to wait at least one year until 2FA expires.".localized
+            lblHint.text = "id_we_recommend_you_enable_more".localized
             btnLeft.isHidden = true
             btnRight.isHidden = true
             btnsContainer.isHidden = true
@@ -213,7 +213,7 @@ class AlertCardCell: UITableViewCell {
             styleWarn()
         case .TFAInfoExpire:
             lblTitle.isHidden = true
-            lblHint.text = "After 2FA expires, you can send funds without your 2FA method or utilize or open source recovery tool.".localized
+            lblHint.text = "id_after_2fa_expires_you_can_send".localized
             btnLeft.isHidden = true
             btnRight.isHidden = true
             btnsContainer.isHidden = true

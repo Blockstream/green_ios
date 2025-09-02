@@ -49,7 +49,7 @@ class LTInvitationViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        txtTextField.attributedPlaceholder = NSAttributedString(string: "Enter your code", attributes: [NSAttributedString.Key.foregroundColor: UIColor.gW60()])
+        txtTextField.attributedPlaceholder = NSAttributedString(string: "id_enter_your_code".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.gW60()])
 
         setContent()
         setStyle()

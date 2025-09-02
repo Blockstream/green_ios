@@ -101,6 +101,7 @@
 "id_advanced_network_settings" = "ネットワーク詳細設定";
 "id_advanced_options" = "詳細オプション";
 "id_advanced_options_for_your_third" = "第3のリカバリーキーに関する詳細オプション";
+"id_after_2fa_expires_you_can_send" = "After 2FA expires, you can send funds without your 2FA method or utilize or open source recovery tool.";
 "id_all" = "全て";
 "id_all_assets" = "すべてのアセット";
 "id_all_coins" = "(すべてのコイン)";
@@ -377,6 +378,7 @@
 "id_copy_uri" = "URIをコピーする";
 "id_copy_url" = "URLをコピーする";
 "id_copy_xpub" = "xpubをコピーする";
+"id_copying" = "Copying...";
 "id_correct_order" = "正しい順番";
 "id_could_not_recognized_qr_code" = "QRコードを認識できませんでした";
 "id_could_not_recognized_the_uri" = "URIを認識できませんでした";
@@ -408,6 +410,7 @@
 "id_custom_network_added_enable_it" = "カスタムネットワークを登録しました、ネットワーク設定から有効化してください";
 "id_custom_network_not_found" = "カスタムネットワークが見つかりません。";
 "id_custom_network_with_this_name" = "この名前のカスタムネットワークが既にあります。";
+"id_custom_server_settings" = "Custom Server Settings";
 "id_custom_servers_and_validation" = "サーバーと検証設定のカスタマイズ";
 "id_customize_2fa_expiration_of" = "コインの2段階認証による保護期間をカスタマイズ";
 "id_d6_confirmations" = "%d/6 承認";
@@ -453,6 +456,7 @@
 "id_disable_pin_access_for_this" = "すべてのデバイスでこのウォレットのPINを無効化する";
 "id_disable_s_twofactor" = "%@による2段階認証を無効化する ";
 "id_disabled" = "無効";
+"id_disabling" = "Disabling...";
 "id_disconnect" = "切断";
 "id_display_values_in_s_and" = "%@を用いて、値を%@、交換レートを%@で表示する";
 "id_displays_the_progress_of_spv" = "SPV同期の進捗を表示";
@@ -520,6 +524,7 @@
 "id_enable_twofactor_authentication" = "2段階認証を有効化して不正送金や重要なセキュリティ設定の無断変更を防ぎましょう";
 "id_enabled" = "有効";
 "id_enabled_1s" = "有効: %1$@";
+"id_enabling" = "Enabling...";
 "id_encryption_passphrase" = "暗号化パスフレーズ";
 "id_enhance_security" = "セキュリティの強化";
 "id_enhanced_privacy" = "充実したプライバシー機能";
@@ -614,8 +619,10 @@
 "id_filters" = "フィルター";
 "id_finishing_up" = "最後に";
 "id_firmware" = "ファームウェア";
+"id_firmware_up_to_date" = "Firmware up to date";
 "id_firmware_update" = "Firmware Update";
 "id_firmware_update_completed" = "ファームウェアアップデートが完了";
+"id_firmware_update_failed" = "Firmware update failed";
 "id_firmware_upgrade" = "ファームウェアをアップグレードする";
 "id_firmware_version_s" = "Firmware Version: %@";
 "id_follow_the_instructions_of_your" = "続行する前にハードウェアウォレットに表示された指示に従ってください。";
@@ -702,6 +709,7 @@
 "id_i_forgot_my_password" = "パスワードを忘れました";
 "id_i_fund_via_an_onchain_bitcoin" = "(i) オンチェーンビットコインで資金調達";
 "id_i_lost_my_2fa" = "2段階認証手段を失った";
+"id_i_lost_my_2fa_method" = "I lost my 2FA method";
 "id_i_secured_the_mnemonic_and_i" = "ニモニックを安全に保管し利用規約も確認しました";
 "id_i_typed_all_my_recovery_phrase" = "リカバリーフレーズを最後まで入力したのに続行できない";
 "id_i_understand_amounts_could_be" = "金額が不正確な可能性があることを理解した";
@@ -711,7 +719,7 @@
 "id_ideal_for_small_amounts_of" = "Ideal for small amounts of bitcoin";
 "id_if_for_any_reason_you_cant" = "もしウォレットにログインできなくなった場合、PINや生体認証でリカバリーフレーズを復元することができます。";
 "id_if_jade_is_already_set_up" = "Jadeのセットアップが終わっている場合、QR Mode > QR PIN Unlock > Continue > Enter your PINを選択します";
-"id_if_you_agree_green_will_collect" = "同意するとGreenはユーザー体験向上のために限られた範囲内で利用データを収集します。機密性の高いユーザーやウォレットについてのデータは収集しません。";
+"id_if_you_agree_blockstream_will" = "If you agree, Blockstream will collect limited usage data to optimize the user experience. No sensitive user or wallet info is collected.";
 "id_if_you_are_the_rightful_owner" = "あなたがこのウォレットの所有者で2段階認証手段が１つでも残されている場合、リセットをキャンセルしてウォレット内の資金を退避させてください。";
 "id_if_you_did_not_change_your" = "Jadeでオラクル設定を変更していない場合は、続行せずBlockstreamサポートにお問い合わせください。";
 "id_if_you_did_not_request_the" = "リセットを申請したのが貴方ではなく、2段階認証手段も失ってしまったためにキャンセルできない場合、2段階認証のリセットを係争申請してください。ウォレットの利用ができなくなりますが、この申請は取り消すこともできます。";
@@ -828,6 +836,7 @@
 "id_lightning" = "Lightning";
 "id_lightning_account" = "ライトニングアカウント";
 "id_lightning_account_shortcut" = "ライトニングアカウントショートカット";
+"id_lightning_disabled_successfully" = "Lightning disabled successfully";
 "id_lightning_invoice" = "ライトニングインボイス";
 "id_lightning_invoice__lnurl" = "ライトニングインボイス / LNURL";
 "id_lightning_invoice_is_expired" = "インボイスの有効期限が切れています";
@@ -1203,6 +1212,7 @@
 "id_request_twofactor_reset" = "2段階認証のリセットを要請する";
 "id_requested_fee_rate_too_low" = "要請された手数料が低過ぎます。";
 "id_rescan_swaps" = "スワップの再スキャン";
+"id_rescan_swaps_completed" = "Rescan Swaps completed";
 "id_rescan_swaps_initiated" = "スワップの再スキャンが開始されました";
 "id_reset" = "リセット";
 "id_reset_language_to_system_default" = "Reset language to system default";
@@ -1243,6 +1253,7 @@
 "id_scan_from_image" = "写真からスキャンする";
 "id_scan_or_paste_your_extended" = "読み取りモードのウォレットにログインするには拡張公開鍵(xPub/yPub/zPub)をスキャンするか貼り付けてください。";
 "id_scan_or_paste_your_public" = "読み取りアカウントにログインするには、パブリック記述子をスキャンするかペーストしてください。";
+"id_scan_or_paste_your_xpub_or" = "Scan or paste your xpub or descriptor to set up your watch-only wallet";
 "id_scan_pubkey" = "Scan PubKey";
 "id_scan_qr_code" = "QRコードをスキャンする";
 "id_scan_qr_on_device" = "Scan QR on Device";
@@ -1266,6 +1277,7 @@
 "id_security_level_1" = "Security Level: 1";
 "id_security_level_1s" = "Security Level %1$@";
 "id_security_level_2" = "Security Level: 2";
+"id_security_policy" = "Security Policy";
 "id_see_archived_accounts_s" = "アーカイブされたアカウントを見る (%@)";
 "id_see_our_privacy_policy_s" = "プライバシーポリシーを確認する %@";
 "id_see_our_terms_of_service_s" = "利用規約を確認する %@";
@@ -1333,6 +1345,8 @@
 "id_set_up_twofactor_authentication" = "2段階認証を設定する";
 "id_set_up_watchonly" = "読み取りモードの設定";
 "id_set_up_watchonly_credentials" = "このウォレットに読み取りモードを追加する";
+"id_set_up_watchonly_wallet" = "Set up Watch-only Wallet";
+"id_set_up_with_username_and" = "Set up with username and password";
 "id_set_wallet_name" = "ウォレット名を設定する";
 "id_set_your_pin_via_qr_on_your" = "開始するには、JadeのQRを使用してPINを設定してください";
 "id_setting_up_your_wallet" = "ウォレットのセットアップ";
@@ -1348,6 +1362,7 @@
 "id_setup_pin" = "PINの設定";
 "id_setup_pin_and_s" = "PINと%@の設定";
 "id_setup_pin_via_qr" = "QR経由でPINを設定";
+"id_setup_watch_only" = "Setup Watch Only";
 "id_setup_your_jade" = "Jadeのセットアップ";
 "id_share" = "シェアする";
 "id_share_address" = "アドレスを共有";
@@ -1393,6 +1408,7 @@
 "id_slide_to_send" = "スライドして送金する";
 "id_slow" = "遅い";
 "id_sms" = "SMS";
+"id_sms_delivery_is_unreliable_in" = "SMS delivery is unreliable in the US due to network operator policy changes. You can try to get your 2FA code via call instead.";
 "id_snnreset_this_setting_and_then" = "%@.\n\nこの設定をリセット後、再度有効化してください。";
 "id_socks5_hostname" = "Socks5ホスト名";
 "id_socks5_port" = "Socks5ポート";
@@ -1401,6 +1417,7 @@
 "id_some_coins_are_no_longer_2fa" = "Some coins are no longer 2FA protected.";
 "id_some_coins_in_your_wallet" = "一部の資産が長期間移動していないため、2段階認証が無効になりました。有効化するには、以下の方法をお試しください：\n\n• 通常通り資金を送金、両替時に2段階認証を更新（手数料を最適化します）\n • 2段階認証が無効化された資金を再入金";
 "id_something_went_wrong" = "問題が生じました。";
+"id_something_went_wrong_when" = "Something went wrong when pairing Jade. Remove your Jade from iOS bluetooth settings and try again.";
 "id_speed_up_transaction" = "トランザクションのスピードアップ";
 "id_spend_your_bitcoin_without_2fa" = "ある閾値までの送金を2段階認証なしで可能にします。累計でこの金額を超える送金を2段階認証なしで行うには、閾値のリセットが必要になります。";
 "id_spv_is_always_synchronized_on" = "SPVはWiFiやEthernetを通じて常に同期されます。モバイルデータを使用中にも同期されるため、ご利用中のデータプランによっては通信費が高くなる可能性があるのでご注意ください。";
@@ -1425,6 +1442,7 @@
 "id_step_1s" = "ステップ %1$@";
 "id_store_it_somewhere_safe" = "安全な場所に保管してください。";
 "id_submit" = "送信";
+"id_submitting_support_request" = "Submitting support request...";
 "id_success" = "成功";
 "id_successfully_sent_your_funds" = "資金の送金が成功しました";
 "id_support" = "サポート";
@@ -1502,6 +1520,7 @@
 "id_this_device_was_not" = "This device was not manufactured by Blockstream. It could be DIY hardware or possibly a malicious clone. Please contact support for more assistance.";
 "id_this_ensures_a_secure_way_to" = "This ensures a secure way to access your wallet.";
 "id_this_feature_is_coming_soon" = "この機能はまもなく追加予定です！";
+"id_this_is_not_a_valid_descriptor" = "This is not a valid descriptor";
 "id_this_is_not_the_default_blind" = "これはデフォルトのブラインドPINオラクルではありません";
 "id_this_is_the_signature_for_the" = "This is the signature for the message signed by the address for proof of ownership.";
 "id_this_is_your_bip85_derived" = "This is your BIP85 derived recovery phrase only for your Lightning account.\n\nWARNING: You can't fully restore your wallet with that.";
@@ -1667,6 +1686,7 @@
 "id_wallet_not_found" = "ウォレットが見つかりませんでした";
 "id_wallet_overview" = "ウォレットの概要";
 "id_wallet_pockets" = "ウォレットのポケット";
+"id_wallet_settings" = "Wallet Settings";
 "id_wallet_transactions" = "ウォレット内のトランザクション";
 "id_wallets" = "ウォレット";
 "id_warning" = "注意!";
@@ -1687,6 +1707,7 @@
 "id_watchonly_mode_cannot_be" = "Liquidでは資産がすべて秘匿されているため、読み取りモードが使用できません。";
 "id_watchonly_wallet" = "読み取り専用のウォレット";
 "id_we_could_successfully_verify" = "We could successfully verify your Jade, enjoy the best Blockstream can offer you with your brand new jade.";
+"id_we_recommend_you_enable_more" = "We recommend you enable more than one 2FA method. If you only set up one  method and lose it, you’ll have to wait at least one year until 2FA expires.";
 "id_we_use_the_camera_to_scan_qr" = "カメラでQRコードをスキャンします。";
 "id_we_were_unable_to_complete_the" = "We were unable to complete the genuine check because it was canceled on Jade.";
 "id_we_will_do_our_best_to_find_a" = "このリカバリーフレーズに対応するウォレットを可能な限り探します";
@@ -1727,6 +1748,7 @@
 "id_you_are_redeeming_funds_from_s" = "%@から資金を償還しています";
 "id_you_can_change_these_later_on" = "これらは後からも変更できます。";
 "id_you_can_empty_your_lightning" = "残高が%@sats以上ある場合、オンチェーントランザクションを用いてライトニングアカウントを空にすることができます。残高が少ない場合は、別のライトニングウォレットに送金することをおすすめします。";
+"id_you_can_receive_a_payment_as" = "You can receive a payment as long as you are connected to the internet";
 "id_you_can_send_up_to" = "最大送金可能額:";
 "id_you_can_still_receive_funds_but" = "受け取りは可能ですが、合計残高には表示されません。";
 "id_you_can_sweep_s_of_your_funds" = "資産の%@をオンチェーンアカウントに移すことができます。";

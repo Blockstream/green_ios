@@ -34,7 +34,7 @@ class LTSuccessViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Funds Received!"
+        lblTitle.text = "id_funds_received".localized
         lblHint.text = viewModel.hint
         btnContinue.setTitle("id_done".localized, for: .normal)
     }

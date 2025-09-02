@@ -166,7 +166,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         case .asset:
             return headerView( "id_asset".localized )
         case .policy:
-            return headerView("Security Policy".localized )
+            return headerView("id_security_policy".localized )
         default:
             return nil
         }
