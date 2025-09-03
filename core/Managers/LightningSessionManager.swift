@@ -17,6 +17,15 @@ public class LightningSessionManager: SessionManager {
     public var nodeState: NodeState? { lightBridge?.nodeInfo }
     public var lspInfo: LspInformation? { lightBridge?.lspInformation }
 
+    public var nodeId: String? {
+        get {
+            return UserDefaults.standard.string(forKey: AppStorageConstants.lightningNodeId.rawValue)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: AppStorageConstants.lightningNodeId.rawValue)
+        }
+    }
+
     public var logger = Logger(
         subsystem: Bundle.main.bundleIdentifier!,
         category: "Lightning"

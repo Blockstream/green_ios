@@ -3,13 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [5.0.9] - 2025-09-08
 
 ### Changed
 - Improved rename/remove wallet actions in home screen 
 - Improved setup Watch-Only
 - Enable lightning rescan swaps
 - Bump GDK to 0.76.0
+- Deprecate spv options: users who want to self validate should connect to their own electrum server in app settings
+
+### Fixed
+- Authentication errors on lightning mnemonic screen
 
 ## [5.0.8] - 2025-08-07
 
