@@ -191,8 +191,6 @@ public class WalletManager {
             parentWalletId: walletIdentifier)
     }
 
-    
-
     public func loginWatchonly(
         credentials: Credentials,
         lightningCredentials: Credentials? = nil
@@ -207,12 +205,12 @@ public class WalletManager {
             }
             let credentials = Credentials(coreDescriptors: descriptors.isEmpty ? nil : descriptors, slip132ExtendedPubkeys: keys.isEmpty ? nil : keys)
             try? await getSession(for: network)?.connect()
-            loginUserResult = try? await getSession(for: network)?.loginUser(credentials)
+            loginUserResult = try await getSession(for: network)?.loginUser(credentials)
         }
         if let username = credentials.username, !username.isEmpty {
-            let session = account.networkType.liquid ? liquidMultisigSession : bitcoinMultisigSession
+            let session = getSession(for: account.networkType)
             try? await session?.connect()
-            loginUserResult = try? await session?.loginUser(credentials)
+            loginUserResult = try await session?.loginUser(credentials)
         }
         if activeSessions.isEmpty {
             throw HWError.Disconnected("id_you_are_not_connected")

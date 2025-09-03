@@ -18,19 +18,11 @@ extension Wally {
     }
 
     public static func isDescriptor(_ desc: String, for network: NetworkSecurityCase) -> Bool {
-        if Wally.descriptorParse(desc, network: getWallyNetwork(network)) != nil {
-            return true
-        }
-        return false
+        return getNetwork(descriptor: desc) == network
     }
 
     public static func isPubKey(_ xpub: String, for network: NetworkSecurityCase) -> Bool {
-        if network.bitcoin && !network.testnet && ["xpub", "ypub", "zpub"].contains(xpub.prefix(4).lowercased()) {
-            return true
-        } else if network.bitcoin && network.testnet && ["tpub", "upub", "vpub"].contains(xpub.prefix(4).lowercased()) {
-            return true
-        }
-        return false
+        return getNetwork(xpub: xpub) == network
     }
 
     public static func getNetwork(descriptor: String) -> NetworkSecurityCase? {
