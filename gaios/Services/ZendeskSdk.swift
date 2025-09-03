@@ -55,10 +55,11 @@ struct ZendeskErrorRequest {
         // Upload logs
         var logs = error ?? ""
         logs += "\r\n"
-        if let nodeId = WalletManager.current?.lightningSession?.nodeState?.id {
-            logs += "NodeId: \(nodeId)\r\n "
+        logs += "Timestamp: \(Int(timestamp))\r\n"
+        if let nodeId = WalletManager.current?.lightningNodeId {
+            logs += "Lightning node id: \(nodeId)\r\n"
+            logs += "Lightning logged: \(WalletManager.current?.lightningSession?.logged ?? false)\r\n"
         }
-        logs += "Timestamp: \(Int(timestamp))\r\n "
         if shareSettings {
             logs += "App settings: \r\n"
             logs += AppSettings.shared.gdkSettings?.stringify() ?? ""

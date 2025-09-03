@@ -24,6 +24,7 @@ public enum AppStorageConstants: String {
     case buyCountyCodeUserSelected = "buy_county_code_user_selected"
     case v5Triggered = "v5_treiggered"
     case firstInitialization = "FirstInitialization"
+    case lightningNodeId = "lightning_node_id"
 }
 
 public protocol AnalyticsManagerDelegate: AnyObject {

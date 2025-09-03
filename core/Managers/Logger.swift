@@ -27,7 +27,7 @@ extension Logger {
     public func logFile(category: String) -> URL {
         let basePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         if category == "Lightning"{
-            if let nodeId = WalletManager.current?.lightningSession?.nodeState?.id {
+            if let nodeId = WalletManager.current?.lightningNodeId {
                 return basePath.appendingPathComponent("Greenlight_Logs_\(nodeId).txt")
             }
         }

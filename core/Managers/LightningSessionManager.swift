@@ -88,6 +88,7 @@ public class LightningSessionManager: SessionManager {
         let walletId = try walletIdentifier(credentials: params)
         let walletHashId = walletId!.walletHashId
         let res = LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? "")
+        loginData = res
         let restore = LightningRepository.shared.get(for: walletHashId) == nil
         lightBridge = initLightningBridge(params, eventListener: self)
         do {
@@ -107,7 +108,6 @@ public class LightningSessionManager: SessionManager {
             LightningRepository.shared.upsert(for: walletHashId, credentials: greenlightCredentials)
         }
         logged = true
-        loginData = res
         return res
     }
 

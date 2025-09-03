@@ -146,6 +146,15 @@ public class WalletManager {
         return subaccounts.filter {$0.gdkNetwork.lightning }.first
     }
 
+    public var lightningNodeId: String? {
+        get {
+            return UserDefaults.standard.string(forKey: "\(AppStorageConstants.lightningNodeId.rawValue)_\(account.id)")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "\(AppStorageConstants.lightningNodeId.rawValue)_\(account.id)")
+        }
+    }
+
     public var testnet: Bool {
         return !prominentNetwork.gdkNetwork.mainnet
     }
@@ -166,7 +175,7 @@ public class WalletManager {
     public var failureSessionsError = Failures()
 
     public func create(_ credentials: Credentials) async throws {
-        var networks: [NetworkSecurityCase] = testnet ? [.testnetSS, .testnetLiquidSS] : [.bitcoinSS, .liquidSS]
+        let networks: [NetworkSecurityCase] = testnet ? [.testnetSS, .testnetLiquidSS] : [.bitcoinSS, .liquidSS]
         for network in networks {
             let session = self.sessions[network.rawValue]!
             try await session.connect()
@@ -262,8 +271,9 @@ public class WalletManager {
             try await session.connect()
             let res = try await session.loginUser(credentials: credentials, hw: device)
             // update walletHashId and xpubHashId
-            if session.gdkNetwork.lightning {
+            if let session = session as? LightningSessionManager, session.gdkNetwork.lightning {
                 account.lightningWalletHashId = res.walletHashId
+                lightningNodeId = session.lightBridge?.nodeInfo?.id
             } else if session.gdkNetwork.network == prominentNetwork.network {
                 account.xpubHashId = res.xpubHashId
                 account.walletHashId = res.walletHashId
