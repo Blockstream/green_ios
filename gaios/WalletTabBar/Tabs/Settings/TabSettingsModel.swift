@@ -169,10 +169,7 @@ class TabSettingsModel {
             subtitle: "id_copy_support_id".localized,
             section: .about,
             type: .supportID)
-        if multiSigSession != nil {
-            return [version, supportId]
-        }
-        return [version]
+        return [version, supportId]
     }
     func getSupport() -> [SettingsItemData] {
         let support = SettingsItemData(
