@@ -16,9 +16,13 @@ class TabSettingsVC: TabViewController {
         super.viewDidLoad()
         view.backgroundColor = UIColor.gBlackBg()
 
-        initViewModel()
         register()
         setContent()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        initViewModel()
     }
 
     func setContent() {
@@ -33,6 +37,7 @@ class TabSettingsVC: TabViewController {
         }
     }
     @objc func pull(_ sender: UIRefreshControl? = nil) {
+        viewModel.load()
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {[weak self] in
             self?.tableView.refreshControl?.endRefreshing()
         }
