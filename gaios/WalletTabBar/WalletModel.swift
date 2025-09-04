@@ -310,16 +310,15 @@ class WalletModel {
     }
     func registerNotifications() {
         guard let token = UserDefaults(suiteName: Bundle.main.appGroup)?.string(forKey: "token"),
-              let wm = wm,
-              let xpubHashId = wm.account.xpubHashId else {
+              let xpubHashId = wm?.account.xpubHashId else {
             return
         }
         AppNotifications.shared.requestRemoteNotificationPermissions(application: UIApplication.shared) {
-            Task.detached(priority: .background) {
+            Task.detached(priority: .background) { [weak self] in
                 let meld = Meld()
                 try? await meld.registerToken(fcmToken: token, externalCustomerId: xpubHashId)
-                try? await wm.lightningSession?.registerNotification(token: token, xpubHashId: xpubHashId)
-                _ = wm.lightningSession?.lightBridge?.updateLspInformation()
+                try? await self?.wm?.lightningSession?.registerNotification(token: token, xpubHashId: xpubHashId)
+                _ = self?.wm?.lightningSession?.lightBridge?.updateLspInformation()
             }
         }
     }

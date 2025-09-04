@@ -17,8 +17,6 @@ class AppNotifications: NSObject {
             FirebaseApp.configure(options: options!)
         }
         Messaging.messaging().delegate = self
-        // Request permissions first
-        requestRemoteNotificationPermissions(application: UIApplication.shared)
     }
 
     func didRegisterForRemoteNotifications(deviceToken: Data) {
