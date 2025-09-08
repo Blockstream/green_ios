@@ -109,16 +109,18 @@ class ShowMnemonicsViewController: UIViewController {
     @IBAction func btnShowQR(_ sender: Any) {
         magnifyQR()
     }
-    
+
     func authenticated(successAction: @escaping () -> Void) {
         let context = LAContext()
         var error: NSError?
         if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
             context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Authentication" ) { success, _ in
-                if success {
-                    successAction()
-                } else {
-                    self.navigationController?.popViewController(animated: true)
+                DispatchQueue.main.async { [weak self] in
+                    if success {
+                        successAction()
+                    } else {
+                        self?.navigationController?.popViewController(animated: true)
+                    }
                 }
             }
         }
