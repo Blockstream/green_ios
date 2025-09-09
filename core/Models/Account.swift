@@ -43,7 +43,6 @@ public struct Account: Codable, Equatable {
     public var uuid: UUID?
     public var isEphemeral: Bool = false
     public var askEphemeral: Bool?
-    public var ephemeralId: Int?
     public var lightningWalletHashId: String?
     private var watchonly: Bool?
     public var isWatchonly: Bool { watchonly ?? false || username != nil }
@@ -70,16 +69,15 @@ public struct Account: Codable, Equatable {
         self.hidden = hidden
         self.password = password
         self.watchonly = watchonly
-        if isEphemeral {
-            let ephAccounts = AccountsRepository.shared.ephAccounts
-            if ephAccounts.count == 0 {
-                self.ephemeralId = 1
-            } else {
-                if let last = ephAccounts.sorted(by: { ($0.ephemeralId ?? 0) > ($1.ephemeralId ?? 0) }).first, let id = last.ephemeralId {
-                    self.ephemeralId = id + 1
-                }
-            }
+    }
+
+    public var ephemeralId: Int? {
+        if !isEphemeral {
+            return nil
         }
+        return AccountsRepository.shared.ephAccounts
+            .filter({ $0.keychain == keychain })
+            .firstIndex(of: self) ?? 0 + 1
     }
 
     public init(name: String, network: NetworkSecurityCase, username: String, password: String? = nil) {

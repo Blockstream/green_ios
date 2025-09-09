@@ -85,15 +85,9 @@ class LoginViewModel {
 
     fileprivate func updateEphemeralAccount(from credentials: Credentials) -> Account {
         let networkType = account.networkType.testnet ? NetworkSecurityCase.testnetSS : NetworkSecurityCase.bitcoinSS
-        let session = SessionManager(networkType.gdkNetwork)
-        let walletId = try? session.walletIdentifier(credentials: credentials)
-        if !credentials.bip39Passphrase.isNilOrEmpty {
-            if let account = AccountsRepository.shared.ephAccounts.first(where: { $0.xpubHashId == walletId?.xpubHashId }) {
-                return account
-            }
-        }
         var newAccount = Account(name: account.name, network: networkType, keychain: account.keychain)
         newAccount.isEphemeral = true
+        newAccount.askEphemeral = true
         newAccount.attempts = account.attempts
         newAccount.xpubHashId = account.xpubHashId
         return newAccount

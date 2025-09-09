@@ -239,7 +239,7 @@ public class WalletManager {
             if !AppSettings.shared.experimental || testnet {
                 logger.error("WM login lightning no available")
                 return
-            } else if credentials == nil {
+            } else if credentials == nil || credentials?.bip39Passphrase != nil {
                 logger.error("WM login no credentials found for lightning")
                 return
             }

@@ -41,6 +41,7 @@ class TabSettingsModel {
     var session: SessionManager? { wm?.prominentSession }
     var settings: Settings? { session?.settings }
     var isWatchonly: Bool { wm?.isWatchonly ?? false }
+    var isEphemeral: Bool { wm?.account.isEphemeral ?? false }
     var isWatchonlySinglesig: Bool { (wm?.isWatchonly ?? false) && (wm?.account.username?.isEmpty ?? true) }
     var isSinglesig: Bool { session?.gdkNetwork.electrum ?? true }
     var isHW: Bool { wm?.account.isHW ?? false }
@@ -143,7 +144,7 @@ class TabSettingsModel {
             section: .account,
             type: .createAccount)
         var menu = [SettingsItemData]()
-        if !isWatchonly && AppSettings.shared.experimental {
+        if !isWatchonly && !isEphemeral && AppSettings.shared.experimental {
             menu += [lightning]
         }
         if !isWatchonlySinglesig {
@@ -253,6 +254,7 @@ class TabSettingsModel {
             accounts: getSubaccountsAmp(),
             hideBalance: false)
     }
+
     func hasLightning() -> Bool {
         guard let account = WalletManager.current?.account else {
             return false

@@ -24,12 +24,6 @@ class HomeViewController: UIViewController {
     var promoCardCellModel = [PromoCellModel]()
     var promoImpressionSent: Bool?
 
-    private var ephAccounts: [Account] {
-        AccountsRepository.shared.ephAccounts.filter { account in
-            account.isEphemeral && !WalletsRepository.shared.wallets.filter {$0.key == account.id }.isEmpty
-        }
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -117,7 +111,7 @@ class HomeViewController: UIViewController {
         case .swWallet:
             return AccountsRepository.shared.swAccounts[indexPath.row]
         case .ephWallet:
-            return ephAccounts[indexPath.row]
+            return AccountsRepository.shared.ephAccounts[indexPath.row]
         case .hwWallet:
             return AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
         default:
@@ -254,7 +248,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case .swWallet:
             return AccountsRepository.shared.swAccounts.count
         case .ephWallet:
-            return ephAccounts.count
+            return AccountsRepository.shared.ephAccounts.count
         case .hwWallet:
             return AccountsRepository.shared.hwVisibleAccounts.count
         default:
@@ -324,7 +318,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case .ephWallet:
-            let account = ephAccounts[indexPath.row]
+            let account = AccountsRepository.shared.ephAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
                                indexPath: indexPath,
