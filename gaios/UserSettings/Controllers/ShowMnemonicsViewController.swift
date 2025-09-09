@@ -35,16 +35,7 @@ class ShowMnemonicsViewController: UIViewController {
                 await self.reload(showLightning: self.showBip85)
             }
         }
-        NotificationCenter.default.addObserver(forName: UIApplication.userDidTakeScreenshotNotification, object: nil, queue: OperationQueue.main) { notification in
-            let alert = UIAlertController(title: "Warning", message: "We prevent sensitive information from being copied to the clipboard or captured in a screenshot. Please copy it manually.", preferredStyle: .alert)
-
-            let ok = UIAlertAction(title: "id_ok".localized, style: .default, handler: { action in
-            })
-            alert.addAction(ok)
-            DispatchQueue.main.async(execute: {
-                self.present(alert, animated: true)
-            })
-        }
+        addObserverUserDidTakeScreenshot()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -52,6 +43,10 @@ class ShowMnemonicsViewController: UIViewController {
         // Protect ScreenShot
         ScreenShield.shared.protect(view: self.collectionView)
         ScreenShield.shared.protectFromScreenRecording()
+    }
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        removeObserverUserDidTakeScreenshot()
     }
 
     func getCredentials() async -> Credentials? {

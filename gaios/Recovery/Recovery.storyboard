@@ -171,6 +171,7 @@
                         <outlet property="word4" destination="nEZ-4U-I29" id="RXl-DL-itc"/>
                         <outlet property="word5" destination="NP4-N4-hD3" id="Qiu-oF-PBC"/>
                         <outlet property="word6" destination="t7P-42-Zsk" id="yXv-1B-Kaq"/>
+                        <outlet property="wordsStack" destination="PgA-0n-Jaw" id="n4N-Xx-hq9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="I1k-SD-8hi" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

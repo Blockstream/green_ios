@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 import gdk
-
+import ScreenShield
 protocol MagnifyQRViewControllerDelegate: AnyObject {
     func close()
     func next()
@@ -74,6 +74,7 @@ class MagnifyQRViewController: UIViewController {
         navView.isHidden = showClose
         mnemonicWarnView.isHidden = !isMnemonic
         mnemonicHeadView.isHidden = !isMnemonic
+        addObserverUserDidTakeScreenshot()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -81,6 +82,14 @@ class MagnifyQRViewController: UIViewController {
         UIView.animate(withDuration: 0.3) {
             self.view.alpha = 1.0
         }
+        // Protect ScreenShot
+        ScreenShield.shared.protect(view: self.qr)
+        ScreenShield.shared.protectFromScreenRecording()
+    }
+
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        removeObserverUserDidTakeScreenshot()
     }
 
     func setContent() {
@@ -128,12 +137,12 @@ class MagnifyQRViewController: UIViewController {
     }
 
     @objc func onTap(sender: UITapGestureRecognizer) {
-        dismiss() { [weak self] in
+        dismiss { [weak self] in
             self?.delegate?.close()
         }
     }
 
-    func dismiss(completion: @escaping ()->Void) {
+    func dismiss(completion: @escaping () -> Void) {
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
         }, completion: { _ in
@@ -144,13 +153,13 @@ class MagnifyQRViewController: UIViewController {
     }
 
     @IBAction func btnClose(_ sender: Any) {
-        dismiss() { [weak self] in
+        dismiss { [weak self] in
             self?.delegate?.next()
         }
     }
 
     @IBAction func btnNavClose(_ sender: Any) {
-        dismiss() { [weak self] in
+        dismiss { [weak self] in
             self?.delegate?.close()
         }
     }

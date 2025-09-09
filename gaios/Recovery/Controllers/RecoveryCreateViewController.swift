@@ -3,7 +3,7 @@ import UIKit
 import gdk
 import core
 import greenaddress
-
+import ScreenShield
 class RecoveryCreateViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -17,6 +17,7 @@ class RecoveryCreateViewController: UIViewController {
     @IBOutlet weak var word4: UILabel!
     @IBOutlet weak var word5: UILabel!
     @IBOutlet weak var word6: UILabel!
+    @IBOutlet weak var wordsStack: UIStackView!
 
     lazy var arrayLabels: [UILabel] = [self.word1, self.word2, self.word3, self.word4, self.word5, self.word6]
 
@@ -42,8 +43,18 @@ class RecoveryCreateViewController: UIViewController {
             loadWords()
             pageControl.numberOfPages = mnemonicSize / Constants.wordsPerPage
         }
+        addObserverUserDidTakeScreenshot()
     }
-
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // Protect ScreenShot
+        ScreenShield.shared.protect(view: self.wordsStack)
+        ScreenShield.shared.protectFromScreenRecording()
+    }
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        removeObserverUserDidTakeScreenshot()
+    }
     func customBack() {
         let view = UIView()
         let button = UIButton(type: .system)

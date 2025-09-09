@@ -66,6 +66,27 @@ extension UIViewController {
             }
         }
     }
+    @MainActor
+    func addObserverUserDidTakeScreenshot() {
+        NotificationCenter.default.addObserver(forName: UIApplication.userDidTakeScreenshotNotification, object: nil, queue: OperationQueue.main) { [weak self] _ in
+            self?.notifyScreenshotNotAllowed()
+        }
+    }
+
+    func notifyScreenshotNotAllowed() {
+        let alert = UIAlertController(title: "id_warning".localized, message: "Do not take photos or screenshots. Write the words on paper and keep them in a safe place.".localized, preferredStyle: .alert)
+
+        let ok = UIAlertAction(title: "id_ok".localized, style: .default, handler: { _ in })
+        alert.addAction(ok)
+
+        DispatchQueue.main.async(execute: { [weak self] in
+            self?.present(alert, animated: true)
+        })
+    }
+    @MainActor
+    func removeObserverUserDidTakeScreenshot() {
+        NotificationCenter.default.removeObserver(UIApplication.userDidTakeScreenshotNotification)
+    }
 }
 @nonobjc extension UIViewController {
     func add(_ child: UIViewController, frame: CGRect? = nil) {
@@ -84,7 +105,7 @@ extension UIViewController {
         view.removeFromSuperview()
         removeFromParent()
     }
-    
+
     @MainActor
     public func presentAsync(_ vc: UIViewController, animated: Bool) async {
       await withCheckedContinuation { continuation in
