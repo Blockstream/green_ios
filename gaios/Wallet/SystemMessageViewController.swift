@@ -31,7 +31,7 @@ class SystemMessageViewController: UIViewController {
         acceptCheck.setImage(accept ? UIImage(named: "check") : nil, for: UIControl.State.normal)
         acceptCheck.tintColor = UIColor.white
         acceptCheck.layer.borderWidth = 1.0
-        acceptCheck.layer.borderColor =  UIColor.customTitaniumLight().cgColor
+        acceptCheck.layer.borderColor =  UIColor.gAccountTestGray().cgColor
         acceptCheck.layer.cornerRadius = 2.0
         if accept {
             confirmBtn.setStyle(.primary)

@@ -43,7 +43,7 @@ class QRCodeReaderView: UIView {
         label.center = CGPoint(x: placeholderTextView.bounds.midX, y: placeholderTextView.bounds.midY)
         label.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin]
         label.setTitle("id_please_enable_camera".localized, for: .normal)
-        label.setTitleColor(UIColor.customTitaniumMedium(), for: .normal)
+        label.setTitleColor(UIColor.gGrayCamera(), for: .normal)
         label.titleLabel?.adjustsFontSizeToFitWidth = false
         label.titleLabel?.numberOfLines = 0
         label.titleLabel?.textAlignment = .center

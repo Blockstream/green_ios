@@ -108,23 +108,6 @@ extension UIView {
         return gradient
     }
 
-    func makeGradientCard() -> CAGradientLayer {
-        let account = AccountsRepository.shared.current
-        let isLiquid = account?.gdkNetwork.liquid ?? false
-        let colours = isLiquid ?
-            [UIColor.cardBlueDark(), UIColor.cardBlueMediumDark(), UIColor.cardBlueMedium(), UIColor.cardBlueLight()] :
-            [UIColor.cardDark(), UIColor.cardMediumDark(), UIColor.cardMedium(), UIColor.cardLight()]
-        let gradient = makeGradient(colours: colours, locations: [0.0, 0.38, 0.68, 1.0])
-        gradient.startPoint = CGPoint(x: 0.0, y: 1.0)
-        gradient.endPoint = CGPoint(x: 1.0, y: 1.0)
-        gradient.frame = self.bounds
-        gradient.borderWidth = 2
-        gradient.cornerRadius = 8
-        gradient.borderColor = UIColor.customTitaniumDark().cgColor
-        gradient.masksToBounds = true
-        return gradient
-    }
-
     // from https://www.hackingwithswift.com
     func findViewController() -> UIViewController? {
         if let nextResponder = self.next as? UIViewController {

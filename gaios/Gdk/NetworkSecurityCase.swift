@@ -30,11 +30,11 @@ extension gdk.NetworkSecurityCase {
     func color() -> UIColor {
         switch self {
         case .bitcoinMS, .bitcoinSS:
-            return UIColor.accountOrange()
+            return UIColor.gAccountOrange()
         case .liquidMS, .liquidSS:
-            return UIColor.accountLightBlue()
+            return UIColor.gAccountLightBlue()
         case .testnetMS, .testnetSS, .testnetLiquidMS, .testnetLiquidSS:
-            return UIColor.accountGray()
+            return UIColor.gAccountTestGray()
         case .lightning, .testnetLightning:
             return UIColor.yellow
         }

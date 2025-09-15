@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "tx_received_mainnet.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "menu_dots.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

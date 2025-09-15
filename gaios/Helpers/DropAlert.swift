@@ -40,7 +40,7 @@ class DropAlert: UIView {
     }
 
     func success(message: String, delay: Double = 2.0) {
-        alert(with: message, textColor: .white, backgroundColor: .customMatrixGreen(), delay: delay)
+        alert(with: message, textColor: .white, backgroundColor: .gGreenMatrix(), delay: delay)
     }
 
     func info(message: String, delay: Double = 2.0) {
