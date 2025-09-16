@@ -18,10 +18,11 @@ class LTRecoverFundsFeeCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        bg.cornerRadius = 5.0
+        bg.setStyle(CardStyle.defaultStyle)
         [lblFeeAmount].forEach {
             $0?.setStyle(.txtCard)
         }
+        feeSlider.minimumTrackTintColor = UIColor.gAccent()
     }
 
     override func prepareForReuse() {

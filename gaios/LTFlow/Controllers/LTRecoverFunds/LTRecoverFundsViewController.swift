@@ -145,6 +145,7 @@ class LTRecoverFundsViewController: KeyboardViewController {
     }
 
     func setStyle() {
+        view.backgroundColor = UIColor.gBlackBg()
         btnNextIsEnabled = false
     }
 

@@ -10,7 +10,7 @@ class LTRecoverFundsAmountCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        bg.cornerRadius = 5.0
+        bg.setStyle(CardStyle.defaultStyle)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
