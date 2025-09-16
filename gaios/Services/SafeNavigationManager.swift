@@ -69,6 +69,7 @@ class SafeNavigationManager {
                 vc.url = url
                 vc.titleStr = title
                 vc.onClose = { () in
+                    appDelegate?.navigateWindow?.isHidden = true
                     appDelegate?.navigateWindow = nil
                     completion?()
                 }
