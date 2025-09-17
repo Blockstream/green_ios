@@ -53,12 +53,18 @@ build_strings:
     - cp -rf gaios/*.lproj translations
     - rm -rf translations/Base.lproj
 
-unsigned_debug:
+qa_debug_simulator:
   stage: build
   when: manual
   extends: .setup_env
   tags:
     - mini
+  artifacts:
+    name: "green-ios-debug-$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    when: on_success
+    paths:
+      - debug/Build/Products/Debug-iphonesimulator/gaios.app
   variables:
     GDK_COMMIT: latest
   script:

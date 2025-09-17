@@ -9,7 +9,7 @@ excluded:
    - gaios/GreenApplication.swift
    - gaios/Wallet/Views/SlidingButton.swift
    - gaios/Helpers/AuthenticationTypeHandler.swift
-
+   - debug
 identifier_name:
    severity: warning
    validates_start_with_lowercase: false

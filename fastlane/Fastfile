@@ -81,6 +81,14 @@ platform :ios do
 
   desc "Build unsigned debug"
   lane :build_unsigned_debug do
+  
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      team_id: "D9W37S9468",
+      path: "gaios.xcodeproj",
+      code_sign_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)"
+    )
+    
     build_ios_app(
       configuration: "Debug",
       scheme: "gaios",
@@ -89,12 +97,25 @@ platform :ios do
       clean: true,
       output_directory: "./debug",
       output_name: "Green-debug.ipa",
-      include_symbols: true,
+      include_symbols: false,
       include_bitcode: false,
       skip_archive: true,
-      skip_package_ipa: true,
-      skip_codesigning: true,
-      disable_package_automatic_updates: true
+      #skip_package_ipa: true,
+      #skip_codesigning: true,
+      disable_package_automatic_updates: true,
+      sdk: "iphonesimulator",
+      destination: "generic/platform=iOS Simulator",
+      derived_data_path: "./debug",
+      build_path: "./debug",
+      xcargs: "ARCHS=arm64",
+      export_method: "development",
+      export_team_id: "D9W37S9468",
+      export_options: {
+        provisioningProfiles: {
+          "io.blockstream.greendev" => "match Development io.blockstream.greendev",
+          "io.blockstream.greendev.NotificationService" => "match Development io.blockstream.greendev.NotificationService"
+        }
+      }
     )
   end
 
