@@ -226,7 +226,6 @@
 		3458AB10292D1F0B006EC7FB /* AnyAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3458AB0F292D1F0B006EC7FB /* AnyAssetCell.xib */; };
 		3458AB12292D1F25006EC7FB /* AnyAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3458AB11292D1F25006EC7FB /* AnyAssetCell.swift */; };
 		3458AB14292D2822006EC7FB /* AssetExpandableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3458AB13292D2822006EC7FB /* AssetExpandableView.xib */; };
-		345A7E1129ED7A2F00526CE5 /* WODetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345A7E1029ED7A2F00526CE5 /* WODetailsViewController.swift */; };
 		345ADE052D3E560D00E7A20F /* HelpCenter.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345ADE042D3E560D00E7A20F /* HelpCenter.storyboard */; };
 		345ADE072D3E566800E7A20F /* ContactUsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345ADE062D3E566800E7A20F /* ContactUsViewController.swift */; };
 		345B28D12DCE54040075860A /* Illustration Rocket.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28D02DCE54040075860A /* Illustration Rocket.riv */; };
@@ -252,9 +251,6 @@
 		345E1A91261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A90261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift */; };
 		345ED1F429C088DC00BD9071 /* GetStartedOnBoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345ED1F329C088DC00BD9071 /* GetStartedOnBoardViewController.swift */; };
 		345FC45C29ED480E009FCF43 /* WOFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345FC45B29ED480E009FCF43 /* WOFlow.storyboard */; };
-		345FC45F29ED4998009FCF43 /* WOSelectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345FC45E29ED4998009FCF43 /* WOSelectViewController.swift */; };
-		345FC46829ED4D83009FCF43 /* WOTypeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345FC46629ED4D83009FCF43 /* WOTypeCell.swift */; };
-		345FC46929ED4D83009FCF43 /* WOTypeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 345FC46729ED4D83009FCF43 /* WOTypeCell.xib */; };
 		3460D2FF2BC02F8700CB8033 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3460D2FE2BC0170A00CB8033 /* PrivacyInfo.xcprivacy */; };
 		3460D3152BC0602E00CB8033 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3460D2FE2BC0170A00CB8033 /* PrivacyInfo.xcprivacy */; };
 		3460D3162BC0602F00CB8033 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3460D2FE2BC0170A00CB8033 /* PrivacyInfo.xcprivacy */; };
@@ -349,11 +345,6 @@
 		348AD31E2BFDF86900F560C8 /* SendFeeInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348AD31D2BFDF86900F560C8 /* SendFeeInfoViewController.swift */; };
 		34927BC72971452300D741DB /* AccountAssetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34927BC62971452300D741DB /* AccountAssetViewController.swift */; };
 		34927BC92971452C00D741DB /* AccountAssetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34927BC82971452C00D741DB /* AccountAssetViewModel.swift */; };
-		34955C0A2B67B34B0056DE90 /* HowToSecureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34955C092B67B34B0056DE90 /* HowToSecureViewController.swift */; };
-		34955C0E2B67B7200056DE90 /* HowToSecureCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34955C0D2B67B7200056DE90 /* HowToSecureCell.xib */; };
-		34955C102B67B7560056DE90 /* HowToSecureCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34955C0F2B67B7560056DE90 /* HowToSecureCell.swift */; };
-		34955C122B67B8380056DE90 /* HowToSecureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34955C112B67B8380056DE90 /* HowToSecureViewModel.swift */; };
-		34955C142B67B8750056DE90 /* HowToSecureCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34955C132B67B8750056DE90 /* HowToSecureCellModel.swift */; };
 		349693C62CFEF613000F308E /* JadeAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349693C52CFEF613000F308E /* JadeAsset.swift */; };
 		3497936425F8B18C0029ECB1 /* OnBoard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3497935325F8B18C0029ECB1 /* OnBoard.storyboard */; };
 		3497936A25F8B18C0029ECB1 /* WalletSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497935A25F8B18C0029ECB1 /* WalletSettingsViewController.swift */; };
@@ -1214,7 +1205,6 @@
 		3458AB0F292D1F0B006EC7FB /* AnyAssetCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = AnyAssetCell.xib; path = gaios/Utility/AssetSelect/AssetSelectCell/AnyAssetCell.xib; sourceTree = SOURCE_ROOT; };
 		3458AB11292D1F25006EC7FB /* AnyAssetCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AnyAssetCell.swift; path = gaios/Utility/AssetSelect/AssetSelectCell/AnyAssetCell.swift; sourceTree = SOURCE_ROOT; };
 		3458AB13292D2822006EC7FB /* AssetExpandableView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AssetExpandableView.xib; sourceTree = "<group>"; };
-		345A7E1029ED7A2F00526CE5 /* WODetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WODetailsViewController.swift; sourceTree = "<group>"; };
 		345ADE042D3E560D00E7A20F /* HelpCenter.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HelpCenter.storyboard; sourceTree = "<group>"; };
 		345ADE062D3E566800E7A20F /* ContactUsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsViewController.swift; sourceTree = "<group>"; };
 		345B28D02DCE54040075860A /* Illustration Rocket.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Rocket.riv"; sourceTree = "<group>"; };
@@ -1242,9 +1232,6 @@
 		345E1A90261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerNetworkSelectionViewController.swift; sourceTree = "<group>"; };
 		345ED1F329C088DC00BD9071 /* GetStartedOnBoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetStartedOnBoardViewController.swift; sourceTree = "<group>"; };
 		345FC45B29ED480E009FCF43 /* WOFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = WOFlow.storyboard; sourceTree = "<group>"; };
-		345FC45E29ED4998009FCF43 /* WOSelectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOSelectViewController.swift; sourceTree = "<group>"; };
-		345FC46629ED4D83009FCF43 /* WOTypeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOTypeCell.swift; sourceTree = "<group>"; };
-		345FC46729ED4D83009FCF43 /* WOTypeCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WOTypeCell.xib; sourceTree = "<group>"; };
 		3460D2FE2BC0170A00CB8033 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		34610C582B86442E005157C8 /* MasterKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterKeyViewController.swift; sourceTree = "<group>"; };
 		34610C5A2B864B84005157C8 /* BleUnavailable.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = BleUnavailable.storyboard; sourceTree = "<group>"; };
@@ -1349,11 +1336,6 @@
 		348AD31D2BFDF86900F560C8 /* SendFeeInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendFeeInfoViewController.swift; sourceTree = "<group>"; };
 		34927BC62971452300D741DB /* AccountAssetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountAssetViewController.swift; sourceTree = "<group>"; };
 		34927BC82971452C00D741DB /* AccountAssetViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountAssetViewModel.swift; sourceTree = "<group>"; };
-		34955C092B67B34B0056DE90 /* HowToSecureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToSecureViewController.swift; sourceTree = "<group>"; };
-		34955C0D2B67B7200056DE90 /* HowToSecureCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HowToSecureCell.xib; sourceTree = "<group>"; };
-		34955C0F2B67B7560056DE90 /* HowToSecureCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToSecureCell.swift; sourceTree = "<group>"; };
-		34955C112B67B8380056DE90 /* HowToSecureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToSecureViewModel.swift; sourceTree = "<group>"; };
-		34955C132B67B8750056DE90 /* HowToSecureCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToSecureCellModel.swift; sourceTree = "<group>"; };
 		349693C52CFEF613000F308E /* JadeAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeAsset.swift; sourceTree = "<group>"; };
 		3497935325F8B18C0029ECB1 /* OnBoard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = OnBoard.storyboard; sourceTree = "<group>"; };
 		3497935A25F8B18C0029ECB1 /* WalletSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletSettingsViewController.swift; sourceTree = "<group>"; };
@@ -2636,9 +2618,6 @@
 		345FC45D29ED494D009FCF43 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				345FC46329ED4A35009FCF43 /* Cells */,
-				345FC45E29ED4998009FCF43 /* WOSelectViewController.swift */,
-				345A7E1029ED7A2F00526CE5 /* WODetailsViewController.swift */,
 				34F370062E55B62100791659 /* WODetailsCompactViewController.swift */,
 				3415862029EE80AC005002D9 /* WOSetupViewController.swift */,
 				3415862229EE9A29005002D9 /* WOLoginViewController.swift */,
@@ -2652,15 +2631,6 @@
 				8189230329F67F5500551824 /* WOViewModel.swift */,
 			);
 			path = ViewModels;
-			sourceTree = "<group>";
-		};
-		345FC46329ED4A35009FCF43 /* Cells */ = {
-			isa = PBXGroup;
-			children = (
-				345FC46629ED4D83009FCF43 /* WOTypeCell.swift */,
-				345FC46729ED4D83009FCF43 /* WOTypeCell.xib */,
-			);
-			path = Cells;
 			sourceTree = "<group>";
 		};
 		34610C572B864410005157C8 /* MasterKey */ = {
@@ -2941,26 +2911,6 @@
 			path = BalanceCell;
 			sourceTree = "<group>";
 		};
-		34955C0B2B67B6BA0056DE90 /* HowToSecure */ = {
-			isa = PBXGroup;
-			children = (
-				34955C0C2B67B6CB0056DE90 /* Cells */,
-				34955C092B67B34B0056DE90 /* HowToSecureViewController.swift */,
-				34955C112B67B8380056DE90 /* HowToSecureViewModel.swift */,
-			);
-			path = HowToSecure;
-			sourceTree = "<group>";
-		};
-		34955C0C2B67B6CB0056DE90 /* Cells */ = {
-			isa = PBXGroup;
-			children = (
-				34955C132B67B8750056DE90 /* HowToSecureCellModel.swift */,
-				34955C0F2B67B7560056DE90 /* HowToSecureCell.swift */,
-				34955C0D2B67B7200056DE90 /* HowToSecureCell.xib */,
-			);
-			path = Cells;
-			sourceTree = "<group>";
-		};
 		3497935125F8B18C0029ECB1 /* OnBoard */ = {
 			isa = PBXGroup;
 			children = (
@@ -2976,7 +2926,6 @@
 			isa = PBXGroup;
 			children = (
 				81DE63422DDE2F5700AB79DB /* SetupNewMoreActionsViewController.swift */,
-				34955C0B2B67B6BA0056DE90 /* HowToSecure */,
 				34A75B62292B6984007995D7 /* OnBoardInfo */,
 				3497935B25F8B18C0029ECB1 /* SetPinViewController.swift */,
 				34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */,
@@ -4884,7 +4833,6 @@
 				347FD0AD25FFA91700BB3FAB /* Home.storyboard in Resources */,
 				3418BAEA2743FA2E00F9B2D0 /* TransactionBarItem.xib in Resources */,
 				34C67E782924F57F00A50F89 /* AccountSelectSubCell.xib in Resources */,
-				34955C0E2B67B7200056DE90 /* HowToSecureCell.xib in Resources */,
 				340EF8D928B3718D001AE87B /* WalletListCell.xib in Resources */,
 				345B28E32DD1E5830075860A /* Illustration Envelope.riv in Resources */,
 				34A883AC2BA85F10004A1826 /* TxDetailsInfoCell.xib in Resources */,
@@ -4938,7 +4886,6 @@
 				34204718291B9A8600EDE945 /* PolicyCell.xib in Resources */,
 				344471C22C478DBD0051957E /* DialogGroupListCell.xib in Resources */,
 				3484020C2DB8E7B200A91C65 /* BuyBTCFlow.storyboard in Resources */,
-				345FC46929ED4D83009FCF43 /* WOTypeCell.xib in Resources */,
 				34C1A4C92E27A3F400CB83D4 /* AccountSettingsCell.xib in Resources */,
 				344D57CC2D71B5B5009725A3 /* WalletTab.storyboard in Resources */,
 			);
@@ -5097,7 +5044,6 @@
 				34BF09DE2A658BB800523E4C /* DialogQRViewController.swift in Sources */,
 				3498079D291CE42100F8DB95 /* AssetSelectCellModel.swift in Sources */,
 				81A5919D2915772E001D1A65 /* MultisigSettings.swift in Sources */,
-				34955C0A2B67B34B0056DE90 /* HowToSecureViewController.swift in Sources */,
 				34C680EA2A72779900369639 /* DialogInputDenominationViewModel.swift in Sources */,
 				344D57CF2D71B5E7009725A3 /* TabTransactVC.swift in Sources */,
 				34465BA12D082EF7002E5033 /* GenuineCheckEndViewController.swift in Sources */,
@@ -5106,7 +5052,6 @@
 				3497936C25F8B18C0029ECB1 /* StrokeColorAnimation.swift in Sources */,
 				344D57E52D758D52009725A3 /* TabHomeVC.swift in Sources */,
 				6D0983F323FF033900289ACA /* DropAlert.swift in Sources */,
-				34955C122B67B8380056DE90 /* HowToSecureViewModel.swift in Sources */,
 				81F5C98C2ADD45AB004B020A /* LNWithdrawAmountCell.swift in Sources */,
 				3448E63B2730141500C7ADFF /* DialogReceiveShareTypeViewController.swift in Sources */,
 				67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */,
@@ -5115,7 +5060,6 @@
 				34145FDF2DBB724500F725E0 /* SelectCountryCell.swift in Sources */,
 				81CDF3452BF2D50500AA4C19 /* SendHWConfirmViewModel.swift in Sources */,
 				34A883B02BA85F3E004A1826 /* TxDetailsInfoCell.swift in Sources */,
-				345A7E1129ED7A2F00526CE5 /* WODetailsViewController.swift in Sources */,
 				34204722291C12DB00EDE945 /* AssetSelectViewModel.swift in Sources */,
 				34465B9B2D075785002E5033 /* GenuineCheckDialogViewController.swift in Sources */,
 				349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */,
@@ -5249,7 +5193,6 @@
 				81E56A652C2476950012A5A3 /* QRUnlockJadePinInfoViewController.swift in Sources */,
 				81F5C9882ADD3F5F004B020A /* LTWithdrawNoteCell.swift in Sources */,
 				34A883C12BAB0329004A1826 /* TxDetailsMoreInfoCell.swift in Sources */,
-				345FC45F29ED4998009FCF43 /* WOSelectViewController.swift in Sources */,
 				3434766C26822B2F00D7AD43 /* AccessibilityIdentifiers.swift in Sources */,
 				344471BC2C46B2A20051957E /* DialogGroupListViewController.swift in Sources */,
 				34927BC92971452C00D741DB /* AccountAssetViewModel.swift in Sources */,
@@ -5296,7 +5239,6 @@
 				814A9CC02DDCDF9A004AE73F /* LTSettingsModel.swift in Sources */,
 				3403BDAC2630282600118C64 /* Learn2faViewController.swift in Sources */,
 				34D51B6B2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift in Sources */,
-				34955C142B67B8750056DE90 /* HowToSecureCellModel.swift in Sources */,
 				347372E72E658E6300FE2BEA /* EditCell.swift in Sources */,
 				8189230429F67F5500551824 /* WOViewModel.swift in Sources */,
 				818BA7152A2F913C00DFB03A /* CentralManager.swift in Sources */,
@@ -5355,7 +5297,6 @@
 				3457F4BD2924090400EF33B5 /* AssetExpandableSelectViewController.swift in Sources */,
 				346EB2722BE8BB290043139F /* AddressDisplay.swift in Sources */,
 				812DBDC2297261F1002992D6 /* WatchOnlySettingsCell.swift in Sources */,
-				345FC46829ED4D83009FCF43 /* WOTypeCell.swift in Sources */,
 				34560B7A29B9D590007E916F /* JadeWaitViewModel.swift in Sources */,
 				34580EB126FCB78D00D3BEFC /* UITableView.swift in Sources */,
 				34DA78A62D807F3F0022FBB1 /* DialogAccountsViewController.swift in Sources */,
@@ -5490,7 +5431,6 @@
 				818BA71A2A30839B00DFB03A /* BleHwManager.swift in Sources */,
 				34C246512670F0BB009E8FCE /* UINavigationController.swift in Sources */,
 				6D970470234418A600839598 /* ModalPresentationController.swift in Sources */,
-				34955C102B67B7560056DE90 /* HowToSecureCell.swift in Sources */,
 				34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */,
 				34F0EC352D7840830017C276 /* PriceChartCell.swift in Sources */,
 				3445498F29FBF7D9006725D2 /* LTSuccessViewController.swift in Sources */,
@@ -6041,8 +5981,8 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosDebug.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = D9W37S9468;
@@ -6216,8 +6156,8 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationServiceDebug.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = D9W37S9468;
@@ -6333,8 +6273,8 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosDebug.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -6383,8 +6323,8 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosRelease.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -6410,6 +6350,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockstream.core;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -6430,8 +6371,8 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -6457,6 +6398,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockstream.core;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -6481,8 +6423,8 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosDebug.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = NO;
@@ -6532,8 +6474,8 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosRelease.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = NO;
@@ -6556,6 +6498,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.gdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -6581,8 +6524,8 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = NO;
@@ -6605,6 +6548,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.gdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -6627,8 +6571,8 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosDebug.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -6675,8 +6619,8 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosRelease.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -6700,6 +6644,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.hw;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -6721,8 +6666,8 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -6746,6 +6691,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.hw;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -6770,8 +6716,8 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosDebug.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = NO;
@@ -6829,8 +6775,8 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosRelease.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = NO;
@@ -6861,6 +6807,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greenaddress;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -6886,8 +6833,8 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = NO;
@@ -6918,6 +6865,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greenaddress;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -6940,8 +6888,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosDebug.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -6994,8 +6942,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosRelease.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -7022,6 +6970,7 @@
 				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.lightning;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -7045,8 +6994,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -7073,6 +7022,7 @@
 				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.lightning;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;

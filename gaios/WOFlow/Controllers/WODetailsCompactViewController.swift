@@ -9,7 +9,7 @@ enum WOImportType: CaseIterable {
     case descriptor
 }
 class WODetailsCompactViewController: KeyboardViewController {
-    
+
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint1: UILabel!
     @IBOutlet weak var lblHint2: UILabel!
@@ -24,6 +24,7 @@ class WODetailsCompactViewController: KeyboardViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     var networks = [NetworkSecurityCase]()
     private let viewModel = WOViewModel()
+    private var placeholderLabel: UILabel! // Placeholder for textView
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,6 +34,20 @@ class WODetailsCompactViewController: KeyboardViewController {
         textView.addDoneButtonToKeyboard(myAction: #selector(self.textView.resignFirstResponder))
         textView.textContainer.heightTracksTextView = true
         textView.isScrollEnabled = false
+        // Add placeholder label
+        placeholderLabel = UILabel()
+        placeholderLabel.text = "Paste one or more descriptors, separated by a new line.".localized
+        placeholderLabel.textColor = UIColor.lightGray.withAlphaComponent(0.6)
+        placeholderLabel.font = textView.font
+        placeholderLabel.numberOfLines = 2
+        placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
+        bgTextView.addSubview(placeholderLabel)
+        NSLayoutConstraint.activate([
+            placeholderLabel.leadingAnchor.constraint(equalTo: bgTextView.leadingAnchor, constant: 15),
+            placeholderLabel.topAnchor.constraint(equalTo: bgTextView.topAnchor, constant: 18),
+            placeholderLabel.trailingAnchor.constraint(equalTo: bgTextView.trailingAnchor, constant: -15)
+        ])
+        updatePlaceholderVisibility()
         refresh()
     }
     func setContent() {
@@ -168,14 +183,18 @@ class WODetailsCompactViewController: KeyboardViewController {
         AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: prettyError)
         WalletsRepository.shared.delete(for: account)
     }
+    func updatePlaceholderVisibility() {
+        placeholderLabel.isHidden = !textView.text.isEmpty
+    }
     @IBAction func btnFile(_ sender: Any) {
         openDocumentPicker()
+        updatePlaceholderVisibility()
     }
     @IBAction func btnPaste(_ sender: Any) {
         if let txt = UIPasteboard.general.string {
             textView.text = txt
-//            segment.selectedSegmentIndex = txt.contains("(") ? 1 : 0
             refresh()
+            updatePlaceholderVisibility()
         }
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
@@ -188,10 +207,12 @@ class WODetailsCompactViewController: KeyboardViewController {
 
             AnalyticsManager.shared.scanQr(account: nil, screen: .onBoardWOCredentials)
         }
+        updatePlaceholderVisibility()
     }
     @IBAction func btnImport(_ sender: Any) {
         Task { [weak self] in
             await self?.onImport()
+            self?.updatePlaceholderVisibility()
         }
     }
     @IBAction func btnUserPwd(_ sender: Any) {
@@ -204,13 +225,10 @@ extension WODetailsCompactViewController: UITextViewDelegate {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.onTextChange), object: nil)
         perform(#selector(self.onTextChange), with: nil, afterDelay: 0.5)
         refresh()
+        updatePlaceholderVisibility()
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if text == "\n" {
-            textView.resignFirstResponder()
-            return false
-        }
         return true
     }
 }
@@ -226,8 +244,8 @@ extension WODetailsCompactViewController: DialogScanViewControllerDelegate {
         } else if let publicΚey = value.bcur?.publicΚey {
             textView.text = publicΚey
         }
-//        segment.selectedSegmentIndex = textView.text?.contains("(") ?? false ? 1 : 0
         refresh()
+        updatePlaceholderVisibility()
     }
     func didStop() {
         //
@@ -237,6 +255,7 @@ extension WODetailsCompactViewController: DialogScanViewControllerDelegate {
 extension WODetailsCompactViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
         dismiss(animated: true)
+        updatePlaceholderVisibility()
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
@@ -244,7 +263,6 @@ extension WODetailsCompactViewController: UIDocumentPickerDelegate {
         guard url.startAccessingSecurityScopedResource() else { return }
         defer { url.stopAccessingSecurityScopedResource() }
         do {
-            // Get the contents
             let txt = try String(contentsOfFile: url.path, encoding: .utf8)
             let data = txt.data(using: .utf8)!
             let content = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] ?? [:]
@@ -257,10 +275,12 @@ extension WODetailsCompactViewController: UIDocumentPickerDelegate {
                 throw NSError(domain: "id_invalid_xpub".localized, code: 42)
             }
             refresh()
+            updatePlaceholderVisibility()
         } catch {
             print(error)
             showError("id_invalid_xpub".localized)
             refresh()
+            updatePlaceholderVisibility()
         }
     }
 

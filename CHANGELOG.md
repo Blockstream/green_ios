@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Hide sensitive info in screenshots
 - Application settings screen redesign
+- Improve descriptors import UX
 
 ## [5.0.9] - 2025-09-08
 
