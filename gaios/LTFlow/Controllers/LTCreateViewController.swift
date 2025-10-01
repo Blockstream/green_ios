@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import core
 import gdk
+import BreezSDK
 
 class LTCreateViewController: UIViewController {
 
@@ -29,8 +30,8 @@ class LTCreateViewController: UIViewController {
     func setContent() {
         lblTitle.text = "id_lightning_network".localized
         lblSubtitle.text = "id_lightning_network_not_enabled".localized
-        lblDescription.text = "id_to_use_faster_and_cheaper".localized
-        btnNext.setTitle("id_enable_lightning".localized, for: .normal)
+        lblDescription.text = "Experimental Lightning support is currently unavailable to new users.".localized
+        btnNext.setTitle("Enable Lightning".localized, for: .normal)
     }
 
     func setStyle() {
@@ -53,7 +54,7 @@ class LTCreateViewController: UIViewController {
     }
 
     func enableLightning() async {
-        startLoader(message: "id_enabling".localized)
+        startLoader(message: "Restoring...")
         let task = Task.detached { [weak self] in
             try await self?.viewModel.enableLightning()
         }
@@ -65,7 +66,12 @@ class LTCreateViewController: UIViewController {
             navigationController?.popViewController(animated: true)
         case .failure(let error):
             stopLoader()
-            showError(error)
+            switch error as? BreezSDK.ConnectError {
+            case .RestoreOnly(let message):
+                showError("Experimental Lightning support is currently unavailable to new users.".localized)
+            default:
+                showError(error)
+            }
         }
     }
 

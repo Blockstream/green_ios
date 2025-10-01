@@ -88,7 +88,7 @@ public class LightningSessionManager: SessionManager {
 
     public func smartLogin(credentials: Credentials, listener: EventListener) async throws {
         lightBridge = initLightningBridge(credentials, eventListener: listener)
-        try await connectToGreenlight(credentials: credentials, checkCredentials: false)
+        try await connectToGreenlight(credentials: credentials, checkCredentials: true)
         logged = true
     }
 
@@ -98,20 +98,14 @@ public class LightningSessionManager: SessionManager {
         let walletHashId = walletId!.walletHashId
         let res = LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? "")
         loginData = res
-        let restore = LightningRepository.shared.get(for: walletHashId) == nil
         lightBridge = initLightningBridge(params, eventListener: self)
         do {
-            logger.info("lightning loginUser \(credentials.toDict()?.description ?? "") \(restore)")
-            try await connectToGreenlight(credentials: params, checkCredentials: restore)
-            isRestoredNode = restore
+            logger.info("lightning loginUser \(credentials.toDict()?.description ?? "")")
+            try await connectToGreenlight(credentials: params, checkCredentials: true)
+            isRestoredNode = true
         } catch {
-            do {
-                logger.info("lightning loginUser \(credentials.toDict()?.description ?? "")")
-                try await connectToGreenlight(credentials: params)
-            } catch {
-                logger.info("lightning loginUser failed \(error.description())")
-                throw error
-            }
+            logger.info("lightning loginUser failed \(error.description())")
+            throw error
         }
         if let greenlightCredentials = lightBridge?.appGreenlightCredentials {
             LightningRepository.shared.upsert(for: walletHashId, credentials: greenlightCredentials)

@@ -4,6 +4,7 @@ import gdk
 import greenaddress
 import hw
 import lightning
+import BreezSDK
 
 public actor Failures {
     public var errors = [String: Error]()
@@ -279,6 +280,8 @@ public class WalletManager {
         } catch {
             // remove multisig session if login is failure
             switch error {
+            case BreezSDK.ConnectError.RestoreOnly:
+                return
             case TwoFactorCallError.failure(let txt):
                 if txt == "id_login_failed" && fullRestore && prominentSession?.networkType != session.networkType {
                     try? await session.disconnect()
