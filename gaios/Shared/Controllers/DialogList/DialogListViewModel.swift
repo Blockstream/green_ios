@@ -13,6 +13,7 @@ enum DialogType: CaseIterable {
     case loginPrefs
     case redeemPrefs
     case debugPrefs
+    case walletListPrefs
 }
 
 enum DialogCellType: CaseIterable {

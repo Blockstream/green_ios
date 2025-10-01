@@ -33,18 +33,6 @@
                                             <action selector="btnClose:" destination="gdl-iy-vFF" eventType="touchUpInside" id="V0Q-jf-Wzb"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SXP-pk-vwC">
-                                        <rect key="frame" x="316" y="0.0" width="44" height="44"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="44" id="JkH-CU-sbF"/>
-                                            <constraint firstAttribute="height" constant="44" id="PbR-Xh-CxA"/>
-                                        </constraints>
-                                        <inset key="imageEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
-                                        <state key="normal" image="ic_tab_security"/>
-                                        <connections>
-                                            <action selector="btnAbout:" destination="gdl-iy-vFF" eventType="touchUpInside" id="zjc-QM-sT5"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N4v-ca-3gl">
                                         <rect key="frame" x="360" y="0.0" width="44" height="44"/>
                                         <constraints>
@@ -64,8 +52,6 @@
                                     <constraint firstItem="PUw-TH-UDX" firstAttribute="centerY" secondItem="AcC-7I-Z2v" secondAttribute="centerY" id="T4f-kg-cyV"/>
                                     <constraint firstItem="PUw-TH-UDX" firstAttribute="leading" secondItem="AcC-7I-Z2v" secondAttribute="leading" id="ZjJ-wg-acQ"/>
                                     <constraint firstAttribute="height" constant="44" id="f6j-Po-jSw"/>
-                                    <constraint firstItem="N4v-ca-3gl" firstAttribute="leading" secondItem="SXP-pk-vwC" secondAttribute="trailing" id="gl7-YG-r11"/>
-                                    <constraint firstItem="SXP-pk-vwC" firstAttribute="centerY" secondItem="AcC-7I-Z2v" secondAttribute="centerY" id="sN3-Qh-RPI"/>
                                     <constraint firstItem="N4v-ca-3gl" firstAttribute="centerY" secondItem="AcC-7I-Z2v" secondAttribute="centerY" id="xTZ-wi-ZZZ"/>
                                 </constraints>
                             </view>
@@ -151,7 +137,6 @@
                     </view>
                     <navigationItem key="navigationItem" id="g8w-YA-LAo"/>
                     <connections>
-                        <outlet property="btnAbout" destination="SXP-pk-vwC" id="nwC-rX-vzl"/>
                         <outlet property="btnSettings" destination="N4v-ca-3gl" id="u9Z-mO-Wo7"/>
                         <outlet property="lblNewWallet" destination="mom-VD-Wx3" id="UCX-4u-sqp"/>
                         <outlet property="lblWallets" destination="qNG-qV-XvX" id="5xC-eB-rmT"/>
@@ -168,7 +153,6 @@
         <image name="ic_back_ios" width="32" height="32"/>
         <image name="ic_logo_blockstream" width="156" height="35"/>
         <image name="ic_nav_disclose" width="23" height="23"/>
-        <image name="ic_tab_security" width="24" height="24"/>
         <image name="ic_wallet_disclose" width="7.5" height="11.5"/>
         <namedColor name="customTitaniumDark">
             <color red="0.070588235294117646" green="0.086274509803921567" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

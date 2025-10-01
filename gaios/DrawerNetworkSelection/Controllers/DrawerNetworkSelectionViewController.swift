@@ -36,10 +36,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
 
         setContent()
         setStyle()
-
         tableView.register(UINib(nibName: "WalletListCell", bundle: nil), forCellReuseIdentifier: "WalletListCell")
-
-        loadNavigationBtns()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -60,18 +57,6 @@ class DrawerNetworkSelectionViewController: UIViewController {
         tableView.backgroundColor = UIColor.gBlackBg()
         newWalletView.setStyle(CardStyle.defaultStyle)
         lblWallets.textColor = UIColor.gGrayTxt()
-    }
-
-    func loadNavigationBtns() {
-        let settingsBtn = UIButton(type: .system)
-        settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
-        settingsBtn.setImage(UIImage(named: "ic_gear"), for: .normal)
-//        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
-        let aboutBtn = UIButton(type: .system)
-        aboutBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
-        aboutBtn.setImage(UIImage(named: "ic_tab_security"), for: .normal)
-//        aboutBtn.addTarget(self, action: #selector(aboutBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: settingsBtn), UIBarButtonItem(customView: aboutBtn)]
     }
 
     func getAccountFromTableView(_ indexPath: IndexPath) -> Account? {
@@ -103,12 +88,14 @@ class DrawerNetworkSelectionViewController: UIViewController {
         }
     }
 
-    @IBAction func btnAbout(_ sender: Any) {
-        delegate?.didSelectAbout()
-    }
-
     @IBAction func btnSettings(_ sender: Any) {
-        delegate?.didSelectSettings()
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "Options".localized, type: .walletListPrefs, items: WalletListPrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
     }
 
     @IBAction func btnClose(_ sender: Any) {
@@ -234,6 +221,25 @@ extension DrawerNetworkSelectionViewController: UIScrollViewDelegate {
                c.account?.id == DrawerAnimationManager.shared.accountId {
                 DrawerAnimationManager.shared.accountId = nil
             }
+        }
+    }
+}
+extension DrawerNetworkSelectionViewController: DialogListViewControllerDelegate {
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
+
+    func didSelectIndex(_ index: Int, with type: DialogType) {
+        switch type {
+        case .walletListPrefs:
+            switch index {
+            case 0:
+                delegate?.didSelectSettings()
+            case 1:
+                delegate?.didSelectAbout()
+            default:
+                break
+            }
+        default:
+            break
         }
     }
 }

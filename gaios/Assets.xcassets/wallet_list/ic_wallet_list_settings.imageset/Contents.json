@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "ic_wallet_list_settings.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

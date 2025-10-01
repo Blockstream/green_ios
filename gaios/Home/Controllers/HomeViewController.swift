@@ -78,11 +78,7 @@ class HomeViewController: UIViewController {
         settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
         settingsBtn.setImage(UIImage(named: "ic_nav_disclose"), for: .normal)
         settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
-        let aboutBtn = UIButton(type: .system)
-        aboutBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
-        aboutBtn.setImage(UIImage(named: "ic_tab_security"), for: .normal)
-        aboutBtn.addTarget(self, action: #selector(aboutBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: settingsBtn), UIBarButtonItem(customView: aboutBtn)]
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: settingsBtn)]
     }
 
     func remoteAlertDismiss() {
@@ -186,18 +182,26 @@ class HomeViewController: UIViewController {
         }
     }
 
-    @objc func settingsBtnTapped() {
-
+    func onAbout() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAboutViewController") as? DialogAboutViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
+    }
+    func onAppSettings() {
         let storyboard = UIStoryboard(name: "AppSettings", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AppSettingsViewController") as? AppSettingsViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    @objc func aboutBtnTapped() {
+    @objc func settingsBtnTapped() {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAboutViewController") as? DialogAboutViewController {
-            vc.modalPresentationStyle = .overFullScreen
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "Options".localized, type: .walletListPrefs, items: WalletListPrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
     }
@@ -216,21 +220,24 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
-    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let renameRowAction = UIContextualAction(style: .normal, title: "id_rename".localized) { [weak self] (_, _, completed) -> Void in
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let renameRowAction = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, completed) -> Void in
             if let account = self?.getAccountFromTableView(indexPath) {
                 self?.walletRename(account.id)
             }
             completed(true)
         }
-        renameRowAction.backgroundColor = UIColor.gAccent()
-        let deleteRowAction = UIContextualAction(style: .destructive, title: "id_remove".localized) { [weak self] (_, _, completed) -> Void in
+        renameRowAction.image = UIImage(named: "ic_wallet_list_pencil")
+
+        let deleteRowAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completed) -> Void in
             if let account = self?.getAccountFromTableView(indexPath) {
                 self?.walletDelete(account.id)
             }
             completed(true)
         }
-        let configuration = UISwipeActionsConfiguration(actions: [renameRowAction, deleteRowAction])
+        deleteRowAction.image = UIImage(named: "ic_wallet_list_bin")
+
+        let configuration = UISwipeActionsConfiguration(actions: [deleteRowAction, renameRowAction])
         configuration.performsFirstActionWithFullSwipe = false
         return configuration
     }
@@ -433,5 +440,25 @@ extension HomeViewController: PromoManagerDelegate {
 extension HomeViewController: DialogAboutViewControllerDelegate {
     func openContactUs() {
         presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
+    }
+}
+
+extension HomeViewController: DialogListViewControllerDelegate {
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
+
+    func didSelectIndex(_ index: Int, with type: DialogType) {
+        switch type {
+        case .walletListPrefs:
+            switch index {
+            case 0:
+                onAppSettings()
+            case 1:
+                onAbout()
+            default:
+                break
+            }
+        default:
+            break
+        }
     }
 }

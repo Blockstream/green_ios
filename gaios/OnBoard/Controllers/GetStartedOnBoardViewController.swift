@@ -97,14 +97,18 @@ class GetStartedOnBoardViewController: UIViewController {
         settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
         settingsBtn.setImage(UIImage(named: "ic_nav_disclose"), for: .normal)
         settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
-        let aboutBtn = UIButton(type: .system)
-        aboutBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
-        aboutBtn.setImage(UIImage(named: "ic_tab_security"), for: .normal)
-        aboutBtn.addTarget(self, action: #selector(aboutBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: settingsBtn), UIBarButtonItem(customView: aboutBtn)]
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: settingsBtn)]
     }
-
-    @objc func aboutBtnTapped() {
+    @objc func settingsBtnTapped() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "Options".localized, type: .walletListPrefs, items: WalletListPrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+    func onAbout() {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAboutViewController") as? DialogAboutViewController {
             vc.modalPresentationStyle = .overFullScreen
@@ -112,7 +116,12 @@ class GetStartedOnBoardViewController: UIViewController {
             present(vc, animated: false, completion: nil)
         }
     }
-
+    func onAppSettings() {
+        let storyboard = UIStoryboard(name: "AppSettings", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AppSettingsViewController") as? AppSettingsViewController {
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
     @objc func onTap(_ gesture: UITapGestureRecognizer) {
         guard let text = labelAgree.text else { return }
         let rangeTerms = (text.lowercased() as NSString).range(of: strTerms.lowercased())
@@ -121,13 +130,6 @@ class GetStartedOnBoardViewController: UIViewController {
             navigate(ExternalUrls.aboutTermsOfService)
         } else if gesture.didTapAttributedTextInLabel(label: labelAgree, inRange: rangePrivacy) {
             navigate(ExternalUrls.aboutPrivacyPolicy)
-        }
-    }
-
-    @objc func settingsBtnTapped() {
-        let storyboard = UIStoryboard(name: "AppSettings", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AppSettingsViewController") as? AppSettingsViewController {
-            navigationController?.pushViewController(vc, animated: true)
         }
     }
     func navigate(_ url: URL) {
@@ -208,3 +210,22 @@ extension GetStartedOnBoardViewController: DialogAboutViewControllerDelegate {
 //        }
 //    }
 //}
+extension GetStartedOnBoardViewController: DialogListViewControllerDelegate {
+    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
+
+    func didSelectIndex(_ index: Int, with type: DialogType) {
+        switch type {
+        case .walletListPrefs:
+            switch index {
+            case 0:
+                onAppSettings()
+            case 1:
+                onAbout()
+            default:
+                break
+            }
+        default:
+            break
+        }
+    }
+}

@@ -532,6 +532,7 @@
 		34F6152A2E425A46007D38F9 /* TFACell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F615292E425A3C007D38F9 /* TFACell.swift */; };
 		34F6152C2E426564007D38F9 /* TFATimeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34F6152B2E426564007D38F9 /* TFATimeCell.xib */; };
 		34F6152E2E42656F007D38F9 /* TFATimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F6152D2E42656D007D38F9 /* TFATimeCell.swift */; };
+		34F9081C2E8D4C8900D82934 /* WalletListPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F9081B2E8D4C7500D82934 /* WalletListPrefs.swift */; };
 		34F9809C2913A5EC00C12D48 /* WalletAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F9809A2913A5EC00C12D48 /* WalletAssetCell.swift */; };
 		34F9809D2913A5EC00C12D48 /* WalletAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34F9809B2913A5EC00C12D48 /* WalletAssetCell.xib */; };
 		34F9809F2913A72600C12D48 /* WalletAssetCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F9809E2913A72600C12D48 /* WalletAssetCellModel.swift */; };
@@ -1530,6 +1531,7 @@
 		34F6152B2E426564007D38F9 /* TFATimeCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TFATimeCell.xib; sourceTree = "<group>"; };
 		34F6152D2E42656D007D38F9 /* TFATimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TFATimeCell.swift; sourceTree = "<group>"; };
 		34F8E7C22823E66C00555F5B /* AMViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMViews.swift; sourceTree = "<group>"; };
+		34F9081B2E8D4C7500D82934 /* WalletListPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListPrefs.swift; sourceTree = "<group>"; };
 		34F9809A2913A5EC00C12D48 /* WalletAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletAssetCell.swift; sourceTree = "<group>"; };
 		34F9809B2913A5EC00C12D48 /* WalletAssetCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletAssetCell.xib; sourceTree = "<group>"; };
 		34F9809E2913A72600C12D48 /* WalletAssetCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletAssetCellModel.swift; sourceTree = "<group>"; };
@@ -2524,6 +2526,7 @@
 				34E8457829DC26DD00B207E7 /* LoginPrefs.swift */,
 				34389B622A9754260023DAC3 /* RedeemPrefs.swift */,
 				3472798E2CD3888600A272D2 /* DebugPrefs.swift */,
+				34F9081B2E8D4C7500D82934 /* WalletListPrefs.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -5297,6 +5300,8 @@
 				3457F4BD2924090400EF33B5 /* AssetExpandableSelectViewController.swift in Sources */,
 				346EB2722BE8BB290043139F /* AddressDisplay.swift in Sources */,
 				812DBDC2297261F1002992D6 /* WatchOnlySettingsCell.swift in Sources */,
+				345FC46829ED4D83009FCF43 /* WOTypeCell.swift in Sources */,
+				34F9081C2E8D4C8900D82934 /* WalletListPrefs.swift in Sources */,
 				34560B7A29B9D590007E916F /* JadeWaitViewModel.swift in Sources */,
 				34580EB126FCB78D00D3BEFC /* UITableView.swift in Sources */,
 				34DA78A62D807F3F0022FBB1 /* DialogAccountsViewController.swift in Sources */,
