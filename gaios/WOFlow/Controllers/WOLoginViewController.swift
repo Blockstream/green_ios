@@ -24,6 +24,7 @@ class WOLoginViewController: KeyboardViewController {
     private let viewModel = WOViewModel()
     let menuButton = UIButton(type: .system)
     var isSS: Bool { account.gdkNetwork.electrum }
+    var autologin = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,7 +52,14 @@ class WOLoginViewController: KeyboardViewController {
             passwordTextField.text = password
         }
     }
-
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if isSS && autologin {
+            Task { [weak self] in
+                await self?.login()
+            }
+        }
+    }
     func setContent() {
         lblTitle.text = "id_log_in_via_watchonly_to_receive".localized
         lblHint.text = ""

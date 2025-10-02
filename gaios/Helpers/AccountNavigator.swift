@@ -41,6 +41,7 @@ class AccountNavigator {
             return vcConnect
         } else if account.isWatchonly {
             vcWatch?.account = account
+            vcWatch?.autologin = autologin
             return vcWatch
         } else if account.hasBioPin || account.hasWoCredentials {
             vcBiometricLogin?.viewModel = LoginViewModel(account: account, autologin: autologin)
