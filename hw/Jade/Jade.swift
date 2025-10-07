@@ -4,7 +4,6 @@ import Combine
 import greenaddress
 import SwiftCBOR
 import CommonCrypto
-import green.wally
 
 public class Jade: JadeCommands, HWProtocol {
 
@@ -78,8 +77,8 @@ public class Jade: JadeCommands, HWProtocol {
             var recoveryxpub = recoveryXPub
             if var recoveryXPub = recoveryXPub, !recoveryXPub.isEmpty {
                 var subactkey = try Wally.bip32KeyFromBase58(recoveryXPub)
-                var branchkey = try Wally.bip32KeyFromParent(hdkey: &subactkey, childNum: branch, flags: UInt32(BIP32_FLAG_KEY_PUBLIC | BIP32_FLAG_SKIP_HASH))
-                recoveryxpub = try Wally.bip32KeyToBase58(key: &branchkey, flags: UInt32(BIP32_FLAG_KEY_PUBLIC))
+                var branchkey = try Wally.bip32KeyFromParent(hdkey: &subactkey, childNum: branch, flags: Wally.BIP32_FLAG_KEY_PUBLIC | Wally.BIP32_FLAG_SKIP_HASH)
+                recoveryxpub = try Wally.bip32KeyToBase58(key: &branchkey, flags: Wally.BIP32_FLAG_KEY_PUBLIC)
             }
             let params = JadeGetReceiveMultisigAddress(network: chain,
                                                     pointer: pointer,

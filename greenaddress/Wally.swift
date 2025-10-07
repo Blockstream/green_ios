@@ -22,6 +22,9 @@ public class Wally {
     /*** miniscript-features Miniscript/Descriptor feature flags */
     public static let WALLY_MS_IS_DESCRIPTOR: UInt32 = 0x020 /** Contains only descriptor expressions (no miniscript) */
     
+    public static let BIP32_FLAG_KEY_PUBLIC: UInt32 = Wally.BIP32_FLAG_KEY_PUBLIC
+    public static let BIP32_FLAG_SKIP_HASH: UInt32 = Wally.BIP32_FLAG_SKIP_HASH
+    
     public static func sigToDer(sig: [UInt8]) throws -> [UInt8] {
         let sigPtr = UnsafePointer(sig)
         let derPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(EC_SIGNATURE_DER_MAX_LEN))
