@@ -20,6 +20,7 @@ class EditProtectionViewController: UIViewController {
 
     var protectionType: EditProtectionType?
     var protectionAction: EditProtectionAction?
+    var mainAccount: Account? { AccountsRepository.shared.current }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,7 +107,7 @@ class EditProtectionViewController: UIViewController {
     }
 
     func changeBiometricAuthentication(enable: Bool) async {
-        if !enable && !(WalletManager.current?.account.hasManualPin ?? false) {
+        if !enable && !(mainAccount?.hasManualPin ?? false) {
             showAlert(
                 title: (protectionType == .faceID ? "id_face_id".localized : "id_touch_id".localized),
                 message: "Enable PIN before disabling " + (protectionType == .faceID ? "id_face_id".localized : "id_touch_id".localized))
@@ -146,14 +147,14 @@ class EditProtectionViewController: UIViewController {
            let session = wm.prominentSession {
             let credentials = try await session.getCredentials(password: "")
             if let credentials = credentials {
-                try await wm.account.addBiometrics(session: session, credentials: credentials)
+                try await mainAccount?.addBiometrics(session: session, credentials: credentials)
                 return
             }
         }
     }
 
     func disableBiometricAuthentication() async {
-        guard let keychain = WalletManager.current?.account.keychain else { return }
+        guard let keychain = mainAccount?.keychain else { return }
         _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyBiometric, for: keychain)
         AuthenticationTypeHandler.removePrivateKey(forNetwork: keychain)
         UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey\(keychain)")

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -244,6 +244,7 @@
                 <outlet property="lblMoreInfo" destination="fsN-5b-cwk" id="SHD-zO-TaP"/>
                 <outlet property="lblToReceiveHint" destination="vw9-nL-dlp" id="ud8-yX-J10"/>
                 <outlet property="lblToReceiveTitle" destination="IkE-KB-uNc" id="sxb-Ml-NBl"/>
+                <outlet property="moreInfoView" destination="nyZ-1t-hPf" id="LcS-bV-1Wo"/>
                 <outlet property="textField" destination="zeF-Sx-49A" id="5CJ-7h-PBf"/>
             </connections>
             <point key="canvasLocation" x="4.5801526717557248" y="31.338028169014088"/>
@@ -255,7 +256,7 @@
         <image name="ic_pencil" width="17" height="17"/>
         <image name="ic_refresh_arrows" width="19.666666030883789" height="18"/>
         <namedColor name="gGrayCard">
-            <color red="0.10588235294117647" green="0.12549019607843137" blue="0.16470588235294117" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.094117647058823528" green="0.094117647058823528" blue="0.094117647058823528" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

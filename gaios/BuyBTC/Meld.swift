@@ -163,8 +163,8 @@ struct Meld {
 
     private static let MELD_API_PRODUCTION = "https://ramps.blockstream.com"
     private static let MELD_API_SANDBOX = "https://ramps.sandbox.blockstream.com"
-    private static let MELD_NOTIFICATIONS_URL_PRODUCTION = "https://green-webhooks.blockstream.com"
-    private static let MELD_NOTIFICATIONS_URL_SANDBOX = "https://green-webhooks.dev.blockstream.com"
+    static let MELD_NOTIFICATIONS_URL_PRODUCTION = "https://green-webhooks.blockstream.com"
+    static let MELD_NOTIFICATIONS_URL_SANDBOX = "https://green-webhooks.dev.blockstream.com"
     private static let MELD_PREFIX_LABEL = "MELD_FETCH_REQUEST_TRANSACTIONS_FOR_"
     private static let MELD_SANDBOX_LABEL = "MELD_SANBOX"
 
@@ -266,14 +266,15 @@ struct Meld {
         return txs.transactions.first?.serviceProvider
     }
 
-    func registerToken(fcmToken: String, externalCustomerId: String) async throws {
+    func registerToken(fcmToken: String, externalCustomerId: String, notificationUrl: String) async throws {
+        logger.info("Meld register token \(fcmToken) for \(externalCustomerId) on \(notificationUrl)")
         let url = "\(notificationUrl)/register-device"
         let params = MeldTokenRegistrationRequest(
             externalCustomerId: externalCustomerId,
             fcmToken: fcmToken,
             platform: "ios"
         )
-        let res: MeldTokenRegistrationResponse = try await Meld.call(url: url, method: "POST", params: params)
+        let _: MeldTokenRegistrationResponse = try await Meld.call(url: url, method: "POST", params: params)
     }
 
     public static func needFetchingTxs(xpub: String) -> Bool {

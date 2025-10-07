@@ -13,7 +13,7 @@ public class WalletsRepository {
             wallets[account.id] = wm
             return
         }
-        let wm = WalletManager(account: account, prominentNetwork: account.networkType)
+        let wm = WalletManager(prominentNetwork: account.networkType)
         wallets[account.id] = wm
     }
 

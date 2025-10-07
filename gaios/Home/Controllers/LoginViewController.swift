@@ -395,7 +395,7 @@ class LoginViewController: UIViewController {
         let alert = UIAlertController(title: "id_warning".localized, message: text, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .default) { _ in })
         alert.addAction(UIAlertAction(title: "id_reset".localized, style: .destructive) { _ in
-            try? self.account.removeBioKeychainData()
+            try? self.account.removeAuthentication(.AuthKeyBiometric)
         })
         DispatchQueue.main.async {
             self.present(alert, animated: true, completion: nil)

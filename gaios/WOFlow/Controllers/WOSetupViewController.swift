@@ -26,7 +26,6 @@ class WOSetupViewController: KeyboardViewController {
 
     private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
-    private let viewModel = WOViewModel()
     private var isRem: Bool = false
     var network: NetworkSecurityCase!
 
@@ -154,7 +153,7 @@ class WOSetupViewController: KeyboardViewController {
     }
 
     func login(for network: NetworkSecurityCase) {
-        let account = viewModel.newAccountMultisig(
+        let account = WOViewModel.newAccountMultisig(
             for: network.gdkNetwork,
             username: self.usernameTextField.text ?? "",
             password: isRem ? self.passwordTextField.text ?? "" : "",
@@ -163,7 +162,8 @@ class WOSetupViewController: KeyboardViewController {
         self.startLoader(message: "id_logging_in".localized)
         Task {
             do {
-                try await self.viewModel.loginMultisig(for: account, password: self.passwordTextField.text)
+                let vm = WOViewModel(account: account)
+                try await vm.loginMultisig(password: self.passwordTextField.text)
                 success(account: account)
             } catch {
                 failure(error, account: account)

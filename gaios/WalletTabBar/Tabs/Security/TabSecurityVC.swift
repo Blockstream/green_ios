@@ -10,10 +10,10 @@ class TabSecurityVC: TabViewController {
     var backupCardCellModel = [AlertCardCellModel]()
     var unlockCellModel: [PreferenceCellModel] {
         var list = [PreferenceCellModel]()
-        let hasBiometricUnlock = walletModel.wm?.account.hasBioPin == true || walletModel.wm?.account.hasWoBioCredentials == true
-        let hasManualPin = walletModel.wm?.account.hasManualPin == true
-        let isWatchonly = walletModel.wm?.isWatchonly ?? false
-        let isHW = walletModel.wm?.isHW ?? false
+        let hasBiometricUnlock = walletModel.mainAccount?.hasBioPin == true || walletModel.mainAccount?.hasWoBioCredentials == true
+        let hasManualPin = walletModel.mainAccount?.hasManualPin == true
+        let isWatchonly = walletModel.mainAccount?.isWatchonly ?? false
+        let isHW = walletModel.mainAccount?.isHW ?? false
         if !isWatchonly && !isHW {
             list.append(PreferenceCellModel(preferenceType: .bio, state: hasBiometricUnlock ? .on : .off))
             list.append(PreferenceCellModel(preferenceType: .pin, state: hasManualPin ? .on : .off))
@@ -21,11 +21,11 @@ class TabSecurityVC: TabViewController {
         return list
     }
     var jadeCellModel: [PreferenceCellModel] {
-        let isHW = walletModel.wm?.account.isJade ?? false
+        let isHW = walletModel.mainAccount?.isJade ?? false
         if !isHW {
             return []
         }
-        let boardType = WalletManager.current?.account.boardType ?? BleHwManager.shared.jade?.version?.boardType
+        let boardType = walletModel.mainAccount?.boardType ?? BleHwManager.shared.jade?.version?.boardType
         switch boardType {
         case .some(.v2):
             return [
@@ -83,7 +83,7 @@ class TabSecurityVC: TabViewController {
     }
     func reloadAlertCards() {
         var cards: [AlertCardType] = []
-        if BackupHelper.shared.needsBackup(walletId: walletModel.wm?.account.id) && BackupHelper.shared.isDismissed(walletId: walletModel.wm?.account.id, position: .securityTab) == false {
+        if BackupHelper.shared.needsBackup(walletId: walletModel.mainAccount?.id) && BackupHelper.shared.isDismissed(walletId: walletModel.mainAccount?.id, position: .securityTab) == false {
             cards.append(.backup)
         }
         self.backupCardCellModel = cards.map { AlertCardCellModel(type: $0) }
@@ -105,7 +105,7 @@ class TabSecurityVC: TabViewController {
     func onPreferenceCell(_ model: PreferenceCellModel) {
         switch model.type {
         case .bio:
-            if walletModel.wm?.account.isHW ?? false {
+            if walletModel.wm?.isHW ?? false {
                 DropAlert().error(message: "Toggle is not supported with Hardware Wallet")
             } else {
                 editProtection(type: model.hasTouchID ? .touchID : .faceID, action: model.state == .on ? .disable : .enable)
@@ -269,7 +269,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
         case .watchonly:
             return (walletModel.wm?.isWatchonly == true) ? 1 : 0
         case .jade:
-            return walletModel.wm?.account.isJade ?? false ? jadeCellModel.count : 0
+            return walletModel.mainAccount?.isJade ?? false ? jadeCellModel.count : 0
         case .backup:
             return backupCardCellModel.count
         case .unlock:
@@ -295,7 +295,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .level:
             if let cell = tableView.dequeueReusableCell(withIdentifier: SecurityLevelCell.identifier, for: indexPath) as? SecurityLevelCell {
-                cell.configure(isHW: walletModel.wm?.account.isHW == true, onCompare: {[weak self] in
+                cell.configure(isHW: walletModel.wm?.isHW == true, onCompare: {[weak self] in
                     self?.onCompare()
                 })
                 cell.selectionStyle = .none

@@ -72,11 +72,11 @@ public class AnalyticsManager {
     public var analyticsUUID: String {
         get {
             if let uuid = UserDefaults.standard.string(forKey: AppStorageConstants.analyticsUUID.rawValue) {
-                logger.info("analyticsUUID \(uuid, privacy: .public)")
+                logger.info("AnalyticsManager analyticsUUID \(uuid, privacy: .public)")
                 return uuid
             } else {
                 let uuid = UUID().uuidString
-                logger.info("analyticsUUID \(uuid, privacy: .public)")
+                logger.info("AnalyticsManager analyticsUUID \(uuid, privacy: .public)")
                 UserDefaults.standard.setValue(uuid, forKey: AppStorageConstants.analyticsUUID.rawValue)
                 return uuid
             }
@@ -123,11 +123,11 @@ public class AnalyticsManager {
     public var countlyOffset: UInt {
         get {
             if let offset = UserDefaults.standard.object(forKey: AppStorageConstants.countlyOffset.rawValue) as? UInt {
-                logger.info("analyticsOFFSET \(offset)")
+                logger.info("AnalyticsManager analyticsOFFSET \(offset)")
                 return offset
             } else {
                 let offset = secureRandom(max: maxCountlyOffset)
-                logger.info("analyticsOFFSET \(offset)")
+                logger.info("AnalyticsManager analyticsOFFSET \(offset)")
                 UserDefaults.standard.setValue(offset, forKey: AppStorageConstants.countlyOffset.rawValue)
                 return offset
             }
@@ -211,14 +211,15 @@ public class AnalyticsManager {
 
         config.remoteConfigCompletionHandler = { error in
             if error == nil {
-                logger.info("Remote Config is ready to use!")
+                logger.info("AnalyticsManager Remote Config is ready to use!")
                 self.delegate?.remoteConfigIsReady()
                 let notification = NSNotification.Name(rawValue: "remote_config_is_ready")
                 NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
             } else {
-                logger.error("There was an error while fetching Remote Config:\n\(error!.localizedDescription)")
+                logger.error("AnalyticsManager There was an error while fetching Remote Config:\n\(error!.localizedDescription)")
             }
         }
+        logger.info("AnalyticsManager start")
         Countly.sharedInstance().start(with: config)
 
         giveConsent()
@@ -235,7 +236,7 @@ public class AnalyticsManager {
     }
 
     private func giveConsent() {
-        logger.info("giving consent: \(self.consent.rawValue)")
+        logger.info("AnalyticsManager giving consent: \(self.consent.rawValue)")
         switch consent {
         case .notDetermined:
             break
@@ -249,6 +250,7 @@ public class AnalyticsManager {
     }
 
     public func setupSession(session: GDKSession?) {
+        logger.info("AnalyticsManager setup session")
         let host = getHost()
         let conf = getSessionConfiguration(session: session)
         Countly.sharedInstance().setNewHost(host)

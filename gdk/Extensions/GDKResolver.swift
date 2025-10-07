@@ -76,7 +76,7 @@ public class GDKResolver {
     private func resolving(_ res: [String: Any]) async throws {
         let status = res["status"] as? String
         let name = res["name"] as? String
-        print("\(network.chain) \(res)")
+        print("GDKResolver \(network.rawValue) \(res)")
         switch status {
         case "done":
             break

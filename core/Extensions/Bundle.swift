@@ -42,4 +42,7 @@ extension Bundle {
         let url = infoDictionary?["NOTIFICATION_SERVICE"] as? String
         return url?.replacingOccurrences(of: "\\/\\/", with: "//")
     }
+    public var teamIdPrefix: String {
+        Bundle.main.object(forInfoDictionaryKey: "TeamIdentifierPrefix") as? String ?? ""
+    }
 }

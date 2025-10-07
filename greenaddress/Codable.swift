@@ -31,4 +31,8 @@ public extension Decodable {
         }
         return nil
     }
+    static func from(string: String) -> Decodable? {
+        guard let data = string.data(using: .utf8, allowLossyConversion: false) else { return nil }
+        return try? JSONDecoder().decode(Self.self, from: data)
+    }
 }

@@ -54,7 +54,7 @@ class ShowMnemonicsViewController: UIViewController {
     }
 
     func getLightningCredentials() -> Credentials? {
-        guard let account = WalletManager.current?.account else {
+        guard let account = AccountsRepository.shared.current else {
             return nil
         }
         return try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)

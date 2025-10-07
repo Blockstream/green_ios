@@ -64,7 +64,7 @@ class ScreenLocker {
         for (id, wm) in WalletsRepository.shared.wallets {
             let altimeout = wm.prominentSession?.settings?.altimeout ?? 5
             if Int(countdown) >= altimeout * 60 {
-                if id == wm.account.id {
+                if id == AccountsRepository.shared.current?.id {
                     self.isScreenLockLocked = true
                 }
             }

@@ -37,7 +37,7 @@ class LoginViewModel {
             // need decrypt with pin server
             let pin = withPIN ?? pinData.plaintextBiometric
             let decryptData = DecryptWithPinParams(pin: pin ?? "", pinData: pinData)
-            let session = SessionManager(account.gdkNetwork)
+            let session = SessionManager(account.networkType)
             try await session.connect()
             return try await session.decryptWithPin(decryptData)
         }
@@ -53,32 +53,32 @@ class LoginViewModel {
         if !bip39passphrase.isNilOrEmpty {
             account = updateEphemeralAccount(from: credentials)
         }
-        let wallet = try await loginWithCredentials(credentials: credentials)
-        account = wallet.account
+        _ = try await loginWithCredentials(credentials: credentials)
         if withPIN != nil {
             account.attempts = 0
         }
-        AccountsRepository.shared.current = account
     }
 
     func loginWithCredentials(credentials: Credentials) async throws -> WalletManager {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = HwPopupResolver()
-        var lightningCredentials: Credentials?
-        if wm.existDerivedLightning() {
-            lightningCredentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
-            lightningCredentials?.bip39Passphrase = credentials.bip39Passphrase
+        if !account.hasLightningKey {
+            let lightningCredentials = try wm.deriveLightningCredentials(from: credentials)
+            try AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: lightningCredentials, for: account.keychainLightning)
         }
+        var lightningCredentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
+        lightningCredentials.bip39Passphrase = credentials.bip39Passphrase
         let walletIdentifier = try wm.prominentSession?.walletIdentifier(credentials: credentials)
-        try await wm.login(
+        let res = try await wm.login(
             credentials: credentials,
             lightningCredentials: lightningCredentials,
             device: nil,
             masterXpub: nil,
             fullRestore: false,
             parentWalletId: walletIdentifier)
-        account = wm.account
+        account.xpubHashId = res?.xpubHashId
+        account.walletHashId = res?.walletHashId
         AccountsRepository.shared.current = account
         return wm
     }

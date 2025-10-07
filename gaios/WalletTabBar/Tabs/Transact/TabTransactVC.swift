@@ -6,6 +6,9 @@ class TabTransactVC: TabViewController {
 
     @IBOutlet weak var tableView: UITableView?
 
+    var assetId: String?
+    var anyAsset: AnyAssetType?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.gBlackBg()
@@ -53,8 +56,44 @@ class TabTransactVC: TabViewController {
         }
     }
 
+    func selectAssetScreen() {
+        guard let wm = walletModel.wm else { return }
+        let hasSubaccountAmp = !wm.subaccounts.filter({ $0.type == .amp }).isEmpty
+        let hasLiquid = !wm.subaccounts.filter({ $0.networkType.liquid }).isEmpty
+        let assetIds = wm.selectableAssets()
+        let list = AssetAmountList.from(assetIds: assetIds ?? [])
+        let model = AssetSelectViewModel(
+            assets: list,
+            enableAnyLiquidAsset: hasLiquid,
+            enableAnyAmpAsset: hasSubaccountAmp)
+        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
+            vc.viewModel = model
+            vc.dismissOnSelect = false
+            vc.delegate = self
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    func selectAccountScreen(assetId: String, accounts: [WalletItem]) {
+        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAccountsViewController") as? DialogAccountsViewController {
+
+            let model = DialogAccountsViewModel(
+                title: "id_account_selector".localized,
+                hint: "id_choose_which_account_you_want".localized,
+                isSelectable: true,
+                assetId: assetId,
+                accounts: accounts,
+                hideBalance: walletModel.hideBalance)
+            vc.viewModel = model
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        }
+    }
     func receive() {
-        receiveScreen(walletModel)
+//        receiveScreen(walletModel)
+        selectAssetScreen()
     }
     func buy() {
         buyScreen(walletModel)
@@ -292,4 +331,66 @@ extension TabTransactVC: UITableViewDataSourcePrefetching {
         }
     }
 
+    func getBitcoinSubaccounts() -> [WalletItem] {
+        WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+    }
+    func getLiquidSubaccounts() -> [WalletItem] {
+        WalletManager.current?.liquidSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+    }
+    func getLiquidAmpSubaccounts() -> [WalletItem] {
+        WalletManager.current?.liquidAmpSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+    }
+    func getLightningSubaccounts() -> [WalletItem] {
+        if let subaccount = WalletManager.current?.lightningSubaccount {
+            return [subaccount]
+        } else {
+            return []
+        }
+    }
+    func getAccounts() -> [WalletItem] {
+        switch anyAsset {
+        case .liquid:
+            return getLiquidSubaccounts()
+        case .amp:
+            return getLiquidAmpSubaccounts()
+        case nil:
+            break
+        }
+        if let asset = WalletManager.current?.info(for: self.assetId ?? "") {
+            if asset.isLightning {
+                return getLightningSubaccounts()
+            } else if asset.isBitcoin {
+                return getBitcoinSubaccounts()
+            } else if asset.amp ?? false {
+                return getLiquidAmpSubaccounts()
+            }
+        }
+        return getLiquidSubaccounts()
+    }
+}
+
+extension TabTransactVC: AssetSelectViewControllerDelegate {
+
+    func didSelectAnyAsset(_ type: AnyAssetType) {
+        self.assetId = nil
+        self.anyAsset = type
+        selectAccountScreen(assetId: AssetInfo.lbtcId, accounts: getAccounts())
+    }
+
+    func didSelectAsset(_ assetId: String) {
+        self.assetId = assetId
+        self.anyAsset = nil
+        selectAccountScreen(assetId: assetId, accounts: getAccounts())
+    }
+}
+extension TabTransactVC: DialogAccountsViewControllerDelegate {
+    func didSelectAccount(_ walletItem: gdk.WalletItem?) {
+
+        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        if let walletItem, let assetId, let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
+            let waParam: (WalletItem, String) = (walletItem, assetId)
+            vc.viewModel = ReceiveViewModel(waParam)
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
 }

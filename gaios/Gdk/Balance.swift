@@ -111,7 +111,7 @@ extension Balance {
         let denomination: DenominationType = .BTC
         let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
         let value = res![denomination.rawValue] as? String
-        return (value?.localeFormattedString(Int(denomination.digits)) ?? "n/a", denomination.string(for: Balance.session?.gdkNetwork ?? GdkNetworks.shared.bitcoinSS))
+        return (value?.localeFormattedString(Int(denomination.digits)) ?? "n/a", denomination.string(for: Balance.session?.gdkNetwork ?? GdkNetworks.bitcoinSS))
     }
 
     func toAssetValue() -> (String, String) {

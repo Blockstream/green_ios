@@ -4,6 +4,7 @@ import gdk
 import greenaddress
 import hw
 import lightning
+import LiquidWalletKit
 
 extension Error {
 
@@ -105,6 +106,9 @@ extension Error {
         }
         if let breezError = self as? BreezSDK.ConnectError {
             return breezError.description() ?? "Connection error"
+        }
+        if let error = self as? LwkError {
+            return error.description()
         }
         return self.localizedDescription
     }

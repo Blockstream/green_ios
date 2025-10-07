@@ -28,6 +28,7 @@ class BuyBTCViewModel {
     var satoshi: Int64?
     var isFiat: Bool = true
     var account: WalletItem { didSet { ReceiveViewModel.defaultAccount = account }}
+    var mainAccount: Account? { AccountsRepository.shared.current }
     var inputDenomination: gdk.DenominationType = .Sats
     var state: AmountCellState = .invalidBuy
     var meld: Meld
@@ -75,7 +76,7 @@ class BuyBTCViewModel {
         self.currency = currency
         self.loadTiers()
     }
-    var isJade: Bool { wm.account.isJade }
+    var isJade: Bool { mainAccount?.isJade ?? false }
     func quote(_ amountStr: String) async throws -> [MeldQuoteItem] {
         let amt = amountStr.replacingOccurrences(of: ",", with: ".")
         let params = MeldQuoteParams(
@@ -115,7 +116,7 @@ class BuyBTCViewModel {
     }
 
     func getDefaultProvider() async {
-        guard let customerId = wm.account.xpubHashId else {
+        guard let customerId = mainAccount?.xpubHashId else {
             return
         }
         if defaultProvider == nil {
@@ -146,7 +147,7 @@ class BuyBTCViewModel {
         let params = MeldWidgetParams(
             sessionData: sessionParams,
             sessionType: MeldTransactionType.BUY.rawValue,
-            externalCustomerId: wm.account.xpubHashId ?? "")
+            externalCustomerId: mainAccount?.xpubHashId ?? "")
         return try await meld.widget(params)
     }
     func verifyOnDeviceViewModel() -> HWDialogVerifyOnDeviceViewModel? {
@@ -173,7 +174,7 @@ class BuyBTCViewModel {
         UserDefaults.standard.setValue(cCode, forKey: AppStorageConstants.buyCountyCodeUserSelected.rawValue)
     }
     func hasPendingTransactions() async throws -> Bool {
-        guard let xpub = wm.account.xpubHashId else {
+        guard let xpub = mainAccount?.xpubHashId else {
             return false
         }
         let hasPendingTx =  try await meld.getPendingTransactions(xpub: xpub).count > 0
@@ -183,8 +184,7 @@ class BuyBTCViewModel {
     }
 
     static var defaultAccountLabel: String? {
-        guard let wm = WalletManager.current else { return nil }
-        return "\(wm.account.id)_buy_subaccount"
+        return "\(AccountsRepository.shared.current?.id ?? "")_buy_subaccount"
     }
 
     static var defaultAccount: WalletItem? {

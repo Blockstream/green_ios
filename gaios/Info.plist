@@ -138,5 +138,7 @@
 	<string>$(GOOGLE_SERVICE_INFO)</string>
 	<key>NOTIFICATION_SERVICE</key>
 	<string>$(NOTIFICATION_SERVICE)</string>
+	<key>TeamIdentifierPrefix</key>
+	<string>$(DEVELOPMENT_TEAM)</string>
 </dict>
 </plist>

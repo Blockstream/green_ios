@@ -46,7 +46,7 @@ public struct AssetInfo: Codable, Equatable {
     public static func == (lhs: AssetInfo, rhs: AssetInfo) -> Bool {
         lhs.assetId == rhs.assetId
     }
-    
+
     public var isLightning: Bool { assetId == AssetInfo.lightningId }
     public var isBitcoin: Bool { assetId == AssetInfo.btcId }
     public var isLiquid: Bool { ![AssetInfo.btcId, AssetInfo.testId, AssetInfo.lightningId].contains(assetId) }
@@ -54,8 +54,8 @@ public struct AssetInfo: Codable, Equatable {
     // Default asset id
     public static var btcId = "btc"
     public static var testId = "btc"
-    public static var lbtcId = GdkNetworks.shared.liquidSS.getFeeAsset()
-    public static var ltestId = GdkNetworks.shared.testnetLiquidSS.getFeeAsset()
+    public static var lbtcId = GdkNetworks.liquidSS.getFeeAsset()
+    public static var ltestId = GdkNetworks.testnetLiquidSS.getFeeAsset()
     public static var lightningId = "lightning"
     public static var baseIds = [btcId, testId, lbtcId, ltestId, lightningId]
 }

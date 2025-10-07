@@ -6,7 +6,10 @@ enum AccountAssetSection: Int, CaseIterable {
     case accountAsset
     case footer
 }
-
+enum UseValidate {
+    case none
+    case satoshi(Int64)
+}
 protocol AccountAssetViewControllerDelegate: AnyObject {
     func didSelectAccountAsset(account: WalletItem, asset: AssetInfo)
 }
@@ -18,12 +21,14 @@ class AccountAssetViewController: UIViewController {
     }
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var lblTitle: UILabel!
+    @IBOutlet weak var btnDismiss: UIButton!
 
     private var headerH: CGFloat = 54.0
     private var footerH: CGFloat = 54.0
 
     var viewModel: AccountAssetViewModel!
-    var delegate: AccountAssetViewControllerDelegate? = nil
+    var delegate: AccountAssetViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,10 +50,29 @@ class AccountAssetViewController: UIViewController {
     }
 
     func setContent() {
-        title = "id_account__asset".localized
+        lblTitle.text = "id_account__asset".localized
     }
 
     func setStyle() {
+    }
+    @IBAction func btnDismiss(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
+    func didSelectAt(_ indexPath: IndexPath) {
+        switch AccountAssetSection(rawValue: indexPath.section) {
+        case .accountAsset:
+            guard let cellModel = viewModel?.accountAssetCellModels[indexPath.row] else { return }
+            viewModel?.select(cell: cellModel)
+            if let delegate = delegate {
+                dismiss(animated: true) {
+                    delegate.didSelectAccountAsset(account: cellModel.account, asset: cellModel.asset)
+                }
+            } else {
+                sendAmountViewController()
+            }
+        default:
+            break
+        }
     }
 }
 
@@ -74,7 +98,11 @@ extension AccountAssetViewController: UITableViewDelegate, UITableViewDataSource
         case .accountAsset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AccountAssetCell.identifier, for: indexPath) as? AccountAssetCell,
                let model = viewModel {
-                cell.configure(model: model.accountAssetCellModels[indexPath.row])
+                cell.configure(model: model.accountAssetCellModels[indexPath.row],
+                               useValidate: UseValidate.satoshi(viewModel.createTx?.satoshi ?? 0),
+                               onTap: { [weak self] in
+                    self?.didSelectAt(indexPath)
+                })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -134,19 +162,6 @@ extension AccountAssetViewController: UITableViewDelegate, UITableViewDataSource
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch AccountAssetSection(rawValue: indexPath.section) {
-        case .accountAsset:
-            guard let cellModel = viewModel?.accountAssetCellModels[indexPath.row] else { return }
-            viewModel?.select(cell: cellModel)
-            if let delegate = delegate {
-                delegate.didSelectAccountAsset(account: cellModel.account, asset: cellModel.asset)
-                navigationController?.popViewController(animated: true)
-            } else {
-                sendAmountViewController()
-            }
-        default:
-            break
-        }
     }
 
     func sendAmountViewController() {
@@ -156,6 +171,7 @@ extension AccountAssetViewController: UITableViewDelegate, UITableViewDataSource
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+
 }
 
 extension AccountAssetViewController {

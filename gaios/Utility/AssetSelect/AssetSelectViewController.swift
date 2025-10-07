@@ -15,6 +15,7 @@ class AssetSelectViewController: UIViewController {
 
     var viewModel: AssetSelectViewModel!
     weak var delegate: AssetSelectViewControllerDelegate?
+    var dismissOnSelect = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +39,24 @@ class AssetSelectViewController: UIViewController {
         searchCard.setStyle(CardStyle.defaultStyle)
     }
 
+    func didSelectAsset(_ asset: String) {
+        if dismissOnSelect {
+            dismiss(animated: true) { [weak self] in
+                self?.delegate?.didSelectAsset(asset)
+            }
+        } else {
+            delegate?.didSelectAsset(asset)
+        }
+    }
+    func didSelectAnyAsset(_ type: AnyAssetType) {
+        if dismissOnSelect {
+            dismiss(animated: true) { [weak self] in
+                self?.delegate?.didSelectAnyAsset(type)
+            }
+        } else {
+            delegate?.didSelectAnyAsset(type)
+        }
+    }
     @objc func triggerTextChange() {
         viewModel?.search(searchField.text ?? "")
         tableView.reloadData()
@@ -48,7 +67,7 @@ class AssetSelectViewController: UIViewController {
         perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0.5)
     }
 
-    override func dismiss(animated: Bool, completion: (()->())? = nil) {
+    override func dismiss(animated: Bool, completion: (() -> Void)? = nil) {
         navigationController?.popViewController(animated: true)
         completion?()
     }
@@ -71,7 +90,9 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
         if indexPath.row < cnt {
             if let cell = tableView.dequeueReusableCell(withIdentifier: AssetSelectCell.identifier, for: indexPath) as? AssetSelectCell {
                 let model = viewModel.assetSelectCellModelsFilter[indexPath.row]
-                cell.configure(model: model, showEditIcon: false)
+                cell.configure(model: model,
+                               showEditIcon: false,
+                               hasLwkSession: viewModel.hasLwkSession)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -127,17 +148,11 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
         if indexPath.row < cnt {
             let assetCellModel = viewModel?.assetSelectCellModelsFilter[indexPath.row] as? AssetSelectCellModel
             let asset = assetCellModel?.asset?.assetId
-            dismiss(animated: true) {
-                self.delegate?.didSelectAsset(asset ?? "")
-            }
+            self.didSelectAsset(asset ?? "")
         } else if indexPath.row == cnt {
-            dismiss(animated: true) {
-                self.delegate?.didSelectAnyAsset(anyAssetTypes[0])
-            }
+            self.didSelectAnyAsset(anyAssetTypes[0])
         } else if indexPath.row == cnt+1 {
-            dismiss(animated: true) {
-                self.delegate?.didSelectAnyAsset(anyAssetTypes[1])
-            }
+            self.didSelectAnyAsset(anyAssetTypes[1])
         }
     }
 }

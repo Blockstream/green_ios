@@ -44,10 +44,7 @@ class ManageAssetViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if viewModel.account == nil {
-            // required to refresh after renaming
-            tableView?.reloadData()
-        }
+        tableView?.reloadData()
     }
     deinit {
         notificationObservers.forEach { observer in
@@ -168,22 +165,18 @@ class ManageAssetViewController: UIViewController {
     }
     func handleEvent(_ eventType: EventType, details: [AnyHashable: Any]) {
         switch eventType {
-        case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed, .newSubaccount:
-            Task.detached { [weak self] in
-                await self?.reload(discovery: false)
-            }
         case .Block:
             if viewModel.existPendingTransaction() {
                 Task.detached { [weak self] in
                     await self?.reload(discovery: false)
                 }
             }
-        case .Settings:
-            break
-        case .AssetsUpdated, .Network, .Ticker, .TwoFactorReset:
-            break
+        case .Settings, .AssetsUpdated, .Ticker:
+            tableView?.reloadData()
         default:
-            break
+            Task.detached { [weak self] in
+                await self?.reload(discovery: false)
+            }
         }
     }
     func setupNotifications() {

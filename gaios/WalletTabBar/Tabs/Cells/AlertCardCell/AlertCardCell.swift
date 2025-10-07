@@ -141,35 +141,26 @@ class AlertCardCell: UITableViewCell {
             }
         case .login(let network, let error):
             lblTitle.text = "id_warning".localized
+            let networkName = NetworkSecurityCase(rawValue: network)?.name()
             let errorString: String = {
                 switch error {
                 case LoginError.connectionFailed(let txt):
-                    return (txt ?? "") + "\n\n" + "id_ensure_your_app_is_up_to_date".localized
+                    return "Failed in \(networkName ?? ""): \(txt?.localized ?? "")\n\nid_ensure_your_app_is_up_to_date".localized
                 case LoginError.walletNotFound(let txt):
-                    return txt ?? ""
+                    return "Failed in \(networkName ?? ""): \(txt?.localized ?? "")"
                 case LoginError.hostUnblindingDisabled(_):
-                    return "Some wallet functionalities have been disabled or will not work properly"
+                    return "Failed in \(networkName ?? ""): Some wallet functionalities have been disabled or will not work properly"
                 case TwoFactorCallError.failure(let txt), TwoFactorCallError.cancel(let txt):
-                    return txt
+                    return "Failed in \(networkName ?? ""): \(txt.localized)"
                 default:
-                    return error.description().localized
+                    return "Failed to connect in \(networkName ?? ""): \(error.description().localized)"
                 }
             }()
-
-            let networkName = NetworkSecurityCase(rawValue: network)?.name()
-            btnRight.isHidden = true
+            btnRight.setTitle("id_try_again".localized, for: .normal)
+            btnRight.isHidden = network == NetworkSecurityCase.lightning.rawValue
             btnLeft.isHidden = true
-            btnsContainer.isHidden = true
-            lblHint.text = "In network \(networkName ?? ""): \(errorString.localized)"
-            switch error {
-            case LoginError.hostUnblindingDisabled(_):
-                lblHint.text = "\(errorString.localized)"
-                btnRight.setTitle("id_try_again".localized, for: .normal)
-                btnRight.isHidden = false
-                btnsContainer.isHidden = false
-            default:
-                break
-            }
+            //btnsContainer.isHidden = true
+            lblHint.text = errorString.localized
         case .lightningMaintenance:
             lblTitle.text = "id_lightning_account".localized
             lblHint.text = "id_lightning_service_is_undergoing".localized

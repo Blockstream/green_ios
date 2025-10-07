@@ -56,7 +56,7 @@ struct ZendeskErrorRequest {
         var logs = error ?? ""
         logs += "\r\n"
         logs += "Timestamp: \(Int(timestamp))\r\n"
-        if let nodeId = WalletManager.current?.lightningNodeId {
+        if let nodeId = WalletManager.current?.lightningSession?.nodeId {
             logs += "Lightning node id: \(nodeId)\r\n"
             logs += "Lightning logged: \(WalletManager.current?.lightningSession?.logged ?? false)\r\n"
         }

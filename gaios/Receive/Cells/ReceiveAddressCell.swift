@@ -75,7 +75,7 @@ class ReceiveAddressCell: UITableViewCell {
         }
         self.onCopyToClipboard = onCopyToClipboard
         self.onRefreshClick = onRefreshClick
-        if let uri = model.text {
+        if let uri = model.text, !uri.isEmpty {
             let dim = min(qrFrame.frame.size.width, qrFrame.frame.size.height)
             let frame = CGRect(x: 0.0, y: 0.0, width: dim, height: dim)
             btnQRCode.setImage(QRImageGenerator.imageForTextWhite(text: uri, frame: frame), for: .normal)
@@ -97,7 +97,7 @@ class ReceiveAddressCell: UITableViewCell {
             loader.isHidden = true
         }
         lnBannerBox.isHidden = true
-        if let onChaininfo = model.onChaininfo, model.type == .swap {
+        if let onChaininfo = model.onChaininfo, model.type == .breezSwap {
             lnBannerBox.isHidden = false
             lblInfo.text = onChaininfo
             btnRefresh.isHidden = true

@@ -192,7 +192,7 @@ extension QRPsbtShowViewController: QRUnlockJadeViewControllerDelegate {
         // nothing
     }
 
-    func login(credentials: gdk.Credentials, wallet: core.WalletManager) {
+    func login(credentials: gdk.Credentials, wallet: core.WalletManager, account: Account) {
         print("login")
     }
     func abort() {

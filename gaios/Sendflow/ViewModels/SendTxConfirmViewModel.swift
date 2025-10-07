@@ -4,6 +4,7 @@ import gdk
 import greenaddress
 import UIKit
 import BreezSDK
+import LiquidWalletKit
 
 enum VerifyAddressState {
     case noneed
@@ -13,12 +14,12 @@ enum VerifyAddressState {
 
 class SendTxConfirmViewModel {
 
-    var transaction: Transaction?
+    var transaction: gdk.Transaction?
     var subaccount: WalletItem?
     var wm: WalletManager? { WalletManager.current }
     var denominationType: DenominationType
     var isFiat = false
-    var isJade: Bool { wm?.account.isJade ?? false }
+    var isJade: Bool { wm?.isJade ?? false }
     var session: SessionManager? {
         guard let subaccount = subaccount else { return nil }
         if isJade && BleHwManager.shared.walletManager != nil {
@@ -43,17 +44,18 @@ class SendTxConfirmViewModel {
         return withdrawData.defaultDescription
     }
     var withdrawAmount: UInt64 = 0
-    var txAddresses: [Address]? {
+    var txAddresses: [gdk.Address]? {
         transaction?.addressees.compactMap { Address(address: $0.address, subtype: $0.subtype, userPath: $0.userPath, isGreedy: $0.isGreedy) }
     }
+    var pay: PreparePayResponse?
 
-    internal init(transaction: Transaction?, subaccount: WalletItem?, denominationType: DenominationType, isFiat: Bool, txType: TxType, unsignedPsbt: String?, signedPsbt: String?) {
+    internal init(transaction: gdk.Transaction?, subaccount: WalletItem?, denominationType: DenominationType, isFiat: Bool, txType: TxType, unsignedPsbt: String?, signedPsbt: String?) {
         self.transaction = transaction
         self.subaccount = subaccount
         self.denominationType = denominationType
         self.isFiat = isFiat
         self.txType = txType
-        self.verifyAddressState = (txType == .redepositExpiredUtxos && (WalletManager.current?.account.isHW ?? false) && !(subaccount?.session?.networkType.liquid ?? false)) ? .unverified : .noneed
+        self.verifyAddressState = (txType == .redepositExpiredUtxos && (WalletManager.current?.isHW ?? false) && !(subaccount?.session?.networkType.liquid ?? false)) ? .unverified : .noneed
         self.unsignedPsbt = unsignedPsbt
         self.signedPsbt = signedPsbt
         self.importSignedPsbt = signedPsbt != nil
@@ -61,7 +63,7 @@ class SendTxConfirmViewModel {
 
     var isLightning: Bool { subaccount?.networkType == .lightning }
     var isConsolitating: Bool { txType == .redepositExpiredUtxos }
-    var hasHW: Bool { wm?.account.isHW ?? false }
+    var hasHW: Bool { wm?.isHW ?? false }
     var addressee: Addressee? { transaction?.addressees.first }
     var address: String? { addressee?.address }
     var assetId: String { addressee?.assetId ?? subaccount?.gdkNetwork.getFeeAsset() ?? "btc" }
@@ -126,11 +128,12 @@ class SendTxConfirmViewModel {
         wm?.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && !importSignedPsbt
     }
     func needConnectHw() -> Bool {
-        wm?.account.isHW ?? false
+        wm?.isHW ?? false
     }
     func needExportPsbt() -> Bool {
         wm?.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && signedPsbt == nil
     }
+
     private func sendTx() async throws -> SendTransactionSuccess {
         guard let session = session,
               var tx = transaction else {
@@ -229,7 +232,7 @@ class SendTxConfirmViewModel {
 
     func sendHWConfirmViewModel() -> SendHWConfirmViewModel {
         SendHWConfirmViewModel(
-            isLedger: wm?.account.isLedger ?? false,
+            isLedger: wm?.isLedger ?? false,
             tx: transaction!,
             denomination: denominationType,
             subaccount: self.subaccount,
@@ -238,7 +241,7 @@ class SendTxConfirmViewModel {
 
     func tempSendHWConfirmViewModel() -> SendHWConfirmViewModel {
         SendHWConfirmViewModel(
-            isLedger: wm?.account.isLedger ?? false,
+            isLedger: wm?.isLedger ?? false,
             tx: transaction!,
             denomination: denominationType,
             subaccount: self.subaccount)
@@ -269,14 +272,14 @@ class SendTxConfirmViewModel {
         }
     }
 
-    func validateHW(_ address: Address) async throws -> Bool {
+    func validateHW(_ address: gdk.Address) async throws -> Bool {
         guard let subaccount = subaccount else {
             throw GaError.GenericError("id_invalid_subaccount".localized)
         }
         return try await BleHwManager.shared.validateAddress(account: subaccount, address: address)
     }
 
-    func sendVerifyOnDeviceViewModel(_ address: Address) -> HWDialogVerifyOnDeviceViewModel? {
+    func sendVerifyOnDeviceViewModel(_ address: gdk.Address) -> HWDialogVerifyOnDeviceViewModel? {
         guard let address = address.address else { return nil }
         let account = AccountsRepository.shared.current
         return HWDialogVerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false,

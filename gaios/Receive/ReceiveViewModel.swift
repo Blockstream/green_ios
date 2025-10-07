@@ -6,31 +6,37 @@ import hw
 import BreezSDK
 import lightning
 import core
+import LiquidWalletKit
 
 enum ReceiveType: Int, CaseIterable {
     case address
-    case swap
+    case breezSwap
     case bolt11
+    case lwkSwap
 }
 
 class ReceiveViewModel {
 
     var account: WalletItem { didSet { ReceiveViewModel.defaultAccount = account }}
+    var mainAccount: Account? { AccountsRepository.shared.current }
     var asset: String
     var satoshi: Int64?
     var anyAsset: AnyAssetType?
     var isFiat: Bool = false
     var type: ReceiveType
     var description: String?
-    var address: Address?
+    var address: gdk.Address?
     var receivePaymentResponse: ReceivePaymentResponse?
-    var invoice: LnInvoice? { receivePaymentResponse?.lnInvoice }
-    var swap: SwapInfo?
+    var breezInvoice: LnInvoice? { receivePaymentResponse?.lnInvoice }
+    var lwkInvoice: InvoiceResponse?
+    var bolt11: String?
+    var breezSwap: SwapInfo?
     var inputDenomination: gdk.DenominationType = .Sats
     var state: AmountCellState = .disabled
     var wm: WalletManager { WalletManager.current! }
     var backupCardCellModel = [AlertCardCellModel]()
     var allowChange = true
+    var reverseSwapInfo: BoltzReverseSwapInfoLBTC?
 
     static func getLightningSubaccounts() -> [WalletItem] {
         if let subaccount = WalletManager.current?.lightningSubaccount {
@@ -48,7 +54,6 @@ class ReceiveViewModel {
     static func getLiquidAmpSubaccounts() -> [WalletItem] {
         WalletManager.current?.liquidAmpSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
-    
     init(_ waParam: (wallet: WalletItem, assetId: String)? = nil) {
         if let waParam = waParam {
             self.account = waParam.wallet
@@ -58,14 +63,14 @@ class ReceiveViewModel {
             self.account = ReceiveViewModel.defaultAccount ?? ReceiveViewModel.getBitcoinSubaccounts().first ??  ReceiveViewModel.getLiquidSubaccounts().first!
             self.asset = self.account.gdkNetwork.getFeeAsset()
         }
-        self.type = self.account.gdkNetwork.lightning ? .bolt11 : .address
+        self.type = self.asset == AssetInfo.lightningId ? .bolt11 : .address
         self.inputDenomination = wm.prominentSession?.settings?.denomination ?? .Sats
     }
-    
+
     func accountType() -> String {
         return account.localizedName
     }
-    
+
     func newAddress() async throws {
         switch type {
         case .address:
@@ -73,13 +78,34 @@ class ReceiveViewModel {
             let session = self.wm.sessions[account.gdkNetwork.network]
             address = try await session?.getReceiveAddress(subaccount: account.pointer)
         case .bolt11:
-            receivePaymentResponse = nil
             if satoshi == nil {
                 return
             }
             receivePaymentResponse = try await wm.lightningSession?.createInvoice(satoshi: UInt64(satoshi ?? 0), description: description ?? "")
-        case .swap:
-            swap = try await wm.lightningSession?.lightBridge?.receiveOnchain()
+            bolt11 = receivePaymentResponse?.lnInvoice.bolt11
+        case .lwkSwap:
+            let liquidAccount: WalletItem? = {
+                if self.account.networkType.liquid {
+                    return self.account
+                }
+                return self.wm.liquidSubaccounts.first
+            }()
+            guard let account = liquidAccount else {
+                throw GaError.GenericError("No liquid session")
+            }
+            logger.info("BOLTZ getReceiveAddress")
+            let address = try await account.session?.getReceiveAddress(subaccount: account.pointer)
+            guard let address = address?.address else {
+                throw GaError.GenericError("Invalid address")
+            }
+            logger.info("BOLTZ invoice")
+            let claimAddress = try LiquidWalletKit.Address(s: address)
+            let invoice = try await wm.lwkSession?.invoice(amount: UInt64(satoshi ?? 0), description: description ?? "", claimAddress: claimAddress)
+            self.lwkInvoice = invoice
+            self.bolt11 = try invoice?.bolt11Invoice().description
+            logger.info("BOLTZ invoiced")
+        case .breezSwap:
+            breezSwap = try await wm.lightningSession?.lightBridge?.receiveOnchain()
         }
     }
 
@@ -127,38 +153,40 @@ class ReceiveViewModel {
 
     var amountCellModel: AmountCellModel {
         let nodeState = account.lightningSession?.nodeState
+
         return AmountCellModel(satoshi: satoshi,
                                maxLimit: nodeState?.maxReceivableSatoshi,
                                isFiat: isFiat,
                                inputDenomination: inputDenomination,
                                gdkNetwork: account.session?.gdkNetwork,
                                breezSdk: account.lightningSession?.lightBridge,
-                               scope: .ltReceive
+                               scope: self.type == .lwkSwap ? .reverseSwap : .ltReceive,
+                               reverseSwapInfo: reverseSwapInfo
         )
     }
 
     var infoReceivedAmountCellModel: LTInfoCellModel {
-        if let satoshi = invoice?.receiveAmountSatoshi(openingFeeParams: receivePaymentResponse?.openingFeeParams) {
+        /*if let satoshi = invoice?.receiveAmountSatoshi(openingFeeParams: receivePaymentResponse?.openingFeeParams) {
             if let balance = Balance.fromSatoshi(Int64(satoshi), assetId: "btc") {
                 let (value, denom) = balance.toDenom(inputDenomination)
                 let (fiat, currency) = balance.toFiat()
                 return LTInfoCellModel(title: "id_amount_to_receive".localized, hint1: "\(value) \(denom)", hint2: "\(fiat) \(currency)")
             }
-        }
+        }*/
         return LTInfoCellModel(title: "id_amount_to_receive".localized, hint1: "", hint2: "")
     }
 
     var infoExpiredInCellModel: LTInfoCellModel {
         LTInfoCellModel(
             title: "id_expiration".localized,
-            hint1: "In \(abs(invoice?.expiringInMinutes ?? 0)) minutes",
+            hint1: "", //"In \(abs(invoice?.expiringInMinutes ?? 0)) minutes",
             hint2: "")
     }
 
     var noteCellModel: LTNoteCellModel {
         return LTNoteCellModel(note: description ?? "id_note".localized)
     }
-    
+
     var isBip21: Bool {
         return text?.hasPrefix("bitcoin:") ?? false ||
             text?.hasPrefix("lightning:") ?? false ||
@@ -168,17 +196,22 @@ class ReceiveViewModel {
     var text: String? {
         switch type {
         case .bolt11:
-            return invoice?.bolt11
-        case .swap:
-            return swap?.bitcoinAddress
+            return bolt11
+        case .breezSwap:
+            return breezSwap?.bitcoinAddress
+        case .lwkSwap:
+            return bolt11
         case .address:
-            if !AssetInfo.baseIds.contains(where: { $0 == asset}) {
-                return addressToUri(address: address?.address ?? "", satoshi: satoshi ?? 0, assetId: asset)
-            } else if satoshi != nil {
-                return addressToUri(address: address?.address ?? "", satoshi: satoshi ?? 0, assetId: asset)
-            } else {
-                return address?.address ?? ""
+            if let address = address?.address {
+                if !AssetInfo.baseIds.contains(where: { $0 == asset}) {
+                    return addressToUri(address: address, satoshi: satoshi ?? 0, assetId: asset)
+                } else if satoshi != nil {
+                    return addressToUri(address: address, satoshi: satoshi ?? 0, assetId: asset)
+                } else {
+                    return address
+                }
             }
+            return nil
         }
     }
 
@@ -187,7 +220,7 @@ class ReceiveViewModel {
         return ReceiveAddressCellModel(text: text,
                                        isBip21: isBip21,
                                        type: type,
-                                       swapInfo: swap,
+                                       swapInfo: breezSwap,
                                        satoshi: satoshi,
                                        maxLimit: nodeState?.maxReceivableSatoshi,
                                        inputDenomination: inputDenomination,
@@ -199,7 +232,7 @@ class ReceiveViewModel {
 
     func getAssetSelectViewModel() -> AssetSelectViewModel {
         let hasSubaccountAmp = hasSubaccountAmp()
-        let hasLightning = wm.existDerivedLightning()
+        let hasLightning = wm.lightningSession?.logged ?? false
         let hasLiquid = hasSubaccountLiquid()
         let hasBitcoin = hasSubaccountBitcoin()
         let assetIds = WalletManager.current?.registry.all
@@ -241,7 +274,7 @@ class ReceiveViewModel {
     }
     func reloadBackupCards() {
         var cards: [AlertCardType] = []
-        if BackupHelper.shared.needsBackup(walletId: wm.account.id) && BackupHelper.shared.isDismissed(walletId: wm.account.id, position: .receive) == false {
+        if BackupHelper.shared.needsBackup(walletId: mainAccount?.id) && BackupHelper.shared.isDismissed(walletId: mainAccount?.id, position: .receive) == false {
             cards.append(.backup)
         }
         self.backupCardCellModel = cards.map { AlertCardCellModel(type: $0) }
@@ -266,7 +299,9 @@ class ReceiveViewModel {
             break
         }
         let asset = wm.info(for: asset)
-        if asset.isLightning {
+        if type == .lwkSwap {
+            return ReceiveViewModel.getLiquidSubaccounts()
+        } else if asset.isLightning {
             return ReceiveViewModel.getLightningSubaccounts()
         } else if asset.isBitcoin {
             return ReceiveViewModel.getBitcoinSubaccounts()
@@ -297,8 +332,7 @@ class ReceiveViewModel {
         ReceiveAssetCellModel(assetId: asset, anyAsset: anyAsset)
     }
     static var defaultAccountLabel: String? {
-        guard let wm = WalletManager.current else { return nil }
-        return "\(wm.account.id)_receive_subaccount"
+        return "\(AccountsRepository.shared.current?.id ?? "")_receive_subaccount"
     }
     static var defaultAccount: WalletItem? {
         get {

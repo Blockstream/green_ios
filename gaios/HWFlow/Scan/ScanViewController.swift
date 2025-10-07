@@ -251,9 +251,9 @@ extension ScanViewController: QRUnlockJadeViewControllerDelegate {
         
     }
     
-    func login(credentials: gdk.Credentials, wallet: WalletManager) {
-        AccountsRepository.shared.current = wallet.account
-        AccountNavigator.navLogged(accountId: wallet.account.id)
+    func login(credentials: gdk.Credentials, wallet: WalletManager, account: Account) {
+        AccountsRepository.shared.current = account
+        AccountNavigator.navLogged(accountId: account.id)
     }
 
     func abort() {

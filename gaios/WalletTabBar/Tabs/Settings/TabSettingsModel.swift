@@ -36,15 +36,16 @@ class TabSettingsModel {
 
     // load wallet manager for current logged session
     var wm: WalletManager? { WalletManager.current }
+    var mainAccount: Account? { AccountsRepository.shared.current }
 
     // load wallet manager for current logged session
     var session: SessionManager? { wm?.prominentSession }
     var settings: Settings? { session?.settings }
     var isWatchonly: Bool { wm?.isWatchonly ?? false }
-    var isEphemeral: Bool { wm?.account.isEphemeral ?? false }
-    var isWatchonlySinglesig: Bool { (wm?.isWatchonly ?? false) && (wm?.account.username?.isEmpty ?? true) }
+    var isEphemeral: Bool { wm?.isEphemeral ?? false }
+    var isWatchonlySinglesig: Bool { (wm?.isWatchonly ?? false) && (mainAccount?.username?.isEmpty ?? true) }
     var isSinglesig: Bool { session?.gdkNetwork.electrum ?? true }
-    var isHW: Bool { wm?.account.isHW ?? false }
+    var isHW: Bool { wm?.isHW ?? false }
     var multiSigSession: SessionManager? { wm?.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }
 
     // reload all contents
@@ -104,7 +105,7 @@ class TabSettingsModel {
             section: .wallet,
             type: .logout)
         var menu = [SettingsItemData]()
-        if let wm = wm, !wm.account.isEphemeral {
+        if let wm = wm, !isEphemeral {
             menu += [rename]
         }
         menu += [unifiedDenominationExchange, autolock, logout]
@@ -228,11 +229,12 @@ class TabSettingsModel {
         if !session.logged {
             if let device = wm?.hwDevice {
                 try await session.register(credentials: nil, hw: device)
-                _ = try await session.loginUser(credentials: nil, hw: device)
+                _ = try await session.loginUser(device)
             } else {
-                let credentials = try await wm?.prominentSession?.getCredentials(password: "")
-                try await session.register(credentials: credentials, hw: nil)
-                _ = try await session.loginUser(credentials: credentials, hw: nil)
+                if let credentials = try await wm?.prominentSession?.getCredentials(password: "") {
+                    try await session.register(credentials: credentials, hw: nil)
+                    _ = try await session.loginUser(credentials)
+                }
             }
         }
         _ = try await session.createSubaccount(CreateSubaccountParams(name: uniqueAmpName(), type: .amp))
@@ -259,11 +261,11 @@ class TabSettingsModel {
     }
 
     func hasLightning() -> Bool {
-        guard let account = WalletManager.current?.account else {
+        guard let mainAccount = mainAccount else {
             return false
         }
         return AuthenticationTypeHandler.findAuth(
             method: .AuthKeyLightning,
-            forNetwork: account.keychainLightning)
+            forNetwork: mainAccount.keychainLightning)
     }
 }

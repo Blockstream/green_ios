@@ -6,6 +6,7 @@ import gdk
 import hw
 import Combine
 import core
+import LiquidWalletKit
 
 public enum TransactionBaseType: UInt32 {
     case BTC = 0
@@ -21,6 +22,7 @@ enum ReceiveSection: Int, CaseIterable {
     case infoReceiveAmount
     case infoExpiredIn
     case note
+    case segmented
 }
 
 class ReceiveViewController: KeyboardViewController {
@@ -33,7 +35,7 @@ class ReceiveViewController: KeyboardViewController {
     @IBOutlet weak var accountStack: UIStackView!
     @IBOutlet weak var lblAccount: UILabel!
     @IBOutlet weak var btnAccount: UIButton!
-
+    @IBOutlet weak var footerLabel: UILabel!
     private var selectedType = TransactionBaseType.BTC
     private var lightningAmountEditing = true
     private var newAddressToken, invoicePaidToken: NSObjectProtocol?
@@ -42,9 +44,10 @@ class ReceiveViewController: KeyboardViewController {
     private var keyboardVisible = false
     var viewModel: ReceiveViewModel!
     weak var verifyOnDeviceViewController: HWDialogVerifyOnDeviceViewController?
+    var selectedSegment: Int = 0
 
     var showVerify: Bool {
-        return viewModel.wm.account.isJade && !viewModel.account.isLightning
+        return viewModel.wm.isJade && !viewModel.account.isLightning && viewModel.type == .address
     }
 
     override func viewDidLoad() {
@@ -54,11 +57,11 @@ class ReceiveViewController: KeyboardViewController {
         setContent()
         setStyle()
 
-        AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
-
         didSelectAccount(viewModel.account)
         // always nag even after dismiss
-        BackupHelper.shared.cleanDismissedCache(walletId: viewModel.wm.account.id, position: .receive)
+        //BackupHelper.shared.cleanDismissedCache(walletId: viewModel.wm.account.id, position: .receive)
+        
+        //AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -89,24 +92,16 @@ class ReceiveViewController: KeyboardViewController {
         let inset = (UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 0) - 5
         keyboardVisible = true
         stackBottom.constant = keyboardFrame.height - inset
-        UIView.animate(withDuration: 0.5, animations: { [weak self] in
-            self?.view.layoutIfNeeded()
-            let network = self?.viewModel.account.gdkNetwork
-        })
     }
 
     override func keyboardWillHide(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         keyboardVisible = false
         stackBottom.constant = 0.0
-        UIView.animate(withDuration: 0.5, animations: { [weak self] in
-            self?.view.layoutIfNeeded()
-            let network = self?.viewModel.account.gdkNetwork
-        })
     }
 
     func register() {
-        ["AlertCardCell", "ReceiveAddressCell", "AmountCell", "LTInfoCell", "LTNoteCell", "ReceiveAssetCell", "ChangeAccountCell"].forEach {
+        ["AlertCardCell", "ReceiveAddressCell", "AmountCell", "LTInfoCell", "LTNoteCell", "ReceiveAssetCell", "ChangeAccountCell", "SegmentedCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
@@ -116,43 +111,57 @@ class ReceiveViewController: KeyboardViewController {
         btnShare.setTitle("id_share".localized, for: .normal)
         btnVerify.setTitle("id_verify_on_device".localized, for: .normal)
         btnConfirm.setTitle("id_confirm".localized, for: .normal)
+        footerLabel.text = "You will receive Liquid bitcoin via Lightning invoice.".localized
     }
 
     func setStyle() {
         btnShare.setStyle(!showVerify ? .primary : .outlined)
-        btnShare.setTitleColor(.white, for: .normal)
         btnVerify.setStyle(.primary)
+        footerLabel.setStyle(.txt)
         stateDidChange(.disabled)
     }
 
     var sections: [ReceiveSection] {
+        if viewModel.asset == AssetInfo.lbtcId {
+            switch viewModel.type {
+            case .lwkSwap:
+                if lightningAmountEditing {
+                    return [.asset, .account, .segmented, .amount]
+                } else {
+                    return [.asset, .account, .segmented, .amount, .address]
+                }
+            default:
+                if viewModel.wm.lwkSession?.logged ?? false {
+                    return [.asset, .account, .segmented, .address]
+                } else {
+                    return [.asset, .account, .address]
+                }
+            }
+        }
         switch viewModel.type {
         case .bolt11:
             if lightningAmountEditing {
                 return [.asset, .account, .amount]
-            } else if viewModel.description == nil {
-                return [.asset, .account, .amount, .address, .infoReceiveAmount, .infoExpiredIn]
             } else {
-                return ReceiveSection.allCases
+                return [.asset, .account, .amount, .address, .infoReceiveAmount, .infoExpiredIn, .note]
             }
-        case .swap:
+        case .breezSwap:
             return [.backup, .asset, .account, .address]
         case .address:
             return [.backup, .asset, .account, .address]
+        default:
+            return []
         }
     }
 
     @MainActor
     func reload() {
         let network = viewModel.account.gdkNetwork
-        btnConfirm.isHidden = !(network.lightning && lightningAmountEditing)
-        btnShare.isHidden = !(!network.lightning || !lightningAmountEditing)
-        if viewModel.type == .swap {
-            btnConfirm.isHidden = true
-            btnShare.isHidden = false
-        }
+        btnConfirm.isHidden = !(lightningAmountEditing && (network.lightning || viewModel.type == .lwkSwap))
+        btnShare.isHidden = lightningAmountEditing && (network.lightning || viewModel.type == .lwkSwap)
         btnVerify.isHidden = !showVerify
         accountStack.isHidden = true
+        footerLabel.isHidden = viewModel.type != .lwkSwap
         reloadNavigationBtns()
         viewModel.reloadBackupCards()
         tableView.reloadData()
@@ -189,8 +198,22 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func newAddress(_ notification: Notification? = nil) {
-        Task { [weak self] in
+         Task { [weak self] in
             await self?.newAddressAsync()
+        }
+    }
+
+    func waitingSwapCompletion() async {
+        guard let invoice = viewModel.lwkInvoice else { return }
+        let res = Task.detached(priority: .background) { [weak self] in
+            try await self?.viewModel.wm.lwkSession?.handleInvoice(invoice: invoice)
+        }
+        switch await res.result {
+        case .success(let res):
+            logger.info("BOLTZ waiting: \(res == PaymentState.success ? "Success" : "Failed" )")
+            DropAlert().success(message: "id_payment_received".localized)
+        case .failure(let err):
+            logger.error("BOLTZ waiting error: \(err.description().localized, privacy: .public)")
         }
     }
 
@@ -204,6 +227,14 @@ class ReceiveViewController: KeyboardViewController {
         case .success:
             loading = false
             reload()
+            // waiting for paid invoice
+            switch viewModel.type {
+            case .lwkSwap:
+                await waitingSwapCompletion()
+                break
+            default:
+                break
+            }
         case .failure(let err):
             error(err)
         }
@@ -235,7 +266,7 @@ class ReceiveViewController: KeyboardViewController {
             screenName: "Receive")
         presentContactUsViewController(request: request)
     }
-
+    
     @MainActor
     func presentDialogAccountsViewController() {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
@@ -349,6 +380,7 @@ class ReceiveViewController: KeyboardViewController {
             vc.showTxt = true
             vc.showBtn = true
             vc.modalPresentationStyle = .overFullScreen
+            vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: false, completion: nil)
             UINotificationFeedbackGenerator().notificationOccurred(.success)
         }
@@ -415,7 +447,7 @@ class ReceiveViewController: KeyboardViewController {
         }
     }
     func backupAlertDismiss() {
-        BackupHelper.shared.addToDismissed(walletId: viewModel.wm.account.id, position: .receive)
+        BackupHelper.shared.addToDismissed(walletId: viewModel.mainAccount?.id, position: .receive)
         viewModel.reloadBackupCards()
         reloadSections([.backup], animated: true)
     }
@@ -476,7 +508,6 @@ class ReceiveViewController: KeyboardViewController {
             newAddress()
         }
     }
-
 }
 
 extension ReceiveViewController: AssetSelectViewControllerDelegate {
@@ -511,17 +542,27 @@ extension ReceiveViewController: AssetSelectViewControllerDelegate {
         }
         viewModel.asset = assetId
         viewModel.anyAsset = nil
-        if (info?.isBitcoin ?? true && !viewModel.account.networkType.bitcoin) ||
-            (info?.isLightning ?? true && !viewModel.account.networkType.lightning) ||
-            (info?.amp ?? true && viewModel.account.type != .amp ) ||
-            (info?.isLiquid ?? true && !viewModel.account.networkType.liquid) {
-            if let account = viewModel.getAccounts().first {
-                viewModel.account = account
-                viewModel.type = account.gdkNetwork.lightning ? .bolt11 : .address
-            }
+        if assetId == AssetInfo.lightningId {
+            viewModel.type = .bolt11
+            lightningAmountEditing = true
+        } else {
+            selectedSegment = 0
+            viewModel.type = .address
         }
         reload()
         newAddress()
+    }
+    func prepareReverseSwap() {
+        Task { [weak self] in
+            do {
+                if self?.viewModel.reverseSwapInfo == nil {
+                    self?.viewModel.reverseSwapInfo = try? await self?.viewModel.wm.lwkSession?.fetchReverseSwapsInfo()
+                }
+                self?.viewModel.type = .lwkSwap
+                self?.selectedSegment = 1
+                self?.reload()
+            }
+        }
     }
 }
 extension ReceiveViewController: DialogAmountViewControllerDelegate {
@@ -627,6 +668,8 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
             return 1
         case ReceiveSection.note:
             return 1
+        case ReceiveSection.segmented:
+            return 1
         }
     }
 
@@ -664,6 +707,7 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
             let action: (() -> Void)? = viewModel.allowChange ? { [weak self] in self?.onAccountChange() } : nil
             if let cell = tableView.dequeueReusableCell(withIdentifier: "ChangeAccountCell") as? ChangeAccountCell {
                 cell.configure(name: viewModel.account.localizedName,
+                               type: viewModel.account.type.path.uppercased(),
                                onTap: action)
                 cell.selectionStyle = .none
                 return cell
@@ -707,6 +751,20 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
+        case ReceiveSection.segmented:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "SegmentedCell") as? SegmentedCell {
+                cell.configure(
+                    selected: selectedSegment,
+                    onLeftTap: { [weak self] in
+                        self?.viewModel.type = .address;
+                        self?.selectedSegment = 0;
+                        self?.reload() },
+                    onRightTap: { [weak self] in
+                        self?.prepareReverseSwap()
+                    })
+                cell.selectionStyle = .none
+                return cell
+            }
         }
 
         return UITableViewCell()
@@ -723,6 +781,8 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
         case ReceiveSection.amount:
             return headerH
         case ReceiveSection.note:
+            return headerH
+        case ReceiveSection.segmented:
             return headerH
         default:
             return 0.1
@@ -751,13 +811,17 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
                 return headerView("id_address".localized)
             case .bolt11:
                 return headerView("id_lightning_invoice".localized)
-            case .swap:
+            case .breezSwap:
                 return headerView("id_onchain_address".localized)
+            case .lwkSwap:
+                return headerView("id_invoice".localized)
             }
         case ReceiveSection.amount:
             return headerView("id_amount".localized)
         case ReceiveSection.note:
             return headerView("id_note".localized)
+        case ReceiveSection.segmented:
+            return headerView("Payer Sends".localized)
         case .infoReceiveAmount:
             return nil
         case .infoExpiredIn:
@@ -832,7 +896,7 @@ extension ReceiveViewController: AmountCellDelegate {
     func stateDidChange(_ state: AmountCellState) {
         viewModel.state = state
         btnConfirm.isEnabled = viewModel.state == .valid
-        btnConfirm.setStyle( btnConfirm.isEnabled ? .primary : .primaryGray)
+        btnConfirm.setStyle( btnConfirm.isEnabled ? .primary : .primaryDisabled)
     }
 }
 

@@ -9,6 +9,9 @@ class AssetSelectCell: UITableViewCell {
     @IBOutlet weak var ampSubview: UIView!
     @IBOutlet weak var lblAmp: UILabel!
     @IBOutlet weak var iconEdit: UIImageView!
+    @IBOutlet weak var viewLightReady: UIView!
+    @IBOutlet weak var iconLightReady: UIImageView!
+    @IBOutlet weak var lblLightReady: UILabel!
 
     class var identifier: String { return String(describing: self) }
 
@@ -17,10 +20,12 @@ class AssetSelectCell: UITableViewCell {
         bg.setStyle(CardStyle.defaultStyle)
         ampSubview.cornerRadius = 5.0
         assetSubview.cornerRadius = 5.0
+        viewLightReady.isHidden = true
     }
 
     func configure(model: AssetSelectCellModel,
-                   showEditIcon: Bool) {
+                   showEditIcon: Bool,
+                   hasLwkSession: Bool = false) {
         ampSubview.isHidden = true
         assetSubview.borderWidth = 0.0
         iconEdit.isHidden = !showEditIcon
@@ -41,5 +46,20 @@ class AssetSelectCell: UITableViewCell {
         self.lblAsset.text = name
         self.imgView?.image = model.icon
 
+        if model.isLBTC() && hasLwkSession {
+            configureLightningReady()
+        } else {
+            viewLightReady.isHidden = true
+        }
+    }
+    func configureLightningReady() {
+        viewLightReady.isHidden = false
+        iconLightReady.image = UIImage(named: "ic_shortcut_light")!.maskWithColor(color: .gLightning())
+        lblLightReady.text = "Lightning Ready".localized
+        viewLightReady.borderWidth = 1.0
+        viewLightReady.borderColor = .gLightning()
+        viewLightReady.cornerRadius = 5.0
+        lblLightReady.setStyle(.txtSmaller)
+        lblLightReady.textColor = .gLightning()
     }
 }

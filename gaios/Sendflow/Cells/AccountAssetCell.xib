@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -102,17 +102,28 @@
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="51" id="QBj-TG-Bfx"/>
                                 </constraints>
                             </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jKk-Ia-og9">
+                                <rect key="frame" x="0.0" y="0.0" width="270" height="81"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <connections>
+                                    <action selector="btnOnTap:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="eaN-RU-QBp"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" name="gGrayCard"/>
                         <constraints>
                             <constraint firstItem="Wz1-Rf-ajy" firstAttribute="leading" secondItem="vYM-M0-7w9" secondAttribute="trailing" constant="15" id="3k1-c7-5Hi"/>
+                            <constraint firstAttribute="bottom" secondItem="jKk-Ia-og9" secondAttribute="bottom" id="56R-11-wAq"/>
+                            <constraint firstAttribute="trailing" secondItem="jKk-Ia-og9" secondAttribute="trailing" id="AdL-2B-qcl"/>
                             <constraint firstAttribute="trailing" secondItem="Wz1-Rf-ajy" secondAttribute="trailing" constant="15" id="Afk-Pm-OOK"/>
+                            <constraint firstItem="jKk-Ia-og9" firstAttribute="top" secondItem="635-L7-ihQ" secondAttribute="top" id="Chi-hg-2GA"/>
                             <constraint firstItem="Wz1-Rf-ajy" firstAttribute="top" secondItem="635-L7-ihQ" secondAttribute="top" constant="15" id="Ik0-oB-8tL"/>
                             <constraint firstItem="ZhN-fs-UK9" firstAttribute="trailing" secondItem="vYM-M0-7w9" secondAttribute="trailing" constant="3" id="Ptk-u2-5eF"/>
                             <constraint firstAttribute="bottom" secondItem="Wz1-Rf-ajy" secondAttribute="bottom" constant="15" id="R64-CC-nch"/>
                             <constraint firstItem="vYM-M0-7w9" firstAttribute="centerY" secondItem="635-L7-ihQ" secondAttribute="centerY" id="gMM-2s-Sri"/>
                             <constraint firstItem="ZhN-fs-UK9" firstAttribute="bottom" secondItem="vYM-M0-7w9" secondAttribute="bottom" constant="3" id="jz4-Wj-zth"/>
                             <constraint firstItem="vYM-M0-7w9" firstAttribute="leading" secondItem="635-L7-ihQ" secondAttribute="leading" constant="15" id="pez-D7-Iaa"/>
+                            <constraint firstItem="jKk-Ia-og9" firstAttribute="leading" secondItem="635-L7-ihQ" secondAttribute="leading" id="zJD-LV-IbB"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -144,12 +155,12 @@
         <image name="ic_key_ms" width="15" height="10"/>
         <image name="ic_key_ss" width="10" height="10"/>
         <image name="ic_lightning" width="13" height="15.666666984558105"/>
-        <image name="ntw_btc" width="60" height="61"/>
+        <image name="ntw_btc" width="24" height="24"/>
         <namedColor name="gBlackBg">
-            <color red="0.074509803921568626" green="0.082352941176470587" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGrayCard">
-            <color red="0.10588235294117647" green="0.12549019607843137" blue="0.16470588235294117" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.094117647058823528" green="0.094117647058823528" blue="0.094117647058823528" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

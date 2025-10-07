@@ -49,4 +49,7 @@ class AssetSelectViewModel {
         assetSelectCellModelsFilter = assetSelectCellModels
         reload?()
     }
+    var hasLwkSession: Bool {
+        return wm.lwkSession?.logged ?? false
+    }
 }

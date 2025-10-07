@@ -18,17 +18,17 @@ class WOLoginViewController: KeyboardViewController {
     @IBOutlet weak var ssModeView: UIView!
     @IBOutlet weak var msModeView: UIView!
 
-    var account: Account!
     private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
-    private let viewModel = WOViewModel()
-    let menuButton = UIButton(type: .system)
+    var account: Account { viewModel.account }
     var isSS: Bool { account.gdkNetwork.electrum }
+    var viewModel: WOViewModel!
+    let menuButton = UIButton(type: .system)
     var autologin = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = account?.name ?? ""
+        navigationItem.title = viewModel.account.name
 
         ssModeView.isHidden = !isSS
         msModeView.isHidden = isSS
@@ -44,13 +44,8 @@ class WOLoginViewController: KeyboardViewController {
         loginSSButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         usernameTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))
         passwordTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))
-
-        if let username = account?.username {
-            usernameTextField.text = username
-        }
-        if let password = account?.password {
-            passwordTextField.text = password
-        }
+        usernameTextField.text = account.username
+        passwordTextField.text = account.password
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -176,25 +171,25 @@ class WOLoginViewController: KeyboardViewController {
 
     func loginSinglesig() async throws {
         if hasBiometricAuthenticationType() {
-            try await viewModel.loginSinglesig(for: self.account)
+            try await viewModel?.loginSinglesig()
             return
         }
         switch AuthenticationTypeHandler.biometryType {
         case .faceID, .touchID:
             let evaluate = try? await authenticated()
             if evaluate ?? false {
-                try await viewModel.loginSinglesig(for: self.account)
+                try await viewModel?.loginSinglesig()
             } else {
                 throw AuthenticationTypeHandler.AuthError.DeniedByUser
             }
         default:
-            try await viewModel.loginSinglesig(for: self.account)
+            try await viewModel?.loginSinglesig()
         }
     }
 
     func loginMultisig() async throws {
         let password = self.passwordTextField.text ?? ""
-        try await self.viewModel.loginMultisig(for: self.account, password: password)
+        try await self.viewModel?.loginMultisig(password: password)
     }
 
     func login() async {
@@ -279,21 +274,17 @@ class WOLoginViewController: KeyboardViewController {
 
 extension WOLoginViewController: DialogRenameViewControllerDelegate, DialogDeleteViewControllerDelegate {
     func didRename(name: String, index: String?) {
-        account?.name = name
-        if let account = self.account {
-            AccountsRepository.shared.upsert(account)
-            navigationItem.title = account.name
-            AnalyticsManager.shared.renameWallet()
-        }
+        viewModel.account.name = name
+        AccountsRepository.shared.upsert(account)
+        navigationItem.title = account.name
+        AnalyticsManager.shared.renameWallet()
     }
     func didDelete(_ index: String?) {
-        if let account = self.account {
-            Task {
-                await AccountsRepository.shared.remove(account)
-                await MainActor.run {
-                    navigationController?.popViewController(animated: true)
-                    AnalyticsManager.shared.deleteWallet()
-                }
+        Task {
+            await AccountsRepository.shared.remove(account)
+            await MainActor.run {
+                navigationController?.popViewController(animated: true)
+                AnalyticsManager.shared.deleteWallet()
             }
         }
     }

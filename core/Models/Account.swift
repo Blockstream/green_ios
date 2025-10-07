@@ -21,7 +21,6 @@ public struct Account: Codable, Equatable {
         case xpubHashId = "xpub_hash_id"
         case hidden
         case uuid
-        case lightningWalletHashId = "lightning_wallet_hash_id"
         case watchonly
         case efusemac
         case boardType
@@ -43,30 +42,27 @@ public struct Account: Codable, Equatable {
     public var uuid: UUID?
     public var isEphemeral: Bool = false
     public var askEphemeral: Bool?
-    public var lightningWalletHashId: String?
     private var watchonly: Bool?
     public var isWatchonly: Bool { watchonly ?? false || username != nil }
     public var efusemac: String?
     public var boardType: JadeBoardType?
 
-    public init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, walletHashId: String? = nil, lightningWalletHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false, password: String? = nil, watchonly: Bool? = nil) {
+    public init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, walletHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false, username: String? = nil, password: String? = nil, watchonly: Bool? = nil, keychain: String? = nil) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name
         self.network = network.network
         self.isJade = isJade
         self.isLedger = isLedger
-        self.username = nil
-        self.password = nil
-        self.keychain = self.id
+        self.keychain = keychain ?? self.id
         self.isSingleSig = isSingleSig
         self.isEphemeral = isEphemeral
         self.askEphemeral = askEphemeral
         self.xpubHashId = xpubHashId
         self.walletHashId = walletHashId
-        self.lightningWalletHashId = lightningWalletHashId
         self.uuid = uuid
         self.hidden = hidden
+        self.username = username
         self.password = password
         self.watchonly = watchonly
     }
@@ -80,64 +76,16 @@ public struct Account: Codable, Equatable {
             .firstIndex(of: self) ?? 0 + 1
     }
 
-    public init(name: String, network: NetworkSecurityCase, username: String, password: String? = nil) {
-        // Watchonly account
-        id = UUID().uuidString
-        self.name = name
-        self.network = network.network
-        self.isJade = false
-        self.isLedger = false
-        self.username = username
-        self.password = password
-        self.keychain = id
-        self.watchonly = true
-    }
-
-    public init(name: String, network: NetworkSecurityCase, keychain: String) {
-        // Migrated account
-        id = UUID().uuidString
-        self.name = name
-        self.network = network.network
-        self.keychain = keychain
-        self.isJade = false
-        self.isLedger = false
-        self.username = nil
-        self.password = nil
-    }
-
     public var isHW: Bool { isJade || isLedger }
-
     public func hasAuthentication(_ method: AuthenticationTypeHandler.AuthType) -> Bool {
         AuthenticationTypeHandler.findAuth(method: method, forNetwork: keychain)
     }
-    public var hasManualPin: Bool {
-        get {
-            return AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: keychain)
-        }
-    }
-
-    public var hasBioPin: Bool {
-        get {
-            AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: keychain)
-        }
-    }
-    
-    public var hasWoCredentials: Bool {
-        get {
-            AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: keychain)
-        }
-    }
-    public var hasWoBioCredentials: Bool {
-        get {
-            AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: keychain)
-        }
-    }
-
-    public var hasPin: Bool {
-        get {
-            return hasManualPin || hasBioPin
-        }
-    }
+    public var hasManualPin: Bool { hasAuthentication(.AuthKeyPIN) }
+    public var hasBioPin: Bool { hasAuthentication(.AuthKeyBiometric) }
+    public var hasWoCredentials: Bool { hasAuthentication(.AuthKeyWoCredentials) }
+    public var hasWoBioCredentials: Bool { hasAuthentication(.AuthKeyWoBioCredentials) }
+    public var hasLightningKey: Bool { hasAuthentication(.AuthKeyLightning) }
+    public var hasPin: Bool { hasManualPin || hasBioPin }
 
     public var icon: UIImage {
         get {
@@ -163,14 +111,12 @@ public struct Account: Codable, Equatable {
         }
     }
 
-    public func removeBioKeychainData() {
-        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyBiometric, for: keychain)
-        AuthenticationTypeHandler.removePrivateKey(forNetwork: keychain)
-        UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + keychain)
-    }
-
-    public func removePinKeychainData() {
-        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyPIN, for: keychain)
+    public func removeAuthentication(_ method: AuthenticationTypeHandler.AuthType) {
+        _ = AuthenticationTypeHandler.removeAuth(method: method, for: keychain)
+        if method == .AuthKeyBiometric {
+            AuthenticationTypeHandler.removePrivateKey(forNetwork: keychain)
+            UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + keychain)
+        }
     }
     public func addBiometrics(session: SessionManager, credentials: Credentials) async throws {
         let password = String.random(length: 14)

@@ -24,9 +24,9 @@ public class AssetsManager {
         } else {
             infos = [AssetInfo.btcId: AssetInfo.btc,
                      AssetInfo.lbtcId: AssetInfo.lbtc]
-//            if lightning {
-//                infos[AssetInfo.lightningId] = AssetInfo.lightning
-//            }
+            if lightning {
+                infos[AssetInfo.lightningId] = AssetInfo.lightning
+            }
         }
     }
 
@@ -43,7 +43,7 @@ public class AssetsManager {
     }
 
     private func getInfo(for key: String, provider: AssetsProvider) -> AssetInfo? {
-        let main = [AssetInfo.btc, AssetInfo.lbtc, AssetInfo.test, AssetInfo.ltest, AssetInfo.lightning].filter { $0.assetId == key }.first
+        let main = AssetInfo.all.filter { $0.assetId == key }.first
         if let main = main {
             return main
         }

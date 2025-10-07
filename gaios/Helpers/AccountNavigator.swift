@@ -44,7 +44,7 @@ class AccountNavigator {
                 autologin: autologin)
             return vcConnect
         } else if account.isWatchonly {
-            vcWatch?.account = account
+            vcWatch?.viewModel = WOViewModel(account: account)
             vcWatch?.autologin = autologin
             return vcWatch
         } else if account.hasBioPin || account.hasWoCredentials {
@@ -59,7 +59,6 @@ class AccountNavigator {
     @MainActor
     static func logged(accountId: String, isFirstLoad: Bool = false) -> UIViewController? {
         let account = AccountsRepository.shared.get(for: accountId)!
-        AccountsRepository.shared.current = account
         let walletModel = WalletModel()
         let vc: WalletTabBarViewController? = instantiateViewController(storyboard: "WalletTab", identifier: "WalletTabBarViewController")
         vc?.walletModel = walletModel

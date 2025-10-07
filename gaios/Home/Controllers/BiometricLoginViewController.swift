@@ -207,7 +207,7 @@ class BiometricLoginViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .default) { _ in })
         if enableReset {
             alert.addAction(UIAlertAction(title: "id_reset".localized, style: .destructive) { _ in
-                self.account.removeBioKeychainData()
+                self.account.removeAuthentication(.AuthKeyBiometric)
             })
         }
         DispatchQueue.main.async {

@@ -38,6 +38,9 @@ public class AccountsRepository {
             get(for: currentId)
         }
         set {
+            if newValue?.xpubHashId == nil || newValue?.walletHashId == nil {
+                logger.error("No xpub or wallet hash id")
+            }
             currentId = newValue?.id ?? ""
             if let account = newValue {
                 upsert(account)
@@ -54,7 +57,7 @@ public class AccountsRepository {
     // Filtered account list of hardware wallets
     public var hwAccounts: [Account] { accounts.filter { $0.isHW } }
     public var hwVisibleAccounts: [Account] { hwAccounts.filter { !($0.hidden ?? true) } }
-    
+
     public func cleanCache() {
         accountsCached = nil
     }
@@ -87,13 +90,12 @@ public class AccountsRepository {
 
     public func remove(_ account: Account) async {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
-        try? await wm.unregisterLightning()
-        await wm.removeLightning()
-        account.removeBioKeychainData()
-        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyPIN, for: account.keychain)
-        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyBiometric, for: account.keychain)
-        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyWoBioCredentials, for: account.keychain)
-        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyWoCredentials, for: account.keychain)
+        try? await wm.lightningSession?.unregister(account: account)
+        await wm.lightningSession?.remove(account: account)
+        account.removeAuthentication(.AuthKeyPIN)
+        account.removeAuthentication(.AuthKeyBiometric)
+        account.removeAuthentication(.AuthKeyWoBioCredentials)
+        account.removeAuthentication(.AuthKeyWoCredentials)
         accounts.removeAll(where: { $0.id == account.id})
     }
 

@@ -9,20 +9,19 @@ import hw
 public class LightningSessionManager: SessionManager {
 
     public var lightBridge: LightningBridge?
-    public var accountId: String?
     public var isRestoredNode: Bool?
 
     public var chainNetwork: NetworkSecurityCase { gdkNetwork.mainnet ? .bitcoinSS : .testnetSS }
     public var workingDir: URL? { lightBridge?.workingDir }
     public var nodeState: NodeState? { lightBridge?.nodeInfo }
     public var lspInfo: LspInformation? { lightBridge?.lspInformation }
-
+    
     public var nodeId: String? {
         get {
-            return UserDefaults.standard.string(forKey: AppStorageConstants.lightningNodeId.rawValue)
+            return UserDefaults.standard.string(forKey: "\(AppStorageConstants.lightningNodeId.rawValue)_\(loginData?.xpubHashId ?? "")")
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: AppStorageConstants.lightningNodeId.rawValue)
+            UserDefaults.standard.set(newValue, forKey: "\(AppStorageConstants.lightningNodeId.rawValue)_\(loginData?.xpubHashId ?? "")")
         }
     }
 
@@ -92,15 +91,14 @@ public class LightningSessionManager: SessionManager {
         logged = true
     }
 
-    public override func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws -> LoginUserResult {
-        guard let params = credentials else { throw LoginError.connectionFailed() }
+    public override func loginUser(_ params: Credentials) async throws -> LoginUserResult {
         let walletId = try walletIdentifier(credentials: params)
         let walletHashId = walletId!.walletHashId
         let res = LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? "")
         loginData = res
         lightBridge = initLightningBridge(params, eventListener: self)
         do {
-            logger.info("lightning loginUser \(credentials.toDict()?.description ?? "")")
+            logger.info("lightning loginUser \(params.toDict()?.description ?? "")")
             try await connectToGreenlight(credentials: params, checkCredentials: true)
             isRestoredNode = true
         } catch {
@@ -110,6 +108,7 @@ public class LightningSessionManager: SessionManager {
         if let greenlightCredentials = lightBridge?.appGreenlightCredentials {
             LightningRepository.shared.upsert(for: walletHashId, credentials: greenlightCredentials)
         }
+        nodeId = lightBridge?.nodeInfo?.id
         logged = true
         return res
     }
@@ -129,21 +128,6 @@ public class LightningSessionManager: SessionManager {
     }
 
     public override func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
-    }
-
-    public override func walletIdentifier(credentials: Credentials) throws -> WalletIdentifier? {
-        let res = try self.session?.getWalletIdentifier(
-            net_params: GdkSettings.read()?.toNetworkParams(chainNetwork.network).toDict() ?? [:],
-            details: credentials.toDict() ?? [:])
-        return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
-    }
-
-    public override func walletIdentifier(masterXpub: String) -> WalletIdentifier? {
-        let details = ["master_xpub": masterXpub]
-        let res = try? self.session?.getWalletIdentifier(
-            net_params: GdkSettings.read()?.toNetworkParams(chainNetwork.network).toDict() ?? [:],
-            details: details)
-        return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
 
     public override func existDatadir(walletHashId: String) -> Bool {
@@ -259,7 +243,7 @@ public class LightningSessionManager: SessionManager {
                 tx.error = "id_invoice_expired"
             } else if let subaccount = tx.subaccount,
                let error = generateLightningError(account: subaccount, satoshi: sendableSatoshi) {
-                tx.error = error
+                //tx.error = error
             }
             return tx
         case .lnUrlPay(let requestData, let bip353Address):
@@ -304,9 +288,9 @@ public class LightningSessionManager: SessionManager {
             if let satoshi = invoice.amountSatoshi {
                 let subaccount = try await subaccount(0)
                 subaccount.satoshi = try await getBalance(subaccount: 0, numConfs: 0)
-                if let error = generateLightningError(account: subaccount, satoshi: satoshi) {
-                    return ValidateAddresseesResult(isValid: true, errors: [error], addressees: [])
-                }
+                //if let error = generateLightningError(account: subaccount, satoshi: satoshi) {
+                //    return ValidateAddresseesResult(isValid: true, errors: [error], addressees: [])
+                //}
             }
             let addr = Addressee.fromLnInvoice(invoice, fallbackAmount: 0)
             return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
@@ -358,6 +342,34 @@ public class LightningSessionManager: SessionManager {
     public func diagnosticData() async -> String? {
         return try? self.lightBridge?.breezSdk?.generateDiagnosticData()
     }
+    
+    public func remove(account: Account) async {
+        try? await disconnect()
+        if let derivedCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning) {
+            if let walletId = try? walletIdentifier(credentials: derivedCredentials) {
+                await removeDatadir(walletHashId: walletId.walletHashId)
+                LightningRepository.shared.remove(for: walletId.walletHashId)
+            }
+        }
+        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyLightning, for: account.keychainLightning)
+    }
+
+    public func unregister(account: Account)  async throws {
+        // unregister lightning webhook
+        let derivedCredentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
+        if !logged {
+            try await smartLogin(
+                credentials: derivedCredentials,
+                listener: self)
+        }
+        let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
+        if let token = defaults?.string(forKey: "token"),
+           let xpubHashId = account.xpubHashId {
+           unregisterNotification(token: token, xpubHashId: xpubHashId)
+        }
+        try? await disconnect()
+    }
+
 }
 
 extension LightningSessionManager: EventListener {

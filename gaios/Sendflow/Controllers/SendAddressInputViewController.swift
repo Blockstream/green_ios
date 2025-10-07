@@ -108,7 +108,12 @@ class SendAddressInputViewController: KeyboardViewController {
         if enable {
             infoBg.backgroundColor = UIColor.gRedWarn()
             infoView.isHidden = false
-            lblInvalid.text = text?.localized ?? ""
+            if (
+                text ?? "").starts(with: "InvalidBolt11Invoice") {
+                lblInvalid.text = "Invalid invoice. Paste a standard bolt11 invoice with an amount."
+            } else {
+                lblInvalid.text = text?.localized ?? ""
+            }
         } else {
             infoBg.backgroundColor = .clear
             infoView.isHidden = true
@@ -168,85 +173,136 @@ class SendAddressInputViewController: KeyboardViewController {
         hidePlaceHolder(!emptyText)
     }
 
-    // swiftlint:disable cyclomatic_complexity
+    func nextLwkLightning() {
+        if viewModel.preferredAccount == nil && viewModel.liquidSubaccountsWithFunds.count >= 1 {
+            // open liquid subaccount selection: go in account/asset screen
+            var accounts = viewModel.liquidSubaccountsWithFunds
+            if let lightningSubaccount = viewModel.lightningSubaccount {
+                accounts.insert(lightningSubaccount, at: 0)
+            }
+            let model = AccountAssetViewModel(
+                accounts: accounts,
+                createTx: viewModel.createTx,
+                funded: true,
+                showBalance: true,
+                showAssets: false)
+            presentAccountAssetViewController(model: model)
+        } else if let subaccount = viewModel.preferredAccount ?? viewModel.liquidSubaccountsWithFunds.first {
+            // use the preselected subaccount or not first empty subaccount
+            didSelectAccountAsset(
+                account: subaccount,
+                asset: AssetInfo.lbtc
+            )
+        } else {
+            enableError(true, text: "id_insufficient_funds".localized)
+        }
+    }
+    func nextBreezLightning() {
+        guard let createTx = viewModel.createTx else { return }
+        if let error = createTx.error {
+            enableError(true, text: error.localized)
+            return
+        }
+        // lightning account: go in amount screen
+        switch createTx.lightningType {
+        case .lnUrlAuth(let data):
+            // open LNURL-Auth page
+            presentLtAuthViewController(requestData: data)
+        case .lnUrlWithdraw(let data):
+            presentSendForWithdraw(requestData: data)
+        default:
+            if createTx.anyAmounts ?? false {
+                presentSendAmountViewController()
+            } else {
+                createBreezLightningAndPushSendTxConfirmViewController()
+            }
+        }
+    }
+    func nextLiquid() {
+        if viewModel.liquidSubaccounts.isEmpty {
+            enableError(true, text: "Miss a liquid subaccount".localized)
+        } else if viewModel.liquidSubaccountsWithFunds.isEmpty {
+            // check there are any liquid funds: display dialog
+            enableError(true, text: "id_insufficient_funds".localized)
+        } else if let account = viewModel.preferredAccount {
+            viewModel.createTx?.subaccount = account
+            if let assetId = viewModel.assetId ?? viewModel.createTx?.assetId {
+                viewModel.createTx?.assetId = assetId
+            }
+            presentSendAmountViewController()
+        } else if viewModel.liquidSubaccountsWithFunds.count == 1,
+                let subaccount = viewModel.liquidSubaccountsWithFunds.first {
+            // preselect the liquid subaccount: go in amount screen
+            if let assetId = viewModel.assetId ?? viewModel.createTx?.assetId {
+                viewModel.createTx?.assetId = assetId
+                viewModel.createTx?.subaccount = subaccount
+                presentSendAmountViewController()
+            } else if subaccount.manyAssets == 1 {
+                viewModel.createTx?.subaccount = subaccount
+                presentSendAmountViewController()
+            } else {
+                let model = AccountAssetViewModel(
+                    accounts: viewModel.liquidSubaccountsWithFunds,
+                    createTx: viewModel.createTx,
+                    funded: true,
+                    showBalance: true,
+                    showAssets: true)
+                presentAccountAssetViewController(model: model)
+            }
+        } else {
+            // open liquid subaccount selection: go in account/asset screen
+            let model = AccountAssetViewModel(
+                accounts: viewModel.liquidSubaccountsWithFunds,
+                createTx: viewModel.createTx,
+                funded: true,
+                showBalance: true,
+                showAssets: true)
+            presentAccountAssetViewController(model: model)
+        }
+    }
+    func nextBitcoin() {
+        if viewModel.bitcoinSubaccounts.isEmpty {
+            enableError(true, text: "Miss a bitcoin subaccount".localized)
+        } else if viewModel.bitcoinSubaccountsWithFunds.isEmpty {
+            // check there are any bitcoin funds: display dialog
+            enableError(true, text: "id_insufficient_funds".localized)
+        } else if let account = viewModel.preferredAccount {
+            viewModel.createTx?.subaccount = account
+            if let assetId = viewModel.assetId, assetId != AssetInfo.btcId {
+                viewModel.createTx?.assetId = viewModel.assetId
+            }
+            presentSendAmountViewController()
+        } else if viewModel.bitcoinSubaccountsWithFunds.count == 1 {
+            // preselect the bitcoin subaccount: go in amount screen
+            viewModel.createTx?.subaccount = viewModel.bitcoinSubaccountsWithFunds.first
+            presentSendAmountViewController()
+        } else {
+            // open bitcoin subaccount selection: go in account/asset screen
+            let model = AccountAssetViewModel(
+                accounts: viewModel.bitcoinSubaccountsWithFunds,
+                createTx: viewModel.createTx,
+                funded: true,
+                showBalance: true,
+                showAssets: false)
+            presentAccountAssetViewController(model: model)
+        }
+    }
+
     @MainActor
     func next() {
         guard let createTx = viewModel.createTx else { return }
         if createTx.txType == .sweep {
             presentSendAmountViewController()
         } else if createTx.txType == .psbt {
-            presentSendPsbtConfirmViewController()
+            createPsbtAndPushSendTxConfirmViewController()
+        } else if createTx.txType == .lwkSwap {
+            nextLwkLightning()
         } else if createTx.isLightning {
-            if let error = createTx.error {
-                enableError(true, text: error.localized)
-                return
-            }
-            // lightning account: go in amount screen
-            switch createTx.lightningType {
-            case .lnUrlAuth(let data):
-                // open LNURL-Auth page
-                presentLtAuthViewController(requestData: data)
-            case .lnUrlWithdraw(let data):
-                //                presentLtWithdrawViewController(requestData: data)
-                presentSendForWithdraw(requestData: data)
-            default:
-                if createTx.anyAmounts ?? false {
-                    presentSendAmountViewController()
-                } else {
-                    Task { [weak self] in await self?.presentSendTxConfirmViewController() }
-                }
-            }
+            nextBreezLightning()
         } else if createTx.isBitcoin {
-            // lightning liquid
-            if viewModel.bitcoinSubaccounts.isEmpty {
-                enableError(true, text: "Miss a bitcoin subaccount".localized)
-            } else if viewModel.bitcoinSubaccountsWithFunds.isEmpty {
-                // check there are any bitcoin funds: display dialog
-                enableError(true, text: "id_insufficient_funds".localized)
-            } else if let account = viewModel.preferredAccount {
-                viewModel.createTx?.subaccount = account
-                if let assetId = viewModel.assetId, assetId != AssetInfo.btcId {
-                    viewModel.createTx?.assetId = viewModel.assetId
-                }
-                presentSendAmountViewController()
-            } else if viewModel.bitcoinSubaccountsWithFunds.count == 1 {
-                // preselect the bitcoin subaccount: go in amount screen
-                viewModel.createTx?.subaccount = viewModel.bitcoinSubaccountsWithFunds.first
-                presentSendAmountViewController()
-            } else if viewModel.bitcoinSubaccountsWithFunds.count > 1 {
-                // open bitcoin subaccount selection: go in account/asset screen
-                presentAccountAssetViewController()
-            }
+            nextBitcoin()
         } else if createTx.isLiquid {
-            // lightning liquid
-            if viewModel.liquidSubaccounts.isEmpty {
-                enableError(true, text: "Miss a liquid subaccount".localized)
-            } else if viewModel.liquidSubaccountsWithFunds.isEmpty {
-                // check there are any liquid funds: display dialog
-                enableError(true, text: "id_insufficient_funds".localized)
-            } else if let account = viewModel.preferredAccount {
-                viewModel.createTx?.subaccount = account
-                if let assetId = viewModel.assetId ?? viewModel.createTx?.assetId {
-                    viewModel.createTx?.assetId = assetId
-                }
-                presentSendAmountViewController()
-            } else if viewModel.liquidSubaccountsWithFunds.count == 1,
-                      let subaccount = viewModel.liquidSubaccountsWithFunds.first {
-                // preselect the liquid subaccount: go in amount screen
-                if let assetId = viewModel.assetId ?? viewModel.createTx?.assetId {
-                    viewModel.createTx?.assetId = assetId
-                    viewModel.createTx?.subaccount = subaccount
-                    presentSendAmountViewController()
-                } else if subaccount.manyAssets == 1 {
-                    viewModel.createTx?.subaccount = subaccount
-                    presentSendAmountViewController()
-                } else {
-                    presentAccountAssetViewController()
-                }
-            } else {
-                // open liquid subaccount selection: go in account/asset screen
-                presentAccountAssetViewController()
-            }
+            nextLiquid()
         }
     }
 
@@ -263,7 +319,6 @@ class SendAddressInputViewController: KeyboardViewController {
     }
 
     func presentReceiveViewController() {
-        guard let createTx = viewModel.createTx else { return }
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
             vc.viewModel = ReceiveViewModel()
@@ -287,16 +342,17 @@ class SendAddressInputViewController: KeyboardViewController {
         }
     }
 
-    func presentAccountAssetViewController() {
+    func presentAccountAssetViewController(model: AccountAssetViewModel) {
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountAssetViewController") as? AccountAssetViewController {
-            vc.viewModel = viewModel.accountAssetViewModel()
-            navigationController?.pushViewController(vc, animated: true)
+            vc.viewModel = model
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: true)
         }
     }
 
     func presentSendForWithdraw(requestData: LnUrlWithdrawRequestData) {
-
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendAmountViewController") as? SendAmountViewController {
             vc.viewModel = SendAmountViewModel(createTx: viewModel.createTx!)
@@ -313,33 +369,80 @@ class SendAddressInputViewController: KeyboardViewController {
         }
     }
 
-    func presentSendTxConfirmViewController() async {
+    func pushSendTxConfirmViewController(model: SendTxConfirmViewModel) {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendTxConfirmViewController") as? SendTxConfirmViewController {
-            vc.viewModel = await viewModel.sendTxConfirmViewModel()
+            vc.viewModel = model
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
+    func pushSendLightningViewController(model: SendLightningViewModel) {
+        let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendLightningViewController") as? SendLightningViewController {
+            vc.viewModel = model
             navigationController?.pushViewController(vc, animated: true)
         }
     }
 
-    func presentSendPsbtConfirmViewController() {
-        let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendTxConfirmViewController") as? SendTxConfirmViewController {
-            Task {
-                do {
-                    startLoader(message: "id_loading".localized)
-                    let vm = try await viewModel.sendPsbtConfirmViewModel()
-                    stopLoader()
-                    await MainActor.run {
-                        vc.viewModel = vm
-                        navigationController?.pushViewController(vc, animated: true)
-                    }
-                } catch {
-                    stopLoader()
-                    showError(error.description().localized)
+    
+    func createBreezLightningAndPushSendTxConfirmViewController() {
+        Task {
+            let task = Task.detached() { [weak self] in
+                try await self?.viewModel.createBreezLightningTransaction()
+            }
+            switch await task.result {
+            case .success(let tx):
+                if let tx = tx {
+                    let model = viewModel.sendTxConfirmViewModel(tx: tx)
+                    self.pushSendTxConfirmViewController(model: model)
                 }
+            case .failure(let err):
+                self.enableError(true, text: err.localizedDescription)
             }
         }
     }
+
+    func createLwkLightningAndPushSendLightningViewController() {
+        Task {
+            startLoader(message: "id_loading".localized)
+            let task = Task.detached() { [weak self] in
+                try await self?.viewModel.checkLwkLimits()
+                return try await self?.viewModel.sendLightningViewModel()
+            }
+            switch await task.result {
+            case .success(let model):
+                stopLoader()
+                if let model = model {
+                    self.pushSendLightningViewController(model: model)
+                }
+            case .failure(let err):
+                stopLoader()
+                self.enableError(true, text: err.description().localized)
+            }
+        }
+    }
+
+    func createPsbtAndPushSendTxConfirmViewController() {
+        Task {
+            startLoader(message: "id_loading".localized)
+            let task = Task.detached() { [weak self] in
+                try await self?.viewModel.getTransactionFromPsbt()
+            }
+            switch await task.result {
+            case .success(let tx):
+                stopLoader()
+                if let tx = tx {
+                    let model = viewModel.sendPsbtConfirmViewModel(tx: tx)
+                    self.pushSendTxConfirmViewController(model: model)
+                }
+            case .failure(let err):
+                stopLoader()
+                self.enableError(true, text: err.localizedDescription)
+            }
+        }
+    }
+
     @objc func triggerTextChange() {
         Task { [weak self] in await self?.validate() }
     }
@@ -376,5 +479,28 @@ extension SendAddressInputViewController: DialogScanViewControllerDelegate {
         }
     }
     func didStop() {
+    }
+}
+
+extension SendAddressInputViewController: AccountAssetViewControllerDelegate {
+    func didSelectAccountAsset(account: WalletItem, asset: AssetInfo) {
+        if account.btc ?? 0 < viewModel.createTx?.satoshi ?? 0 {
+            self.enableError(true, text: "id_insufficient_funds".localized)
+            return
+        }
+        if account.isLightning {
+            nextBreezLightning()
+            return
+        }
+        viewModel.createTx?.subaccount = account
+        viewModel.createTx?.assetId = asset.assetId
+        switch viewModel.createTx?.txType {
+        case .lwkSwap:
+            createLwkLightningAndPushSendLightningViewController()
+        case .psbt:
+            createPsbtAndPushSendTxConfirmViewController()
+        default:
+            presentSendAmountViewController()
+        }
     }
 }

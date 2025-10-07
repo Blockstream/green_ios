@@ -97,9 +97,9 @@ class SetupNewViewController: UIViewController {
             try await self?.viewModel.createWallet(pin: nil)
         }
         switch await task.result {
-        case .success(let wm):
+        case .success(let accountWallet):
             stopLoader()
-            if let account = wm?.account {
+            if let account = accountWallet?.0 {
                 AccountsRepository.shared.current = account
                 AccountNavigator.navLogged(accountId: account.id, isFirstLoad: true)
             }

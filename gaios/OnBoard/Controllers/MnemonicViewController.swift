@@ -183,9 +183,9 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             return try await self?.viewModel.restoreWallet(credentials: credentials, pin: nil)
         }
         switch await task.result {
-        case .success(let wm):
+        case .success(let accountWallet):
             stopLoader()
-            if let account = wm?.account {
+            if let account = accountWallet?.0 {
                 AccountsRepository.shared.current = account
                 AccountNavigator.navLogged(accountId: account.id, isFirstLoad: false)
             }

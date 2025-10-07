@@ -41,7 +41,7 @@ class JadeManager {
     func connectPinServer(testnet: Bool) async throws {
         if pinServerSession == nil {
             let networkType: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
-            pinServerSession = SessionManager(networkType.gdkNetwork)
+            pinServerSession = SessionManager(networkType)
         }
         try await pinServerSession?.connect()
     }

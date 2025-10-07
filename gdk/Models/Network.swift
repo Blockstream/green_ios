@@ -76,61 +76,70 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
 }
 
 public struct GdkNetworks {
-    public static var shared = GdkNetworks()
 
-    public lazy var bitcoinSS = getGdkNetwork(NetworkSecurityCase.bitcoinSS.network)
-    public lazy var bitcoinMS = getGdkNetwork(NetworkSecurityCase.bitcoinMS.network)
-    public lazy var testnetSS = getGdkNetwork(NetworkSecurityCase.testnetSS.network)
-    public lazy var testnetMS = getGdkNetwork(NetworkSecurityCase.testnetMS.network)
-    public lazy var liquidSS = getGdkNetwork(NetworkSecurityCase.liquidSS.network)
-    public lazy var liquidMS = getGdkNetwork(NetworkSecurityCase.liquidMS.network)
-    public lazy var testnetLiquidSS = getGdkNetwork(NetworkSecurityCase.testnetLiquidSS.network)
-    public lazy var testnetLiquidMS = getGdkNetwork(NetworkSecurityCase.testnetLiquidMS.network)
+    public static var bitcoinSS = getGdkNetwork(NetworkSecurityCase.bitcoinSS.network)
+    public static var bitcoinMS = getGdkNetwork(NetworkSecurityCase.bitcoinMS.network)
+    public static var testnetSS = getGdkNetwork(NetworkSecurityCase.testnetSS.network)
+    public static var testnetMS = getGdkNetwork(NetworkSecurityCase.testnetMS.network)
+    public static var liquidSS = getGdkNetwork(NetworkSecurityCase.liquidSS.network)
+    public static var liquidMS = getGdkNetwork(NetworkSecurityCase.liquidMS.network)
+    public static var testnetLiquidSS = getGdkNetwork(NetworkSecurityCase.testnetLiquidSS.network)
+    public static var testnetLiquidMS = getGdkNetwork(NetworkSecurityCase.testnetLiquidMS.network)
 
-    public lazy var lightning = GdkNetwork(name: NetworkSecurityCase.lightning.name(),
+    public static var lwkMainnet = GdkNetwork(name: NetworkSecurityCase.lwkMainnet.name(),
+                                           network: NetworkSecurityCase.liquidSS.network,
+                                           liquid: true,
+                                           mainnet: false,
+                                           development: false,
+                                     txExplorerUrl: GdkNetworks.liquidSS.txExplorerUrl,
+                                     policyAsset: GdkNetworks.liquidSS.getFeeAsset())
+    public static var lightning = GdkNetwork(name: NetworkSecurityCase.lightning.name(),
                                            network: NetworkSecurityCase.lightning.network,
                                            liquid: false,
                                            mainnet: true,
                                            development: false,
-                                           txExplorerUrl: bitcoinSS.txExplorerUrl,
+                                           txExplorerUrl: GdkNetworks.bitcoinSS.txExplorerUrl,
                                            policyAsset: AssetInfo.lightningId,
                                            serverType: "breez")
-    public lazy var testnetLightning = GdkNetwork(name: NetworkSecurityCase.testnetLightning.name(),
+    public static var testnetLightning = GdkNetwork(name: NetworkSecurityCase.testnetLightning.name(),
                                                   network: NetworkSecurityCase.testnetLightning.network,
                                                   liquid: false,
                                                   mainnet: false,
                                                   development: false,
-                                                  txExplorerUrl: testnetSS.txExplorerUrl,
+                                             txExplorerUrl: GdkNetworks.testnetSS.txExplorerUrl,
                                                   policyAsset: AssetInfo.lightningId,
                                                   serverType: "breez")
 
-    public mutating func get(networkType: NetworkSecurityCase) -> GdkNetwork {
+    public static func get(networkType: NetworkSecurityCase) -> GdkNetwork {
         switch networkType {
-        case .bitcoinSS: return bitcoinSS
-        case .bitcoinMS: return bitcoinMS
-        case .testnetSS: return testnetSS
-        case .testnetMS: return testnetMS
-        case .liquidSS: return liquidSS
-        case .liquidMS: return liquidMS
-        case .testnetLiquidSS: return testnetLiquidSS
-        case .testnetLiquidMS: return testnetLiquidMS
-        case .lightning: return lightning
-        case .testnetLightning: return testnetLightning
+        case .bitcoinSS: return GdkNetworks.bitcoinSS
+        case .bitcoinMS: return GdkNetworks.bitcoinMS
+        case .testnetSS: return GdkNetworks.testnetSS
+        case .testnetMS: return GdkNetworks.testnetMS
+        case .liquidSS: return GdkNetworks.liquidSS
+        case .liquidMS: return GdkNetworks.liquidMS
+        case .testnetLiquidSS: return GdkNetworks.testnetLiquidSS
+        case .testnetLiquidMS: return GdkNetworks.testnetLiquidMS
+        case .lightning: return GdkNetworks.lightning
+        case .testnetLightning: return GdkNetworks.testnetLightning
+        case .lwkMainnet: return GdkNetworks.lwkMainnet
         }
     }
 
-    public func get(network: String) -> GdkNetwork {
+    public static func get(network: String) -> GdkNetwork {
         if network == NetworkSecurityCase.lightning.network {
-            return GdkNetworks.shared.lightning
+            return GdkNetworks.lightning
+        } else if network == NetworkSecurityCase.lwkMainnet.network {
+            return GdkNetworks.lwkMainnet
         } else if network == NetworkSecurityCase.testnetLightning.network {
-            return GdkNetworks.shared.testnetLightning
+            return GdkNetworks.testnetLightning
         } else {
-            return GdkNetworks.shared.getGdkNetwork(network)
+            return GdkNetworks.getGdkNetwork(network)
         }
     }
 
     private static var cachedNetworks: [String: Any]?
-    private func getGdkNetwork(_ network: String, data: [String: Any]? = nil) -> GdkNetwork {
+    private static func getGdkNetwork(_ network: String, data: [String: Any]? = nil) -> GdkNetwork {
         if data ?? GdkNetworks.cachedNetworks == nil {
             GdkNetworks.cachedNetworks = try? getNetworks()
         }

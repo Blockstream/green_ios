@@ -5,7 +5,7 @@ import gdk
 import hw
 
 protocol QRUnlockJadeViewControllerDelegate: AnyObject {
-    func login(credentials: Credentials, wallet: WalletManager)
+    func login(credentials: Credentials, wallet: WalletManager, account: Account)
     func abort()
     func unlock()
 }
@@ -343,7 +343,7 @@ extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate
             switch await task.result {
             case .success(let wallet):
                 if let wallet = wallet {
-                    success(wallet: wallet)
+                    success(wallet: wallet, account: vm.account)
                 }
             case .failure(let error):
                 failure(error, account: vm.account)
@@ -352,11 +352,11 @@ extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate
     }
 
     @MainActor
-    func success(wallet: WalletManager) {
+    func success(wallet: WalletManager, account: Account) {
         stopLoader()
         dismiss(animated: true) {
             if let credentials = self.credentials {
-                self.delegate?.login(credentials: credentials, wallet: wallet)
+                self.delegate?.login(credentials: credentials, wallet: wallet, account: account)
             }
         }
     }

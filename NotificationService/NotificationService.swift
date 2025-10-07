@@ -13,25 +13,27 @@ struct LnurlInvoiceMessage: Codable {
     let amount: UInt64
 }
 
-public enum LightningNotificationType: String, Codable {
+public enum NotificationType: String, Codable {
     case addressTxsConfirmed = "address_txs_confirmed"
     case paymentReceived = "payment_received"
     case swapUpdated = "swap_updated"
+    case boltzEvent = "BOLTZ_EVENT"
 }
 
-public struct LightningNotification: Codable {
+public struct Notification: Codable {
     enum CodingKeys: String, CodingKey {
         case appData = "app_data"
         case notificationType = "notification_type"
         case notificationPayload = "notification_payload"
     }
     let appData: String?
-    let notificationType: LightningNotificationType?
+    let notificationType: NotificationType
     let notificationPayload: String?
 }
 
 public enum NotificationError: Error {
     case InvalidNotification
+    case InvalidSwap
     case WalletNotFound
     case Failed
     case EventNotFound
@@ -49,24 +51,60 @@ class NotificationService: UNNotificationServiceExtension {
         _ request: UNNotificationRequest,
         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void)
     {
-        logger.info("\(self.TAG, privacy: .public): Notification received: \(self.bestAttemptContent?.userInfo.description ?? "", privacy: .public)")
+        logger.info("\(self.TAG, privacy: .public): Notification received: \(self.bestAttemptContent?.userInfo.debugDescription ?? "", privacy: .public)")
         self.contentHandler = contentHandler
         self.bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         let userInfo = bestAttemptContent?.userInfo
-        if let lightningNotification = LightningNotification.from(userInfo ?? [:]) as? LightningNotification {
+        if let notification = Notification.from(userInfo ?? [:]) as? Notification {
             Task.detached(priority: .high) { @MainActor [weak self] in
-                await self?.didReceiveLightning(lightningNotification)
+                await self?.didReceiveLightning(notification)
             }
         } else if let meldNotification = MeldEvent.from(userInfo ?? [:]) as? MeldEvent {
             Task.detached(priority: .high) { @MainActor [weak self] in
                 await self?.didReceiveMeld(meldNotification)
+            }
+        } else if let lwkNotification = LwkEvent.from(userInfo ?? [:]) as? LwkEvent {
+            Task.detached(priority: .high) { @MainActor [weak self] in
+                await self?.didReceiveLwkSwap(lwkNotification)
             }
         } else {
             logger.info("\(self.TAG, privacy: .public): Invalid notification")
             if let content = bestAttemptContent {
                 contentHandler(content)
             }
+        }
+    }
+
+    func didReceiveLwkSwap(_ notification: LwkEvent) async {
+        guard let account = getAccount(xpub: notification.walletHashedId) else {
+            logger.error("\(self.TAG, privacy: .public): Wallet not found")
+            let silentContent = UNMutableNotificationContent()
+            contentHandler?(silentContent)
             return
+        }
+        let currentTask = LwkSwapTask(
+            account: account,
+            event: notification,
+            logger: logger,
+            contentHandler: contentHandler,
+            bestAttemptContent: bestAttemptContent,
+            dismiss: shutdown
+        )
+        let task = Task {
+            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
+            guard let mnemonic = credentials.mnemonic else {
+                logger.error("\(self.TAG, privacy: .public): Mnemonic not found")
+                throw NotificationError.Failed
+            }
+            return try await currentTask.start(network: .mainnet(), secret: mnemonic)
+        }
+        switch await task.result {
+        case .success:
+            logger.info("\(self.TAG, privacy: .public): LwkSwapTask starts successfully")
+        case .failure(let err):
+            logger.error("\(self.TAG, privacy: .public): LwkSwapTask fails with \(err.description(), privacy: .public)")
+            let silentContent = UNMutableNotificationContent()
+            contentHandler?(silentContent)
         }
     }
 
@@ -101,7 +139,7 @@ class NotificationService: UNNotificationServiceExtension {
         }
     }
 
-    func didReceiveLightning(_ notification: LightningNotification) async {
+    func didReceiveLightning(_ notification: Notification) async {
         let currentTask = self.getTaskFromNotification(notification: notification)
         guard let currentTask = currentTask else { return }
         self.currentTask = currentTask
@@ -145,7 +183,7 @@ class NotificationService: UNNotificationServiceExtension {
             .first
     }
 
-    func getTaskFromNotification(notification: LightningNotification) -> TaskProtocol? {
+    func getTaskFromNotification(notification: Notification) -> TaskProtocol? {
         switch notification.notificationType {
         case .addressTxsConfirmed:
             logger.info("\(self.TAG, privacy: .public): creating task for tx received")

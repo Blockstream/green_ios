@@ -10,45 +10,46 @@ enum SecurityState {
     case alerted
 }
 class WalletModel {
-
+    
     var wm: WalletManager? { WalletManager.current }
+    var mainAccount: Account? { AccountsRepository.shared.current }
     var session: SessionManager? { wm?.prominentSession }
     var settings: Settings? { session?.settings }
     var paused: Bool { !(wm?.activeSessions.filter { $0.value.paused }.isEmpty ?? false) }
     var isTxLoading = true // on init is always true
     var isBalanceLoading = true
     var expiredSubaccounts = [WalletItem]()
-
+    
     /// load visible subaccounts
     var subaccounts: [WalletItem] { wm?.subaccounts.filter { !($0.hidden) } ?? [] }
     var watchOnly: Bool { wm?.isWatchonly ?? false}
     var headerIcon: UIImage { return UIImage(named: wm?.prominentNetwork.gdkNetwork.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white) }
-
+    
     /// Cached data
     var cachedTransactions = [String: [Transactions]]()
     var cachedBalance: AssetAmountList?
     var cachedMeldTransactions = [Transaction]()
-
+    
     /// if no accounts show the layer
     var welcomeLayerVisibility: (() -> Void)?
-
+    
     /// cell models
     var txCellModels = [TransactionCellModel]()
     var balanceCellModel: BalanceCellModel?
     var backupCardCellModel = [AlertCardCellModel]()
     var alertCardCellModel = [AlertCardCellModel]()
     var promoCardCellModel = [PromoCellModel]()
-
+    
     var walletAssetCellModels: [WalletAssetCellModel] {
         return cachedBalance?
             .nonZeroAmounts()
             .compactMap { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1, masked: hideBalance, hidden: false) } ?? []
     }
-
+    
     var remoteAlert: RemoteAlert?
-
+    
     var balanceDisplayMode: BalanceDisplayMode = .denom
-
+    
     var analyticsDone = false
     var isFirstLoad = false
     var hideBalance: Bool {
@@ -59,7 +60,7 @@ class WalletModel {
             UserDefaults.standard.set(newValue, forKey: AppStorageConstants.hideBalance.rawValue)
         }
     }
-
+    
     var fetchingTxs = false
     var securityState = SecurityState.alerted
     var currency: String? {
@@ -68,7 +69,7 @@ class WalletModel {
         }
         return nil
     }
-
+    
     init() {
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .walletOverview, networks: wm?.activeNetworks ?? []).first
         if let promo = PromoManager.shared.promoCellModels(.homeTab).first?.promo,
@@ -76,7 +77,7 @@ class WalletModel {
             PromoManager.shared.promoView(promo: promo, source: source)
         }
     }
-
+    
     func getAssetId() -> String {
         let lSubs: [WalletItem] = subaccounts.filter { $0.gdkNetwork.liquid == true }
         if lSubs.count == subaccounts.count && lSubs.count > 0 {
@@ -86,10 +87,10 @@ class WalletModel {
         }
     }
     func fetchBalances(discovery: Bool) async throws {
-
+        
         var subaccounts: [WalletItem] = try await wm?.subaccounts(discovery) ?? []
         let balances = try await wm?.balances(subaccounts: subaccounts)
-
+        
         for subaccount in subaccounts where (subaccount.hidden == true && accountIsFunded(subaccount)) {
             try await unarchiveSubaccount(subaccount)
         }
@@ -120,7 +121,7 @@ class WalletModel {
                                                 assetId: self.getAssetId())
         }
     }
-
+    
     func existPendingTransaction() -> Bool {
         let list = cachedTransactions
             .flatMap({$0.value })
@@ -130,7 +131,7 @@ class WalletModel {
         }
         return false
     }
-
+    
     func fetchTransactions(reset: Bool) async throws {
         guard let wm = wm, !fetchingTxs else {
             return
@@ -151,10 +152,10 @@ class WalletModel {
         fetchingTxs = false
     }
     func getMeldTransactions(_ subaccount: WalletItem?) async throws -> [Transaction] {
-        guard let wm, let subaccount else {
+        guard let subaccount else {
             return []
         }
-        if let xpub = wm.account.xpubHashId, Meld.needFetchingTxs(xpub: xpub) {
+        if let xpub = mainAccount?.xpubHashId, Meld.needFetchingTxs(xpub: xpub) {
             let meld = Meld()
             let meldTxs = try? await meld.getPendingTransactions(xpub: xpub)
             if let meldTxs = meldTxs {
@@ -214,8 +215,8 @@ class WalletModel {
     func reloadBackupCards() {
         guard let wm = wm else { return }
         var cards: [AlertCardType] = []
-        if BackupHelper.shared.needsBackup(walletId: wm.account.id) &&
-            BackupHelper.shared.isDismissed(walletId: wm.account.id, position: .homeTab) == false &&
+        if BackupHelper.shared.needsBackup(walletId: AccountsRepository.shared.current?.id) &&
+            BackupHelper.shared.isDismissed(walletId: AccountsRepository.shared.current?.id, position: .homeTab) == false &&
             cachedBalance?.satoshi() ?? 0 > 0 {
             cards.append(.backup)
         }
@@ -225,7 +226,7 @@ class WalletModel {
         guard let wm = wm, let session = session else { return }
         var cards: [AlertCardType] = []
         // All sessions should login with the passphrase
-        if wm.account.isEphemeral {
+        if mainAccount?.isEphemeral ?? false {
             // Bip39 ephemeral wallet
             cards.append(.ephemeralWallet)
         }
@@ -286,11 +287,11 @@ class WalletModel {
         ReEnable2faViewModel(expiredSubaccounts: expiredSubaccounts)
     }
     func callAnalytics(_ subs: [WalletItem]?) {
-
+        
         guard let subs else { return }
         if analyticsDone == true { return }
         analyticsDone = true
-
+        
         var accountsFunded: Int = 0
         subs.forEach { item in
             let assets = item.satoshi ?? [:]
@@ -308,20 +309,65 @@ class WalletModel {
                                                                                         accounts: accounts,
                                                                                         accountsTypes: accountsTypes))
     }
-    func registerNotifications() {
-        guard let token = UserDefaults(suiteName: Bundle.main.appGroup)?.string(forKey: "token"),
-              let xpubHashId = wm?.account.xpubHashId else {
-            return
+    func registerNotifications() async throws {
+        guard let token = UserDefaults(suiteName: Bundle.main.appGroup)?.string(forKey: "token") else {
+            throw GaError.GenericError("No token")
         }
-        AppNotifications.shared.requestRemoteNotificationPermissions(application: UIApplication.shared) {
-            Task.detached(priority: .background) { [weak self] in
-                let meld = Meld()
-                try? await meld.registerToken(fcmToken: token, externalCustomerId: xpubHashId)
-                try? await self?.wm?.lightningSession?.registerNotification(token: token, xpubHashId: xpubHashId)
-                _ = self?.wm?.lightningSession?.lightBridge?.updateLspInformation()
+        guard let xpubHashId = mainAccount?.xpubHashId else {
+            throw GaError.GenericError("No xpub")
+        }
+        /// Register notification token for meld and lwk on sanbox
+        if Bundle.main.dev || Meld.isSandboxEnvironment {
+            try? await Meld().registerToken(fcmToken: token, externalCustomerId: xpubHashId, notificationUrl: Meld.MELD_NOTIFICATIONS_URL_SANDBOX)
+        }
+        /// Register notification token for meld and lwk on production
+        if !Bundle.main.dev || !Meld.isSandboxEnvironment {
+            try? await Meld().registerToken(fcmToken: token, externalCustomerId: xpubHashId, notificationUrl: Meld.MELD_NOTIFICATIONS_URL_PRODUCTION)
+        }
+        /// Register notification token for breez lightning
+        if let lightningSession = wm?.lightningSession, lightningSession.logged {
+            try? await lightningSession.registerNotification(token: token, xpubHashId: xpubHashId)
+            _ = lightningSession.lightBridge?.updateLspInformation()
+        }
+    }
+    func completePendingSwap(_ swap: BoltzSwap, accountName: String) async {
+        logger.info("completePendingSwap \(swap.id ?? "", privacy: .public): \(swap.data?[0..<64] ?? "")")
+        switch swap.type {
+        case .some(BoltzSwapTypes.Submarine):
+            if let pay = try? await wm?.lwkSession?.restorePreparePay(data: swap.data ?? "") {
+                let state = try? await wm?.lwkSession?.handlePay(pay: pay)
+            }
+        case .some(BoltzSwapTypes.ReverseSubmarine):
+            if let invoice = try? await wm?.lwkSession?.restoreInvoice(data: swap.data ?? "") {
+                let state = try? await wm?.lwkSession?.handleInvoice(invoice: invoice)
+                logger.info("WalletModel \(swap.id ?? "", privacy: .public) \(state?.localized ?? "", privacy: .public)")
+                switch state {
+                case .success:
+                    await DropAlert().success(message: "id_payment_received".localized)
+                default:
+                    break
+                }
+            }
+        case .none:
+            break
+        }
+    }
+    func completePendingSwaps() async {
+        let account = AccountsRepository.shared.current
+        let pendingSwapsIds = try? await BoltzController.shared.fetchIDs(byIsPending: true, byXpubHashId: account?.xpubHashId)
+        let pendingSwaps = try? await BoltzController.shared.gets(with: pendingSwapsIds ?? [])
+        let swapTask: ((_ swap: BoltzSwap) async -> Void?) = { [self] swap in
+            await self.completePendingSwap(swap, accountName: account?.name ?? "")
+        }
+        await withTaskGroup(of: Void.self) { group in
+            for swap in pendingSwaps ?? [] {
+                group.addTask(priority: .background) {
+                    await swapTask(swap)
+                }
             }
         }
     }
+
     func isSendEnabled() async -> Bool {
         if watchOnly {
             let notSinglesigBitcoinNetworks = subaccounts.filter { $0.networkType.multisig || $0.networkType.liquid }
@@ -341,5 +387,12 @@ class WalletModel {
         }
         balanceDisplayMode = balanceDisplayMode.next(isBTC)
         reloadBalances()
+    }
+    func relogin() async throws {
+        let account = AccountsRepository.shared.current
+        let credentials = try? await wm?.prominentSession?.getCredentials(password: "")
+        let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account?.keychainLightning ?? "")
+        _ = try await wm?.login(credentials: credentials, lightningCredentials: lightningCredentials, device: wm?.hwDevice, masterXpub: nil, fullRestore: false, parentWalletId: nil)
+        _ = try await wm?.subaccounts()
     }
 }

@@ -3,7 +3,7 @@ import gdk
 
 enum AmountCellState: Int {
     case valid
-    //case validFunding
+    // case validFunding
     case aboveInboundLiquidity
     case tooHigh
     case tooLow
@@ -11,6 +11,7 @@ enum AmountCellState: Int {
     case invalidAmount
     case disconnected
     case invalidBuy
+    case invalidReverseSwap
 }
 
 protocol AmountCellDelegate: AnyObject {
@@ -39,6 +40,7 @@ class AmountCell: UITableViewCell {
     @IBOutlet weak var lblToReceiveTitle: UILabel!
     @IBOutlet weak var lblToReceiveHint: UILabel!
     @IBOutlet weak var bottomStackPad: NSLayoutConstraint!
+    @IBOutlet weak var moreInfoView: UIView!
 
     var state: AmountCellState = .valid
     weak var delegate: AmountCellDelegate?
@@ -51,7 +53,7 @@ class AmountCell: UITableViewCell {
         super.awakeFromNib()
         bg.cornerRadius = 5.0
         bg.borderWidth = 1.0
-        infoPanel.cornerRadius = 5.0
+        bg.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         lblAmount.setStyle(.txtCard)
         lblAsset.setStyle(.txtBigger)
         [lblToReceiveTitle, lblToReceiveHint].forEach {
@@ -96,13 +98,11 @@ class AmountCell: UITableViewCell {
         btnPaste.isHidden = textField.text?.count ?? 0 > 0
         let balance = "\(model?.maxLimitAmount ?? "") \(model?.denomText ?? "")"
         lblAmount.text = String(format: "id_max_limit_s".localized, balance)
-        lblAsset.attributedText = model?.denomUnderlineText
-        if model.scope == .buyBtc {
-            lblInfo.isHidden = !model.showMessage
-            lblToReceiveHint.isHidden = model.hideSubamount
+        if model.scope == .reverseSwap {
             lblAmount.isHidden = true
             bottomStackPad.constant = model.showMessage ? 10 : -24
         }
+        lblAsset.attributedText = model?.denomUnderlineText
     }
 
     func toReceiveAmount(show: Bool) {
@@ -202,31 +202,11 @@ class AmountCell: UITableViewCell {
         case .valid:
             disableState()
             lblAmount.isHidden = false
-            if model.scope == .buyBtc {
+            if model.scope == .reverseSwap {
+                moreInfoView.isHidden = true
                 lblToReceiveHint.isHidden = model.hideSubamount
                 lblToReceiveHint.text = model.subamountText
-                if model.showMessage {
-                    bg.borderColor = UIColor.gAccent()
-                    infoPanel.backgroundColor = UIColor.gAccent()
-                    lblInfo.text = model.message(.valid) ?? ""
-                }
             }
-        /*case .validFunding:
-            bg.borderColor = UIColor.gAccent()
-            infoPanel.backgroundColor = UIColor.gAccent().withAlphaComponent(1.0)
-            let amount = model.openChannelFee
-            lblInfo.text = String(format: "id_a_set_up_funding_fee_of_s_s".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
-            lblInfo.isHidden = false
-            btnFeeInfo.isHidden = false
-            lblMoreInfo.isHidden = false
-            lblAmount.isHidden = true
-            toReceiveAmount(show: true)
-            lblToReceiveHint.text = model.toReceiveAmountStr
-            [lblInfo, lblMoreInfo].forEach {
-                $0?.textColor = .white
-            }
-            btnFeeInfo.setStyle(.underline(txt: "id_read_more".localized, color: .white))
-	*/
         case .aboveInboundLiquidity:
             let amount = Int64(model.breezSdk?.nodeInfo?.inboundLiquiditySatoshi ?? 0)
             let text = String(format: "The amount is above your inbound liquidity. Please type an amount lower than %@ (%@).",  model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
@@ -258,6 +238,16 @@ class AmountCell: UITableViewCell {
             }
             lblMoreInfo.isHidden = true
             btnFeeInfo.isHidden = true
+        case .invalidReverseSwap:
+            moreInfoView.isHidden = false
+            lblInfo.text = model.message(.invalidReverseSwap) ?? ""
+            lblInfo.isHidden = false
+            lblToReceiveHint.text = model.subamountText
+            bg.borderColor = UIColor.gRedWarn()
+            infoPanel.backgroundColor = UIColor.gRedWarn()
+            lblMoreInfo.isHidden = true
+            btnFeeInfo.isHidden = true
+            lblToReceiveHint.isHidden = true
         }
     }
 

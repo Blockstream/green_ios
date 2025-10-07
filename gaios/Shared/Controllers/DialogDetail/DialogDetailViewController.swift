@@ -30,7 +30,7 @@ class DialogDetailViewController: KeyboardViewController {
     private var assetDetailCellTypes = DetailCellType.allCases
     private var isLBTC: Bool {
         get {
-            return tag == GdkNetworks.shared.liquidSS.policyAsset
+            return tag == GdkNetworks.liquidSS.policyAsset
         }
     }
     private var assetsUpdatedToken: NSObjectProtocol?

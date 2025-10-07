@@ -14,12 +14,14 @@ public enum NetworkSecurityCase: String, CaseIterable {
     case lightning = "lightning-mainnet"
     case testnetLightning = "lightning-testnet"
 
+    case lwkMainnet = "lwk-mainnet"
+
     public var network: String {
         self.rawValue
     }
 
     public var gdkNetwork: GdkNetwork {
-        return GdkNetworks.shared.get(networkType: self)
+        return GdkNetworks.get(networkType: self)
     }
 
     public var chain: String {
@@ -56,6 +58,8 @@ public enum NetworkSecurityCase: String, CaseIterable {
             return "Lightning"
         case .testnetLightning:
             return "Lightning Testnet"
+        case .lwkMainnet:
+            return "Liquid Swaps"
         }
     }
 }

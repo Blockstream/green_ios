@@ -63,7 +63,7 @@ class AssetExpandableSelectViewController: KeyboardViewController {
             case .asset(let assetId):
                 vc.viewModel = SecuritySelectViewModel(asset: assetId)
             case .none:
-                vc.viewModel = SecuritySelectViewModel(asset: GdkNetworks.shared.liquidSS.policyAsset ?? AssetInfo.btcId)
+                vc.viewModel = SecuritySelectViewModel(asset: GdkNetworks.liquidSS.policyAsset ?? AssetInfo.btcId)
             }
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)

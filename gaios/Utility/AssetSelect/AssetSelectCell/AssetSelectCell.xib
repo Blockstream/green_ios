@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -44,11 +44,40 @@
                                             <constraint firstAttribute="height" constant="16" id="cf2-VX-h2L"/>
                                         </constraints>
                                     </imageView>
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EZg-d8-RLj">
+                                        <rect key="frame" x="134" y="19.333333333333329" width="121" height="25.666666666666671"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_shortcut_light" translatesAutoresizingMaskIntoConstraints="NO" id="vVZ-iu-jCs">
+                                                <rect key="frame" x="8" y="7.6666666666666679" width="10" height="10"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="10" id="CuO-Yx-ktd"/>
+                                                    <constraint firstAttribute="width" constant="10" id="lnC-6W-7Xb"/>
+                                                </constraints>
+                                            </imageView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_light_ready" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GuB-nQ-qze">
+                                                <rect key="frame" x="23" y="4.9999999999999991" width="90" height="15.666666666666664"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="vVZ-iu-jCs" firstAttribute="leading" secondItem="EZg-d8-RLj" secondAttribute="leading" constant="8" id="6Rg-ZZ-KOv"/>
+                                            <constraint firstItem="vVZ-iu-jCs" firstAttribute="centerY" secondItem="GuB-nQ-qze" secondAttribute="centerY" id="DTR-nV-Ksz"/>
+                                            <constraint firstItem="GuB-nQ-qze" firstAttribute="top" secondItem="EZg-d8-RLj" secondAttribute="top" constant="5" id="Glt-ti-RUY"/>
+                                            <constraint firstAttribute="bottom" secondItem="GuB-nQ-qze" secondAttribute="bottom" constant="5" id="PQD-1A-5MC"/>
+                                            <constraint firstAttribute="trailing" secondItem="GuB-nQ-qze" secondAttribute="trailing" constant="8" id="m2h-p2-5aA"/>
+                                            <constraint firstItem="GuB-nQ-qze" firstAttribute="leading" secondItem="vVZ-iu-jCs" secondAttribute="trailing" constant="5" id="v5F-Ez-XVO"/>
+                                        </constraints>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="sgt-61-vN6" firstAttribute="leading" secondItem="vYM-M0-7w9" secondAttribute="trailing" constant="15" id="13e-GJ-RJu"/>
+                                    <constraint firstItem="EZg-d8-RLj" firstAttribute="centerY" secondItem="6tO-qa-i0y" secondAttribute="centerY" id="Nyf-Zd-nFC"/>
                                     <constraint firstAttribute="bottom" secondItem="vYM-M0-7w9" secondAttribute="bottom" constant="15" id="Qjv-PI-mRq"/>
+                                    <constraint firstAttribute="trailing" secondItem="EZg-d8-RLj" secondAttribute="trailing" constant="15" id="Ybh-72-Deu"/>
                                     <constraint firstItem="hdd-4b-1az" firstAttribute="centerY" secondItem="6tO-qa-i0y" secondAttribute="centerY" id="hez-cv-RnR"/>
                                     <constraint firstItem="hdd-4b-1az" firstAttribute="leading" secondItem="sgt-61-vN6" secondAttribute="trailing" constant="10" id="jKy-Ei-Fnl"/>
                                     <constraint firstItem="vYM-M0-7w9" firstAttribute="top" secondItem="6tO-qa-i0y" secondAttribute="top" constant="15" id="lzz-PJ-EpV"/>
@@ -116,9 +145,12 @@
                 <outlet property="assetSubview" destination="6tO-qa-i0y" id="a6J-jc-eec"/>
                 <outlet property="bg" destination="635-L7-ihQ" id="cYg-ni-Phn"/>
                 <outlet property="iconEdit" destination="hdd-4b-1az" id="d5B-8l-v6l"/>
+                <outlet property="iconLightReady" destination="vVZ-iu-jCs" id="W1f-rd-dWb"/>
                 <outlet property="imgView" destination="vYM-M0-7w9" id="z51-Wa-TuC"/>
                 <outlet property="lblAmp" destination="vVb-3c-Dpb" id="o9n-vH-TH8"/>
                 <outlet property="lblAsset" destination="sgt-61-vN6" id="vLJ-86-mSo"/>
+                <outlet property="lblLightReady" destination="GuB-nQ-qze" id="8vC-aW-nWM"/>
+                <outlet property="viewLightReady" destination="EZg-d8-RLj" id="oW7-xF-tqw"/>
             </connections>
             <point key="canvasLocation" x="109.9236641221374" y="37.676056338028168"/>
         </tableViewCell>
@@ -126,12 +158,13 @@
     <resources>
         <image name="ic_amp_warn" width="15.333333015441895" height="16"/>
         <image name="ic_pencil" width="17" height="17"/>
-        <image name="ntw_btc" width="60" height="61"/>
+        <image name="ic_shortcut_light" width="14.333333015441895" height="17.666666030883789"/>
+        <image name="ntw_btc" width="24" height="24"/>
         <namedColor name="gBlackBg">
-            <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGrayCard">
-            <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.094117647058823528" green="0.094117647058823528" blue="0.094117647058823528" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGreenMatrix">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

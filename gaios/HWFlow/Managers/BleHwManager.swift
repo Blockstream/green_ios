@@ -184,13 +184,13 @@ class BleHwManager {
         }
     }
 
-    func login(account: Account) async throws -> WalletManager {
+    func login(account: Account) async throws -> (Account, WalletManager) {
         AnalyticsManager.shared.loginWalletStart()
-        let walletManager = WalletManager(account: account, prominentNetwork: account.networkType)
+        var account = account
+        let walletManager = WalletManager(prominentNetwork: account.networkType)
         let device = try await getHwProtocol()
         walletManager.popupResolver = await PopupResolver()
         walletManager.hwInterfaceResolver = HwPopupResolver()
-        walletManager.hwDevice = device
         walletManager.hwProtocol = hwProtocol
         var derivedCredentials: Credentials?
         if AuthenticationTypeHandler.findAuth(method: .AuthKeyLightning, forNetwork: account.keychainLightning) {
@@ -199,7 +199,7 @@ class BleHwManager {
         do {
             if let masterXpub = try await getMasterXpub(chain: account.gdkNetwork.chain) {
                 let walletId = try walletManager.prominentSession?.walletIdentifier(masterXpub: masterXpub)
-                try await walletManager.login(
+                let res = try await walletManager.login(
                    credentials: nil,
                    lightningCredentials: derivedCredentials,
                    device: device,
@@ -208,9 +208,11 @@ class BleHwManager {
                    parentWalletId: walletId
                 )
                 // block to login on bip32 passphrase jade wallet
-                if let hashId1 = account.walletHashId, let hashId2 = walletManager.account.walletHashId, hashId1 != hashId2 {
+                if let hashId1 = account.walletHashId, let hashId2 = res?.walletHashId, hashId1 != hashId2 {
                     throw GaError.GenericError("Wallet hash is different from the previous wallet")
                 }
+                account.xpubHashId = res?.xpubHashId
+                account.walletHashId = res?.walletHashId
             }
         } catch {
             let text = toBleError(error, network: nil).localizedDescription
@@ -219,15 +221,15 @@ class BleHwManager {
         }
         switch type {
         case .Jade:
-            walletManager.account.boardType = jade?.version?.boardType
-            walletManager.account.efusemac = jade?.version?.efusemac
+            account.boardType = jade?.version?.boardType
+            account.efusemac = jade?.version?.efusemac
         case .Ledger:
             break
         }
         self.walletManager = walletManager
         AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .hardware)
         AnalyticsManager.shared.activeWalletStart()
-        return walletManager
+        return (account, walletManager)
     }
 
     func validateAddress(account: WalletItem, address: Address) async throws -> Bool {

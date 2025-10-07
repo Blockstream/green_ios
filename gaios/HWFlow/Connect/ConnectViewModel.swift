@@ -148,9 +148,8 @@ class ConnectViewModel: NSObject {
         _ = try await bleHwManager.jade?.silentMasterBlindingKey()
         // login
         updateState?(.login)
-        let wm = try await bleHwManager.login(account: account)
-        // use updated account
-        self.account = wm.account
+        let (account, wm) = try await bleHwManager.login(account: account)
+        self.account = account
         AccountsRepository.shared.current = account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)
@@ -188,9 +187,9 @@ class ConnectViewModel: NSObject {
         }
         // login
         updateState?(.login)
-        let wm = try await bleHwManager.login(account: account)
+        let (account, wm) = try await bleHwManager.login(account: account)
         // use updated account
-        self.account = wm.account
+        self.account = account
         AccountsRepository.shared.current = account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)
@@ -200,18 +199,22 @@ class ConnectViewModel: NSObject {
     func loginJadeWatchonly(method: AuthenticationTypeHandler.AuthType) async throws {
         updateState?(.watchonly)
         AnalyticsManager.shared.loginWalletStart()
-        let wm = WalletManager(account: account, prominentNetwork: account.networkType)
+        let wm = WalletManager(prominentNetwork: account.networkType)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = HwPopupResolver()
         switch method {
         case .AuthKeyWoCredentials:
             let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
             updateState?(.login)
-            try await wm.loginWatchonly(credentials: credentials)
+            let res = try await wm.loginWatchonly(credentials: credentials)
+            account.xpubHashId = res?.xpubHashId
+            account.walletHashId = res?.walletHashId
         case .AuthKeyWoBioCredentials:
             let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
             updateState?(.login)
-            try await wm.loginWatchonly(credentials: credentials)
+            let res = try await wm.loginWatchonly(credentials: credentials)
+            account.xpubHashId = res?.xpubHashId
+            account.walletHashId = res?.walletHashId
         case .AuthKeyBiometric, .AuthKeyPIN:
             let session = wm.prominentSession!
             AnalyticsManager.shared.loginWalletStart()
@@ -220,11 +223,13 @@ class ConnectViewModel: NSObject {
             let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
             let credentials = try await session.decryptWithPin(decrypt)
             updateState?(.login)
-            try await wm.loginWatchonly(credentials: credentials)
+            let res = try await wm.loginWatchonly(credentials: credentials)
+            account.xpubHashId = res?.xpubHashId
+            account.walletHashId = res?.walletHashId
         default:
             throw HWError.Declined("")
         }
-        AccountsRepository.shared.current = wm.account
+        AccountsRepository.shared.current = account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)
         }

@@ -3,10 +3,11 @@ import UIKit
 import BreezSDK
 import gdk
 import lightning
+import core
 
 enum AmountCellScope {
     case ltReceive
-    case buyBtc
+    case reverseSwap
 }
 struct AmountCellModel {
     var satoshi: Int64?
@@ -17,11 +18,12 @@ struct AmountCellModel {
     var gdkNetwork: gdk.GdkNetwork?
     var breezSdk: LightningBridge?
     var scope: AmountCellScope
+    var reverseSwapInfo: BoltzReverseSwapInfoLBTC?
 
     var network: NetworkSecurityCase?
     var swapInfo: SwapInfo?
     var amount: String? { isFiat ? fiat : btc }
-    var subamountText: String? { isFiat ? "≈ \(btc ?? "") \(denomText ?? "")" : "≈ \(fiat ?? "") \(currency ?? "")" }
+    var subamountText: String? { isFiat ? "≈ \(btc ?? "") \(denominationHint ?? "")" : "≈ \(fiat ?? "") \(currency ?? "")" }
     var ticker: String? {
         if isFiat {
             return currency == nil ? defaultCurrency : currency
@@ -43,7 +45,23 @@ struct AmountCellModel {
         guard let channelOpeningFees = swapInfo?.channelOpeningFees?.minMsat.satoshi else { return nil }
         return "\(channelOpeningFees) sats"
     }
+    var minReverseSwapText: String? {
+        guard let min = reverseSwapInfo?.limits.minimal else { return nil }
+        let balance = Balance.fromSatoshi(min, assetId: AssetInfo.btcId)
+        return isFiat ? balance?.toFiatText() : balance?.toText(inputDenomination)
+    }
+    var maxReverseSwapText: String? {
+        guard let max = reverseSwapInfo?.limits.maximal else { return nil }
+        let balance = Balance.fromSatoshi(max, assetId: AssetInfo.btcId)
+        return isFiat ? balance?.toFiatText() : balance?.toText(inputDenomination)
+    }
     func message(_ state: AmountCellState) -> String? {
+        if state == .invalidReverseSwap {
+            if let minReverseSwapText, let maxReverseSwapText {
+                return "Type an amount between \(minReverseSwapText) and \(maxReverseSwapText)."
+            }
+            return "Invalid amount"
+        }
         if network == .lightning {
             if state == .invalidBuy {
                 return "Type an amount between \(minAllowedDepositText ?? "-") and \(maxAllowedDepositText ?? "-"). A minimum setup fee of \(channelOpeningFeesText ?? "-") will be applied to the received amount."
@@ -59,25 +77,31 @@ struct AmountCellModel {
     var hideSubamount: Bool {
         return satoshi == nil
     }
-
+    var reverseSwapLimits: (Int64, Int64)? {
+        if let info = reverseSwapInfo {
+            let min = info.limits.minimal
+            let max = info.limits.maximal
+            return (min, max)
+        }
+        return nil
+    }
     var amountText: String? { isFiat ? fiat : btc }
     var denomText: String? {
-        if scope == .buyBtc {
-            if let gdkNetwork = network?.gdkNetwork {
+        if isFiat {
+            return currency == nil ? defaultCurrency : currency
+        } else {
+            if let gdkNetwork = gdkNetwork {
                 return inputDenomination.string(for: gdkNetwork)
             } else {
                 return defaultDenomination
             }
+        }
+    }
+    var denominationHint: String? {
+        if let gdkNetwork = gdkNetwork {
+            return inputDenomination.string(for: gdkNetwork)
         } else {
-            if isFiat {
-                return currency == nil ? defaultCurrency : currency
-            } else {
-                if let gdkNetwork = gdkNetwork {
-                    return inputDenomination.string(for: gdkNetwork)
-                } else {
-                    return defaultDenomination
-                }
-            }
+            return defaultDenomination
         }
     }
     var toReceiveAmountStr: String {
@@ -89,13 +113,8 @@ struct AmountCellModel {
         return ""
     }
     var denomUnderlineText: NSAttributedString {
-        if scope == .buyBtc {
-            return NSAttributedString(string: ticker ?? "", attributes:
+        return NSAttributedString(string: denomText ?? "", attributes:
                 [.underlineStyle: NSUnderlineStyle.single.rawValue])
-        } else {
-            return NSAttributedString(string: denomText ?? "", attributes:
-                [.underlineStyle: NSUnderlineStyle.single.rawValue])
-        }
     }
 
     var btc: String? {
@@ -126,33 +145,31 @@ struct AmountCellModel {
     }
 
     var state: AmountCellState {
-        if scope == .buyBtc {
-            guard let satoshi = satoshi else { return .valid }
-            if let maxAllowedDeposit = swapInfo?.maxAllowedDeposit,
-                let minAllowedDeposit = swapInfo?.minAllowedDeposit,
-               satoshi >= maxAllowedDeposit || satoshi < minAllowedDeposit {
-                return .invalidBuy
+        guard let satoshi = satoshi else { return .disabled }
+        switch scope {
+        case .ltReceive:
+            guard let _ = breezSdk?.lspInformation, let nodeState = breezSdk?.nodeInfo else {
+                return .disconnected
             }
-            return .valid
-        }
-        guard let satoshi = satoshi else {
-            return .disabled
-        }
-        guard let lspInformation = breezSdk?.lspInformation, let nodeState = breezSdk?.nodeInfo else {
-            return .disconnected
-        }
-        if satoshi >= nodeState.maxReceivableSatoshi {
-            return .tooHigh
-        } else if satoshi <= nodeState.inboundLiquiditySatoshi || satoshi >= openChannelFee ?? 0 {
-            if nodeState.inboundLiquiditySatoshi == 0 || satoshi > nodeState.inboundLiquiditySatoshi {
-                return .aboveInboundLiquidity
+            if satoshi >= nodeState.maxReceivableSatoshi {
+                return .tooHigh
+            } else if satoshi <= nodeState.inboundLiquiditySatoshi || satoshi >= openChannelFee ?? 0 {
+                if nodeState.inboundLiquiditySatoshi == 0 || satoshi > nodeState.inboundLiquiditySatoshi {
+                    return .aboveInboundLiquidity
+                } else {
+                    return .valid
+                }
+            } else if satoshi <= openChannelFee ?? 0 {
+                return .tooLow
+            } else {
+                return .disabled
+            }
+        case .reverseSwap:
+            if satoshi < reverseSwapLimits?.0 ?? 0 || satoshi > reverseSwapLimits?.1 ?? 0 {
+                return .invalidReverseSwap
             } else {
                 return .valid
             }
-        } else if satoshi <= openChannelFee ?? 0 {
-            return .tooLow
-        } else {
-            return .disabled
         }
     }
     var defaultCurrency: String? = {

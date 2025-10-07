@@ -24,6 +24,8 @@ extension gdk.NetworkSecurityCase {
             return (UIImage(named: "ic_key")!, UIImage(named: "ntw_testnet_liquid")!)
         case .lightning, .testnetLightning:
             return (UIImage(named: "ic_key")!, UIImage(named: "ntw_btc")!)
+        case .lwkMainnet:
+            return (UIImage(named: "ic_key")!, UIImage(named: "ntw_liquid")!)
         }
     }
 
@@ -31,7 +33,7 @@ extension gdk.NetworkSecurityCase {
         switch self {
         case .bitcoinMS, .bitcoinSS:
             return UIColor.gAccountOrange()
-        case .liquidMS, .liquidSS:
+        case .liquidMS, .liquidSS, .lwkMainnet:
             return UIColor.gAccountLightBlue()
         case .testnetMS, .testnetSS, .testnetLiquidMS, .testnetLiquidSS:
             return UIColor.gAccountTestGray()

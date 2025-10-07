@@ -5,6 +5,7 @@ import greenaddress
 import hw
 import lightning
 import BreezSDK
+import LiquidWalletKit
 
 public actor Failures {
     public var errors = [String: Error]()
@@ -29,8 +30,10 @@ public class WalletManager {
 
     // Return current WalletManager used for the active user session
     public static var current: WalletManager? {
-        let account = AccountsRepository.shared.current
-        return WalletsRepository.shared.get(for: account?.id ?? "")
+        if let account = AccountsRepository.shared.current {
+            return WalletsRepository.shared.get(for: account.id)
+        }
+        return nil
     }
 
     // Hashmap of available networks with open session
@@ -49,22 +52,11 @@ public class WalletManager {
     let mainnet: Bool
 
     public var isWatchonly: Bool = false
-
-    public var isHW: Bool { account.isHW }
-
-    public var account: Account {
-        didSet {
-            if AccountsRepository.shared.get(for: account.id) != nil {
-                AccountsRepository.shared.upsert(account)
-            }
-        }
-    }
-
-    public var hwDevice: HWDevice? {
-        didSet {
-            sessions.forEach { $0.value.hw = hwDevice }
-        }
-    }
+    public var isEphemeral: Bool = false
+    public var isHW: Bool { hwDevice != nil }
+    public var isJade: Bool { hwDevice?.isJade ?? false }
+    public var isLedger: Bool { hwDevice?.isLedger ?? false }
+    public var hwDevice: HWDevice?
 
     public var popupResolver: PopupResolverDelegate? {
         didSet {
@@ -92,17 +84,17 @@ public class WalletManager {
         return activeSessions.keys.compactMap { NetworkSecurityCase(rawValue: $0) }
     }
 
-    public init(account: Account, prominentNetwork: NetworkSecurityCase?) {
+    public init(prominentNetwork: NetworkSecurityCase?) {
         self.mainnet = prominentNetwork?.gdkNetwork.mainnet ?? true
         self.prominentNetwork = prominentNetwork ?? .bitcoinSS
         self.registry = AssetsManager(testnet: !mainnet, lightning: AppSettings.shared.experimental)
-        self.account = account
         if mainnet {
             addSession(for: .bitcoinSS)
             addSession(for: .liquidSS)
             addSession(for: .bitcoinMS)
             addSession(for: .liquidMS)
-            addLightningSession(for: .lightning)
+            addSession(for: .lwkMainnet)
+            addSession(for: .lightning)
         } else {
             addSession(for: .testnetSS)
             addSession(for: .testnetLiquidSS)
@@ -120,8 +112,14 @@ public class WalletManager {
     }
 
     public func addSession(for network: NetworkSecurityCase) {
-        let networkName = network.network
-        sessions[networkName] = SessionManager(network.gdkNetwork)
+        switch network {
+        case .lightning:
+            sessions[network.rawValue] = LightningSessionManager(network)
+        case .lwkMainnet:
+            sessions[network.rawValue] = LwkSessionManager(network: Network.mainnet())
+        default:
+            sessions[network.rawValue] = SessionManager(network)
+        }
     }
 
     public func getSession(for network: NetworkSecurityCase) -> SessionManager? {
@@ -132,28 +130,17 @@ public class WalletManager {
         getSession(for: subaccount.networkType)
     }
 
-    public func addLightningSession(for network: NetworkSecurityCase) {
-        let session = LightningSessionManager(network.gdkNetwork)
-        session.accountId = account.id
-        sessions[network.rawValue] = session
-    }
-
     public var lightningSession: LightningSessionManager? {
         let network: NetworkSecurityCase = testnet ? .testnetLightning : .lightning
         return sessions[network.rawValue] as? LightningSessionManager
     }
 
-    public var lightningSubaccount: WalletItem? {
-        return subaccounts.filter {$0.gdkNetwork.lightning }.first
+    public var lwkSession: LwkSessionManager? {
+        return sessions[NetworkSecurityCase.lwkMainnet.network] as? LwkSessionManager
     }
 
-    public var lightningNodeId: String? {
-        get {
-            return UserDefaults.standard.string(forKey: "\(AppStorageConstants.lightningNodeId.rawValue)_\(account.id)")
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: "\(AppStorageConstants.lightningNodeId.rawValue)_\(account.id)")
-        }
+    public var lightningSubaccount: WalletItem? {
+        return subaccounts.filter {$0.gdkNetwork.lightning }.first
     }
 
     public var testnet: Bool {
@@ -182,41 +169,28 @@ public class WalletManager {
     }
     public var failureSessionsError = Failures()
 
-    public func create(_ credentials: Credentials) async throws {
-        let networks: [NetworkSecurityCase] = testnet ? [.testnetSS, .testnetLiquidSS] : [.bitcoinSS, .liquidSS]
-        for network in networks {
-            let session = self.sessions[network.rawValue]!
-            try await session.connect()
-            try await session.register(credentials: credentials)
-        }
-        let walletIdentifier = try prominentSession?.walletIdentifier(credentials: credentials)
-        try await login(
-            credentials: credentials,
-            lightningCredentials: nil,
-            device: nil,
-            masterXpub: nil,
-            fullRestore: false,
-            parentWalletId: walletIdentifier)
-    }
-
     public func loginWatchonly(
         credentials: Credentials,
         lightningCredentials: Credentials? = nil
-    ) async throws {
+    ) async throws -> LoginUserResult? {
         var loginUserResult: LoginUserResult?
-        let allNetworks: [NetworkSecurityCase] = [.bitcoinSS, .liquidSS, .testnetSS, .testnetLiquidSS]
-        for network in allNetworks {
-            let descriptors = credentials.coreDescriptors?.filter({ Wally.isDescriptor($0, for: network) }) ?? []
-            let keys = credentials.slip132ExtendedPubkeys?.filter({ Wally.isPubKey($0, for: network) }) ?? []
-            if descriptors.isEmpty && keys.isEmpty {
-                continue
-            }
-            let credentials = Credentials(coreDescriptors: descriptors.isEmpty ? nil : descriptors, slip132ExtendedPubkeys: keys.isEmpty ? nil : keys)
-            try? await getSession(for: network)?.connect()
-            loginUserResult = try await getSession(for: network)?.loginUser(credentials)
+        // login singlesig bitcoin
+        let descriptors = credentials.coreDescriptors?.filter({ Wally.isDescriptor($0, for: bitcoinSinglesigNetwork) })
+        let slip132Keys = credentials.slip132ExtendedPubkeys?.filter({ Wally.isPubKey($0, for: bitcoinSinglesigNetwork) })
+        if !(descriptors ?? []).isEmpty || !(slip132Keys ?? []).isEmpty {
+            let credentials = Credentials(coreDescriptors: descriptors, slip132ExtendedPubkeys: slip132Keys)
+            try? await bitcoinSinglesigSession?.connect()
+            loginUserResult = try await bitcoinSinglesigSession?.loginUser(credentials)
         }
+        // login singlesig liquid
+        if let descriptors = credentials.coreDescriptors?.filter({ Wally.isDescriptor($0, for: liquidSinglesigNetwork) }), descriptors.count > 0 {
+            let credentials = Credentials(coreDescriptors: descriptors)
+            try? await liquidSinglesigSession?.connect()
+            loginUserResult = try await liquidSinglesigSession?.loginUser(credentials)
+        }
+        // login multisig
         if let username = credentials.username, !username.isEmpty {
-            let session = getSession(for: account.networkType)
+            let session = getSession(for: prominentNetwork)
             try? await session?.connect()
             loginUserResult = try await session?.loginUser(credentials)
         }
@@ -226,89 +200,147 @@ public class WalletManager {
         _ = try await subaccounts()
         try? await loadRegistry()
         isWatchonly = true
-        account.xpubHashId = loginUserResult?.xpubHashId
+        return loginUserResult
     }
 
-    public func loginSession(
+    public func loginGdk(
         session: SessionManager,
         credentials: Credentials?,
         device: HWDevice?,
         masterXpub: String?,
         fullRestore: Bool
-    ) async throws {
+    ) async throws -> LoginUserResult? {
         // disable liquid if is unsupported on hw
         if session.gdkNetwork.liquid && device?.supportsLiquid ?? 1 == 0 {
             logger.error("WM login disable liquid if is unsupported on hw")
-            return
+            return nil
         }
         // verify session
-        if session.networkType == .lightning {
-            if !AppSettings.shared.experimental || testnet {
-                logger.error("WM login lightning no available")
-                return
-            } else if credentials == nil || credentials?.bip39Passphrase != nil {
-                logger.error("WM login no credentials found for lightning")
-                return
-            }
-        } else if session.networkType != .lightning && (credentials == nil && device == nil) {
+        if credentials == nil && device == nil {
             throw GaError.GenericError("no credentials found for \(session.networkType.rawValue)")
         }
-        let session = session.networkType == .lightning ? session as? LightningSessionManager : session
-        guard let session = session else {
-            logger.error("WM login lightning no available")
-            return
-        }
         // check existing a previous session
-        let existDatadir = {
-            if let masterXpub = masterXpub {
-                return session.existDatadir(masterXpub: masterXpub)
-            } else if let credentials = credentials {
-                return session.existDatadir(credentials: credentials)
-            }
-            return nil
-        }() ?? false
+        let existDatadir = session.existDatadir(credentials: credentials, masterXpub: masterXpub)
         // ignore login on multisig session if not exist a previous session
         if session.gdkNetwork.multisig && !fullRestore && !existDatadir && credentials?.username ?? nil == nil {
             logger.info("WM login no previous active session found for \(session.networkType.rawValue, privacy: .public)")
-            return
+            return nil
         }
         // login
         do {
             try await session.connect()
-            let res = try await session.loginUser(credentials: credentials, hw: device)
-            // update walletHashId and xpubHashId
-            if let session = session as? LightningSessionManager, session.gdkNetwork.lightning {
-                account.lightningWalletHashId = res.walletHashId
-                lightningNodeId = session.lightBridge?.nodeInfo?.id
-            } else if session.gdkNetwork.network == prominentNetwork.network {
-                account.xpubHashId = res.xpubHashId
-                account.walletHashId = res.walletHashId
+            if let device = device {
+                return try await session.loginUser(device)
+            } else if let credentials = credentials {
+                return try await session.loginUser(credentials)
+            } else {
+                return nil
             }
         } catch {
             // remove multisig session if login is failure
             switch error {
-            case BreezSDK.ConnectError.RestoreOnly:
-                return
             case TwoFactorCallError.failure(let txt):
-                if txt == "id_login_failed" && fullRestore && prominentSession?.networkType != session.networkType {
+                if txt == "id_login_failed" && prominentSession?.networkType != session.networkType {
                     try? await session.disconnect()
-                    if let masterXpub = masterXpub {
-                        await session.removeDatadir(masterXpub: masterXpub)
-                    } else if let credentials = credentials {
-                        await session.removeDatadir(credentials: credentials)
+                    if fullRestore {
+                        if let masterXpub = masterXpub {
+                            await session.removeDatadir(masterXpub: masterXpub)
+                        } else if let credentials = credentials {
+                            await session.removeDatadir(credentials: credentials)
+                        }
                     }
-                    return
+                    return nil
                 }
                 throw error
             default:
                 throw error
             }
         }
-        // discovery and add default subaccounts
-        let refresh = fullRestore && session.logged
-        try? await session.discovery(refresh: refresh, updateHidden: !existDatadir || fullRestore)
     }
 
+    public func loginLightning(
+        session: LightningSessionManager,
+        credentials: Credentials,
+        restore: Bool = false
+    ) async throws -> LoginUserResult? {
+        // verify session
+        if !AppSettings.shared.experimental || testnet {
+            logger.error("WM login lightning no available")
+            return nil
+        } else if credentials.bip39Passphrase != nil {
+            logger.error("WM login no credentials found for lightning")
+            return nil
+        }
+        let walletId = try session.walletIdentifier(credentials: credentials)
+        let walletHashId = walletId!.walletHashId
+        if !restore && LightningRepository.shared.get(for: walletHashId) == nil {
+            logger.error("WM login lightning is disabled")
+            return nil
+        }
+        // login
+        do {
+            try await session.connect()
+            let res = try await session.loginUser(credentials)
+            return res
+        } catch {
+            // remove multisig session if login is failure
+            switch error {
+            case BreezSDK.ConnectError.RestoreOnly:
+                return nil
+            default:
+                throw error
+            }
+        }
+    }
+
+    public func loginLWK(
+        lwk: LwkSessionManager,
+        credentials: Credentials,
+        parentWalletId: WalletIdentifier?
+    ) async throws -> LoginUserResult? {
+        let res = try await lwk.loginUser(credentials)
+        lwk.xpubHashId = parentWalletId?.xpubHashId
+        return res
+    }
+
+    public func loginSession(
+        session: SessionManager,
+        credentials: Credentials?,
+        lightningCredentials: Credentials?,
+        device: HWDevice?,
+        masterXpub: String?,
+        fullRestore: Bool,
+        parentWalletId: WalletIdentifier?)
+    async throws -> LoginUserResult? {
+        do {
+            logger.info("WM \(session.networkType.rawValue, privacy: .public) login")
+            var loginUserResult: LoginUserResult?
+            switch session.networkType {
+            case .lightning:
+                // Connect and login Breez
+                if let session = lightningSession, let credentials = lightningCredentials {
+                    loginUserResult = try await loginLightning(session: session, credentials: credentials, restore: fullRestore)
+                }
+            case .lwkMainnet:
+                // Connect and login Lwk
+                if let session = lwkSession, let credentials = lightningCredentials {
+                    loginUserResult = try await loginLWK(lwk: session, credentials: credentials, parentWalletId: parentWalletId)
+                }
+            default:
+                // Connect and login Gdk
+                loginUserResult = try await loginGdk(session: session, credentials: credentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
+                // discovery and add default subaccounts
+                let refresh = fullRestore && session.logged
+                let existDatadir = session.existDatadir(credentials: credentials, masterXpub: masterXpub)
+                try? await session.discovery(refresh: refresh, updateHidden: !existDatadir || fullRestore)
+            }
+            return loginUserResult
+        } catch {
+            logger.info("WM \(session.networkType.rawValue, privacy: .public) failure: \(error, privacy: .public)")
+            try? await session.disconnect()
+            throw error
+        }
+    }
     public func login(
         credentials: Credentials?,
         lightningCredentials: Credentials?,
@@ -316,26 +348,35 @@ public class WalletManager {
         masterXpub: String?,
         fullRestore: Bool,
         parentWalletId: WalletIdentifier?
-    )
-    async throws {
-        let loginTask: ((_ session: SessionManager) async throws -> ()) = { [self] session in
+    ) async throws -> LoginUserResult? {
+        isEphemeral = credentials?.bip39Passphrase != nil
+        isWatchonly = false
+        hwDevice = device
+        let loginTask: ((_ session: SessionManager) async -> LoginUserResult?) = { [self] session in
             do {
-                let credentials = session.networkType == .lightning ? lightningCredentials : credentials
-                try await loginSession(session: session, credentials: credentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
-                logger.info("WM \(session.networkType.rawValue, privacy: .public) login")
+                return try await loginSession(
+                    session: session,
+                    credentials: credentials,
+                    lightningCredentials: lightningCredentials,
+                    device: device,
+                    masterXpub: masterXpub,
+                    fullRestore: fullRestore,
+                    parentWalletId: parentWalletId)
             } catch {
-                logger.info("WM \(session.networkType.rawValue, privacy: .public) failure: \(error, privacy: .public)")
-                try? await session.disconnect()
                 await failureSessionsError.add(for: session.networkType, error: error)
+                return nil
             }
         }
         await failureSessionsError.reset()
         let sessions = self.sessions.values.filter { !$0.logged }
         logger.info("WM login: \(sessions.count) sessions")
-        await withTaskGroup(of: Void.self) { group in
+        let loginUserDatas = await withTaskGroup(of: (NetworkSecurityCase, LoginUserResult?).self) { group in
             for session in sessions {
-                group.addTask(priority: .high) { try? await loginTask(session) }
+                group.addTask(priority: .high) {
+                    return (session.networkType, await loginTask(session))
+                }
             }
+            return await group.reduce(into: [:]) { acc, item in acc[item.0] = item.1 }
         }
         logger.info("WM sessions: \(self.activeSessions.count)")
         if self.activeSessions.count == 0 {
@@ -350,6 +391,7 @@ public class WalletManager {
         _ = try? await self.prominentSession?.loadSettings()
         logger.info("WM loadRegistry")
         try? await self.loadRegistry()
+        return loginUserDatas.first { $0.key == prominentNetwork }?.value
     }
 
     public var bitcoinSinglesigNetwork: NetworkSecurityCase { mainnet ? .bitcoinSS : .testnetSS }
@@ -516,16 +558,16 @@ public class WalletManager {
             }
     }
 
-    public func transactions(subaccounts: [WalletItem], first: Int = 0, count: Int? = nil) async throws -> [Transaction] {
-        return try await withThrowingTaskGroup(of: [Transaction].self, returning: [Transaction].self) { group in
+    public func transactions(subaccounts: [WalletItem], first: Int = 0, count: Int? = nil) async throws -> [gdk.Transaction] {
+        return try await withThrowingTaskGroup(of: [gdk.Transaction].self, returning: [gdk.Transaction].self) { group in
             for subaccount in subaccounts {
                 group.addTask {
                     let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: first)
-                    let page = txs?.list.map { Transaction($0.details, subaccountId: subaccount.id) }
+                    let page = txs?.list.map { gdk.Transaction($0.details, subaccountId: subaccount.id) }
                     return page ?? []
                 }
             }
-            return try await group.reduce(into: [Transaction]()) { partial, res in
+            return try await group.reduce(into: [gdk.Transaction]()) { partial, res in
                 partial += res
             }.sorted()
         }
@@ -536,7 +578,7 @@ public class WalletManager {
             for subaccount in subaccounts {
                 group.addTask {
                     let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: page * 30, count: 30)
-                    let list = txs?.list.map { Transaction($0.details, subaccountId: subaccount.id) }
+                    let list = txs?.list.map { gdk.Transaction($0.details, subaccountId: subaccount.id) }
                     return (subaccount.id, Transactions(list: list ?? []))
                 }
             }
@@ -545,24 +587,24 @@ public class WalletManager {
             }
         }
     }
-    public func allTransactions(subaccounts: [WalletItem]) async throws -> [Transaction] {
-        return try await withThrowingTaskGroup(of: [Transaction].self, returning: [Transaction].self) { group in
+    public func allTransactions(subaccounts: [WalletItem]) async throws -> [gdk.Transaction] {
+        return try await withThrowingTaskGroup(of: [gdk.Transaction].self, returning: [gdk.Transaction].self) { group in
             for subaccount in subaccounts {
                 group.addTask {
                     let txs = try await self.allBySubaccount(subaccount)
                     return txs
                 }
             }
-            return try await group.reduce(into: [Transaction]()) { partial, res in
+            return try await group.reduce(into: [gdk.Transaction]()) { partial, res in
                 partial += res
             }.sorted(by: { $0 > $1 })
         }
     }
-    func allBySubaccount(_ subaccount: WalletItem) async throws -> [Transaction] {
+    func allBySubaccount(_ subaccount: WalletItem) async throws -> [gdk.Transaction] {
         let offset = 30
         var page = 0
         var end: Bool = false
-        var transactions: [Transaction] = []
+        var transactions: [gdk.Transaction] = []
         while end == false {
             let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: page * offset, count: offset)
             let list = txs?.list.map { Transaction($0.details, subaccountId: subaccount.id) } ?? []
@@ -605,52 +647,17 @@ public class WalletManager {
         }
     }
 
-    public func existDerivedLightning() -> Bool {
-        AppSettings.shared.experimental && !testnet && AuthenticationTypeHandler.findAuth(method: .AuthKeyLightning, forNetwork: account.keychainLightning)
-    }
-
-    public func removeLightning() async {
-        try? await lightningSession?.disconnect()
-        if let walletHashId = account.lightningWalletHashId {
-            await lightningSession?.removeDatadir(walletHashId: walletHashId)
-            LightningRepository.shared.remove(for: walletHashId)
-        }
-        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyLightning, for: account.keychainLightning)
-        // reload subaccounts
-        if logged {
-            _ = try? await subaccounts()
-        }
-    }
-
-    public func unregisterLightning()  async throws {
-        // unregister lightning webhook
-        let derivedCredentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
-        if let session = lightningSession, !session.logged {
-            try await session.smartLogin(
-                credentials: derivedCredentials,
-                listener: session)
-        }
-        let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
-        if let token = defaults?.string(forKey: "token"),
-           let xpubHashId = account.xpubHashId {
-           lightningSession?.unregisterNotification(token: token, xpubHashId: xpubHashId)
-        }
-        try? await lightningSession?.disconnect()
-    }
-
-    public func getLightningMnemonic(credentials: Credentials) throws -> String? {
+    public func deriveLightningCredentials(from credentials: Credentials) throws -> Credentials {
         guard let mnemonic = credentials.mnemonic else {
             throw GaError.GenericError("No such mnemonic")
         }
-        return Wally.bip85FromMnemonic(mnemonic: mnemonic,
-                          passphrase: credentials.bip39Passphrase,
-                          isTestnet: false,
-                          index: 0)
-    }
-
-    public func deriveLightningCredentials(from credentials: Credentials) throws -> Credentials {
-        Credentials(
-            mnemonic: try getLightningMnemonic(credentials: credentials),
+        let bip85Key = Wally.bip85FromMnemonic(
+            mnemonic: mnemonic,
+            passphrase: credentials.bip39Passphrase,
+            isTestnet: false,
+            index: 0)
+        return Credentials(
+            mnemonic: bip85Key,
             bip39Passphrase: credentials.bip39Passphrase)
     }
 
@@ -679,6 +686,20 @@ public class WalletManager {
         }
         return expiredSubaccounts
     }
+
+    public func selectableAssets() -> [String]? {
+        let hasSubaccountAmp = !subaccounts.filter({ $0.type == .amp }).isEmpty
+        let hasLightning = !subaccounts.filter({ $0.networkType.lightning }).isEmpty
+        let hasLiquid = !subaccounts.filter({ $0.networkType.liquid }).isEmpty
+        let hasBitcoin = !subaccounts.filter({ $0.networkType.bitcoin }).isEmpty
+        let assetIds = WalletManager.current?.registry.all
+            .filter { !(!hasSubaccountAmp && $0.amp == true) }
+            .filter { hasLightning || $0.assetId != AssetInfo.lightningId }
+            .filter { hasBitcoin || ![AssetInfo.btcId, AssetInfo.testId].contains($0.assetId) }
+            .filter { hasLiquid || [AssetInfo.btcId, AssetInfo.testId, AssetInfo.lightningId].contains($0.assetId) }
+            .map { $0.assetId }
+        return assetIds
+    }
 }
 extension WalletManager {
 
@@ -700,12 +721,12 @@ extension WalletManager {
 }
 extension WalletManager: AssetsProvider {
     public func getAssets(params: gdk.GetAssetsParams) -> gdk.GetAssetsResult? {
-        let session = activeLiquidSessions.first ?? liquidSinglesigSession ?? SessionManager(liquidSinglesigNetwork.gdkNetwork)
+        let session = activeLiquidSessions.first ?? liquidSinglesigSession ?? SessionManager(liquidSinglesigNetwork)
         return session.getAssets(params: params)
     }
 
     public func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) async throws {
-        let session = activeLiquidSessions.first ?? liquidSinglesigSession ?? SessionManager(liquidSinglesigNetwork.gdkNetwork)
+        let session = activeLiquidSessions.first ?? liquidSinglesigSession ?? SessionManager(liquidSinglesigNetwork)
         if refresh {
             try await session.connect()
         }

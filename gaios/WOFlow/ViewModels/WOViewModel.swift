@@ -11,6 +11,8 @@ struct WOCellModel {
 }
 
 class WOViewModel {
+    
+    var account: Account
 
     let types: [WOCellModel] = [
         WOCellModel(img: UIImage(named: "ic_key_ss")!,
@@ -20,8 +22,12 @@ class WOViewModel {
                     title: "id_multisig_shield".localized,
                     hint: "id_log_in_to_your_multisig_shield".localized)
     ]
+    
+    init(account: Account) {
+        self.account = account
+    }
 
-    func newAccountMultisig(for gdkNetwork: GdkNetwork, username: String, password: String, remember: Bool ) -> Account {
+    static func newAccountMultisig(for gdkNetwork: GdkNetwork, username: String, password: String, remember: Bool) -> Account {
         let name = AccountsRepository.shared.getUniqueAccountName(
             testnet: !gdkNetwork.mainnet,
             watchonly: true)
@@ -29,7 +35,7 @@ class WOViewModel {
         return Account(name: name, network: network, username: username, password: remember ? password : nil)
     }
 
-    func newAccountSinglesig(for gdkNetwork: GdkNetwork) -> Account {
+    static func newAccountSinglesig(for gdkNetwork: GdkNetwork) -> Account {
         let name = AccountsRepository.shared.getUniqueAccountName(
             testnet: !gdkNetwork.mainnet,
             watchonly: true)
@@ -37,7 +43,7 @@ class WOViewModel {
         return Account(name: name, network: network, username: "")
     }
 
-    func loginMultisig(for account: Account, password: String?) async throws {
+    func loginMultisig(password: String?) async throws {
         guard let username = account.username,
               let password = !password.isNilOrEmpty ? password : account.password else {
             throw GaError.GenericError("Invalid credentials")
@@ -45,24 +51,30 @@ class WOViewModel {
         AnalyticsManager.shared.loginWalletStart()
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         let credentials = Credentials.watchonlyMultisig(username: username, password: password)
-        try await wm.loginWatchonly(credentials: credentials)
-        AccountsRepository.shared.current = wm.account
-        AnalyticsManager.shared.loginWalletEnd(account: wm.account, loginType: .watchOnly)
+        let res = try await wm.loginWatchonly(credentials: credentials)
+        account.xpubHashId = res?.xpubHashId
+        account.walletHashId = res?.walletHashId
+        AccountsRepository.shared.current = account
+        AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly)
     }
 
-    func setupSinglesig(for account: Account, credentials: Credentials) async throws {
+    func setupSinglesig(credentials: Credentials) async throws {
         try AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoCredentials, credentials: credentials, for: account.keychain)
     }
 
-    func loginSinglesig(for account: Account) async throws {
+    func loginSinglesig() async throws {
         AnalyticsManager.shared.loginWalletStart()
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: account.keychain) {
             let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
-            try await wm.loginWatchonly(credentials: credentials)
+            let res = try await wm.loginWatchonly(credentials: credentials)
+            account.xpubHashId = res?.xpubHashId
+            account.walletHashId = res?.walletHashId
         } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: account.keychain) {
             let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
-            try await wm.loginWatchonly(credentials: credentials)
+            let res = try await wm.loginWatchonly(credentials: credentials)
+            account.xpubHashId = res?.xpubHashId
+            account.walletHashId = res?.walletHashId
         } else {
             let session = wm.prominentSession!
             let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain)
@@ -71,9 +83,11 @@ class WOViewModel {
             try await session.connect()
             let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
             let credentials = try await session.decryptWithPin(decrypt)
-            try await wm.loginWatchonly(credentials: credentials)
+            let res = try await wm.loginWatchonly(credentials: credentials)
+            account.xpubHashId = res?.xpubHashId
+            account.walletHashId = res?.walletHashId
         }
-        AccountsRepository.shared.current = wm.account
-        AnalyticsManager.shared.loginWalletEnd(account: wm.account, loginType: .watchOnly)
+        AccountsRepository.shared.current = account
+        AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly)
     }
 }

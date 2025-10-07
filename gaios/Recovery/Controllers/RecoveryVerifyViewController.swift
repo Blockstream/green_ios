@@ -105,7 +105,7 @@ class RecoveryVerifyViewController: UIViewController {
     }
 
     func next() {
-        guard let account =  WalletManager.current?.account else {
+        guard let account = AccountsRepository.shared.current else {
             return
         }
         BackupHelper.shared.removeFromBackupList(account.id)

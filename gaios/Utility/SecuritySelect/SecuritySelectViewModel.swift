@@ -119,7 +119,7 @@ class SecuritySelectViewModel {
         let network = policy.getNetwork(testnet: wm.testnet, liquid: isLiquid)!
         let prominentSession = wm.prominentSession!
         if network.lightning {
-            if wm.account.isHW {
+            if wm.isHW {
                 throw GaError.GenericError("Cannot create a lightning account for an hardware wallet")
             }
             guard let session = wm.lightningSession else {
@@ -134,8 +134,8 @@ class SecuritySelectViewModel {
             }
             let credentials = try wm.deriveLightningCredentials(from: mainCredentials)
             await session.removeDatadir(credentials: credentials)
-            _ = try await session.loginUser(credentials: credentials, hw: nil)
-            _ = try await wm.subaccounts()
+            let _ = try await session.loginUser(credentials)
+            let _ = try await wm.subaccounts()
             if Bundle.main.debug {
                 // try await wm.setCloseToAddress()
             }
@@ -181,14 +181,14 @@ class SecuritySelectViewModel {
     }
 
     func device() -> HWDevice {
-        return wm.account.isJade ? .defaultJade(fmwVersion: nil) : .defaultLedger()
+        return wm.isJade ? .defaultJade(fmwVersion: nil) : .defaultLedger()
     }
 
     func registerSession(session: SessionManager) async throws {
-        if session.gdkNetwork.liquid && wm.account.isLedger {
+        if session.gdkNetwork.liquid && wm.isLedger {
             throw GaError.GenericError("Liquid not supported on Ledger Nano X")
-        } else if wm.account.isHW {
-            let hw = wm.account.isJade ? HWDevice.defaultJade(fmwVersion: nil) : HWDevice.defaultLedger()
+        } else if wm.isHW {
+            let hw = wm.isJade ? HWDevice.defaultJade(fmwVersion: nil) : HWDevice.defaultLedger()
             return try await registerSession(session: session, hw: hw)
         } else if let prominentSession = wm.prominentSession {
             let credentials = try await prominentSession.getCredentials(password: "")
@@ -200,7 +200,11 @@ class SecuritySelectViewModel {
 
     func registerSession(session: SessionManager, credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
         try await session.register(credentials: credentials, hw: hw)
-        _ = try await session.loginUser(credentials: credentials, hw: hw)
+        if let credentials = credentials {
+            _ = try await session.loginUser(credentials)
+        } else if let hw = hw {
+            _ = try await session.loginUser(hw)
+        }
         let subaccounts = try await session.subaccounts(true)
         let used = try await self.isUsedDefaultAccount(for: session, account: subaccounts.first)
         if !used {

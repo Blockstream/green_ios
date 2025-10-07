@@ -87,7 +87,7 @@ extension TabHomeVC { // navigation
     }
     func backupAlertDismiss() {
         Task {
-            BackupHelper.shared.addToDismissed(walletId: walletModel.wm?.account.id, position: .homeTab)
+            BackupHelper.shared.addToDismissed(walletId: walletModel.mainAccount?.id, position: .homeTab)
             walletModel.reloadBackupCards()
             reloadSections([.backup], animated: true)
         }
@@ -248,16 +248,22 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                                    onDismiss: {[weak self] in
                         self?.remoteAlertDismiss()
                     })
-                case .login(let network, let error):
+                case .login:
                     let handleAlertGesture: (() -> Void)? = { [weak self] in
-                        switch error {
-                        case LoginError.hostUnblindingDisabled(_):
-                            Task {
-//                                try? await self?.viewModel.reconnectHW(network)
-//                                await MainActor.run { self?.reload() }
+                        Task { [weak self] in
+                            self?.startLoader(message: "id_connecting".localized)
+                            let task = Task.detached { [weak self] in
+                                try await self?.walletModel.relogin()
                             }
-                        default:
-                            break
+                            switch await task.result {
+                            case .success:
+                                await self?.walletModel.reloadAlertCards()
+                                await self?.walletTab.reload(discovery: false)
+                                self?.stopLoader()
+                            case .failure(let error):
+                                self?.stopLoader()
+                                DropAlert().error(message: error.description().localized)
+                            }
                         }
                     }
                     cell.configure(walletModel.alertCardCellModel[indexPath.row],

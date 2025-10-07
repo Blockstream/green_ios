@@ -20,7 +20,7 @@ class SendAmountViewModel {
     var transaction: Transaction?
     var transactionPriority: TransactionPriority = .Medium
     var isFiat = false
-    var hasHW: Bool { wm?.account.isHW ?? false }
+    var hasHW: Bool { wm?.isHW ?? false }
 
     var feeEstimator: FeeEstimator?
     var validateTask: Task<Transaction?, Error>?
@@ -281,7 +281,7 @@ class SendAmountViewModel {
             tx.feeRate = feeRate
         }
         switch createTx.txType {
-        case .transaction, .psbt:
+        case .transaction, .psbt, .lwkSwap:
             if createTx.sendAll && createTx.satoshi == nil {
                 createTx.satoshi = 0
             } else if !createTx.sendAll && (createTx.satoshi == nil || createTx.satoshi == 0) {

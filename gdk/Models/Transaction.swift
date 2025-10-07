@@ -15,6 +15,7 @@ public enum TxType: Codable {
     case lnurl
     case redepositExpiredUtxos
     case psbt
+    case lwkSwap
 }
 
 public typealias Metadata = [[String]]
@@ -65,7 +66,7 @@ public struct Addressee: Codable {
     public let subtype: UInt32?
     public let userPath: [UInt32]?
 
-    public static func from(address: String, satoshi: Int64?, assetId: String?, isGreedy: Bool = false, bip21: Bool = false) -> Addressee {
+    public static func from(address: String, satoshi: Int64?, assetId: String?, isGreedy: Bool = false, bip21: Bool = false, txType: TxType = .transaction) -> Addressee {
         return Addressee(address: address,
                          satoshi: satoshi,
                          isGreedy: isGreedy,
@@ -75,7 +76,7 @@ public struct Addressee: Codable {
                          maxAmount: nil,
                          domain: nil,
                          metadata: nil,
-                         type: .transaction,
+                         type: txType,
                          bip21: bip21,
                          bip21Params: nil,
                          subtype: nil,

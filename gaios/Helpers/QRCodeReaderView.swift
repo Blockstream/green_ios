@@ -290,7 +290,7 @@ extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
 
     func validate(_ text: String) async throws -> BcurDecodedData? {
         if session == nil {
-            session = SessionManager(NetworkSecurityCase.bitcoinSS.gdkNetwork)
+            session = SessionManager(NetworkSecurityCase.bitcoinSS)
         }
         return try await session?.bcurDecode(params: BcurDecodeParams(part: text), bcurResolver: self)
     }

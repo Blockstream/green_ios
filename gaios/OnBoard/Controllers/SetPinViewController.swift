@@ -205,7 +205,10 @@ class SetPinViewController: UIViewController {
                 guard let credentials = try await WalletManager.current?.prominentSession?.getCredentials(password: "") else {
                     throw LoginError.failed("")
                 }
-                return try await self?.viewModel.setupPinWallet(credentials: credentials, pin: pin)
+                guard let wm = WalletManager.current, let account = AccountsRepository.shared.current else {
+                    throw LoginError.failed("")
+                }
+                return try await self?.viewModel.setupPinWallet(credentials: credentials, pin: pin, account: account, wm: wm)
             case .restore:
                 await self?.startLoader(message: "id_restoring_your_wallet".localized, isRive: true)
                 guard let credentials = OnboardViewModel.credentials else {
@@ -218,19 +221,19 @@ class SetPinViewController: UIViewController {
             }
         }
         switch await task.result {
-        case .success(let wallet):
+        case .success(let accountWallet):
             stopLoader()
             switch pinFlow {
             case .settings:
                 navigationController?.popToRootViewController(animated: true)
             case .restore:
-                if let account = wallet?.account {
+                if let account = accountWallet?.0 {
                     AccountsRepository.shared.current = account
                     AnalyticsManager.shared.activeWalletStart()
                     AccountNavigator.navLogged(accountId: account.id, isFirstLoad: false)
                 }
             case .create:
-                if let account = wallet?.account {
+                if let account = accountWallet?.0 {
                     AccountsRepository.shared.current = account
                     AnalyticsManager.shared.activeWalletStart()
                     AccountNavigator.navLogged(accountId: account.id, isFirstLoad: true)

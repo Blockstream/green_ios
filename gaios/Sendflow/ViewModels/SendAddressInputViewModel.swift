@@ -3,6 +3,7 @@ import greenaddress
 import core
 import BreezSDK
 import lightning
+import LiquidWalletKit
 
 class SendAddressInputViewModel {
     var input: String?
@@ -36,7 +37,7 @@ class SendAddressInputViewModel {
     var isBip21Bitcoin: Bool { (input ?? "").starts(with: "bitcoin:") }
     var isBip21Liquid: Bool { (input ?? "").starts(with: "liquidnetwork:") }
     var isBip21Lightning: Bool { (input ?? "").starts(with: "lightning:") }
-    
+
     var bitcoinSession: SessionManager? { bitcoinSinglesigSession ?? bitcoinMultisigSession }
     var liquidSession: SessionManager? { liquidSinglesigSession ?? liquidMultisigSession }
 
@@ -52,7 +53,18 @@ class SendAddressInputViewModel {
         self.assetId = assetId
     }
 
-    private func parseLightning() async throws -> CreateTx? {
+    private func parseLwkLightning() async throws -> CreateTx? {
+        guard let input = input else {
+            return nil
+        }
+        let bolt11 = input.replacingOccurrences(of: "lightning:", with: "")
+        let invoice = try Bolt11Invoice(s: bolt11)
+        let satoshi = invoice.amountMilliSatoshis()?.satoshi
+        let addressee = Addressee.from(address: invoice.description, satoshi: Int64(satoshi ?? 0), assetId: AssetInfo.lbtcId, txType: .lwkSwap)
+        return CreateTx(addressee: addressee, txType: .lwkSwap)
+    }
+
+    private func parseBreezLightning() async throws -> CreateTx? {
         guard let input = input, let lightningSession = lightningSession else {
             return nil
         }
@@ -71,7 +83,7 @@ class SendAddressInputViewModel {
                 case .bolt11(_): return .bolt11
                 default: return .lnurl
             }}()
-            return CreateTx(addressee: addressee, subaccount: wm?.lightningSubaccount, error: res?.errors.first, anyAmounts: anyAmounts, lightningType: lightningType, txType: txType)
+            return CreateTx(addressee: addressee, subaccount: wm?.lightningSubaccount, error: nil, anyAmounts: anyAmounts, lightningType: lightningType, txType: txType)
         } else {
             if isBip21Lightning || preferredAccount?.networkType.lightning ?? false {
                 throw TransactionError.invalid(localizedDescription: res?.errors.first ?? "id_invalid_address")
@@ -184,8 +196,12 @@ class SendAddressInputViewModel {
             createTx = res
             return
         }
+        if let res = try await parseLwkLightning() {
+            createTx = res
+            return
+        }
         if lightningSession?.logged ?? false {
-            if let res = try await parseLightning() {
+            if let res = try await parseBreezLightning() {
                 createTx = res
                 return
             }
@@ -201,37 +217,55 @@ class SendAddressInputViewModel {
         throw TransactionError.invalid(localizedDescription: "id_invalid_address".localized)
     }
 
-    func lightningTransaction() async -> Transaction? {
+    func createBreezLightningTransaction() async throws -> gdk.Transaction {
+        guard let lightningSession = lightningSession else {
+            throw GaError.GenericError("No lightning session")
+        }
         var tx = Transaction([:], subaccountId: lightningSubaccount?.id)
         if let addressee = createTx?.addressee {
             tx.addressees = [addressee]
         }
-        var created = try? await lightningSession?.createTransaction(tx: tx)
-        created?.subaccountId = lightningSubaccount?.id
+        var created = try await lightningSession.createTransaction(tx: tx)
+        created.subaccountId = lightningSubaccount?.id
         return created
     }
-    
-    func sendTxConfirmViewModel() async -> SendTxConfirmViewModel {
+
+    func sendTxConfirmViewModel(tx: gdk.Transaction) -> SendTxConfirmViewModel {
         SendTxConfirmViewModel(
-            transaction: await lightningTransaction(),
-            subaccount: lightningSubaccount,
+            transaction: tx,
+            subaccount: tx.subaccount,
             denominationType: settings?.denomination ?? .Sats,
             isFiat: false,
-            txType: createTx?.txType ?? .transaction, 
+            txType: createTx?.txType ?? .transaction,
             unsignedPsbt: nil,
             signedPsbt: nil)
     }
 
-    func accountAssetViewModel() -> AccountAssetViewModel {
-        let isBitcoin = createTx?.isBitcoin ?? true
-        return AccountAssetViewModel(
-            accounts: isBitcoin ? bitcoinSubaccountsWithFunds : liquidSubaccountsWithFunds,
-            createTx: createTx,
-            funded: true,
-            showBalance: true)
+    func checkLwkLimits() async throws {
+        let res = try await wm?.lwkSession?.fetchSubmarineSwapsInfo()
+        if let satoshi = createTx?.satoshi {
+            if let limitsMinimal = res?.limits.minimal, satoshi < limitsMinimal {
+                throw GaError.GenericError("Amount too low".localized)
+            } else if let limitsMaximal = res?.limits.maximal, satoshi > limitsMaximal {
+                throw GaError.GenericError("Amount too big".localized)
+            }
+        }
     }
 
-    func sendPsbtConfirmViewModel() async throws -> SendTxConfirmViewModel {
+    func sendLightningViewModel() async throws -> SendLightningViewModel {
+        guard let subaccount = createTx?.subaccount else {
+            throw GaError.GenericError("Invalid subaccount")
+        }
+        let vm = SendLightningViewModel(
+            liquidAccount: subaccount,
+            invoice: try Bolt11Invoice(s: createTx?.address ?? ""),
+            denominationType: settings?.denomination ?? .Sats,
+            isFiat: false)
+        try await vm.prepareTx()
+        return vm
+    }
+
+    func getTransactionFromPsbt() async throws -> gdk.Transaction? {
         guard let psbt = createTx?.psbt else {
             throw GaError.GenericError("Empty Psbt")
         }
@@ -251,14 +285,17 @@ class SendAddressInputViewModel {
         let addressee = tx?.transactionOutputs?.map { Addressee.from(address: $0.address ?? "", satoshi: $0.satoshi, assetId: $0.assetId) }
         tx?.addressees = addressee ?? []
         tx?.subaccountId = subaccount?.id
+        return tx
+    }
+    func sendPsbtConfirmViewModel(tx: gdk.Transaction) -> SendTxConfirmViewModel {
         let denomination = wm?.prominentSession?.settings?.denomination
         return SendTxConfirmViewModel(
             transaction: tx,
-            subaccount: subaccount,
+            subaccount: tx.subaccount,
             denominationType: denomination ?? .Sats,
             isFiat: false,
             txType: .psbt,
-            unsignedPsbt: isFinalized ? nil : psbt,
-            signedPsbt: isFinalized ? psbt : nil)
+            unsignedPsbt: createTx?.psbt,
+            signedPsbt: nil)
     }
 }

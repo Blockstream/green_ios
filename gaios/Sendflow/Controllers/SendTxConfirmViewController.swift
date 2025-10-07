@@ -24,6 +24,7 @@ class SendTxConfirmViewController: UIViewController {
     @IBOutlet weak var lblAmountValue: UILabel!
     @IBOutlet weak var lblAmountFee: UILabel!
     @IBOutlet weak var lblAssetName: UILabel!
+    @IBOutlet weak var lblAmountSubtitle: UILabel!
     @IBOutlet weak var lblAccount1: UILabel!
     @IBOutlet weak var lblAccount2: UILabel!
     @IBOutlet weak var squareSliderView: SquareSliderView!
@@ -89,7 +90,7 @@ class SendTxConfirmViewController: UIViewController {
         lblAccount1.text = ""
         lblAccount2.text = ""
 
-        lblSumFeeKey.text = "id_network_fee".localized
+        lblSumFeeKey.text = "Total fees".localized
         lblSumFeeValue.text = ""
         lblSumAmountKey.text = "id_recipient_receives".localized
         lblSumAmountValue.text = ""
@@ -106,6 +107,7 @@ class SendTxConfirmViewController: UIViewController {
         btnSignViaQr.setTitle("id_sign_transaction_via_qr".localized, for: .normal)
         btnSignViaQr.isHidden = !viewModel.showSignTransactionViaQR()
         squareSliderView.isHidden = !viewModel.showSignTransaction()
+        lblAmountSubtitle.text = "You are paying this Lightning invoice with Liquid bitcoin"
     }
 
     func setStyle() {
@@ -129,6 +131,7 @@ class SendTxConfirmViewController: UIViewController {
         }
         lblPayRequestByValue.setStyle(.txtBigger)
         lblPayRequestByHint.setStyle(.txt)
+        lblAmountSubtitle.setStyle(.txt)
         btnInfoFee.setImage(UIImage(named: "ic_lightning_info_err")!.maskWithColor(color: UIColor.gW40()), for: .normal)
         if viewModel.isWithdraw {
             [addressCard, lblAddressTitle].forEach {
@@ -231,6 +234,7 @@ class SendTxConfirmViewController: UIViewController {
         noteView.isHidden = viewModel.note?.isEmpty ?? true
         lblSumAmountView.isHidden = viewModel.recipientReceivesHidden
         amountMultiAddrCard.isHidden = true
+        lblAmountSubtitle.isHidden = viewModel.txType != .lwkSwap
 
         if viewModel.isLightning {
             if let text = viewModel.addressee?.domain {
@@ -263,7 +267,9 @@ class SendTxConfirmViewController: UIViewController {
             payRequestByStack.isHidden = true
             AddressDisplay.configure(
                 address: viewModel.address ?? "",
-                textView: addressTextView)
+                textView: addressTextView,
+                style: .default,
+                truncate: true)
         }
         if viewModel.assetId != viewModel.session?.gdkNetwork.getFeeAsset() {
             [lblConversion, lblAmountFee].forEach {
@@ -487,10 +493,14 @@ class SendTxConfirmViewController: UIViewController {
     }
 
     @IBAction func btnInfoFee(_ sender: Any) {
-
+        var scope = SendFeeScope.info
+        if viewModel.txType == .lwkSwap {
+            scope = .lwkSwap(swap: "NA sats", chain: "NA sats", total: "NA sats", fiat: "NA fiat")
+        }
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendFeeInfoViewController") as? SendFeeInfoViewController {
             vc.delegate = self
+            vc.scope = scope
             vc.modalPresentationStyle = .overFullScreen
             UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
         }
@@ -572,7 +582,7 @@ extension SendTxConfirmViewController: SendSuccessViewControllerDelegate, ReEnab
             .shared
             .request(
                 isSendAll: viewModel.sendAll,
-                account: viewModel.wm?.account,
+                account: AccountsRepository.shared.current,
                 walletItem: viewModel.subaccount)
         navigationController?.popToViewController(ofClass: WalletTabBarViewController.self)
     }

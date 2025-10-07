@@ -2,6 +2,8 @@ import Foundation
 import gdk
 
 extension AssetInfo {
+    
+    public static let all = [btc, test, lbtc, ltest, lightning]
 
     // Default asset info
     public static var btc: AssetInfo {

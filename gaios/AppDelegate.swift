@@ -75,7 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // run account migration
         MigratorManager.shared.migrate()
-    
+
         // Open first page
         AccountNavigator.navFirstPage()
 
@@ -152,6 +152,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         Messaging.messaging().apnsToken = deviceToken
-        AppNotifications.shared.didRegisterForRemoteNotifications(deviceToken: deviceToken)
+        AppNotifications.shared.didRegisterForRemoteNotificationsWithDeviceToken(deviceToken: deviceToken)
     }
 }

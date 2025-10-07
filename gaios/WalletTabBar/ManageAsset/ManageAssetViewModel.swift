@@ -144,7 +144,7 @@ class ManageAssetViewModel {
         return nil
     }
     func hasLightning() -> Bool {
-        guard let account = WalletManager.current?.account else {
+        guard let account = AccountsRepository.shared.current else {
             return false
         }
         return AuthenticationTypeHandler.findAuth(

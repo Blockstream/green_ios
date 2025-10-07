@@ -472,15 +472,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="O5S-bz-kAP">
-                                <rect key="frame" x="0.0" y="96" width="414" height="562"/>
+                                <rect key="frame" x="0.0" y="96" width="414" height="546.5"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="pu3-Id-NaL" id="Pno-in-szU"/>
                                     <outlet property="delegate" destination="pu3-Id-NaL" id="Lju-oP-H59"/>
                                 </connections>
                             </tableView>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="kP0-o2-FCc">
-                                <rect key="frame" x="25" y="658" width="364" height="170"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="kP0-o2-FCc">
+                                <rect key="frame" x="25" y="642.5" width="364" height="185.5"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="nsG-1q-yNj" userLabel="account stack">
                                         <rect key="frame" x="0.0" y="0.0" width="364" height="50"/>
@@ -520,8 +520,14 @@
                                             </view>
                                         </subviews>
                                     </stackView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_footer" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="8" translatesAutoresizingMaskIntoConstraints="NO" id="5jJ-i3-JXE">
+                                        <rect key="frame" x="0.0" y="55" width="364" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="eLX-bq-sxw">
-                                        <rect key="frame" x="0.0" y="60" width="364" height="50"/>
+                                        <rect key="frame" x="0.0" y="80.5" width="364" height="50"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AhX-BE-GwQ" userLabel="Share">
                                                 <rect key="frame" x="0.0" y="0.0" width="177" height="50"/>
@@ -552,7 +558,7 @@
                                         </subviews>
                                     </stackView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kNV-NB-pdr">
-                                        <rect key="frame" x="0.0" y="120" width="364" height="50"/>
+                                        <rect key="frame" x="0.0" y="135.5" width="364" height="50"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="yPk-f7-2TM"/>
@@ -589,6 +595,7 @@
                         <outlet property="btnConfirm" destination="kNV-NB-pdr" id="xEH-Bc-UhX"/>
                         <outlet property="btnShare" destination="AhX-BE-GwQ" id="GtJ-8V-PpK"/>
                         <outlet property="btnVerify" destination="d3P-Or-Xp0" id="MrM-vB-PZq"/>
+                        <outlet property="footerLabel" destination="5jJ-i3-JXE" id="kii-SG-KOw"/>
                         <outlet property="lblAccount" destination="55n-8t-on7" id="jtg-4y-xsD"/>
                         <outlet property="stackBottom" destination="Cff-MR-ByK" id="aSX-sb-iAM"/>
                         <outlet property="tableView" destination="O5S-bz-kAP" id="zMC-bo-J7Y"/>

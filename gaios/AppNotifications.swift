@@ -19,24 +19,64 @@ class AppNotifications: NSObject {
         Messaging.messaging().delegate = self
     }
 
-    func didRegisterForRemoteNotifications(deviceToken: Data) {
+    func didRegisterForRemoteNotificationsWithDeviceToken(deviceToken: Data) {
+        logger.info("Device Token: \(deviceToken)")
     }
 
-    func requestRemoteNotificationPermissions(application: UIApplication, completion: (() -> Void)? = nil) {
-        // Remote Notifications permissions
-        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-        UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { (granted, error) in
-            if let error = error {
-                logger.error("Register for push notifications fails with error: \(error.localizedDescription)")
-                completion?()
-                return
-            }
-            logger.info("Granter permission for push notifications")
+    
+    func checkNotificationStatusAndPromptIfNeeded(from viewController: UIViewController) {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
             DispatchQueue.main.async {
-                application.registerForRemoteNotifications()
-                completion?()
+                switch settings.authorizationStatus {
+                case .denied:
+                    // User has previously denied permission. Show custom dialog.
+                    self.showManualEnableAlert(from: viewController)
+                case .notDetermined:
+                    // Permission hasn't been requested yet. Request it normally.
+                    self.requestNotificationPermission()
+                case .authorized, .provisional, .ephemeral:
+                    // User has granted permission.
+                    logger.info("Push notifications are enabled.")
+                @unknown default:
+                    break
+                }
             }
         }
+    }
+
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+            if let error = error {
+                logger.error("Permission error: \(error.localizedDescription)")
+            } else if granted {
+                logger.info("Permission granted, now register for remote notifications.")
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            } else {
+                logger.error("Permission denied at first request.")
+            }
+        }
+    }
+
+    private func showManualEnableAlert(from viewController: UIViewController) {
+        let alertController = UIAlertController(
+            title: "Notifications Disabled",
+            message: "Enable notifications in your device settings.",
+            preferredStyle: .alert
+        )
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        let settingsAction = UIAlertAction(title: "Settings", style: .default) { _ in
+            // Redirect user to app's notification settings
+            if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                if UIApplication.shared.canOpenURL(settingsURL) {
+                    UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
+                }
+            }
+        }
+        alertController.addAction(settingsAction)
+        viewController.present(alertController, animated: true, completion: nil)
     }
 }
 

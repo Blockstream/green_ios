@@ -42,12 +42,14 @@ class HWDialogConnectViewController: UIViewController {
         setContent()
         setStyle()
         view.alpha = 0.0
-        viewModel = ConnectViewModel(
-           account: WalletManager.current!.account,
-           firstConnection: false,
-           storeConnection: false,
-           type: WalletManager.current!.account.isJade ? .Jade : .Ledger
-       )
+        if let account = AccountsRepository.shared.current {
+            viewModel = ConnectViewModel(
+                account: account,
+                firstConnection: false,
+                storeConnection: false,
+                type: account.isJade ? .Jade : .Ledger
+            )
+        }
         viewModel?.updateState = { self.state = $0 }
         viewModel?.delegate = self
         updateImage()

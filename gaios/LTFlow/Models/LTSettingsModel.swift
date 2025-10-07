@@ -117,8 +117,10 @@ struct LTSettingsViewModel {
     }
 
     func disableLightning() async {
-        try? await WalletManager.current?.unregisterLightning()
-        await WalletManager.current?.removeLightning()
+        if let account = AccountsRepository.shared.current {
+            try? await WalletManager.current?.lightningSession?.unregister(account: account)
+            await WalletManager.current?.lightningSession?.remove(account: account)
+        }
     }
 
     func rescanSwaps() async throws {

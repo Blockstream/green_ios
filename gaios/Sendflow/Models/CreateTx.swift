@@ -35,7 +35,7 @@ struct CreateTx {
         get { addressee?.isGreedy ?? false }
         set { addressee?.isGreedy = newValue }
     }
-    var isLightning: Bool { lightningType != nil }
+    var isLightning: Bool { lightningType != nil || address?.starts(with: "lnbc") == true }
     var isLiquid: Bool { !isLightning && (assetId != nil && assetId != "btc") }
     var isBitcoin: Bool { !isLightning && (assetId == nil || assetId == "btc") }
 

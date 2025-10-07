@@ -16,10 +16,10 @@ public enum LoginError: Error, Equatable {
 
 public class SessionManager {
 
-    // var notificationManager: NotificationManager?
     public var twoFactorConfig: TwoFactorConfig?
     public var settings: Settings?
     public var session: GDKSession?
+    public var networkType: NetworkSecurityCase
     public var gdkNetwork: GdkNetwork
     public var blockHeight: UInt32 = 0
     public var popupResolver: PopupResolverDelegate?
@@ -30,23 +30,23 @@ public class SessionManager {
     public var logged = false
     public var paused = false
     public var gdkFailures = [String]()
-    public var hw: HWDevice?
     public var hwProtocol: HWProtocol?
     public let uuid = UUID()
 
     // Serial reconnect queue for network events
     public let reconnectionTasks = SerialTasks<Void>()
 
-    public var networkType: NetworkSecurityCase {
-        NetworkSecurityCase(rawValue: gdkNetwork.network) ?? .bitcoinSS
-    }
+    //public var networkType: NetworkSecurityCase {
+    //    NetworkSecurityCase(rawValue: gdkNetwork.network) ?? .bitcoinSS
+    //}
 
     public var isResetActive: Bool? {
         get { twoFactorConfig?.twofactorReset.isResetActive }
     }
 
-    public init(_ gdkNetwork: GdkNetwork) {
-        self.gdkNetwork = gdkNetwork
+    public init(_ networkType: NetworkSecurityCase) {
+        self.networkType = networkType
+        self.gdkNetwork = GdkNetworks.get(networkType: networkType)
         session = GDKSession()
     }
 
@@ -96,18 +96,20 @@ public class SessionManager {
         }
     }
 
-    public func walletIdentifier(credentials: Credentials) throws -> WalletIdentifier? {
+    public func walletIdentifier(credentials: Credentials? = nil, masterXpub: String? = nil) throws -> WalletIdentifier? {
+        let details = {
+            if let credentials = credentials {
+                return credentials.toDict()
+            } else if let masterXpub = masterXpub {
+                return ["master_xpub": masterXpub]
+            } else {
+                return nil
+            }
+        }()
+        let netParams = GdkSettings.read()?.toNetworkParams(gdkNetwork.network).toDict()
         let res = try self.session?.getWalletIdentifier(
-            net_params: GdkSettings.read()?.toNetworkParams(gdkNetwork.network).toDict() ?? [:],
-            details: credentials.toDict() ?? [:])
-        return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
-    }
-
-    public func walletIdentifier(masterXpub: String) throws -> WalletIdentifier? {
-        let details = ["master_xpub": masterXpub]
-        let res = try self.session?.getWalletIdentifier(
-            net_params: GdkSettings.read()?.toNetworkParams(gdkNetwork.network).toDict() ?? [:],
-            details: details)
+            net_params: netParams ?? [:],
+            details: details ?? [:])
         return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
 
@@ -123,6 +125,15 @@ public class SessionManager {
             return existDatadir(walletHashId: hash.walletHashId)
         }
         return false
+    }
+    public func existDatadir(credentials: Credentials?, masterXpub: String?) -> Bool {
+        if let credentials = credentials {
+            return existDatadir(credentials: credentials)
+        } else if let masterXpub = masterXpub {
+            return existDatadir(masterXpub: masterXpub)
+        } else {
+            return false
+        }
     }
 
     public func existDatadir(walletHashId: String) -> Bool {
@@ -199,7 +210,7 @@ public class SessionManager {
     public func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?, network: NetworkSecurityCase?) async throws -> ValidateAddresseesResult {
         let asset = assetId == AssetInfo.btcId ? nil : assetId
         let addressee = Addressee.from(address: input, satoshi: satoshi, assetId: asset)
-        let addressees = ValidateAddresseesParams(addressees: [addressee], network: network?.network ?? networkType.network)
+        let addressees = ValidateAddresseesParams(addressees: [addressee], network: network?.network ?? gdkNetwork.network)
         return try await self.wrapper(fun: self.session?.validate, params: addressees)
     }
 
@@ -248,16 +259,6 @@ public class SessionManager {
         return res
     }
 
-    public func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws -> LoginUserResult {
-        if let credentials = credentials {
-            return try await loginUser(credentials)
-        } else if let hw = hw {
-            return try await loginUser(hw)
-        } else {
-            throw GaError.GenericError("No login method specified")
-        }
-    }
-
     typealias GdkFunc = ([String: Any]) throws -> TwoFactorCall
 
     func log(
@@ -270,10 +271,10 @@ public class SessionManager {
             sensitive = sensitive || !result.keys.filter { mask.contains($0) }.isEmpty
         }
         if sensitive {
-            logger.info("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public)")
+            logger.info("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public)")
         } else {
             let params = params.stringify() ?? ""
-            logger.info("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(params, privacy: .public)")
+            logger.info("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(params, privacy: .public)")
         }
     }
 
@@ -281,25 +282,25 @@ public class SessionManager {
         if let error = error as? TwoFactorCallError {
             switch error {
             case .failure(let txt):
-                logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt, privacy: .public)")
+                logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt, privacy: .public)")
             case .cancel(let txt):
-                logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt, privacy: .public)")
+                logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt, privacy: .public)")
             }
         } else if let error = error as? GaError {
             switch error {
             case .GenericError(let txt):
-                logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public)")
+                logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public)")
             case .ReconnectError(let txt):
-                logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
+                logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
             case .SessionLost(let txt):
-                logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
+                logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
             case .TimeoutError(let txt):
-                logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
+                logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
             case .NotAuthorizedError(let txt):
-                logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
+                logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
             }
         } else {
-            logger.error("GDK \(self.networkType.rawValue, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public)")
+            logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public)")
         }
     }
 
@@ -434,7 +435,7 @@ public class SessionManager {
                 log("changeSettingsTwoFactor", res)
             }
         } catch {
-            logger.error("GDK \(self.networkType.rawValue, privacy: .public) \("changeSettingsTwoFactor") \(error)")
+            logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \("changeSettingsTwoFactor") \(error)")
             throw error
         }
     }

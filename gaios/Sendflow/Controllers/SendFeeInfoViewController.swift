@@ -10,6 +10,11 @@ enum SendFeeInfoAction {
     case cancel
 }
 
+enum SendFeeScope {
+    case info
+    case lwkSwap(swap: String, chain: String, total: String, fiat: String)
+}
+
 class SendFeeInfoViewController: UIViewController {
 
     @IBOutlet weak var tappableBg: UIView!
@@ -17,12 +22,23 @@ class SendFeeInfoViewController: UIViewController {
     @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
-
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnFeeInfo: UIButton!
 
+    @IBOutlet weak var lwkPanel: UIView!
+    @IBOutlet weak var lblSwapFeeTitle: UILabel!
+    @IBOutlet weak var lblSwapFeeValue: UILabel!
+    @IBOutlet weak var lblSwapFeeHint: UILabel!
+    @IBOutlet weak var lblChainFeeTitle: UILabel!
+    @IBOutlet weak var lblChainFeeValue: UILabel!
+    @IBOutlet weak var lblChainFeeHint: UILabel!
+    @IBOutlet weak var lblTotalTitle: UILabel!
+    @IBOutlet weak var lblTotalValue1: UILabel!
+    @IBOutlet weak var lblTotalValue2: UILabel!
+
     weak var delegate: SendFeeInfoViewControllerDelegate?
+    var scope: SendFeeScope = .info
 
     lazy var blurredView: UIView = {
         let containerView = UIView()
@@ -76,15 +92,37 @@ class SendFeeInfoViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "id_network_fee".localized
-        lblHint.text = "id_fees_are_not_collected_by".localized
-        btnFeeInfo.setStyle(.underline(txt: "id_read_more".localized, color: UIColor.gAccent()))
+        switch scope {
+        case .info:
+            lblTitle.text = "id_network_fee".localized
+            lblHint.text = "id_fees_are_not_collected_by".localized
+            lwkPanel.isHidden = true
+        case .lwkSwap(let swap, let chain, let total, let fiat):
+            lblTitle.text = "Total Fees".localized
+            lblHint.text = "Fees are not collected by Blockstream, but by Bitcoin miners, Liquid functionaries, and Lightning nodes that process your transaction.".localized
+            lwkPanel.isHidden = false
+            lblSwapFeeTitle.text = "Network fee and Swap fee".localized
+            lblSwapFeeValue.text = swap
+            lblSwapFeeHint.text = "Includes service and Lightning routing.".localized
+            lblChainFeeTitle.text = "Liquid on-chain".localized
+            lblChainFeeValue.text = chain
+            lblChainFeeHint.text = "Miner fee to send LBTC on Liquid.".localized
+            lblTotalTitle.text = "Total".localized
+            lblTotalValue1.text = total
+            lblTotalValue2.text = fiat
+        }
+        btnFeeInfo.setStyle(.underline(txt: "id_read_more".localized, color: .gAccent()))
+        btnFeeInfo.setImage(UIImage(named: "ic_squared_out_small")?.maskWithColor(color: .gAccent()), for: .normal)
     }
 
     func setStyle() {
         cardView.setStyle(.bottomsheet)
         handle.cornerRadius = 1.5
-
+        [lblSwapFeeTitle, lblChainFeeTitle].forEach { $0?.setStyle(.txt) }
+        [lblSwapFeeHint, lblChainFeeHint, lblSwapFeeValue, lblChainFeeValue].forEach { $0?.setStyle(.txtCard) }
+        lblTotalTitle.setStyle(.txtBigger)
+        lblTotalValue1.setStyle(.txtBigger)
+        lblTotalValue2.setStyle(.txtCard)
         lblHint.setStyle(.txtCard)
     }
 

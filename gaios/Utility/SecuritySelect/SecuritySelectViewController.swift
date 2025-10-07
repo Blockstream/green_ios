@@ -380,7 +380,7 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
         }
 
         // only for lightning subaccount creation: add lightning shortcut
-        let account = WalletManager.current?.account
+        let account = AccountsRepository.shared.current
         if let account = account, !account.isEphemeral && !(account.hidden ?? false) {
             Task {
                 startLoader(message: "")

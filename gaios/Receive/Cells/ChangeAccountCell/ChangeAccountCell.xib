@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -21,13 +21,13 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QNX-w7-Hb8">
                         <rect key="frame" x="25" y="5" width="304" height="108"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="249" verticalHuggingPriority="252" text="lbl_account" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tiD-WM-kgf">
-                                <rect key="frame" x="0.0" y="45.666666666666664" width="203.33333333333334" height="17"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="249" verticalHuggingPriority="252" text="lbl_account" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tiD-WM-kgf">
+                                <rect key="frame" x="0.0" y="45.666666666666664" width="304" height="17"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="5VP-yl-8c8">
+                            <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="5VP-yl-8c8">
                                 <rect key="frame" x="213.33333333333334" y="44" width="90.666666666666657" height="20"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_name" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ilm-WP-YVU">
@@ -52,7 +52,7 @@
                             <constraint firstItem="tiD-WM-kgf" firstAttribute="centerY" secondItem="QNX-w7-Hb8" secondAttribute="centerY" id="4tW-JO-t1p"/>
                             <constraint firstAttribute="trailing" secondItem="5VP-yl-8c8" secondAttribute="trailing" id="5tv-Vx-3PY"/>
                             <constraint firstItem="tiD-WM-kgf" firstAttribute="leading" secondItem="QNX-w7-Hb8" secondAttribute="leading" id="7Jn-h2-SYO"/>
-                            <constraint firstItem="5VP-yl-8c8" firstAttribute="leading" secondItem="tiD-WM-kgf" secondAttribute="trailing" constant="10" id="X0c-xF-zdl"/>
+                            <constraint firstAttribute="trailing" secondItem="tiD-WM-kgf" secondAttribute="trailing" id="JO2-VH-vjx"/>
                             <constraint firstItem="5VP-yl-8c8" firstAttribute="centerY" secondItem="QNX-w7-Hb8" secondAttribute="centerY" id="lOH-tc-OaG"/>
                         </constraints>
                     </view>

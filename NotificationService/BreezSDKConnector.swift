@@ -30,7 +30,7 @@ class BreezSDKConnector: EventListener {
     func connectSDK(credentials: Credentials) async throws -> BlockingBreezServices? {
         // Connect to the Breez SDK make it ready for use
         GdkInit.defaults().run()
-        BreezSDKConnector.lightningSession = LightningSessionManager(NetworkSecurityCase.bitcoinSS.gdkNetwork)
+        BreezSDKConnector.lightningSession = LightningSessionManager(NetworkSecurityCase.bitcoinSS)
         try await BreezSDKConnector.lightningSession?.smartLogin(credentials: credentials, listener: self)
         return BreezSDKConnector.lightningSession?.lightBridge?.breezSdk
     }

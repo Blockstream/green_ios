@@ -5,10 +5,11 @@ import greenaddress
 
 struct LTCreateViewModel {
     var wallet: WalletManager? { WalletManager.current }
-    var isHW: Bool { wallet?.account.isHW ?? false }
+    var mainAccount: Account? { AccountsRepository.shared.current }
+    var isHW: Bool { wallet?.isHW ?? false }
 
     func enableLightning() async throws {
-        guard let account = wallet?.account else {
+        guard let account = mainAccount else {
             throw GaError.GenericError("Invalid account")
         }
         guard let credentials = try await wallet?.prominentSession?.getCredentials(password: "") else {
@@ -25,7 +26,7 @@ struct LTCreateViewModel {
         await session.removeDatadir(credentials: lightningCredentials)
         // connect lightning session
         try await session.connect()
-        _ = try await session.loginUser(credentials: lightningCredentials, hw: nil)
+        _ = try await session.loginUser(lightningCredentials)
         if let token = UserDefaults(suiteName: Bundle.main.appGroup)?.string(forKey: "token"),
            let xpubHashId = account.xpubHashId {
             try? await session.registerNotification(token: token, xpubHashId: xpubHashId)

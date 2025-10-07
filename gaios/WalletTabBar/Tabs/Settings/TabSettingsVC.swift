@@ -10,7 +10,7 @@ class TabSettingsVC: TabViewController {
 
     var session = { WalletManager.current?.prominentSession }()
     var viewModel = TabSettingsModel()
-    var account: Account? { get { viewModel.wm?.account } }
+    var account: Account? { get { walletModel.mainAccount } }
 
     override func viewDidLoad() {
         super.viewDidLoad()

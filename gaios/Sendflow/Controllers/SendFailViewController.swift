@@ -70,17 +70,17 @@ class SendFailViewController: UIViewController {
     }
 
     @IBAction func btnDismiss(_ sender: Any) {
-        dismiss() {}
+        dismiss {}
     }
 
     @IBAction func btnAgain(_ sender: Any) {
-        dismiss() {
+        dismiss {
             self.delegate?.onAgain()
         }
     }
 
     @IBAction func btnSupport(_ sender: Any) {
-        dismiss() {
+        dismiss {
             self.delegate?.onSupport(error: self.error)
         }
     }

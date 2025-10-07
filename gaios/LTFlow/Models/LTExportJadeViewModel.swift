@@ -5,6 +5,7 @@ import gdk
 
 class LTExportJadeViewModel {
     private var wm: WalletManager? { WalletManager.current }
+    private var mainAccount: Account? { AccountsRepository.shared.current }
     private var privateKey: Data?
 
     func request() async -> BcurEncodedData? {
@@ -34,14 +35,14 @@ class LTExportJadeViewModel {
     func enableLightning(credentials: Credentials) async throws {
         // Get lightning session
         guard let session = wm?.lightningSession,
-            let account = wm?.account else {
+            let account = mainAccount else {
             throw HWError.Abort("Invalid lightning session")
         }
         // remove previous lightning data
         await session.removeDatadir(credentials: credentials)
         // connect lightning session
         try await session.connect()
-        let _ = try await session.loginUser(credentials: credentials, hw: nil)
+        let _ = try await session.loginUser(credentials)
         if let token = UserDefaults(suiteName: Bundle.main.appGroup)?.string(forKey: "token"),
            let xpubHashId = account.xpubHashId {
             try? await session.registerNotification(token: token, xpubHashId: xpubHashId)

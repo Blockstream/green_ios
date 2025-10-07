@@ -23,7 +23,6 @@ class WODetailsCompactViewController: KeyboardViewController {
     @IBOutlet weak var btnUserPwd: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
     var networks = [NetworkSecurityCase]()
-    private let viewModel = WOViewModel()
     private var placeholderLabel: UILabel! // Placeholder for textView
 
     override func viewDidLoad() {
@@ -134,7 +133,8 @@ class WODetailsCompactViewController: KeyboardViewController {
         }
         let credentials = Credentials(coreDescriptors: isListOfPubKeys ? nil : keys, slip132ExtendedPubkeys: isListOfPubKeys ? keys : nil)
         let network = isListOfPubKeys ? keys.compactMap { Wally.getNetwork(xpub: $0) }.first : keys.compactMap { Wally.getNetwork(descriptor: $0) }.first
-        let account = viewModel.newAccountSinglesig(for: (network ?? NetworkSecurityCase.bitcoinSS).gdkNetwork)
+        var account = WOViewModel.newAccountSinglesig(for: (network ?? NetworkSecurityCase.bitcoinSS).gdkNetwork)
+        let viewModel = WOViewModel(account: account)
         let task = Task {
             let wm = WalletsRepository.shared.getOrAdd(for: account)
             try? await wm.getSession(for: network ?? .bitcoinSS)?.connect()
@@ -142,9 +142,9 @@ class WODetailsCompactViewController: KeyboardViewController {
             _ = try await wm.subaccounts()
             try? await wm.loadRegistry()
             wm.isWatchonly = true
-            wm.account.xpubHashId = loginUserResult?.xpubHashId
-            try await self.viewModel.setupSinglesig(for: wm.account, credentials: credentials)
-            AccountsRepository.shared.current = wm.account
+            account.xpubHashId = loginUserResult?.xpubHashId
+            try await viewModel.setupSinglesig(credentials: credentials)
+            AccountsRepository.shared.current = account
         }
         switch await task.result {
         case .success:

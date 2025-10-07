@@ -16,7 +16,7 @@ class TxDetailsMultiAmountCell: UITableViewCell {
     @IBOutlet weak var iconSide: UIImageView!
 
     private var btc: String {
-        return WalletManager.current?.account.gdkNetwork.getFeeAsset() ?? ""
+        return WalletManager.current?.prominentNetwork.gdkNetwork.getFeeAsset() ?? ""
     }
 
     override func awakeFromNib() {

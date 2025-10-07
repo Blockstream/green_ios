@@ -17,13 +17,13 @@ class ChangeAccountCell: UITableViewCell {
         }
     }
 
-    func configure(name: String, onTap: (() -> Void)?) {
-        lblAccount.text = "id_account".localized
-        self.lblName.text = name
-        self.onTap = onTap
-        self.iconDisclose.isHidden = onTap == nil
+    func configure(name: String, type: String, onTap: (() -> Void)?) {
+        lblAccount.text = "\("id_account".localized): \(name) - (\(type))"
+//        self.lblName.text = name
+//        self.onTap = onTap
+//        self.iconDisclose.isHidden = onTap == nil
     }
     @IBAction func tap(_ sender: Any) {
-        self.onTap?()
+//        self.onTap?()
     }
 }

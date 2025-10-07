@@ -18,15 +18,37 @@ class WalletTabBarViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setTabBar()
-        setupNotifications()
-        walletModel.registerNotifications()
+        setupLocalNotifications()
+        AppNotifications.shared.checkNotificationStatusAndPromptIfNeeded(from: self)
         Task.detached { [weak self] in
-            // refresh tabs content on load
+            await self?.walletModel.reloadAlertCards()
             await self?.reload(discovery: false)
+        }
+        Task.detached { [weak self] in
+            await self?.reloadChart()
+            await self?.updateTabs([.home])
+        }
+        Task.detached { [weak self] in
+            await self?.setupRemoteNotifications()
+        }
+        Task.detached { [weak self] in
+            await self?.walletModel.completePendingSwaps()
         }
     }
 
-    func setupNotifications() {
+    func setupRemoteNotifications() async {
+        let res = Task.detached(priority: .background) { [weak self] in
+            try await self?.walletModel.registerNotifications()
+        }
+        switch try? await res.value {
+        case .none:
+            DropAlert().error(message: "Notifications error".localized)
+        default:
+            break
+        }
+    }
+
+    func setupLocalNotifications() {
         let observer = NotificationCenter.default.addObserver(
             forName: UIApplication.willEnterForegroundNotification,
             object: UIApplication.shared,
@@ -52,31 +74,34 @@ class WalletTabBarViewController: UITabBarController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
-        if walletModel.isFirstLoad, let view = UIApplication.shared.delegate?.window??.rootViewController?.view {
+        if walletModel.isFirstLoad {
             walletModel.isFirstLoad = false
             // load welcome dialog
-            view.addSubview(wView)
-            wView.frame = view.frame
-            wView.configure(with: WelcomeViewModel(), onTap: {[weak self] in
-                AnalyticsManager.shared.swwCreated(account: AccountsRepository.shared.current)
-                self?.wView.removeFromSuperview()
-            })
+            addWelcomeDialog()
             // load backup alert
-            if let wm = walletModel.wm, !wm.account.isHW && !wm.isWatchonly {
-                BackupHelper.shared.addToBackupList(walletModel.wm?.account.id)
+            if let wm = walletModel.wm, !wm.isHW && !wm.isWatchonly {
+                BackupHelper.shared.addToBackupList(AccountsRepository.shared.current?.id)
+                walletModel.reloadBackupCards()
+                updateTabs([.home])
             }
         }
-        setSecurityState(BackupHelper.shared.needsBackup(walletId: walletModel.wm?.account.id) ? .alerted : .normal)
+        setSecurityState(BackupHelper.shared.needsBackup(walletId: AccountsRepository.shared.current?.id) ? .alerted : .normal)
         // reload tabs content on appear
         walletModel.reloadBalances()
         walletModel.reloadTransactions()
         updateTabs([.home, .transact])
-        Task.detached { [weak self] in
-            // refresh tabs content on load
-            await self?.walletModel.reloadAlertCards()
-            await self?.reloadChart()
-            await self?.updateTabs([.home])
+    }
+    
+    func addWelcomeDialog() {
+        // load welcome dialog
+        if let view = UIApplication.shared.delegate?.window??.rootViewController?.view {
+            view.addSubview(wView)
         }
+        wView.frame = view.frame
+        wView.configure(with: WelcomeViewModel(), onTap: {[weak self] in
+            AnalyticsManager.shared.swwCreated(account: AccountsRepository.shared.current)
+            self?.wView.removeFromSuperview()
+        })
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -89,15 +114,6 @@ class WalletTabBarViewController: UITabBarController {
             NotificationCenter.default.removeObserver(observer)
         }
         notificationObservers = []
-    }
-
-    @objc func settingsBtnTapped(_ sender: Any) {
-
-        let alert = UIAlertController(title: "Settings will be available in the next beta release.", message: "", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "id_ok".localized, style: .default) { _ in })
-        DispatchQueue.main.async {
-            UIApplication.shared.delegate?.window??.rootViewController?.present(alert, animated: true, completion: nil)
-        }
     }
 
     @objc func switchNetwork() {
@@ -157,10 +173,6 @@ class WalletTabBarViewController: UITabBarController {
 
     func handleEvent(_ eventType: EventType, details: [AnyHashable: Any]) {
         switch eventType {
-        case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed, .newSubaccount:
-            Task.detached { [weak self] in
-                await self?.reload(discovery: false)
-            }
         case .Block:
             if walletModel.existPendingTransaction() {
                 Task.detached { [weak self] in
@@ -173,12 +185,14 @@ class WalletTabBarViewController: UITabBarController {
                 await self?.reloadChart()
                 await self?.updateTabs([.home])
             }
-        case .AssetsUpdated, .Network, .Ticker, .TwoFactorReset:
+        case .AssetsUpdated, .Ticker:
             walletModel.reloadBalances()
             walletModel.reloadTransactions()
             updateTabs([.home, .transact])
         default:
-            break
+            Task.detached { [weak self] in
+                await self?.reload(discovery: false)
+            }
         }
     }
 
@@ -250,7 +264,7 @@ class WalletTabBarViewController: UITabBarController {
     func userLogout() {
         self.startLoader(message: "id_logging_out".localized)
         Task {
-            let account = self.walletModel.wm?.account
+            let account = AccountsRepository.shared.current
             if let account = account, account.isHW {
                 try? await BleHwManager.shared.disconnect()
             }
@@ -302,25 +316,14 @@ class WalletTabBarViewController: UITabBarController {
 extension WalletTabBarViewController: UITabBarControllerDelegate {
 
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-
-         guard let selectedIndex = tabBarController.viewControllers?.firstIndex(of: viewController) else {
+        guard let selectedIndex = tabBarController.viewControllers?.firstIndex(of: viewController) else {
             return true
-         }
-
-         if selectedIndex == 3 {
-             // return false for no action
-//             if let nv = parent as? UINavigationController {
-//                 nv.navigationBar.topItem?.title = "id_transact".localized
-//             }
-//             settingsBtnTapped(self)
-//             return false
-         }
-
+        }
         guard let fromView = selectedViewController?.view, let toView = viewController.view else {
-          return false
+            return false
         }
         if fromView != toView {
-          UIView.transition(from: fromView, to: toView, duration: 0.4, options: [.transitionCrossDissolve], completion: nil)
+            UIView.transition(from: fromView, to: toView, duration: 0.4, options: [.transitionCrossDissolve], completion: nil)
         }
         return true
     }
@@ -365,11 +368,13 @@ extension WalletTabBarViewController: DrawerNetworkSelectionDelegate {
     // accounts drawer: select another account
     func didSelectAccount(account: Account) {
         // don't switch if same account selected
-        if account.id == self.walletModel.wm?.account.id ?? "" {
+        if account.id == AccountsRepository.shared.current?.id ?? "" {
             presentedViewController?.dismiss(animated: true)
         } else if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
+            AccountsRepository.shared.current = account
             AccountNavigator.navLogged(accountId: account.id)
         } else {
+            AccountsRepository.shared.current = account
             AccountNavigator.navLogin(accountId: account.id)
         }
     }
@@ -415,8 +420,7 @@ extension WalletTabBarViewController: DialogRenameViewControllerDelegate {
     func didRename(name: String, index: String?) {
         if var account = AccountsRepository.shared.current {
             account.name = name
-            WalletManager.current?.account = account
-            // AccountsRepository.shared.upsert(account)
+            AccountsRepository.shared.upsert(account)
             AnalyticsManager.shared.renameWallet()
             Task.detached { [weak self] in
                 // try? await self?.walletModel.loadBalances()
