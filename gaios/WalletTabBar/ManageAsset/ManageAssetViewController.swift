@@ -92,7 +92,7 @@ class ManageAssetViewController: UIViewController {
             return
         }
         var actions: [AccountSettingsType] = []
-        if !(AccountsRepository.shared.current?.isWatchonly ?? false) {
+        if !(WalletManager.current?.isWatchonly ?? false) {
             actions.append(.rename(current: viewModel.account?.localizedName ?? ""))
         }
         // if viewModel.account?.isSinglesig == true { actions.append(.watchonly) }

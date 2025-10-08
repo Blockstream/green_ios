@@ -71,7 +71,7 @@ enum WalletPrefs: Int, CaseIterable {
     }
 
     static func getPrefs() -> [WalletPrefs] {
-        let isWatchOnly = AccountsRepository.shared.current?.isWatchonly ?? false
+        let isWatchOnly = WalletManager.current?.isWatchonly ?? false
         let prefs: [WalletPrefs] = isWatchOnly ? [ /*.settings,*/ .logout ] : [ .createAccount, /*.settings,*/ .logout ]
         return prefs
     }
@@ -87,7 +87,7 @@ enum WalletPrefs: Int, CaseIterable {
            subaccount.filter({ $0.hidden }).count > 0 {
             showArchive = true
         }
-        if AccountsRepository.shared.current?.isWatchonly == true {
+        if WalletManager.current?.isWatchonly == true {
             return ([0: Sections.wallet.name,
                      1: Sections.session.name],
                     [0: [.contact, .denominations/*, .settings*/],

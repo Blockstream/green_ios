@@ -115,7 +115,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let section = viewModel.getSection(index: section)
         if section != viewModel.selected { return nil }
-        let enableCreate = !(AccountsRepository.shared.current?.isWatchonly ?? false)
+        let enableCreate = !(WalletManager.current?.isWatchonly ?? false)
         if let createView = Bundle.main.loadNibNamed("AccountCreateFooterView", owner: self, options: nil)?.first as? AccountCreateFooterView {
             createView.configure(
                 enableCreate: enableCreate,
