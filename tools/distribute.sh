@@ -60,10 +60,59 @@ cp ${APP} ${DEST} | true
 
 cat > "${DEST}/index.html" <<EOL
 <html>
+<head>
+    <title>Blockstream iOS Internal Distribution</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            text-align: center;
+            padding: 40px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .install-button {
+            display: inline-block;
+            background-color: #007aff;
+            color: white;
+            padding: 18px 36px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        .commit-info {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .commit-info a {
+            color: #007aff;
+            text-decoration: none;
+        }
+        .commit-info a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
 <body>
-<h1>
-<a href="itms-services://?action=download-manifest&url=${URL}/manifest.plist">Install App</a>
-</h1>
+    <div class="container">
+        <h1>Blockstream iOS Build</h1>
+        <a href="itms-services://?action=download-manifest&url=${URL}/manifest.plist" class="install-button">Install App</a>
+
+        <div class="commit-info">
+            <p><strong>Branch:</strong> ${CI_COMMIT_REF_NAME}</p>
+            <p><strong>Commit:</strong> <a href="https://github.com/Blockstream/green_ios/commit/${CI_COMMIT_SHA}">${CI_COMMIT_SHORT_SHA}</a> - ${CI_COMMIT_TITLE}</p>
+        </div>
+    </div>
 </body>
 </html>
 EOL
