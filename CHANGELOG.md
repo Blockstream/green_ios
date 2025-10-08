@@ -14,6 +14,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Improve descriptors import UX
 - Watch-only: improved face ID login
 
+### Fixed
+- Sign messages with Jade
+
 ## [5.0.9] - 2025-09-08
 
 ### Changed

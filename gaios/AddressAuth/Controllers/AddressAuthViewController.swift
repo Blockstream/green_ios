@@ -1,8 +1,9 @@
 import UIKit
-
 import RiveRuntime
 import gdk
+import hw
 import BreezSDK
+import core
 
 enum AddressAuthSection: Int, CaseIterable {
     case list
@@ -17,6 +18,7 @@ class AddressAuthViewController: KeyboardViewController {
 
     var viewModel: AddressAuthViewModel!
     var isSearchActive = false
+    var selectedAddress: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -116,10 +118,30 @@ class AddressAuthViewController: KeyboardViewController {
 
     func onSign(_ row: Int) {
         guard let model = viewModel?.listCellModelsFilter[safe: row] else { return }
+        if let wm = WalletManager.current, wm.isHW && wm.isWatchonly {
+            selectedAddress = model.address
+            presentConnectViewController()
+        } else {
+            presentDialogSignViewController(wallet: viewModel.wallet, address: model.address)
+        }
+    }
+
+    @MainActor
+    func presentConnectViewController() {
+        let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "HWDialogConnectViewController") as? HWDialogConnectViewController {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    @MainActor
+    func presentDialogSignViewController(wallet: WalletItem, address: String) {
         let storyboard = UIStoryboard(name: "AddressAuth", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogSignViewController") as? DialogSignViewController {
             vc.modalPresentationStyle = .overFullScreen
-            vc.viewModel = DialogSignViewModel(wallet: viewModel.wallet, address: model.address)
+            vc.viewModel = DialogSignViewModel(subaccount: wallet, address: address)
             present(vc, animated: false, completion: nil)
         }
     }
@@ -243,5 +265,24 @@ extension AddressAuthViewController: UITextFieldDelegate {
 
     func textFieldDidEndEditing(_ textField: UITextField) {
         isSearchActive = false
+    }
+}
+
+extension AddressAuthViewController: HWDialogConnectViewControllerDelegate {
+    func connected() {
+    }
+
+    func logged() {
+        if let selectedAddress = selectedAddress {
+            presentDialogSignViewController(wallet: viewModel.wallet, address: selectedAddress)
+        }
+    }
+
+    func cancel() {
+        showError(HWError.Abort("id_cancel"))
+    }
+
+    func failure(err: Error) {
+        showError(err)
     }
 }

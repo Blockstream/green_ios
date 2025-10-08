@@ -3,20 +3,24 @@ import UIKit
 import core
 import gdk
 
-class DialogSignViewModel {
+struct DialogSignViewModel {
 
-    var wallet: WalletItem
+    var subaccount: WalletItem
     var address: String
     var isHW: Bool { WalletManager.current?.account.isHW ?? false }
-
-    init(wallet: WalletItem, address: String) {
-        self.wallet = wallet
-        self.address = address
+    
+    var session: SessionManager? {
+        if isHW && BleHwManager.shared.walletManager != nil {
+            if BleHwManager.shared.isConnected() {
+                return BleHwManager.shared.walletManager?.getSession(for: subaccount)
+            }
+        }
+        return WalletManager.current?.getSession(for: subaccount)
     }
 
     func sign(message: String) async throws -> String? {
         let params = SignMessageParams(address: address, message: message)
-        let res = try await wallet.session?.signMessage(params)
+        let res = try await session?.signMessage(params)
         return res?.signature
     }
 }
