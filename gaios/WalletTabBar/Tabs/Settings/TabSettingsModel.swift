@@ -104,7 +104,10 @@ class TabSettingsModel {
             section: .wallet,
             type: .logout)
         var menu = [SettingsItemData]()
-        menu += [rename, unifiedDenominationExchange, autolock, logout]
+        if let wm = wm, !wm.account.isEphemeral {
+            menu += [rename]
+        }
+        menu += [unifiedDenominationExchange, autolock, logout]
         return menu
     }
     func getAccount() -> [SettingsItemData] {
