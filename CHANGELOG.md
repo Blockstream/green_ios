@@ -3,20 +3,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [5.1.0] - 2025-10-14
 
 ### Added
-- Export unsigned PSBT and import signed PSBT in watch-only wallets
+- Export and import PSBT from files in watch-only wallets
 
 ### Changed
-- Hide sensitive info in screenshots
-- Application settings screen redesign
-- Improve descriptors import UX
-- Watch-only: improved face ID login
+- Uniform behaviour for preventing screenshots of sensitive info
+- App settings screen redesign
+- Streamlined watch-only wallets import flow with automatic detection
+- Quicker access to watch-only wallets with faceID when selected from the wallets list
+- Improved actions to rename and remove wallets in the list with swipe left gesture
+- Consolidate app settings and about screen under a single menu
 
 ### Fixed
-- Sign messages with Jade
-- Improve ephemeral wallet with a bip39 passphrase login
+- Fixed sign message with Jade for address proof of ownership
+- Fixes for ephemeral wallets login with bip39 passphrases
+- Fix crash on pull down gesture to refresh in Home View
 
 ## [5.0.9] - 2025-09-08
 
