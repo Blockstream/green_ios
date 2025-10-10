@@ -228,24 +228,24 @@ class SendAddressInputViewController: KeyboardViewController {
                 viewModel.createTx?.subaccount = account
                 if let assetId = viewModel.assetId ?? viewModel.createTx?.assetId {
                     viewModel.createTx?.assetId = assetId
+                }
+                presentSendAmountViewController()
+            } else if viewModel.liquidSubaccountsWithFunds.count == 1,
+                      let subaccount = viewModel.liquidSubaccountsWithFunds.first {
+                // preselect the liquid subaccount: go in amount screen
+                if let assetId = viewModel.assetId ?? viewModel.createTx?.assetId {
+                    viewModel.createTx?.assetId = assetId
+                    viewModel.createTx?.subaccount = subaccount
                     presentSendAmountViewController()
-                } else if viewModel.liquidSubaccountsWithFunds.count == 1,
-                          let subaccount = viewModel.liquidSubaccountsWithFunds.first {
-                    // preselect the liquid subaccount: go in amount screen
-                    if let assetId = viewModel.assetId ?? viewModel.createTx?.assetId {
-                        viewModel.createTx?.assetId = assetId
-                        viewModel.createTx?.subaccount = subaccount
-                        presentSendAmountViewController()
-                    } else if subaccount.manyAssets == 1 {
-                        viewModel.createTx?.subaccount = subaccount
-                        presentSendAmountViewController()
-                    } else {
-                        presentAccountAssetViewController()
-                    }
+                } else if subaccount.manyAssets == 1 {
+                    viewModel.createTx?.subaccount = subaccount
+                    presentSendAmountViewController()
                 } else {
-                    // open liquid subaccount selection: go in account/asset screen
                     presentAccountAssetViewController()
                 }
+            } else {
+                // open liquid subaccount selection: go in account/asset screen
+                presentAccountAssetViewController()
             }
         }
     }
