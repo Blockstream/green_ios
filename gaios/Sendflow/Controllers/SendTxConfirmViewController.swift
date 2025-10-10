@@ -562,7 +562,7 @@ extension SendTxConfirmViewController: HWDialogConnectViewControllerDelegate {
     }
 
     func failure(err: Error) {
-        onSupport(error: err)
+        self.presentSendFailViewController(err)
     }
 }
 
