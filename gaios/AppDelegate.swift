@@ -75,7 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // run account migration
         MigratorManager.shared.migrate()
-        
+    
         // Open first page
         AccountNavigator.navFirstPage()
 

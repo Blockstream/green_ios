@@ -18,6 +18,11 @@ class TabHomeVC: TabViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView?.reloadData()
+        
+        if let url = URLSchemeManager.shared.url {
+            URLSchemeManager.shared.url = nil
+            sendScreen(walletModel, input: url.absoluteString)
+        }
     }
 
     func setContent() {

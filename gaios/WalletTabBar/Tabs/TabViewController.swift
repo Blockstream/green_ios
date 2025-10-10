@@ -69,9 +69,9 @@ extension TabViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    func sendScreen(_ walletModel: WalletModel) {
+    func sendScreen(_ walletModel: WalletModel, input: String?) {
         let sendAddressInputViewModel = SendAddressInputViewModel(
-            input: nil,
+            input: input,
             preferredAccount: nil,
             txType: .transaction)
 

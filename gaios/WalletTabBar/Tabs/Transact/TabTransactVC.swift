@@ -60,7 +60,7 @@ class TabTransactVC: TabViewController {
         buyScreen(walletModel)
     }
     func send() {
-        sendScreen(walletModel)
+        sendScreen(walletModel, input: nil)
     }
     func onTxTap(_ indexPath: IndexPath) {
         let tx = walletModel.txCellModels[indexPath.row].tx
