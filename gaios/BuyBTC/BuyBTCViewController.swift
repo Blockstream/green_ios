@@ -135,7 +135,7 @@ class BuyBTCViewController: KeyboardViewController {
         lblHintBackup.setStyle(.txtCard)
         lblTitleBackup.text = "id_back_up_your_wallet_now".localized
         lblHintBackup.text = "id_dont_lose_access_to_your_funds".localized
-        btnLeftBackup.setTitle("id_backup_now".localized, for: .normal)
+        btnLeftBackup.setTitle("id_back_up_now".localized, for: .normal)
         btnRightBackup.isHidden = true
         iconWarnBackup.image = UIImage(named: "ic_card_warn")
         if BackupHelper.shared.needsBackup(walletId: viewModel.wm.account.id) && BackupHelper.shared.isDismissed(walletId: viewModel.wm.account.id, position: .buy) == false {

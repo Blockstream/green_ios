@@ -39,7 +39,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
     }
 
     func setContent() {
-        lblNewWallet.text = "id_setup_a_new_wallet".localized
+        lblNewWallet.text = "id_set_up_a_new_wallet".localized
         lblWallets.text = "id_my_wallets".localized
     }
 

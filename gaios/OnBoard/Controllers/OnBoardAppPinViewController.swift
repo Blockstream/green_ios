@@ -21,7 +21,7 @@ class OnBoardAppPinViewController: UIViewController {
         lblTitle.text = "id_enable_pin_to_protect_your".localized
         lblHint1.text = "id_this_ensures_a_secure_way_to".localized
         lblHint2.text = "id_warning_if_you_forget_your_pin".localized
-        btnPin.setTitle("id_setup_pin".localized, for: .normal)
+        btnPin.setTitle("id_set_up_pin".localized, for: .normal)
         btnMore.setTitle("id_learn_more".localized, for: .normal)
     }
 

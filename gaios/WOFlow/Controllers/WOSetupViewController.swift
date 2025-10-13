@@ -44,7 +44,7 @@ class WOSetupViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = "id_login".localized
+        lblTitle.text = "id_log_in".localized
         lblHint.text = "id_log_in_via_watchonly_to_receive".localized
         warningLabel.text = "id_watchonly_mode_can_be_activated".localized
         loginButton.setTitle("id_log_in".localized, for: .normal)

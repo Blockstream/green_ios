@@ -9,7 +9,7 @@ enum LoginPrefs: Int, CaseIterable {
     var name: String {
         switch self {
         case .passphrase:
-            return "id_login_with_bip39_passphrase".localized
+            return "id_log_in_with_bip39_passphrase".localized
         case .emergency:
             return "id_show_recovery_phrase".localized
         case .edit:

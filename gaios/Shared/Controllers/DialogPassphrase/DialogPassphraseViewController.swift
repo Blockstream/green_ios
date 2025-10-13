@@ -121,7 +121,7 @@ class DialogPassphraseViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = "id_login_with_bip39_passphrase".localized
+        lblTitle.text = "id_log_in_with_bip39_passphrase".localized
         let hint = "id_bip39_passphrase".localized
         fieldPassphrase.attributedPlaceholder = NSAttributedString(string: hint, attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         lblHint1.text = "id_different_passphrases_generate".localized

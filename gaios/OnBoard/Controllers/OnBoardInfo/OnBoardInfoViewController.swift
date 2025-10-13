@@ -68,7 +68,7 @@ class OnBoardInfoViewController: UIViewController {
     }
 
     func setContent() {
-        title = "id_before_you_backup".localized
+        title = "id_before_you_back_up".localized
         btnNext.setTitle("id_show_recovery_phrase".localized, for: .normal)
         btnPrint.setTitle("Print Backup Template", for: .normal)
         btnPrint.isHidden = true

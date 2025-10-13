@@ -192,7 +192,7 @@ class AlertCardCell: UITableViewCell {
         case .backup:
             lblTitle.text = "id_back_up_your_wallet_now".localized
             lblHint.text = "id_dont_lose_access_to_your_funds".localized
-            btnLeft.setTitle("id_backup_now".localized, for: .normal)
+            btnLeft.setTitle("id_back_up_now".localized, for: .normal)
             btnRight.isHidden = true
             btnDismiss.isHidden = onDismiss == nil
             styleWarn()

@@ -88,7 +88,7 @@ class SetPhoneViewController: KeyboardViewController {
         countryCodeField.attributedPlaceholder = NSAttributedString(string: "id_country".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
         textField.attributedPlaceholder = NSAttributedString(string: "id_phone_number".localized.capitalized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
 
-        nextButton.setTitle("id_setup_2fa_now".localized, for: .normal)
+        nextButton.setTitle("id_set_up_2fa_now".localized, for: .normal)
 
         [lblAgree, lblFrequency, lblHelp].forEach {
             $0?.isHidden = !sms

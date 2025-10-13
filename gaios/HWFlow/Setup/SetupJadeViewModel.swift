@@ -24,7 +24,7 @@ class SetupJadeViewModel {
                           placeholderName: nil),
             SetupJadeStep(riveModel: RiveModel.animationCheckList,
                           titleStep: "id_step".localized.uppercased() + " 2",
-                          title: "id_backup_recovery_phrase".localized,
+                          title: "id_back_up_recovery_phrase".localized,
                           hint: "id_write_down_your_recovery_phrase".localized,
                           placeholderName: nil),
             SetupJadeStep(riveModel: RiveModel.animationFrontBtn,

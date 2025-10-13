@@ -22,12 +22,11 @@ class QRUnlockJadePinInfoViewController: UIViewController {
     }
 
     func setContent() {
-        title = "id_setup_pin_via_qr".localized
+        title = "id_set_up_pin_via_qr".localized
         lblTitle.text = "id_qr_pin_unlock".localized
         lblHint.text = "id_allows_you_to_sign_transactions".localized
         btnNext.setTitle("id_start_qr_unlock".localized, for: .normal)
-        lblInfo1.text = "id_setup_jade_and_backup_the".localized
-        lblInfo2.text = "id_on_jade_select_qr__continue_".localized
+        lblInfo1.text = "id_set_up_jade_and_back_up_the".localized
         lblInfo3.text = "id_if_jade_is_already_set_up".localized
     }
 

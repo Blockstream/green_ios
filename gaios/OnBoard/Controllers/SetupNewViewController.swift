@@ -42,7 +42,7 @@ class SetupNewViewController: UIViewController {
     func setContent() {
         lblTitle.text = ""
         lblSubtitle.text = "id_create_a_new_wallet_to_begin".localized
-        btnCta1.setTitle("id_setup_mobile_wallet".localized, for: .normal)
+        btnCta1.setTitle("id_set_up_mobile_wallet".localized, for: .normal)
         btnCta2.setStyle(.underline(txt: "id_restore_from_backup".localized, color: UIColor.gAccent()))
         let riveView = RiveModel.createWallet.createRiveView()
         animateView.addSubview(riveView)
@@ -57,7 +57,7 @@ class SetupNewViewController: UIViewController {
 
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
-        settingsBtn.setStyle(.underline(txt: "id_setup_watch_only".localized, color: UIColor.gAccent()))
+        settingsBtn.setStyle(.underline(txt: "id_set_up_watch_only".localized, color: UIColor.gAccent()))
         settingsBtn.addTarget(self, action: #selector(onSetup), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
     }
