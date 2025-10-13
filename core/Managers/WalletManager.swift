@@ -172,7 +172,14 @@ public class WalletManager {
         let multisigNetworks: [NetworkSecurityCase] =  [.bitcoinMS, .testnetMS, .liquidMS, .testnetLiquidMS]
         return self.activeNetworks.filter { multisigNetworks.contains($0) }.count > 0
     }
-
+    public var hasBTCMultisig: Bool {
+        let multisigNetworks: [NetworkSecurityCase] =  [.bitcoinMS, .testnetMS]
+        return self.activeNetworks.filter { multisigNetworks.contains($0) }.count > 0
+    }
+    public var hasLiquidMultisig: Bool {
+        let multisigNetworks: [NetworkSecurityCase] =  [.liquidMS, .testnetLiquidMS]
+        return self.activeNetworks.filter { multisigNetworks.contains($0) }.count > 0
+    }
     public var failureSessionsError = Failures()
 
     public func create(_ credentials: Credentials) async throws {

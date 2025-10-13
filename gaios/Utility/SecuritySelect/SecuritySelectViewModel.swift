@@ -7,7 +7,7 @@ import greenaddress
 
 class SecuritySelectViewModel {
 
-    var asset: String? = nil
+    var asset: String?
     var anyLiquidAsset: Bool = false
     var anyLiquidAmpAsset: Bool = false
     var onlyBtc: Bool = false
@@ -30,37 +30,58 @@ class SecuritySelectViewModel {
         self.onlyBtc = onlyBtc
     }
 
-    var unarchiveCreateDialog: (( @escaping (Bool) -> ()) -> ())?
+    var unarchiveCreateDialog: (( @escaping (Bool) -> Void) -> Void)?
 
     var showAll = false
+    var hasBTCMultisig: Bool { wm.hasBTCMultisig }
+    var hasLiquidMultisig: Bool { wm.hasMultisig }
 
     func listBitcoin(extended: Bool) -> [PolicyCellType] {
-        var list: [PolicyCellType] = [.NativeSegwit, .LegacySegwit, .Lightning, .TwoFAProtected, .TwoOfThreeWith2FA]
+//        var list: [PolicyCellType] = [.NativeSegwit, .LegacySegwit, .Lightning, .TwoFAProtected, .TwoOfThreeWith2FA]
+//        if !extended {
+//            list = [.NativeSegwit, .Lightning, .TwoFAProtected]
+//        }
+//        if !AppSettings.shared.experimental || wm.testnet {
+//            list.removeAll(where: { $0 == .Lightning })
+//        }
+        var list: [PolicyCellType] = [.NativeSegwit, .LegacySegwit, .TwoFAProtected, .TwoOfThreeWith2FA]
         if !extended {
-            list = [.NativeSegwit, .Lightning, .TwoFAProtected]
-        }
-        if !AppSettings.shared.experimental || wm.testnet {
-            list.removeAll(where: { $0 == .Lightning })
+            list = [.NativeSegwit, .LegacySegwit]
         }
         return list
     }
 
     func listLiquid(extended: Bool) -> [PolicyCellType] {
-        var list: [PolicyCellType] = [.NativeSegwit, .LegacySegwit, .TwoFAProtected, .Amp]
+//        var list: [PolicyCellType] = [.NativeSegwit, .LegacySegwit, .TwoFAProtected, .Amp]
+//        if !extended {
+//            list = [.NativeSegwit, .TwoFAProtected]
+//        }
+        var list: [PolicyCellType] = [.NativeSegwit, .LegacySegwit, .TwoFAProtected]
         if !extended {
-            list = [.NativeSegwit, .TwoFAProtected]
+            list = [.NativeSegwit, .LegacySegwit]
         }
         return list
     }
 
     func isAdvancedEnable() -> Bool {
-        if anyLiquidAmpAsset {
+//        if anyLiquidAmpAsset {
+//            return false
+//        }
+//        if let asset = asset, let asset = WalletManager.current?.info(for: asset), asset.amp ?? false {
+//            return false
+//        } else {
+//            return true
+//        }
+        if anyLiquidAmpAsset { // any amp liquid asset
             return false
-        }
-        if let asset = asset, let asset = WalletManager.current?.info(for: asset), asset.amp ?? false {
+        } else if anyLiquidAsset { // any liquid asset
+            return hasLiquidMultisig
+        } else if AssetInfo.btcId == asset { // btc
+            return hasBTCMultisig
+        } else if let asset = asset, let asset = WalletManager.current?.info(for: asset), asset.amp ?? false { // amp liquid asset
             return false
-        } else {
-            return true
+        } else { // liquid
+            return hasLiquidMultisig
         }
     }
 
@@ -113,8 +134,8 @@ class SecuritySelectViewModel {
             }
             let credentials = try wm.deriveLightningCredentials(from: mainCredentials)
             await session.removeDatadir(credentials: credentials)
-            let _ = try await session.loginUser(credentials: credentials, hw: nil)
-            let _ = try await wm.subaccounts()
+            _ = try await session.loginUser(credentials: credentials, hw: nil)
+            _ = try await wm.subaccounts()
             if Bundle.main.debug {
                 // try await wm.setCloseToAddress()
             }
@@ -216,14 +237,14 @@ class SecuritySelectViewModel {
         let funded = items.filter { $0.1 > 0 }.map { $0.0 }.first
         if let funded = funded, let dialog = self.unarchiveCreateDialog {
             // ask user to unarchive o create a new one
-            dialog() { create in
+            dialog { create in
                 Task {
                     if create {
-                        try? await session.createSubaccount(params)
+                        _ = try? await session.createSubaccount(params)
                     } else {
                         let params = UpdateSubaccountParams(subaccount: funded.pointer, hidden: false)
                         try? await session.updateSubaccount(params)
-                        try? await session.subaccount(funded.pointer)
+                        _ = try? await session.subaccount(funded.pointer)
                     }
                 }
             }
@@ -250,12 +271,12 @@ class SecuritySelectViewModel {
         guard let mainCredentials = try await wm.prominentSession?.getCredentials(password: "") else {
             return
         }
-        let credentials = try wm.deriveLightningCredentials(from: mainCredentials)
-        //try await wm.addLightningShortcut(credentials: credentials)
+        _ = try wm.deriveLightningCredentials(from: mainCredentials)
+        // try await wm.addLightningShortcut(credentials: credentials)
     }
 
     func addHWShortcutLightning(_ credentials: Credentials) async throws {
-        //try await wm.addLightningShortcut(credentials: credentials)
+        // try await wm.addLightningShortcut(credentials: credentials)
     }
 
     var linkMore: String {
