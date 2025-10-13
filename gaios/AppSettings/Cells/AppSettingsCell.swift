@@ -66,7 +66,7 @@ class AppSettingsCell: UITableViewCell {
             lblHint.text = ""
         case .meld:
             lblTitle.text = "Meld".localized
-            lblHint.text = "Enable Meld sendbox".localized
+            lblHint.text = "Enable Meld Sandbox".localized
         case .electrum:
             lblTitle.text = "id_personal_electrum_server".localized
             lblHint.text = ""
