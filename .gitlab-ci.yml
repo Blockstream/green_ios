@@ -29,9 +29,18 @@ test_format:
   stage: format
   extends: .setup_env
   tags:
-    - osx-m4
+    - mini
   script:
     - fastlane run swiftlint
+
+check_localization:
+  stage: format
+  extends: .setup_env
+  needs: []  # Run in parallel with other format jobs
+  tags:
+    - mini
+  script:
+    - python3 tools/check_localization.py
 
 # BUILD
 build_strings:
