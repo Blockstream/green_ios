@@ -56,7 +56,7 @@ extension PopoverMenuHomeViewController: UITableViewDataSource, UITableViewDeleg
             case .emergency:
                 cell.textLabel?.text = "id_show_recovery_phrase".localized
             case .passphrase:
-                cell.textLabel?.text = "id_login_with_bip39_passphrase".localized
+                cell.textLabel?.text = "id_log_in_with_bip39_passphrase".localized
             case .edit:
                 cell.textLabel?.text = "id_rename_wallet".localized
             case .delete:

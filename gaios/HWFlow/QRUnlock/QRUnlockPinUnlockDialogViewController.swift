@@ -94,7 +94,7 @@ class QRUnlockPinUnlockDialogViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = "id_unlock_jade_before_signing_the".localized
-        lblHint.text = "id_qr_mode_allows_you_to.".localized
+        lblHint.text = "id_qr_mode_allows_you_to".localized
         btnLearMore.setTitle("id_learn_more".localized, for: .normal)
         btnPinUnlock.setTitle("id_qr_pin_unlock".localized, for: .normal)
         btnAlreadyUnlocked.setTitle("id_jade_already_unlocked".localized, for: .normal)

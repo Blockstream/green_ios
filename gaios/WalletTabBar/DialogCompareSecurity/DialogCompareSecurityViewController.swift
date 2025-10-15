@@ -116,7 +116,7 @@ class DialogCompareSecurityViewController: UIViewController {
             lblInfo1.text = "id_ideal_for_longterm_bitcoin".localized
             lblInfo2.text = "id_mitigates_common_attacks_risks".localized
             lblInfo3.text = "id_keys_stored_on_specialized".localized
-            btnCta1.setTitle("id_setup_hardware_wallet".localized, for: .normal)
+            btnCta1.setTitle("id_set_up_hardware_wallet".localized, for: .normal)
             btnCta1.setStyle(.primary)
             btnCta2.setStyle(.underline(txt: "id_dont_have_one_buy_a_jade".localized, color: UIColor.gAccent()))
             btnCta2.alpha = 1

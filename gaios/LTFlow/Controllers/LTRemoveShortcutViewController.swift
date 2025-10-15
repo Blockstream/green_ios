@@ -43,7 +43,7 @@ class LTRemoveShortcutViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = "id_payments_will_fail".localized
-        lblHint.text = "id_you_will_stop_receiving_push.".localized
+        lblHint.text = "id_you_will_stop_receiving_push".localized
         btnCancel.setTitle("id_cancel".localized, for: .normal)
         btnRemove.setTitle("id_remove_lightning_shortcut".localized, for: .normal)
     }
