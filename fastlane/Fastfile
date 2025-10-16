@@ -32,14 +32,6 @@ platform :ios do
         }
       }
     )
-    resign(
-      ipa: "./dev/Green-dev.ipa",
-      signing_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)",
-      provisioning_profile: {
-        "io.blockstream.greendev" => "/opt/ios-certs/c62a046a-9685-45a5-a938-30637935d2bd.mobileprovision",
-        "io.blockstream.greendev.NotificationService" => "/opt/ios-certs/b8714f41-6a66-4368-9235-44c46797f50d.mobileprovision"
-      }
-    )
   end
 
   desc "Production release"
