@@ -27,6 +27,7 @@ class QRUnlockJadePinInfoViewController: UIViewController {
         lblHint.text = "id_allows_you_to_sign_transactions".localized
         btnNext.setTitle("id_start_qr_unlock".localized, for: .normal)
         lblInfo1.text = "id_set_up_jade_and_back_up_the".localized
+        lblInfo2.text = "id_on_jade_select_qr__continue_".localized
         lblInfo3.text = "id_if_jade_is_already_set_up".localized
     }
 

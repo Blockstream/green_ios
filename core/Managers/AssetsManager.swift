@@ -24,9 +24,9 @@ public class AssetsManager {
         } else {
             infos = [AssetInfo.btcId: AssetInfo.btc,
                      AssetInfo.lbtcId: AssetInfo.lbtc]
-            if lightning {
-                infos[AssetInfo.lightningId] = AssetInfo.lightning
-            }
+//            if lightning {
+//                infos[AssetInfo.lightningId] = AssetInfo.lightning
+//            }
         }
     }
 
