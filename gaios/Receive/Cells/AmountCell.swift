@@ -3,7 +3,8 @@ import gdk
 
 enum AmountCellState: Int {
     case valid
-    case validFunding
+    //case validFunding
+    case aboveInboundLiquidity
     case tooHigh
     case tooLow
     case disabled
@@ -210,7 +211,7 @@ class AmountCell: UITableViewCell {
                     lblInfo.text = model.message(.valid) ?? ""
                 }
             }
-        case .validFunding:
+        /*case .validFunding:
             bg.borderColor = UIColor.gAccent()
             infoPanel.backgroundColor = UIColor.gAccent().withAlphaComponent(1.0)
             let amount = model.openChannelFee
@@ -225,6 +226,11 @@ class AmountCell: UITableViewCell {
                 $0?.textColor = .white
             }
             btnFeeInfo.setStyle(.underline(txt: "id_read_more".localized, color: .white))
+	*/
+        case .aboveInboundLiquidity:
+            let amount = Int64(model.breezSdk?.nodeInfo?.inboundLiquiditySatoshi ?? 0)
+            let text = String(format: "The amount is above your inbound liquidity. Please type an amount lower than %@ (%@).",  model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
+            errorState(text: text)
         case .tooHigh:
             let amount = Int64(model.breezSdk?.nodeInfo?.maxReceivableSatoshi ?? 0)
             let text = String(format: "id_you_cannot_receive_more_than_s".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")

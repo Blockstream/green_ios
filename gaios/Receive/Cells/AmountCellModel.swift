@@ -145,7 +145,7 @@ struct AmountCellModel {
             return .tooHigh
         } else if satoshi <= nodeState.inboundLiquiditySatoshi || satoshi >= openChannelFee ?? 0 {
             if nodeState.inboundLiquiditySatoshi == 0 || satoshi > nodeState.inboundLiquiditySatoshi {
-                return .validFunding
+                return .aboveInboundLiquidity
             } else {
                 return .valid
             }

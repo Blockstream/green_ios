@@ -853,7 +853,7 @@ extension ReceiveViewController: AmountCellDelegate {
     }
     func stateDidChange(_ state: AmountCellState) {
         viewModel.state = state
-        btnConfirm.isEnabled = viewModel.state == .valid || viewModel.state == .validFunding
+        btnConfirm.isEnabled = viewModel.state == .valid
         btnConfirm.setStyle( btnConfirm.isEnabled ? .primary : .primaryGray)
     }
 }
