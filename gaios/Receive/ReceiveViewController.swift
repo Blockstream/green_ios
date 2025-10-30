@@ -28,7 +28,6 @@ class ReceiveViewController: KeyboardViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnShare: UIButton!
     @IBOutlet weak var btnVerify: UIButton!
-    @IBOutlet weak var btnOnChain: UIButton!
     @IBOutlet weak var btnConfirm: UIButton!
     @IBOutlet weak var stackBottom: NSLayoutConstraint!
     @IBOutlet weak var accountStack: UIStackView!
@@ -93,7 +92,6 @@ class ReceiveViewController: KeyboardViewController {
         UIView.animate(withDuration: 0.5, animations: { [weak self] in
             self?.view.layoutIfNeeded()
             let network = self?.viewModel.account.gdkNetwork
-            self?.btnOnChain.isHidden = !(network?.lightning ?? false) || self?.keyboardVisible ?? false
         })
     }
 
@@ -104,7 +102,6 @@ class ReceiveViewController: KeyboardViewController {
         UIView.animate(withDuration: 0.5, animations: { [weak self] in
             self?.view.layoutIfNeeded()
             let network = self?.viewModel.account.gdkNetwork
-            self?.btnOnChain.isHidden = !(network?.lightning ?? false) || self?.keyboardVisible ?? false
         })
     }
 
@@ -124,7 +121,6 @@ class ReceiveViewController: KeyboardViewController {
     func setStyle() {
         btnShare.setStyle(!showVerify ? .primary : .outlined)
         btnShare.setTitleColor(.white, for: .normal)
-        btnOnChain.semanticContentAttribute = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
         btnVerify.setStyle(.primary)
         stateDidChange(.disabled)
     }
@@ -149,7 +145,6 @@ class ReceiveViewController: KeyboardViewController {
     @MainActor
     func reload() {
         let network = viewModel.account.gdkNetwork
-        btnOnChain.isHidden = !network.lightning || keyboardVisible
         btnConfirm.isHidden = !(network.lightning && lightningAmountEditing)
         btnShare.isHidden = !(!network.lightning || !lightningAmountEditing)
         if viewModel.type == .swap {
@@ -157,7 +152,6 @@ class ReceiveViewController: KeyboardViewController {
             btnShare.isHidden = false
         }
         btnVerify.isHidden = !showVerify
-        btnOnChain.setTitle(viewModel.type == .bolt11 ? "id_show_onchain_address".localized : "id_show_lightning_invoice".localized, for: .normal)
         accountStack.isHidden = true
         reloadNavigationBtns()
         viewModel.reloadBackupCards()
@@ -483,22 +477,6 @@ class ReceiveViewController: KeyboardViewController {
         }
     }
 
-    @IBAction func btnOnChain(_ sender: Any) {
-        viewModel.type = viewModel.type == .bolt11 ? .swap : .bolt11
-        switch viewModel.type {
-        case .bolt11:
-            if viewModel.invoice == nil {
-                newAddress()
-            }
-        case .swap:
-            if viewModel.swap == nil {
-                newAddress()
-            }
-        default:
-            break
-        }
-        reload()
-    }
 }
 
 extension ReceiveViewController: AssetSelectViewControllerDelegate {

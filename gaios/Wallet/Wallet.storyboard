@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -472,7 +472,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="O5S-bz-kAP">
-                                <rect key="frame" x="0.0" y="96" width="414" height="502"/>
+                                <rect key="frame" x="0.0" y="96" width="414" height="562"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="pu3-Id-NaL" id="Pno-in-szU"/>
@@ -480,7 +480,7 @@
                                 </connections>
                             </tableView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="kP0-o2-FCc">
-                                <rect key="frame" x="25" y="598" width="364" height="230"/>
+                                <rect key="frame" x="25" y="658" width="364" height="170"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="nsG-1q-yNj" userLabel="account stack">
                                         <rect key="frame" x="0.0" y="0.0" width="364" height="50"/>
@@ -564,20 +564,6 @@
                                             <action selector="btnConfirm:" destination="pu3-Id-NaL" eventType="touchUpInside" id="Zar-lR-D74"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yLo-py-EE2">
-                                        <rect key="frame" x="0.0" y="180" width="364" height="50"/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="XlV-3X-eqA"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <inset key="imageEdgeInsets" minX="5" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                        <state key="normal" title="btn_onchain" image="ic_lightning_info"/>
-                                        <connections>
-                                            <action selector="btnOnChain:" destination="pu3-Id-NaL" eventType="touchUpInside" id="l1A-a9-QLk"/>
-                                        </connections>
-                                    </button>
                                 </subviews>
                             </stackView>
                         </subviews>
@@ -601,7 +587,6 @@
                         <outlet property="accountStack" destination="nsG-1q-yNj" id="BXD-j9-F03"/>
                         <outlet property="btnAccount" destination="tPF-MK-90a" id="Kzv-Sc-egt"/>
                         <outlet property="btnConfirm" destination="kNV-NB-pdr" id="xEH-Bc-UhX"/>
-                        <outlet property="btnOnChain" destination="yLo-py-EE2" id="bXg-lo-DXk"/>
                         <outlet property="btnShare" destination="AhX-BE-GwQ" id="GtJ-8V-PpK"/>
                         <outlet property="btnVerify" destination="d3P-Or-Xp0" id="MrM-vB-PZq"/>
                         <outlet property="lblAccount" destination="55n-8t-on7" id="jtg-4y-xsD"/>
@@ -622,7 +607,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="NrC-4Y-Tjd">
-                                <rect key="frame" x="0.0" y="140" width="414" height="756"/>
+                                <rect key="frame" x="0.0" y="150" width="414" height="746"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="cLb-Ee-a9U" id="TbY-GT-UGB"/>
@@ -750,13 +735,13 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nZc-kR-2Ii">
-                                <rect key="frame" x="0.0" y="140" width="414" height="756"/>
+                                <rect key="frame" x="0.0" y="150" width="414" height="746"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lg4-SM-cHo">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="756"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="746"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZOh-0D-27J">
-                                                <rect key="frame" x="36" y="156" width="342" height="324.5"/>
+                                                <rect key="frame" x="36" y="151" width="342" height="324.5"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6UG-os-h6J">
                                                         <rect key="frame" x="21" y="0.0" width="300" height="186"/>
@@ -1109,7 +1094,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="34U-nb-dki" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Bbe-DK-xlu">
-                        <rect key="frame" x="0.0" y="96" width="414" height="44"/>
+                        <rect key="frame" x="0.0" y="96" width="414" height="54"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -1127,7 +1112,6 @@
         <image name="ic_actions_plus" width="24" height="24"/>
         <image name="ic_amount_drop_down" width="7.5" height="4.5"/>
         <image name="ic_dialog_qr" width="24" height="24"/>
-        <image name="ic_lightning_info" width="17" height="17"/>
         <image name="ic_receive" width="24" height="24"/>
         <image name="ic_search" width="17" height="17"/>
         <image name="ic_send" width="24" height="24"/>
