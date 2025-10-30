@@ -36,6 +36,9 @@ class DialogCompareSecurityViewController: UIViewController {
     @IBOutlet weak var lblInfo1: UILabel!
     @IBOutlet weak var lblInfo2: UILabel!
     @IBOutlet weak var lblInfo3: UILabel!
+    @IBOutlet weak var icInfo1: UIImageView!
+    @IBOutlet weak var icInfo2: UIImageView!
+    @IBOutlet weak var icInfo3: UIImageView!
     @IBOutlet weak var btnCta1: UIButton!
     @IBOutlet weak var btnCta2: UIButton!
     @IBOutlet weak var ilSecLevel: UIImageView!
@@ -100,6 +103,9 @@ class DialogCompareSecurityViewController: UIViewController {
         case .mobile:
             lblHint1.text = "id_mobile".localized
             lblHint2.text = "id_security_level_1".localized
+            icInfo1.image = UIImage(named: "ic_sec_lev_coins")
+            icInfo2.image = UIImage(named: "ic_sec_lev_light")
+            icInfo3.image = UIImage(named: "ic_sec_lev_key")
             lblInfo1.text = "id_ideal_for_small_amounts_of".localized
             lblInfo2.text = "id_convenient_spending".localized
             lblInfo3.text = "id_keys_stored_on_mobile_device".localized
@@ -113,6 +119,9 @@ class DialogCompareSecurityViewController: UIViewController {
         case .hardware:
             lblHint1.text = "id_hardware".localized
             lblHint2.text = "id_security_level_2".localized
+            icInfo1.image = UIImage(named: "ic_sec_lev_lock")
+            icInfo2.image = UIImage(named: "ic_sec_lev_shield")
+            icInfo3.image = UIImage(named: "ic_sec_lev_key")
             lblInfo1.text = "id_ideal_for_longterm_bitcoin".localized
             lblInfo2.text = "id_mitigates_common_attacks_risks".localized
             lblInfo3.text = "id_keys_stored_on_specialized".localized

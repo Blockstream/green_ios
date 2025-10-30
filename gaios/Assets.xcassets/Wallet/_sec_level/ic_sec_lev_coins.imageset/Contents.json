@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "ic_sec_lev_coins.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
