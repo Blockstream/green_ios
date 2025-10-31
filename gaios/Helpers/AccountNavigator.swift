@@ -4,6 +4,10 @@ import UIKit
 import AsyncBluetooth
 import core
 
+enum BackupFlowType {
+    case phrase
+    case quiz
+}
 class AccountNavigator {
 
     static func home() -> HomeViewController? {
@@ -80,7 +84,14 @@ class AccountNavigator {
     static func mnemonic() -> ShowMnemonicsViewController? {
         instantiateViewController(storyboard: "UserSettings", identifier: "ShowMnemonicsViewController")
     }
-
+    @MainActor
+    static func backupIntro(_ type: BackupFlowType) -> ManualBackupViewController? {
+        if let vc: ManualBackupViewController = instantiateViewController(storyboard: "WalletTab", identifier: "ManualBackupViewController") {
+            vc.backupFlowType = type
+            return vc
+        }
+        return nil
+    }
     @MainActor
     static func navLogged(accountId: String, isFirstLoad: Bool = false) {
         if let vc = logged(accountId: accountId, isFirstLoad: isFirstLoad) {

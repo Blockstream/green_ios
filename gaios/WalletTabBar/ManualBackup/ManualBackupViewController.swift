@@ -11,6 +11,7 @@ class ManualBackupViewController: UIViewController {
     @IBOutlet weak var lblInfo3: UILabel!
     @IBOutlet weak var btnNext: UIButton!
     var showBip85: Bool = false
+    var backupFlowType = BackupFlowType.phrase
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,8 +38,15 @@ class ManualBackupViewController: UIViewController {
         btnNext.setStyle(.primary)
     }
     @IBAction func btnNext(_ sender: Any) {
-        if let vc = AccountNavigator.mnemonic() {
-            navigationController?.pushViewController(vc, animated: true)
+        switch backupFlowType {
+        case .phrase:
+            if let vc = AccountNavigator.mnemonic() {
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        case .quiz:
+            if let vc = AccountNavigator.recover() {
+                navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
 }

@@ -435,7 +435,7 @@ class BuyBTCViewController: KeyboardViewController {
     }
 
     @IBAction func btnBackup(_ sender: Any) {
-        if let vc = AccountNavigator.recover() {
+        if let vc = AccountNavigator.backupIntro(.quiz) {
             navigationController?.pushViewController(vc, animated: true)
         }
     }

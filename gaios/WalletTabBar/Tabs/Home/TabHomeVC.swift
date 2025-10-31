@@ -18,7 +18,7 @@ class TabHomeVC: TabViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView?.reloadData()
-        
+
         if let url = URLSchemeManager.shared.url {
             URLSchemeManager.shared.url = nil
             sendScreen(walletModel, input: url.absoluteString)
@@ -186,7 +186,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                 case .backup:
                     cell.configure(alertCard,
                                    onLeft: {[weak self] in
-                        if let vc = AccountNavigator.recover() {
+                        if let vc = AccountNavigator.backupIntro(.quiz) {
                             self?.navigationController?.pushViewController(vc, animated: true)
                         }
                     },
