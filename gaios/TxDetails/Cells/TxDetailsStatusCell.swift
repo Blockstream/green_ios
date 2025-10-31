@@ -64,10 +64,17 @@ class TxDetailsStatusCell: UITableViewCell {
             setPendingIcon()
         } else if !isLightning && model.transaction.isLiquid && model.blockHeight < model.transaction.blockHeight + 1 {
             step = Int(model.blockHeight) - Int(model.transaction.blockHeight) + 1
-            lblStateTitle.text = String(format: "id_transaction_unconfirmed_ss".localized, "\(step)", "\(steps)")
-            lblStateStatus.text = model.txStatus
-            applyColor(UIColor.gOrangeTx())
-            setPendingIcon()
+            if step == 1 {
+                lblStateTitle.text = String(format: "id_transaction_confirmed_ss".localized, "\(step)", "\(steps)")
+                lblStateStatus.text = model.txStatus
+                applyColor(UIColor.gAccent())
+                stateIcon.image = UIImage(named: "ic_tx_confirmed")!
+            } else {
+                lblStateTitle.text = String(format: "id_transaction_unconfirmed_ss".localized, "\(step)", "\(steps)")
+                lblStateStatus.text = model.txStatus
+                applyColor(UIColor.gOrangeTx())
+                setPendingIcon()
+            }
         } else if !isLightning && !model.transaction.isLiquid && model.blockHeight < model.transaction.blockHeight + 5 {
             if model.blockHeight >= model.transaction.blockHeight {
                 step = Int(model.blockHeight) - Int(model.transaction.blockHeight) + 1
