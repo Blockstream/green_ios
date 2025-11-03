@@ -58,8 +58,10 @@ class TxDetailsStatusCell: UITableViewCell {
             applyColor(UIColor.gRedTx())
             stateIcon.image = UIImage(named: "ic_tx_failed")!
         } else if model.transaction.isUnconfirmed(block: model.blockHeight) {
-            lblStateTitle.text = String(format: "id_transaction_unconfirmed_ss".localized, "0", model.transaction.isLiquid ? "2": "6")
+//            lblStateTitle.text = String(format: "id_transaction_unconfirmed_ss".localized, "0", model.transaction.isLiquid ? "2": "6")
+            lblStateTitle.text = "id_unconfirmed".localized
             lblStateStatus.text = model.txUnconfirmedStatus
+            lblStateInfo.text = "id_your_transaction_is_awaiting".localized
             applyColor(UIColor.gOrangeTx())
             setPendingIcon()
         } else if !isLightning && model.transaction.isLiquid && model.blockHeight < model.transaction.blockHeight + 1 {
