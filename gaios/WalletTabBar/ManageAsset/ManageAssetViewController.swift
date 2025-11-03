@@ -95,12 +95,11 @@ class ManageAssetViewController: UIViewController {
         if !(WalletManager.current?.isWatchonly ?? false) {
             actions.append(.rename(current: viewModel.account?.localizedName ?? ""))
         }
-        // if viewModel.account?.isSinglesig == true { actions.append(.watchonly) }
         actions.append(.watchonly)
-        if viewModel.isFunded == false { actions.append(.archive) }
+        actions.append(.archive)
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountSettingsViewController") as? AccountSettingsViewController {
-            vc.viewModel = AccountSettingsViewModel(title: "id_account_settings".localized, actions: actions)
+            vc.viewModel = AccountSettingsViewModel(title: "id_account_settings".localized, actions: actions, isFunded: viewModel.isFunded == true)
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)

@@ -9,9 +9,11 @@ enum AccountSettingsType {
 }
 class AccountSettingsCellModel {
     var type: AccountSettingsType
+    var isFunded: Bool
 
-    init(type: AccountSettingsType) {
+    init(type: AccountSettingsType, isfunded: Bool) {
         self.type = type
+        self.isFunded = isfunded
     }
     var title: String {
         switch self.type {
