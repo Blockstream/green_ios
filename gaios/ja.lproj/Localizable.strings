@@ -725,7 +725,7 @@
 "id_if_you_forget_it_or_lose_it" = "忘れたり失くした場合、アカウント内の資金も失うことになります。";
 "id_if_you_forget_your_pin_you_will" = "If you forget your PIN, you will need to restore with your recovery phrase";
 "id_if_you_have_access_to_a" = "このウォレットに紐づいた2段階認証手段が残されている場合、リセットをキャンセルして送受信機能を取り戻すか、%d日待つことができます。";
-"id_if_you_have_some_coins_on_the" = "レガシーアドレスに資金があり、近日中に送金する予定がない場合、万が一の際に資金にアクセスできるようメールアドレスを登録してリカバリー用トランザクションを受け取る必要があります。";
+"id_if_you_have_some_coins_on_the" = "If you have some coins on the legacy address type, and you won't spend them shortly, you might need to set up an email and receive your recovery transactions to be sure you are always in control of your funds.";
 "id_if_you_initiated_the_2fa_reset" = "誤って2段階認証リセットの係争申請をしてしまった場合、取り消すことでウォレットを2段階認証リセット中の状態に戻すことができます。";
 "id_import" = "インポート";
 "id_import_a_multisig_shield_wallet" = "Blockstream Greenで作成されたマルチシグ・シールドウォレットを取り込みます。";
@@ -816,7 +816,7 @@
 "id_later" = "後で";
 "id_latest_transactions" = "最新のトランザクション";
 "id_lbtc_has_no_issuer_and_is" = "LBTCには発行者がおらず、ペグインによってネットワーク上で生成されます。";
-"id_learn_more" = "詳しく知る";
+"id_learn_more" = "Learn More";
 "id_learn_more_about_amp_the_assets" = "AMP、アセット、利用資格について詳しく知る";
 "id_learn_more_about_s" = "%@についてより詳しく知る。";
 "id_learn_more_about_using_qr_mode" = "JadeのQRモードの使用方法について詳しく見る";
@@ -879,6 +879,7 @@
 "id_log_out" = "Log Out";
 "id_logged_in_wallets" = "ログインしたウォレット";
 "id_logging_in" = "ログイン中です…";
+"id_logging_out" = "Logging out…";
 "id_login_failed" = "ログイン失敗";
 "id_login_options" = "ログイン設定";
 "id_logout" = "ログアウト";
@@ -1019,6 +1020,7 @@
 "id_offline_written_backup" = "Offline, written backup";
 "id_ok" = "承諾";
 "id_ok_i_understand" = "はい、理解しました";
+"id_okay" = "Okay";
 "id_old_fee" = "旧手数料";
 "id_on_average" = "平均で";
 "id_on_hardware_wallet" = "ハードウェアウォレットで保管する";
@@ -1161,7 +1163,7 @@
 "id_recovery" = "リカバリー";
 "id_recovery_and_notifications" = "リカバリーと通知";
 "id_recovery_key_type" = "リカバリーキーの種類";
-"id_recovery_method" = "Recovery method";
+"id_recovery_method" = "Recovery Method";
 "id_recovery_mnemonic" = "リカバリーニモニック";
 "id_recovery_phrase" = "リカバリーフレーズ";
 "id_recovery_phrase_check" = "リカバリーフレーズの確認";
@@ -1180,7 +1182,7 @@
 "id_redeposited" = "再入金";
 "id_redepositing" = "Redepositing";
 "id_reenable_2fa" = "2段階認証を再度有効にする";
-"id_reference_exchange_rate" = "取引レート参照先";
+"id_reference_exchange_rate" = "Reference Exchange Rate";
 "id_refresh" = "リフレッシュ";
 "id_refund" = "払い戻し";
 "id_refund_in_progress" = "払い戻し処理中";
@@ -1378,7 +1380,7 @@
 "id_show_all_assets" = "すべてのアセットを表示する";
 "id_show_bitcoin_amounts_in" = "ビットコインの表示単位";
 "id_show_coins_with_expiring" = "2段階認証による保護期間が終了間近のコインを表示";
-"id_show_details" = "詳細を見る";
+"id_show_details" = "Show Details";
 "id_show_fiat" = "法定通貨で金額を表示";
 "id_show_lightning_invoice" = "ライトニングインボイスを表示";
 "id_show_my_wallet_backup" = "ウォレットのバックアップ情報を確認する";
@@ -1504,7 +1506,7 @@
 "id_the_recovery_phrase_doesnt" = "リカバリーフレーズがウォレットと一致しません。違うリカバリーフレーズをお試しください。";
 "id_the_source_code_is_available_at" = "ソースコードを下記にて公開しています %@";
 "id_the_transaction_contains" = "このトランザクションには秘匿化されていない資金が含まれます。";
-"id_the_transaction_was" = "トランザクションは正常に受信されました";
+"id_the_transaction_was" = "The transaction was successfully received.";
 "id_the_username_cant_be_empty" = "ユーザー名は必須です";
 "id_the_waiting_period_is_necessary" = "この待ち時間はウォレットが盗難に遭った場合に2段階認証をすぐに解除されないために存在するセキュリティ機能です。";
 "id_there_are_no_results_for_the" = "フィルター条件に該当する結果はありません";
@@ -1527,7 +1529,7 @@
 "id_this_signature_is_a_proof_of" = "この署名はアドレスの所有者である証拠となります";
 "id_this_transaction_spent" = "このトランザクションには秘匿化されていない資金が含まれていました。";
 "id_this_wallet_is_based_on_your" = "このウォレットはあなたのリカバリーフレーズとBIP39パスフレーズから導かれたものです";
-"id_this_wallet_operates_on_a_test" = "このウォレットはテストネット用です。送受信するものに価値はありません。";
+"id_this_wallet_operates_on_a_test" = "This wallet operates on a test network. Anything you receive or send here has no value.";
 "id_this_will_disable_pin_login_for" = "すべてのデバイス上でこのウォレットへのPINログインを無効化します。ウォレットへのアクセスにはリカバリーフレーズが必要になります。";
 "id_this_will_log_you_out_and" = "これを選択するとログアウトされ、このウォレットがアプリとBlockstreamサーバーのデータベースから削除されます。";
 "id_ticker" = "ティッカーシンボル";
@@ -1824,7 +1826,8 @@
 "id_your_settings_are_unsavednndo" = "設定は保存されていません。 \n\n続けますか？";
 "id_your_swap_proposal_is_generated" = "Swap Proposalを生成しました！";
 "id_your_transaction_failed_s" = "トランザクションが失敗: %@";
-"id_your_transaction_was" = "トランザクションは正常に送信されました";
+"id_your_transaction_is_awaiting" = "Your transaction is awaiting confirmation.";
+"id_your_transaction_was" = "Your transaction was successfully sent.";
 "id_your_transactions_will_be_shown" = "トランザクションはこちらから確認できます。";
 "id_your_twofactor_threshold_is_s" = "あなたの2段階認証の閾値は %@です。";
 "id_your_wallet_backup_is_made_of" = "ウォレットのバックアップは24単語で、ニモニックともいいます。書き留めて安全に保管してください。ニモニックが流出すると資金も盗まれてしまいます。ニモニックはデバイスの紛失、故障、盗難の際に新しいデバイスにBlockstream Greenウォレットを復旧するのに必要です。";

@@ -121,7 +121,7 @@ class LangSelectViewController: UIViewController {
                 return
             }
             if AppSettings.shared.gdkSettings?.tor ?? false {
-                self.startLoader(message: "id_logout".localized)
+                self.startLoader(message: "id_logging_out".localized)
             }
             Task {
                 let account = AccountsRepository.shared.current

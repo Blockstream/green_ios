@@ -401,7 +401,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
         case .jade:
             return jadeCellModel.count > 0 ? sectionHeader("id_your_jade".localized) : nil
         case .unlock:
-            return unlockCellModel.count > 0 ? sectionHeader("id_view_balance".localized) : nil
+            return unlockCellModel.count > 0 ? sectionHeader("id_unlock_method".localized) : nil
         case .recovery:
             return recoveryCellModel.count > 0 ? sectionHeader("id_recovery_method".localized) : nil
         default:

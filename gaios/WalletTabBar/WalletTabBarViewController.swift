@@ -248,7 +248,7 @@ class WalletTabBarViewController: UITabBarController {
     }
 
     func userLogout() {
-        self.startLoader(message: "id_logout".localized)
+        self.startLoader(message: "id_logging_out".localized)
         Task {
             let account = self.walletModel.wm?.account
             if let account = account, account.isHW {

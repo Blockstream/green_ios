@@ -725,7 +725,7 @@
 "id_if_you_forget_it_or_lose_it" = "Qualora dovessi dimenticarla o perderla, anche i tuoi fondi andranno persi.";
 "id_if_you_forget_your_pin_you_will" = "If you forget your PIN, you will need to restore with your recovery phrase";
 "id_if_you_have_access_to_a" = "Se hai accesso a un metodo a Due Fattori per questo wallet, cancella il reset per poter spendere e ricevere immediatamente, oppure attendi %d giorni.";
-"id_if_you_have_some_coins_on_the" = "Se sei in possesso di alcuni coin sull'indirizzo legacy, che non spenderai a breve, potresti dover impostare un indirizzo e-mail e ricevere le tue recovery transaction per essere sicuro di mantenere sempre il controllo sui tuoi fondi.";
+"id_if_you_have_some_coins_on_the" = "If you have some coins on the legacy address type, and you won't spend them shortly, you might need to set up an email and receive your recovery transactions to be sure you are always in control of your funds.";
 "id_if_you_initiated_the_2fa_reset" = "Se hai iniziato la contestazione del reset della 2FA per sbaglio, potrai annullare l'azione e ripristinare il reset della 2FA del tuoi wallet.";
 "id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Importa un wallet Multisig Shield creato su Blockstream Green.";
@@ -816,7 +816,7 @@
 "id_later" = "PIÙ TARDI/DOPO";
 "id_latest_transactions" = "Ultime transazioni";
 "id_lbtc_has_no_issuer_and_is" = "Gli LBTC non hanno emettitori e vengono creati sulla rete attraverso un peg-in.";
-"id_learn_more" = "Maggiori informazioni";
+"id_learn_more" = "Learn More";
 "id_learn_more_about_amp_the_assets" = "Scopri di più su AMP, asset e la tua idoneità";
 "id_learn_more_about_s" = "Maggiori informazioni su %@.";
 "id_learn_more_about_using_qr_mode" = "Learn more about using QR Mode with Jade";
@@ -879,6 +879,7 @@
 "id_log_out" = "Log Out";
 "id_logged_in_wallets" = "Accesso ai wallet effettuato";
 "id_logging_in" = "Accesso in corso…";
+"id_logging_out" = "Logging out…";
 "id_login_failed" = "Accesso Fallito";
 "id_login_options" = "Opzioni login";
 "id_logout" = "Logout";
@@ -1019,6 +1020,7 @@
 "id_offline_written_backup" = "Offline, written backup";
 "id_ok" = "Ok";
 "id_ok_i_understand" = "Ok, I understand";
+"id_okay" = "Okay";
 "id_old_fee" = "Old fee";
 "id_on_average" = "in media";
 "id_on_hardware_wallet" = "On Hardware Wallet";
@@ -1161,7 +1163,7 @@
 "id_recovery" = "Recovery";
 "id_recovery_and_notifications" = "Recovery e Notifiche";
 "id_recovery_key_type" = "Tipo di Recovery Key";
-"id_recovery_method" = "Recovery method";
+"id_recovery_method" = "Recovery Method";
 "id_recovery_mnemonic" = "Mnemonic recovery";
 "id_recovery_phrase" = "Recovery Phrase";
 "id_recovery_phrase_check" = "Controllo Recovery Phrase";
@@ -1180,7 +1182,7 @@
 "id_redeposited" = "Ridepositato";
 "id_redepositing" = "Redepositing";
 "id_reenable_2fa" = "Re-enable 2FA";
-"id_reference_exchange_rate" = "Tasso di cambio di riferimento";
+"id_reference_exchange_rate" = "Reference Exchange Rate";
 "id_refresh" = "Aggiorna";
 "id_refund" = "Refund";
 "id_refund_in_progress" = "Refund in progress";
@@ -1378,7 +1380,7 @@
 "id_show_all_assets" = "Mostra tutti gli asset";
 "id_show_bitcoin_amounts_in" = "Mostra importi in bitcoin in";
 "id_show_coins_with_expiring" = "Mostra coin con Autenticazione a Due Fattori in scadenza.";
-"id_show_details" = "Mostra dettagli";
+"id_show_details" = "Show Details";
 "id_show_fiat" = "Mostra fiat";
 "id_show_lightning_invoice" = "Show Lightning Invoice";
 "id_show_my_wallet_backup" = "Mostra il backup del mio wallet";
@@ -1504,7 +1506,7 @@
 "id_the_recovery_phrase_doesnt" = "La recovery phrase non coincide con il wallet precedente. Riprova con una recovery phrase diversa.";
 "id_the_source_code_is_available_at" = "Il codice sorgente è disponibile su %@";
 "id_the_transaction_contains" = "La transazione contiene non-confidential fund.";
-"id_the_transaction_was" = "The transaction was successfully received";
+"id_the_transaction_was" = "The transaction was successfully received.";
 "id_the_username_cant_be_empty" = "L'username non può essere vuoto";
 "id_the_waiting_period_is_necessary" = "É necessario attendere per garantire la sicurezza del tuo wallet e impedire che la tua protezione a Due Fattori venga rubata.";
 "id_there_are_no_results_for_the" = "Nessun risultato trovato per il filtro applicato";
@@ -1527,7 +1529,7 @@
 "id_this_signature_is_a_proof_of" = "This signature is a proof of ownership of the address";
 "id_this_transaction_spent" = "Con questa transazione sono stati spesi non-confidential fund.";
 "id_this_wallet_is_based_on_your" = "Il wallet si basa sulla tua recovery phrase e una Passphrase BIP39";
-"id_this_wallet_operates_on_a_test" = "Questo wallet è attivo su un test network. Tutto quello che ricevi o invii non ha alcun valore";
+"id_this_wallet_operates_on_a_test" = "This wallet operates on a test network. Anything you receive or send here has no value.";
 "id_this_will_disable_pin_login_for" = "In questo modo disabiliterai il login tramite PIN per il wallet su tutti i tuoi dispositivi. Avrai bisogno di una recovery phrase per accedere al tuo wallet.";
 "id_this_will_log_you_out_and" = "In questo modo effettuerai il log out e cancellerai il wallet dall'app e dal database dei server Blockstream.";
 "id_ticker" = "Ticker";
@@ -1824,7 +1826,8 @@
 "id_your_settings_are_unsavednndo" = "Your settings are unsaved.\n\nDo you want to continue?";
 "id_your_swap_proposal_is_generated" = "Proposta di Swap";
 "id_your_transaction_failed_s" = "Your transaction failed: %@";
-"id_your_transaction_was" = "Your transaction was successfully sent";
+"id_your_transaction_is_awaiting" = "Your transaction is awaiting confirmation.";
+"id_your_transaction_was" = "Your transaction was successfully sent.";
 "id_your_transactions_will_be_shown" = "Le tue transazioni appariranno qui.";
 "id_your_twofactor_threshold_is_s" = "La tua soglia a Due Fattori è %@.";
 "id_your_wallet_backup_is_made_of" = "Il backup del tuo wallet, o mnemonic, è composto da 24 parole. Assicurati di aver effettuato il backup e tienilo al sicuro. Chiunque vi abbia accesso potrebbe sottrarti del denaro. Puoi utilizzare il backup per ripristinare il tuo wallet Blockstream Green su un altro dispositivo in caso di smarrimento, malfunzionamento o furto.";

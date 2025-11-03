@@ -725,7 +725,7 @@
 "id_if_you_forget_it_or_lose_it" = "If you forget it or lose it, your funds are going to be lost as well.";
 "id_if_you_forget_your_pin_you_will" = "If you forget your PIN, you will need to restore with your recovery phrase";
 "id_if_you_have_access_to_a" = "Daca aveți acces la o metodă 2FA pentru acest portofel, anulați resetarea pentru a putea cheltui monedele sau asteptați %d zile.";
-"id_if_you_have_some_coins_on_the" = "If you have some coins on the legacy address type, and you won't spend them shortly, you might need to setup an email and receive your recovery transactions to be sure you are always in control of your funds.";
+"id_if_you_have_some_coins_on_the" = "If you have some coins on the legacy address type, and you won't spend them shortly, you might need to set up an email and receive your recovery transactions to be sure you are always in control of your funds.";
 "id_if_you_initiated_the_2fa_reset" = "Daca ați inițiat contestarea resetării 2FA din greșeală, puteți anula contestarea.";
 "id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Import a Multisig Shield wallet created on Blockstream Green.";
@@ -816,7 +816,7 @@
 "id_later" = "MAI TÂRZIU";
 "id_latest_transactions" = "Latest transactions";
 "id_lbtc_has_no_issuer_and_is" = "LBTC nu are o entitate emitentă și este creat de către rețea atunci când bitcoini de pe lanțul principal sunt transferați în rețea.";
-"id_learn_more" = "Află mai mult";
+"id_learn_more" = "Learn More";
 "id_learn_more_about_amp_the_assets" = "Learn more about AMP, the assets and your eligibility";
 "id_learn_more_about_s" = "Învățați mai mult despre %@.";
 "id_learn_more_about_using_qr_mode" = "Learn more about using QR Mode with Jade";
@@ -879,6 +879,7 @@
 "id_log_out" = "Log Out";
 "id_logged_in_wallets" = "Logat în portofele";
 "id_logging_in" = "Se realizează logarea...";
+"id_logging_out" = "Logging out…";
 "id_login_failed" = "Logarea a eșuat";
 "id_login_options" = "Opțiuni de logare";
 "id_logout" = "Delogare";
@@ -1019,6 +1020,7 @@
 "id_offline_written_backup" = "Offline, written backup";
 "id_ok" = "Ok";
 "id_ok_i_understand" = "Ok, I understand";
+"id_okay" = "Okay";
 "id_old_fee" = "Old fee";
 "id_on_average" = "în medie";
 "id_on_hardware_wallet" = "On Hardware Wallet";
@@ -1161,7 +1163,7 @@
 "id_recovery" = "Recuperare";
 "id_recovery_and_notifications" = "Recuperare și Notificări";
 "id_recovery_key_type" = "Recovery Key Type";
-"id_recovery_method" = "Recovery method";
+"id_recovery_method" = "Recovery Method";
 "id_recovery_mnemonic" = "Mnemonic de recuperare";
 "id_recovery_phrase" = "Frază de recuperare";
 "id_recovery_phrase_check" = "Verificare frază de recuperare";
@@ -1180,7 +1182,7 @@
 "id_redeposited" = "Redepozitat";
 "id_redepositing" = "Redepositing";
 "id_reenable_2fa" = "Re-enable 2FA";
-"id_reference_exchange_rate" = "Rata de schimb de referință";
+"id_reference_exchange_rate" = "Reference Exchange Rate";
 "id_refresh" = "Reîmprospătare";
 "id_refund" = "Refund";
 "id_refund_in_progress" = "Refund in progress";
@@ -1378,7 +1380,7 @@
 "id_show_all_assets" = "Afișează toate monedele";
 "id_show_bitcoin_amounts_in" = "Afișarea cantităților de bitcoin în";
 "id_show_coins_with_expiring" = "Afișarea monedelor a căror protecție 2FA (autentificare cu doi factori) este pe cale să expire.";
-"id_show_details" = "Show details";
+"id_show_details" = "Show Details";
 "id_show_fiat" = "Afișare monede fiat";
 "id_show_lightning_invoice" = "Show Lightning Invoice";
 "id_show_my_wallet_backup" = "Afișare date recuperare (backup) pentru portofel";
@@ -1504,7 +1506,7 @@
 "id_the_recovery_phrase_doesnt" = "The recovery phrase doesn't match the previously existing wallet. Please retry with a different recovery phrase.";
 "id_the_source_code_is_available_at" = "Codul sursă este disponibil la %@";
 "id_the_transaction_contains" = "Tranzacția conține fonduri non-confidențiale";
-"id_the_transaction_was" = "The transaction was successfully received";
+"id_the_transaction_was" = "The transaction was successfully received.";
 "id_the_username_cant_be_empty" = "The username can't be empty";
 "id_the_waiting_period_is_necessary" = "Perioada de așteptare este necesară pentru securitatea portofelului dvs, nepermițând unui eventual atacator sa aibă acces la fondurile dvs.";
 "id_there_are_no_results_for_the" = "There are no results for the applied filter";
@@ -1527,7 +1529,7 @@
 "id_this_signature_is_a_proof_of" = "This signature is a proof of ownership of the address";
 "id_this_transaction_spent" = "Această tranzacție a trimis monede non-confidențiale.";
 "id_this_wallet_is_based_on_your" = "This wallet is based on your recovery phrase and a BIP39 Passphrase";
-"id_this_wallet_operates_on_a_test" = "This wallet operates on a test network. Anything you receive or send here has no value";
+"id_this_wallet_operates_on_a_test" = "This wallet operates on a test network. Anything you receive or send here has no value.";
 "id_this_will_disable_pin_login_for" = "Această opțiune va dezactiva logarea cu PIN pe toate dispozitivele unde acest portofel este instalat. Veți avea nevoie de fraza de recuperare pentru a restabili accesul.";
 "id_this_will_log_you_out_and" = "Această opțiune vă va deloga și va șterge acest portofel din aplicație și din baza de date Blockstream.";
 "id_ticker" = "Simbol";
@@ -1824,7 +1826,8 @@
 "id_your_settings_are_unsavednndo" = "Your settings are unsaved.\n\nDo you want to continue?";
 "id_your_swap_proposal_is_generated" = "Your Swap Proposal is generated!";
 "id_your_transaction_failed_s" = "Your transaction failed: %@";
-"id_your_transaction_was" = "Your transaction was successfully sent";
+"id_your_transaction_is_awaiting" = "Your transaction is awaiting confirmation.";
+"id_your_transaction_was" = "Your transaction was successfully sent.";
 "id_your_transactions_will_be_shown" = "Tranzacțiile dvs vor fi afișate aici.";
 "id_your_twofactor_threshold_is_s" = "Pragul dvs pentru autentificare cu doi factori este %@.";
 "id_your_wallet_backup_is_made_of" = "Copia de protecție a portofelului dvs conține 24 de cuvinte, pe care le vom numi și frază mnemonică. Asigurați-vă că aveți mereu această copie într-un loc sigur. Oricine găsește cuvintele vă poate fura monedele. În cazul în care dispozitivul dvs este pierdut, distrus sau furat, veți putea folosi fraza mnemonică pentru a vă recupera portofelul Blockstream Green și toate fondurile din el pe un alt telefon.";

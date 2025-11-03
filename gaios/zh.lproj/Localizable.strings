@@ -725,7 +725,7 @@
 "id_if_you_forget_it_or_lose_it" = "如果您忘记或丢失了它，您的资金也将丢失。";
 "id_if_you_forget_your_pin_you_will" = "If you forget your PIN, you will need to restore with your recovery phrase";
 "id_if_you_have_access_to_a" = "如果您可以访问此钱包的双重验证，请取消重置以便能够立即转账和接收，或者等待%d天。";
-"id_if_you_have_some_coins_on_the" = "如果您有一些代币保存在旧的地址类型，并且您不会很快花费它们，您可能需要设置电子邮件并接收您的恢复转账，以确保您始终可以控制您的资金。";
+"id_if_you_have_some_coins_on_the" = "If you have some coins on the legacy address type, and you won't spend them shortly, you might need to set up an email and receive your recovery transactions to be sure you are always in control of your funds.";
 "id_if_you_initiated_the_2fa_reset" = "如果您错误地发起了2FA重置争议，您可以撤消它并设置钱包回到2FA重置状态。";
 "id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "导入在Blockstream Green上创建的Multisig Shield钱包。";
@@ -816,7 +816,7 @@
 "id_later" = "稍后";
 "id_latest_transactions" = "最新的转账";
 "id_lbtc_has_no_issuer_and_is" = "LBTC并没有对应的发行方，是由锁入操作生成的。";
-"id_learn_more" = "了解更多";
+"id_learn_more" = "Learn More";
 "id_learn_more_about_amp_the_assets" = "详细了解 AMP、资产和您的准入资格";
 "id_learn_more_about_s" = "了解更多%@。";
 "id_learn_more_about_using_qr_mode" = "Learn more about using QR Mode with Jade";
@@ -879,6 +879,7 @@
 "id_log_out" = "Log Out";
 "id_logged_in_wallets" = "已登录钱包";
 "id_logging_in" = "正在登录...";
+"id_logging_out" = "Logging out…";
 "id_login_failed" = "登录失败";
 "id_login_options" = "登录选项";
 "id_logout" = "登出";
@@ -1019,6 +1020,7 @@
 "id_offline_written_backup" = "Offline, written backup";
 "id_ok" = "确认";
 "id_ok_i_understand" = "Ok, I understand";
+"id_okay" = "Okay";
 "id_old_fee" = "Old fee";
 "id_on_average" = "平均";
 "id_on_hardware_wallet" = "On Hardware Wallet";
@@ -1161,7 +1163,7 @@
 "id_recovery" = "恢复资金设置";
 "id_recovery_and_notifications" = "恢复与通知";
 "id_recovery_key_type" = "恢复密钥类型";
-"id_recovery_method" = "Recovery method";
+"id_recovery_method" = "Recovery Method";
 "id_recovery_mnemonic" = "助记词";
 "id_recovery_phrase" = "助记词";
 "id_recovery_phrase_check" = "助记词检查";
@@ -1378,7 +1380,7 @@
 "id_show_all_assets" = "显示所有资产";
 "id_show_bitcoin_amounts_in" = "比特币面值";
 "id_show_coins_with_expiring" = "显示快过期的双重验证保护的资产。";
-"id_show_details" = "展示细节";
+"id_show_details" = "Show Details";
 "id_show_fiat" = "显示法币";
 "id_show_lightning_invoice" = "Show Lightning Invoice";
 "id_show_my_wallet_backup" = "显示我的钱包备份";
@@ -1504,7 +1506,7 @@
 "id_the_recovery_phrase_doesnt" = "助记词与以前存在的钱包不匹配。请使用不同的助记词重试。";
 "id_the_source_code_is_available_at" = "可以在%@找到源代码";
 "id_the_transaction_contains" = "转账中包含非隐私资金。";
-"id_the_transaction_was" = "The transaction was successfully received";
+"id_the_transaction_was" = "The transaction was successfully received.";
 "id_the_username_cant_be_empty" = "用户名不能为空";
 "id_the_waiting_period_is_necessary" = "等待期对于确保您的钱包安全是必要的，可以防止恶意人员绕过您的双重验证。";
 "id_there_are_no_results_for_the" = "筛选无结果";
@@ -1527,7 +1529,7 @@
 "id_this_signature_is_a_proof_of" = "This signature is a proof of ownership of the address";
 "id_this_transaction_spent" = "这笔转账花费了非隐私资金。";
 "id_this_wallet_is_based_on_your" = "该钱包基于您的助记词和BIP39密语";
-"id_this_wallet_operates_on_a_test" = "该钱包在测试网上运行。您在此处接收或发送的任何内容都没有实际价值";
+"id_this_wallet_operates_on_a_test" = "This wallet operates on a test network. Anything you receive or send here has no value.";
 "id_this_will_disable_pin_login_for" = "这将在您的所有设备上禁用此钱包的PIN登录。您将需要助记词才能访问您的钱包。";
 "id_this_will_log_you_out_and" = "这将使您注销并从app和Blockstream的服务器数据库中删除此钱包。";
 "id_ticker" = "资产代号";
@@ -1824,7 +1826,8 @@
 "id_your_settings_are_unsavednndo" = "Your settings are unsaved.\n\nDo you want to continue?";
 "id_your_swap_proposal_is_generated" = "已创建您的互换提案！";
 "id_your_transaction_failed_s" = "Your transaction failed: %@";
-"id_your_transaction_was" = "Your transaction was successfully sent";
+"id_your_transaction_is_awaiting" = "Your transaction is awaiting confirmation.";
+"id_your_transaction_was" = "Your transaction was successfully sent.";
 "id_your_transactions_will_be_shown" = "您的转账信息将在此显示。";
 "id_your_twofactor_threshold_is_s" = "触发双重验证的阈值是%@。";
 "id_your_wallet_backup_is_made_of" = "你的钱包备份是由24个单词组成的，这24个单词叫做助记词。请确保你有备份助记词并确保助记词的安全。任何知道你的助记词的人都可以偷走你的资产。万一你的设备丢失或损坏，你可以用助记词在其它设备上恢复你的Blockstream Green钱包。";

@@ -725,7 +725,7 @@
 "id_if_you_forget_it_or_lose_it" = "Если вы забудете или потеряете его, ваши средства также будут потеряны.";
 "id_if_you_forget_your_pin_you_will" = "If you forget your PIN, you will need to restore with your recovery phrase";
 "id_if_you_have_access_to_a" = "Если у вас есть доступ к двухфакторному методу для этого кошелька, отмените сброс, чтобы иметь возможность тратить и получать средства моментально, или подождите %d дней.";
-"id_if_you_have_some_coins_on_the" = "Если у вас есть монеты на legacy-адресе и вы не собираетесь их тратить в ближайшее время, вам может потребоваться настроить электронную почту и получать транзакции восстановления, чтобы знать, что вы всегда контролируете свои средства.";
+"id_if_you_have_some_coins_on_the" = "If you have some coins on the legacy address type, and you won't spend them shortly, you might need to set up an email and receive your recovery transactions to be sure you are always in control of your funds.";
 "id_if_you_initiated_the_2fa_reset" = "Если вы инициировали спор о сбросе 2FA по ошибке, вы можете отменить его и вернуть кошелек в состояние сброса 2FA.";
 "id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Импортируйте кошелек Multisig Shield, созданный в Blockstream Green.";
@@ -816,7 +816,7 @@
 "id_later" = "ПОЗЖЕ";
 "id_latest_transactions" = "Последние транзакции";
 "id_lbtc_has_no_issuer_and_is" = "LBTC не имеет эмитента и вместо этого создается в сети посредством привязки.";
-"id_learn_more" = "Узнать больше";
+"id_learn_more" = "Learn More";
 "id_learn_more_about_amp_the_assets" = "Узнайте больше об AMP, активах и соответствии требованиям";
 "id_learn_more_about_s" = "Узнать больше о %@.";
 "id_learn_more_about_using_qr_mode" = "Learn more about using QR Mode with Jade";
@@ -879,6 +879,7 @@
 "id_log_out" = "Log Out";
 "id_logged_in_wallets" = "Авторизованные кошельки";
 "id_logging_in" = "Выполняется вход...";
+"id_logging_out" = "Logging out…";
 "id_login_failed" = "Вход невозможен";
 "id_login_options" = "Варианты входа";
 "id_logout" = "Выйти";
@@ -1019,6 +1020,7 @@
 "id_offline_written_backup" = "Offline, written backup";
 "id_ok" = "Ok";
 "id_ok_i_understand" = "Ok, I understand";
+"id_okay" = "Okay";
 "id_old_fee" = "Old fee";
 "id_on_average" = "в среднем";
 "id_on_hardware_wallet" = "On Hardware Wallet";
@@ -1161,7 +1163,7 @@
 "id_recovery" = "Восстановление";
 "id_recovery_and_notifications" = "Восстановление и уведомления";
 "id_recovery_key_type" = "Тип ключа восстановления";
-"id_recovery_method" = "Recovery method";
+"id_recovery_method" = "Recovery Method";
 "id_recovery_mnemonic" = "Мнемоническая фраза для восстановления";
 "id_recovery_phrase" = "Фраза восстановления";
 "id_recovery_phrase_check" = "Проверка фразы восстановления";
@@ -1180,7 +1182,7 @@
 "id_redeposited" = "Внесенный повторно";
 "id_redepositing" = "Redepositing";
 "id_reenable_2fa" = "Re-enable 2FA";
-"id_reference_exchange_rate" = "Обменный курс";
+"id_reference_exchange_rate" = "Reference Exchange Rate";
 "id_refresh" = "Обновление";
 "id_refund" = "Refund";
 "id_refund_in_progress" = "Refund in progress";
@@ -1378,7 +1380,7 @@
 "id_show_all_assets" = "Показать все активы";
 "id_show_bitcoin_amounts_in" = "Показать количество биткоинов в";
 "id_show_coins_with_expiring" = "Показать монеты с истекающим сроком двухфакторной аутентификации.";
-"id_show_details" = "Показать детали";
+"id_show_details" = "Show Details";
 "id_show_fiat" = "Показать фиат";
 "id_show_lightning_invoice" = "Show Lightning Invoice";
 "id_show_my_wallet_backup" = "Показать резервную копию моего кошелька";
@@ -1504,7 +1506,7 @@
 "id_the_recovery_phrase_doesnt" = "Фраза восстановления не соответствует ранее существовавшему кошельку. Повторите попытку, используя другую фразу восстановления.";
 "id_the_source_code_is_available_at" = "Исходный код доступен по адресу %@";
 "id_the_transaction_contains" = "Транзакция содержит неконфиденциальные средства.";
-"id_the_transaction_was" = "The transaction was successfully received";
+"id_the_transaction_was" = "The transaction was successfully received.";
 "id_the_username_cant_be_empty" = "Имя пользователя не может быть пустым";
 "id_the_waiting_period_is_necessary" = "Период ожидания необходим для обеспечения безопасности вашего кошелька, чтобы злоумышленники не смогли обойти вашу двухфакторную защиту.";
 "id_there_are_no_results_for_the" = "Нет результатов для заданного фильтра";
@@ -1527,7 +1529,7 @@
 "id_this_signature_is_a_proof_of" = "This signature is a proof of ownership of the address";
 "id_this_transaction_spent" = "На эту транзакцию потрачены неконфиденциальные средства.";
 "id_this_wallet_is_based_on_your" = "Этот кошелек основан на вашей фразе восстановления и пароле BIP39.";
-"id_this_wallet_operates_on_a_test" = "Этот кошелек работает в тестовой сети. Все, что вы получаете или отправляете здесь, не имеет ценности";
+"id_this_wallet_operates_on_a_test" = "This wallet operates on a test network. Anything you receive or send here has no value.";
 "id_this_will_disable_pin_login_for" = "Это действие отключит вход с помощью PIN-кода для этого кошелька на всех ваших устройствах. Для доступа к кошельку вам понадобится фраза восстановления.";
 "id_this_will_log_you_out_and" = "Это действие приведет к выходу из системы и удалению этого кошелька из приложения и базы данных серверов Blockstream.";
 "id_ticker" = "Тикер";
@@ -1824,7 +1826,8 @@
 "id_your_settings_are_unsavednndo" = "Your settings are unsaved.\n\nDo you want to continue?";
 "id_your_swap_proposal_is_generated" = "Ваше предложение по обмену создано!";
 "id_your_transaction_failed_s" = "Your transaction failed: %@";
-"id_your_transaction_was" = "Your transaction was successfully sent";
+"id_your_transaction_is_awaiting" = "Your transaction is awaiting confirmation.";
+"id_your_transaction_was" = "Your transaction was successfully sent.";
 "id_your_transactions_will_be_shown" = "Ваши транзакции будут показаны здесь.";
 "id_your_twofactor_threshold_is_s" = "Ваш двухфакторный лимит расходов составляет %@.";
 "id_your_wallet_backup_is_made_of" = "Резервная копия вашего кошелька состоит из 24 слов, также известных как мнемоническая фраза. Убедитесь, что у вас есть резервная копия и храните ее в безопасном месте. Любой, кто его найдет, может украсть ваши деньги. Вы можете использовать ее для восстановления своего кошелька Blockstream Green на другом устройстве в случае потери, повреждения или кражи вашего кошелька.";

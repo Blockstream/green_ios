@@ -725,7 +725,7 @@
 "id_if_you_forget_it_or_lose_it" = "Pokud ji zapomenete nebo ztratíte, přijdete i o své finanční prostředky.";
 "id_if_you_forget_your_pin_you_will" = "If you forget your PIN, you will need to restore with your recovery phrase";
 "id_if_you_have_access_to_a" = "Pokud pro tuto peněženku máte přístup k dvoufaktorové metodě, zrušte reset, abyste mohli okamžitě utrácet a přijímat nebo čekat %d dny.";
-"id_if_you_have_some_coins_on_the" = "Pokud máte nějaké mince na starším typu adresy a v nejbližší době je neutratíte, možná budete muset nastavit e-mail a přijímat transakce na obnovu, abyste měli jistotu, že máte své prostředky vždy pod kontrolou.";
+"id_if_you_have_some_coins_on_the" = "If you have some coins on the legacy address type, and you won't spend them shortly, you might need to set up an email and receive your recovery transactions to be sure you are always in control of your funds.";
 "id_if_you_initiated_the_2fa_reset" = "Pokud jste spor o resetování 2FA zahájili omylem, můžete jej vrátit zpět a nastavit peněženku zpět do stavu resetování 2FA.";
 "id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Importovat Multisig Shield peněženku vytvořenou na Blockstream Green.";
@@ -816,7 +816,7 @@
 "id_later" = "POZDĚJI";
 "id_latest_transactions" = "Poslední transakce";
 "id_lbtc_has_no_issuer_and_is" = "LBTC nemá vydavatele a je místo toho vytvořen v síti pomocí peg-in.";
-"id_learn_more" = "Zjistit více";
+"id_learn_more" = "Learn More";
 "id_learn_more_about_amp_the_assets" = "Další informace o AMP, aktivech a vaší způsobilosti";
 "id_learn_more_about_s" = "Dozvědět se víc o %@.";
 "id_learn_more_about_using_qr_mode" = "Learn more about using QR Mode with Jade";
@@ -879,6 +879,7 @@
 "id_log_out" = "Log Out";
 "id_logged_in_wallets" = "Přihlášeni v peněženkách";
 "id_logging_in" = "Přihlašování...";
+"id_logging_out" = "Logging out…";
 "id_login_failed" = "Přihlášení selhalo";
 "id_login_options" = "Možnosti přihlášení";
 "id_logout" = "Odhlásit se";
@@ -1019,6 +1020,7 @@
 "id_offline_written_backup" = "Offline, written backup";
 "id_ok" = "Ok";
 "id_ok_i_understand" = "Dobře, rozumím.";
+"id_okay" = "Okay";
 "id_old_fee" = "Starý poplatek";
 "id_on_average" = "v průměru";
 "id_on_hardware_wallet" = "O hardwarové peněžence";
@@ -1161,7 +1163,7 @@
 "id_recovery" = "Obnova";
 "id_recovery_and_notifications" = "Obnovení a oznámení";
 "id_recovery_key_type" = "Typ klíče pro obnovení";
-"id_recovery_method" = "Recovery method";
+"id_recovery_method" = "Recovery Method";
 "id_recovery_mnemonic" = "Obnova mnemotechnické fráze";
 "id_recovery_phrase" = "Fráze pro obnovení";
 "id_recovery_phrase_check" = "Kontrola obnovovací fráze";
@@ -1180,7 +1182,7 @@
 "id_redeposited" = "Opětovné vrácení";
 "id_redepositing" = "Redepositing";
 "id_reenable_2fa" = "Znovu povolit 2FA";
-"id_reference_exchange_rate" = "Referenční směnný kurz";
+"id_reference_exchange_rate" = "Reference Exchange Rate";
 "id_refresh" = "Obnovit";
 "id_refund" = "Vrácení peněz";
 "id_refund_in_progress" = "Probíhající vrácení peněz";
@@ -1378,7 +1380,7 @@
 "id_show_all_assets" = "Zobrazit všechna aktiva";
 "id_show_bitcoin_amounts_in" = "Zobrazit množství bitcoinů v";
 "id_show_coins_with_expiring" = "Zobrazit mince s vypršením platnosti dvoufaktorové ověřovací ochrany.";
-"id_show_details" = "Zobrazit podrobnosti";
+"id_show_details" = "Show Details";
 "id_show_fiat" = "Zobrazit fiat";
 "id_show_lightning_invoice" = "Zobrazit Lightning fakturu";
 "id_show_my_wallet_backup" = "Zobrazit zálohu peněženky";
@@ -1504,7 +1506,7 @@
 "id_the_recovery_phrase_doesnt" = "Fráze pro obnovení se neshoduje s dříve existující peněženkou. Zkuste to prosím znovu s jinou frází pro obnovení.";
 "id_the_source_code_is_available_at" = "Zdrojový kód je k dispozici na %@";
 "id_the_transaction_contains" = "Transakce obsahuje nedůvěrné prostředky.";
-"id_the_transaction_was" = "Transakce byla úspěšně přijata";
+"id_the_transaction_was" = "The transaction was successfully received.";
 "id_the_username_cant_be_empty" = "Uživatelské jméno nesmí být prázdné";
 "id_the_waiting_period_is_necessary" = "Čekací doba je nezbytná k zajištění bezpečnosti vaší peněženky, aby se zabránilo tomu, že by zloději obcházeli vaši ochranu dvou faktorů.";
 "id_there_are_no_results_for_the" = "Pro použitý filtr nejsou k dispozici žádné výsledky";
@@ -1527,7 +1529,7 @@
 "id_this_signature_is_a_proof_of" = "Tento podpis je dokladem o vlastnictví adresy.";
 "id_this_transaction_spent" = "Tato transakce utratila nedůvěrné prostředky.";
 "id_this_wallet_is_based_on_your" = "Tato peněženka je založena na vaší obnovovací frázi a přístupové frázi BIP39.";
-"id_this_wallet_operates_on_a_test" = "Tato peněženka funguje v testovací síti. Cokoli, co zde obdržíte nebo odešlete, nemá žádnou hodnotu.";
+"id_this_wallet_operates_on_a_test" = "This wallet operates on a test network. Anything you receive or send here has no value.";
 "id_this_will_disable_pin_login_for" = "Tím deaktivujete přihlášení pomocí PINu pro tuto peněženku na všech svých zařízeních. Pro přístup do peněženky budete potřebovat frázi pro obnovení.";
 "id_this_will_log_you_out_and" = "Tím se odhlásíte a odstraníte tuto peněženku z aplikace a databáze serverů Blockstream.";
 "id_ticker" = "Ticker";
@@ -1824,7 +1826,8 @@
 "id_your_settings_are_unsavednndo" = "Vaše nastavení není uloženo.\n\nChcete pokračovat?";
 "id_your_swap_proposal_is_generated" = "Váš návrh výměny je vygenerován!";
 "id_your_transaction_failed_s" = "Vaše transakce se nezdařila: %@";
-"id_your_transaction_was" = "Vaše transakce byla úspěšně odeslána";
+"id_your_transaction_is_awaiting" = "Your transaction is awaiting confirmation.";
+"id_your_transaction_was" = "Your transaction was successfully sent.";
 "id_your_transactions_will_be_shown" = "Zde se zobrazí vaše transakce.";
 "id_your_twofactor_threshold_is_s" = "Váš 2-Faktorový limit je %@.";
 "id_your_wallet_backup_is_made_of" = "Záloha vaší peněženky se skládá z 24 slov, známých také jako mnemotechnická fráze. Ujistěte se, že máte zálohu a udržujte ji v bezpečí. Každý, kdo ji najde, může ukrást vaše peníze. Můžete ji také použít k obnovení vaší peněženky Blockstream Green na jiném zařízení v případě ztráty, poškození nebo odcizení.";

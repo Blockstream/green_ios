@@ -725,7 +725,7 @@
 "id_if_you_forget_it_or_lose_it" = "Якщо ви забудете або втратите його, ваші кошти також будуть втрачені.";
 "id_if_you_forget_your_pin_you_will" = "If you forget your PIN, you will need to restore with your recovery phrase";
 "id_if_you_have_access_to_a" = "Якщо у вас є доступ до двофакторного метода для цього гаманця, скасуйте скидання, щоб мати можливість витрачати і отримувати кошти миттєво, або почекайте %d днів.";
-"id_if_you_have_some_coins_on_the" = "Якщо у вас є монети на legacy-адресі і ви не збираєтеся витрачати їх найближчим часом, вам можливо буде потрібно налаштувати електронну пошту і отримувати транзакції відновлення, щоб бути впевненим, що ви завжди контролюєте свої кошти.";
+"id_if_you_have_some_coins_on_the" = "If you have some coins on the legacy address type, and you won't spend them shortly, you might need to set up an email and receive your recovery transactions to be sure you are always in control of your funds.";
 "id_if_you_initiated_the_2fa_reset" = "Якщо ви помилково ініціювали оскарження скидання 2FA, ви можете його скасувати  і повернути гаманець в стан скидання 2FA.";
 "id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Імпортуйте гаманець Multisig Shield, створений у Blockstream Green.";
@@ -816,7 +816,7 @@
 "id_later" = "ПІЗНІШЕ";
 "id_latest_transactions" = "Останні транзакції";
 "id_lbtc_has_no_issuer_and_is" = "LBTC не має емітента і замість цього створюється в мережі за допомогою прив'язки.";
-"id_learn_more" = "Дізнатися більше";
+"id_learn_more" = "Learn More";
 "id_learn_more_about_amp_the_assets" = "Дізнайтеся більше про AMP, активи та відповідність вимогам";
 "id_learn_more_about_s" = "Дізнатися більше про %@.";
 "id_learn_more_about_using_qr_mode" = "Learn more about using QR Mode with Jade";
@@ -879,6 +879,7 @@
 "id_log_out" = "Log Out";
 "id_logged_in_wallets" = "Авторизовані гаманці";
 "id_logging_in" = "Виконується вхід...";
+"id_logging_out" = "Logging out…";
 "id_login_failed" = "Вхід неможливий";
 "id_login_options" = "Варіанти входу";
 "id_logout" = "Вийти";
@@ -1019,6 +1020,7 @@
 "id_offline_written_backup" = "Offline, written backup";
 "id_ok" = "Ok";
 "id_ok_i_understand" = "Ok, I understand";
+"id_okay" = "Okay";
 "id_old_fee" = "Old fee";
 "id_on_average" = "в середньому";
 "id_on_hardware_wallet" = "On Hardware Wallet";
@@ -1161,7 +1163,7 @@
 "id_recovery" = "Відновлення";
 "id_recovery_and_notifications" = "Відновлення і повідомлення";
 "id_recovery_key_type" = "Тип ключа відновлення";
-"id_recovery_method" = "Recovery method";
+"id_recovery_method" = "Recovery Method";
 "id_recovery_mnemonic" = "Відновлення мнемонічної фрази";
 "id_recovery_phrase" = "Фраза відновлення";
 "id_recovery_phrase_check" = "Перевірка фрази відновлення";
@@ -1180,7 +1182,7 @@
 "id_redeposited" = "Внесений повторно";
 "id_redepositing" = "Redepositing";
 "id_reenable_2fa" = "Re-enable 2FA";
-"id_reference_exchange_rate" = "Курс обміну";
+"id_reference_exchange_rate" = "Reference Exchange Rate";
 "id_refresh" = "Оновити";
 "id_refund" = "Refund";
 "id_refund_in_progress" = "Refund in progress";
@@ -1378,7 +1380,7 @@
 "id_show_all_assets" = "Показати всі активи";
 "id_show_bitcoin_amounts_in" = "Показати кількість біткоінів в";
 "id_show_coins_with_expiring" = "Показати монети, термін двофакторної аутентифікації яких закінчується.";
-"id_show_details" = "Показати деталі";
+"id_show_details" = "Show Details";
 "id_show_fiat" = "Показати фіат";
 "id_show_lightning_invoice" = "Show Lightning Invoice";
 "id_show_my_wallet_backup" = "Показати резервну копію мого гаманця";
@@ -1504,7 +1506,7 @@
 "id_the_recovery_phrase_doesnt" = "Фраза відновлення не відповідає раніше існуючому гаманцю. Повторіть спробу, використовуючи іншу фразу відновлення.";
 "id_the_source_code_is_available_at" = "Вихідний код доступний за адресою %@";
 "id_the_transaction_contains" = "Транзакція містить неконфіденційні кошти.";
-"id_the_transaction_was" = "The transaction was successfully received";
+"id_the_transaction_was" = "The transaction was successfully received.";
 "id_the_username_cant_be_empty" = "Ім'я користувача не може бути порожнім";
 "id_the_waiting_period_is_necessary" = "Період очікування необхідний для забезпечення безпеки вашого гаманця, щоб зловмисники не змогли обійти ваш двофакторний захист.";
 "id_there_are_no_results_for_the" = "Немає результатів для застосованого фільтра";
@@ -1527,7 +1529,7 @@
 "id_this_signature_is_a_proof_of" = "This signature is a proof of ownership of the address";
 "id_this_transaction_spent" = "На цю транзакцію витрачені неконфіденційні кошти.";
 "id_this_wallet_is_based_on_your" = "Цей гаманець базується на вашій фразі відновлення та паролі BIP39";
-"id_this_wallet_operates_on_a_test" = "Цей гаманець працює у тестовій мережі. Все, що ви отримуєте або надсилаєте тут, не має цінності";
+"id_this_wallet_operates_on_a_test" = "This wallet operates on a test network. Anything you receive or send here has no value.";
 "id_this_will_disable_pin_login_for" = "Ця дія відключить вхід за допомогою PIN-коду для цього гаманця на всіх ваших пристроях. Для доступу до гаманця вам знадобиться фраза відновлення.";
 "id_this_will_log_you_out_and" = "Ця дія призведе до виходу з системи і видалення цього гаманця з програми і бази даних серверів Blockstream.";
 "id_ticker" = "Тікер";
@@ -1824,7 +1826,8 @@
 "id_your_settings_are_unsavednndo" = "Your settings are unsaved.\n\nDo you want to continue?";
 "id_your_swap_proposal_is_generated" = "Ваша пропозиція по обміну створена!";
 "id_your_transaction_failed_s" = "Your transaction failed: %@";
-"id_your_transaction_was" = "Your transaction was successfully sent";
+"id_your_transaction_is_awaiting" = "Your transaction is awaiting confirmation.";
+"id_your_transaction_was" = "Your transaction was successfully sent.";
 "id_your_transactions_will_be_shown" = "Ваші транзакції будуть показані тут.";
 "id_your_twofactor_threshold_is_s" = "Ваш двофакторний ліміт витрат становить %@.";
 "id_your_wallet_backup_is_made_of" = "Резервна копія вашого гаманця складається з 24 слів, також відомих як ваша мнемонічна фраза. Переконайтеся, що у вас є резервна копія, і збережіть її. Той, хто її знайде, може вкрасти ваші гроші. Ви можете використовувати її для відновлення свого гаманця Blockstream Green на іншому пристрої у випадку втрати, пошкодження або крадіжки вашого гаманця.";

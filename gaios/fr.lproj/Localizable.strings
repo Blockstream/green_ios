@@ -725,7 +725,7 @@
 "id_if_you_forget_it_or_lose_it" = "Si vous l'oubliez ou le perdez, vos fonds seront perdus.";
 "id_if_you_forget_your_pin_you_will" = "If you forget your PIN, you will need to restore with your recovery phrase";
 "id_if_you_have_access_to_a" = "Si vous avez accès à une méthode à deux facteurs pour ce portefeuille, annulez la réinitialisation pour pouvoir dépenser et recevoir immédiatement, ou attendez%d jours.";
-"id_if_you_have_some_coins_on_the" = "Si vous avez quelques pièces sur le type d'adresse héritée, et que vous ne les dépenserez pas de sitôt, vous pourriez avoir besoin de configurer un e-mail et de recevoir vos transactions de récupération pour être sûr de toujours contrôler vos fonds.";
+"id_if_you_have_some_coins_on_the" = "If you have some coins on the legacy address type, and you won't spend them shortly, you might need to set up an email and receive your recovery transactions to be sure you are always in control of your funds.";
 "id_if_you_initiated_the_2fa_reset" = "Si vous avez lancé le conflit de réinitialisation 2FA par erreur, vous pouvez l'annuler et remettre le portefeuille en état de réinitialisation 2FA.";
 "id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Importez un portefeuille Multisig Shield créé sur Blockstream Green.";
@@ -816,7 +816,7 @@
 "id_later" = "PLUS TARD";
 "id_latest_transactions" = "Dernières transactions";
 "id_lbtc_has_no_issuer_and_is" = "Le LBTC n'a pas d'émetteur et est créé sur le réseau via un peg-in.";
-"id_learn_more" = "En savoir plus";
+"id_learn_more" = "Learn More";
 "id_learn_more_about_amp_the_assets" = "En savoir plus sur la AMP, les actifs et votre éligibilité";
 "id_learn_more_about_s" = "En savoir plus sur %@.";
 "id_learn_more_about_using_qr_mode" = "Learn more about using QR Mode with Jade";
@@ -879,6 +879,7 @@
 "id_log_out" = "Log Out";
 "id_logged_in_wallets" = "Portefeuilles connectés";
 "id_logging_in" = "Connexion en cours...";
+"id_logging_out" = "Logging out…";
 "id_login_failed" = "Échec de la connexion";
 "id_login_options" = "Options de connexion";
 "id_logout" = "Déconnexion";
@@ -1019,6 +1020,7 @@
 "id_offline_written_backup" = "Offline, written backup";
 "id_ok" = "OK";
 "id_ok_i_understand" = "Ok, I understand";
+"id_okay" = "Okay";
 "id_old_fee" = "Old fee";
 "id_on_average" = "en moyenne";
 "id_on_hardware_wallet" = "On Hardware Wallet";
@@ -1161,7 +1163,7 @@
 "id_recovery" = "Recovery";
 "id_recovery_and_notifications" = "Récupération et notifications";
 "id_recovery_key_type" = "Type de clé de récupération";
-"id_recovery_method" = "Recovery method";
+"id_recovery_method" = "Recovery Method";
 "id_recovery_mnemonic" = "Récupération mnemonic";
 "id_recovery_phrase" = "Phrase de récupération";
 "id_recovery_phrase_check" = "Vérification de la phrase de récupération";
@@ -1180,7 +1182,7 @@
 "id_redeposited" = "Redéposé";
 "id_redepositing" = "Redepositing";
 "id_reenable_2fa" = "Re-enable 2FA";
-"id_reference_exchange_rate" = "Taux de change de référence";
+"id_reference_exchange_rate" = "Reference Exchange Rate";
 "id_refresh" = "Rafraîchir";
 "id_refund" = "Refund";
 "id_refund_in_progress" = "Refund in progress";
@@ -1378,7 +1380,7 @@
 "id_show_all_assets" = "Affichez Tous les actifs";
 "id_show_bitcoin_amounts_in" = "Afficher les montants en bitcoins ";
 "id_show_coins_with_expiring" = "Affichez les pièces dont la protection d'authentification à deux facteurs arrive à expiration.";
-"id_show_details" = "Afficher les détails";
+"id_show_details" = "Show Details";
 "id_show_fiat" = "Affichez FIAT";
 "id_show_lightning_invoice" = "Show Lightning Invoice";
 "id_show_my_wallet_backup" = "Affichez la sauvegarde de mon portefeuille";
@@ -1504,7 +1506,7 @@
 "id_the_recovery_phrase_doesnt" = "La phrase de récupération ne correspond pas au portefeuille existant. Veuillez réessayer avec une phrase de récupération différente.";
 "id_the_source_code_is_available_at" = "Le code source est disponible à l'adresse suivante %@";
 "id_the_transaction_contains" = "La transaction contient des fonds non confidentiels.\n ";
-"id_the_transaction_was" = "The transaction was successfully received";
+"id_the_transaction_was" = "The transaction was successfully received.";
 "id_the_username_cant_be_empty" = "Le nom d'utilisateur ne peut pas être vide";
 "id_the_waiting_period_is_necessary" = "La période d'attente est nécessaire pour garantir la sécurité de votre portefeuille, afin d'empêcher les voleurs de contourner votre protection à deux facteurs.";
 "id_there_are_no_results_for_the" = "Il n'y a pas de résultats pour le filtre appliqué";
@@ -1527,7 +1529,7 @@
 "id_this_signature_is_a_proof_of" = "This signature is a proof of ownership of the address";
 "id_this_transaction_spent" = "Cette transaction a généré des fonds non confidentiels.\n ";
 "id_this_wallet_is_based_on_your" = "Ce portefeuille est basé sur votre phrase de récupération et une passphrase BIP39.";
-"id_this_wallet_operates_on_a_test" = "Ce portefeuile fonctionne sur un réseau de test. Tout ce que vous recevez ou envoyez ici n'a aucune valeur.";
+"id_this_wallet_operates_on_a_test" = "This wallet operates on a test network. Anything you receive or send here has no value.";
 "id_this_will_disable_pin_login_for" = "Cela désactivera la connexion par code PIN pour ce portefeuille sur tous vos appareils. Vous aurez besoin de votre phrase de récupération pour accéder à votre portefeuille.";
 "id_this_will_log_you_out_and" = "Cela vous déconnectera et supprimera ce portefeuille de l'application et de la base de données des serveurs Blockstream.";
 "id_ticker" = "Ticker";
@@ -1824,7 +1826,8 @@
 "id_your_settings_are_unsavednndo" = "Your settings are unsaved.\n\nDo you want to continue?";
 "id_your_swap_proposal_is_generated" = "Votre proposition de swap a été générée";
 "id_your_transaction_failed_s" = "Your transaction failed: %@";
-"id_your_transaction_was" = "Your transaction was successfully sent";
+"id_your_transaction_is_awaiting" = "Your transaction is awaiting confirmation.";
+"id_your_transaction_was" = "Your transaction was successfully sent.";
 "id_your_transactions_will_be_shown" = "Vos transactions seront affichées ici.";
 "id_your_twofactor_threshold_is_s" = "Votre seuil Double-Facteur est de %@";
 "id_your_wallet_backup_is_made_of" = "La sauvegarde de votre portefeuille est composée de 24 mots, également connus sous le nom de votre mnémonique. Assurez-vous d'avoir une sauvegarde et gardez-la en sécurité. Quiconque la trouve peut vous voler votre argent. Vous pouvez l'utiliser pour restaurer votre portefeuille Blockstream Green sur un autre appareil au cas où le vôtre serait perdu, endommagé ou volé.";

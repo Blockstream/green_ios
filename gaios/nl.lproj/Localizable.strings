@@ -725,7 +725,7 @@
 "id_if_you_forget_it_or_lose_it" = "Als je het vergeet of verliest, gaat je geld ook verloren.";
 "id_if_you_forget_your_pin_you_will" = "If you forget your PIN, you will need to restore with your recovery phrase";
 "id_if_you_have_access_to_a" = "Als je toegang hebt tot een 2FA-methode voor je wallet, annuleer dan de reset om de wallet onmiddellijk te kunnen gebruiken, of wacht %d dagen.";
-"id_if_you_have_some_coins_on_the" = "Als je munten van het oude adrestype hebt en deze niet binnenkort gaat gebruiken, moet je mogelijk een e-mailadres instellen en je hersteltransacties ontvangen om er zeker van te zijn dat je altijd de controle behoudt over je geld.";
+"id_if_you_have_some_coins_on_the" = "If you have some coins on the legacy address type, and you won't spend them shortly, you might need to set up an email and receive your recovery transactions to be sure you are always in control of your funds.";
 "id_if_you_initiated_the_2fa_reset" = "Als je per ongeluk het 2FA-resetgeschil hebt gestart, kun je dit ongedaan maken en de wallet terugzetten naar de 2FA-resetstatus.";
 "id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Importeer een Multisig Shield-wallet die is gemaakt op Blockstream Green.";
@@ -816,7 +816,7 @@
 "id_later" = "LATER";
 "id_latest_transactions" = "Laatste transacties";
 "id_lbtc_has_no_issuer_and_is" = "LBTC heeft geen uitgever en wordt in plaats daarvan op het netwerk aangemaakt via een peg-in.";
-"id_learn_more" = "Kom meer te weten";
+"id_learn_more" = "Learn More";
 "id_learn_more_about_amp_the_assets" = "Meer informatie over AMP, de assets en je kwalificatie";
 "id_learn_more_about_s" = "Kom meer te weten over %@.";
 "id_learn_more_about_using_qr_mode" = "Learn more about using QR Mode with Jade";
@@ -879,6 +879,7 @@
 "id_log_out" = "Log Out";
 "id_logged_in_wallets" = "Aangemelde wallets";
 "id_logging_in" = "Aanmelden…";
+"id_logging_out" = "Logging out…";
 "id_login_failed" = "Aanmelden mislukt";
 "id_login_options" = "Aanmeldopties";
 "id_logout" = "Afmelden";
@@ -1019,6 +1020,7 @@
 "id_offline_written_backup" = "Offline, written backup";
 "id_ok" = "OK";
 "id_ok_i_understand" = "Ok, I understand";
+"id_okay" = "Okay";
 "id_old_fee" = "Old fee";
 "id_on_average" = "gemiddeld";
 "id_on_hardware_wallet" = "On Hardware Wallet";
@@ -1161,7 +1163,7 @@
 "id_recovery" = "Herstel";
 "id_recovery_and_notifications" = "Herstel en notificaties";
 "id_recovery_key_type" = "Type herstelsleutel";
-"id_recovery_method" = "Recovery method";
+"id_recovery_method" = "Recovery Method";
 "id_recovery_mnemonic" = "Herstelzin";
 "id_recovery_phrase" = "Herstelzin";
 "id_recovery_phrase_check" = "Herstelzin controleren";
@@ -1180,7 +1182,7 @@
 "id_redeposited" = "Opnieuw gestort";
 "id_redepositing" = "Redepositing";
 "id_reenable_2fa" = "Re-enable 2FA";
-"id_reference_exchange_rate" = "Standaard wisselkoers";
+"id_reference_exchange_rate" = "Reference Exchange Rate";
 "id_refresh" = "Vernieuwen";
 "id_refund" = "Refund";
 "id_refund_in_progress" = "Refund in progress";
@@ -1378,7 +1380,7 @@
 "id_show_all_assets" = "Toon alle assets";
 "id_show_bitcoin_amounts_in" = "Toon bitcoin-bedragen in";
 "id_show_coins_with_expiring" = "Toon munten met verlopende tweetrapsauthenticatie.";
-"id_show_details" = "Details tonen";
+"id_show_details" = "Show Details";
 "id_show_fiat" = "Fiat tonen";
 "id_show_lightning_invoice" = "Show Lightning Invoice";
 "id_show_my_wallet_backup" = "Toon mijn wallet-back-up";
@@ -1504,7 +1506,7 @@
 "id_the_recovery_phrase_doesnt" = "De herstelzin komt niet overeen met de voorheen gebruikte wallet. Probeer het opnieuw met een andere herstelzin.";
 "id_the_source_code_is_available_at" = "De broncode is beschikbaar op %@";
 "id_the_transaction_contains" = "De transactie bevat niet-vertrouwelijk geld.";
-"id_the_transaction_was" = "The transaction was successfully received";
+"id_the_transaction_was" = "The transaction was successfully received.";
 "id_the_username_cant_be_empty" = "De gebruikersnaam mag niet leeg zijn";
 "id_the_waiting_period_is_necessary" = "De wachttijd is nodig om de veiligheid van je wallet te waarborgen, om te voorkomen dat dieven je tweetrapsauthenticatie omzeilen.";
 "id_there_are_no_results_for_the" = "Er zijn geen resultaten voor de toegepaste filter";
@@ -1527,7 +1529,7 @@
 "id_this_signature_is_a_proof_of" = "This signature is a proof of ownership of the address";
 "id_this_transaction_spent" = "Bij deze transactie is niet-vertrouwelijk geld uitgegeven.";
 "id_this_wallet_is_based_on_your" = "Deze wallet is gebaseerd op je herstelzin en een BIP39-passphrase";
-"id_this_wallet_operates_on_a_test" = "Deze wallet is actief op een testnetwerk. Alles wat je hier ontvangt of verzendt heeft geen waarde";
+"id_this_wallet_operates_on_a_test" = "This wallet operates on a test network. Anything you receive or send here has no value.";
 "id_this_will_disable_pin_login_for" = "Hierdoor wordt het inloggen met PIN voor deze wallet op al je apparaten uitgeschakeld. Je hebt je herstelzin nodig om weer toegang te krijgen tot je wallet.";
 "id_this_will_log_you_out_and" = "Hierdoor log je uit en verwijder je deze wallet uit de app en de Blockstream-serverdatabase.";
 "id_ticker" = "Ticker";
@@ -1824,7 +1826,8 @@
 "id_your_settings_are_unsavednndo" = "Your settings are unsaved.\n\nDo you want to continue?";
 "id_your_swap_proposal_is_generated" = "Je ruilvoorstel is gegenereerd!";
 "id_your_transaction_failed_s" = "Your transaction failed: %@";
-"id_your_transaction_was" = "Your transaction was successfully sent";
+"id_your_transaction_is_awaiting" = "Your transaction is awaiting confirmation.";
+"id_your_transaction_was" = "Your transaction was successfully sent.";
 "id_your_transactions_will_be_shown" = "Je transacties verschijnen hier.";
 "id_your_twofactor_threshold_is_s" = "Je limiet voor tweetrapsauthenticatie is %@.";
 "id_your_wallet_backup_is_made_of" = "Je wallet-back-up bestaat uit 24 woorden, ofwel je herstelzin. Zorg voor een back-up en bewaar deze veilig. Iedereen die het vindt, kan je geld stelen. Je kunt het gebruiken om je Blockstream Green-wallet op een ander apparaat te herstellen voor het geval de jouwe verloren, beschadigd of gestolen is.";
