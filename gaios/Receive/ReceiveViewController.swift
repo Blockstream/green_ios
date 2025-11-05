@@ -165,6 +165,9 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func reloadNavigationBtns() {
+        let helpButton = UIButton(type: .system)
+        helpButton.setImage(UIImage(named: "ic_help"), for: .normal)
+        helpButton.addTarget(self, action: #selector(helpButtonTapped), for: .touchUpInside)
         if viewModel.account.networkType.lightning {
             let btnNote = UIButton(type: .system)
             btnNote.setStyle(.inline)
@@ -175,10 +178,12 @@ class ReceiveViewController: KeyboardViewController {
             let optBtn = UIButton(type: .system)
             optBtn.setImage(UIImage(named: "ic_dots_three"), for: .normal)
             optBtn.addTarget(self, action: #selector(optBtnTap), for: .touchUpInside)
-            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: optBtn)
+            navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: optBtn), UIBarButtonItem(customView: helpButton)]
         }
     }
-
+    @objc func helpButtonTapped(_ sender: Any) {
+        SafeNavigationManager.shared.navigate(ExternalUrls.receiveHelp)
+    }
     func invoicePaid(_ notification: Notification? = nil) {
         Task {
             if let invoice = notification?.object as? InvoicePaidDetails {

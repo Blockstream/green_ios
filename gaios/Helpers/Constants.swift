@@ -51,6 +51,7 @@ enum ExternalUrls {
     static let buyJadePlus = URL(string: "https://store.blockstream.com/products/jade-plus")!
     static let buyBTCMeldRedirectScheme = "blockstream://redirect/transactions"
     static let learnMoreWatchonly = "https://blkstrm.com/watchonly"
+    static let receiveHelp = "https://help.blockstream.com/hc/en-us/articles/46683253935513-Receive-bitcoin"
 }
 
 enum RiveModel {
