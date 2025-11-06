@@ -103,9 +103,9 @@ class DialogCompareSecurityViewController: UIViewController {
         case .mobile:
             lblHint1.text = "id_mobile".localized
             lblHint2.text = "id_security_level_1".localized
-            icInfo1.image = UIImage(named: "ic_sec_lev_coins")
-            icInfo2.image = UIImage(named: "ic_sec_lev_light")
-            icInfo3.image = UIImage(named: "ic_sec_lev_key")
+            icInfo1.image = UIImage(named: "ic_sec_lev_coins")?.maskWithColor(color: .lightGray)
+            icInfo2.image = UIImage(named: "ic_sec_lev_light")?.maskWithColor(color: .lightGray)
+            icInfo3.image = UIImage(named: "ic_sec_lev_key")?.maskWithColor(color: .lightGray)
             lblInfo1.text = "id_ideal_for_small_amounts_of".localized
             lblInfo2.text = "id_convenient_spending".localized
             lblInfo3.text = "id_keys_stored_on_mobile_device".localized
@@ -119,9 +119,9 @@ class DialogCompareSecurityViewController: UIViewController {
         case .hardware:
             lblHint1.text = "id_hardware".localized
             lblHint2.text = "id_security_level_2".localized
-            icInfo1.image = UIImage(named: "ic_sec_lev_lock")
-            icInfo2.image = UIImage(named: "ic_sec_lev_shield")
-            icInfo3.image = UIImage(named: "ic_sec_lev_key")
+            icInfo1.image = UIImage(named: "ic_sec_lev_lock")?.maskWithColor(color: .lightGray)
+            icInfo2.image = UIImage(named: "ic_sec_lev_shield")?.maskWithColor(color: .lightGray)
+            icInfo3.image = UIImage(named: "ic_sec_lev_key")?.maskWithColor(color: .lightGray)
             lblInfo1.text = "id_ideal_for_longterm_bitcoin".localized
             lblInfo2.text = "id_mitigates_common_attacks_risks".localized
             lblInfo3.text = "id_keys_stored_on_specialized".localized
