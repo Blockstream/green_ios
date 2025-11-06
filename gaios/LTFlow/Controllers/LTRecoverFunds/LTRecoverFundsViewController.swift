@@ -272,8 +272,8 @@ extension LTRecoverFundsViewController: UITableViewDelegate, UITableViewDataSour
             }
         case .amount:
             if let cell = tableView.dequeueReusableCell(withIdentifier: LTRecoverFundsAmountCell.identifier) as? LTRecoverFundsAmountCell {
-                viewModel.amount = viewModel.type == .sendAll ? viewModel.maxReverseSwapAmount ?? 0 : viewModel.amount ?? 0
-                cell.configure(amount: viewModel.amountText, isEditing: viewModel.type != .sendAll)
+                viewModel.amount = (viewModel.type == .sendAll || viewModel.type == .sweep) ? viewModel.maxReverseSwapAmount ?? 0 : viewModel.amount ?? 0
+                cell.configure(amount: viewModel.amountText, isEditing: viewModel.type != .sendAll && viewModel.type != .sweep)
                 cell.selectionStyle = .none
                 return cell
             }
