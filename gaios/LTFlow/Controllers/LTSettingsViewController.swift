@@ -23,6 +23,7 @@ class LTSettingsViewController: UIViewController {
     @IBOutlet weak var btnDisable: UIButton!
     @IBOutlet weak var btnSwaps: UIButton!
     @IBOutlet weak var btnSweep: UIButton!
+    @IBOutlet weak var btnDiagnostic: UIButton!
 
     var viewModel: LTSettingsViewModel!
     private var nodeCellTypes: [LTSettingsCellType] { viewModel.cellTypes }
@@ -56,12 +57,13 @@ class LTSettingsViewController: UIViewController {
         btnSweep.setTitle("id_sweep".localized, for: .normal)
         btnSweep.isHidden = viewModel.onchainBalanceSatoshi ?? 0 == 0
         btnEmpty.isHidden = viewModel.channelsBalance ?? 0 == 0
+        btnDiagnostic.setTitle("Generate diagnostic data", for: .normal)
     }
 
     func setStyle() {
         lblTitle.setStyle(.title)
         lblSubtitle.setStyle(.txtBigger)
-        [btnEmpty, btnMnemonic, btnDisable, btnSwaps, btnSweep].forEach({ $0.setStyle(.outlined) })
+        [btnEmpty, btnMnemonic, btnDisable, btnSwaps, btnSweep, btnDiagnostic].forEach({ $0.setStyle(.outlined) })
     }
 
     func register() {
@@ -103,6 +105,20 @@ class LTSettingsViewController: UIViewController {
     @IBAction func btnDisable(_ sender: Any) {
         Task { [weak self] in
             await self?.disableLightning()
+        }
+    }
+
+    @IBAction func btnDiagnostic(_ sender: Any) {
+        startLoader(message: "id_loading".localized)
+        Task { [weak self] in
+            do {
+                let msg = await self?.viewModel?.lightningSession.diagnosticData()
+                if let msg {
+                    UIPasteboard.general.string = msg
+                    DropAlert().info(message: "id_copied_to_clipboard".localized)
+                }
+                self?.stopLoader()
+            }
         }
     }
 

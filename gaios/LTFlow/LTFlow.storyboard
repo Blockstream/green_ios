@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -909,7 +909,7 @@
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="3" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cUo-n0-jeh">
-                                                                    <rect key="frame" x="18" y="58" width="338" height="21"/>
+                                                                    <rect key="frame" x="20" y="58" width="334" height="20"/>
                                                                     <color key="minimumTrackTintColor" name="customMatrixGreen"/>
                                                                     <connections>
                                                                         <action selector="didValueChange:" destination="HFr-dq-OZd" eventType="valueChanged" id="CPZ-rD-ghc"/>
@@ -1965,7 +1965,7 @@ EE5leHQ
                                                                         <rect key="frame" x="0.0" y="0.0" width="414" height="633"/>
                                                                         <subviews>
                                                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="u61-ae-hrx">
-                                                                                <rect key="frame" x="25" y="0.0" width="364" height="335"/>
+                                                                                <rect key="frame" x="25" y="0.0" width="364" height="275"/>
                                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <connections>
                                                                                     <outlet property="dataSource" destination="YWw-FO-FVV" id="hWZ-t6-OJz"/>
@@ -1973,7 +1973,7 @@ EE5leHQ
                                                                                 </connections>
                                                                             </tableView>
                                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="QI2-nz-UoN">
-                                                                                <rect key="frame" x="0.0" y="343" width="414" height="290"/>
+                                                                                <rect key="frame" x="0.0" y="283" width="414" height="350"/>
                                                                                 <subviews>
                                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Ql-rN-v6g" userLabel="Next">
                                                                                         <rect key="frame" x="25" y="0.0" width="364" height="50"/>
@@ -2031,8 +2031,22 @@ EE5leHQ
                                                                                             <action selector="btnSweep:" destination="YWw-FO-FVV" eventType="touchUpInside" id="R7N-c9-O7C"/>
                                                                                         </connections>
                                                                                     </button>
-                                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MpL-2B-jZL" userLabel="Next">
+                                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EE9-z1-F17" userLabel="Next">
                                                                                         <rect key="frame" x="25" y="240" width="364" height="50"/>
+                                                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                        <constraints>
+                                                                                            <constraint firstAttribute="height" constant="50" id="gWp-8y-HgV"/>
+                                                                                        </constraints>
+                                                                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                                                                        <state key="normal" title="btn_diagnostic">
+                                                                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                        </state>
+                                                                                        <connections>
+                                                                                            <action selector="btnDiagnostic:" destination="YWw-FO-FVV" eventType="touchUpInside" id="4PF-Ct-xWS"/>
+                                                                                        </connections>
+                                                                                    </button>
+                                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MpL-2B-jZL" userLabel="Next">
+                                                                                        <rect key="frame" x="25" y="300" width="364" height="50"/>
                                                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                         <constraints>
                                                                                             <constraint firstAttribute="height" constant="50" id="b1S-qh-gqq"/>
@@ -2052,10 +2066,12 @@ EE5leHQ
                                                                                     <constraint firstAttribute="trailing" secondItem="TOE-Q2-8fb" secondAttribute="trailing" constant="25" id="B4E-DK-yAQ"/>
                                                                                     <constraint firstAttribute="trailing" secondItem="7Ql-rN-v6g" secondAttribute="trailing" constant="25" id="BJI-aH-qBF"/>
                                                                                     <constraint firstAttribute="trailing" secondItem="9LF-3X-JSh" secondAttribute="trailing" constant="25" id="QgR-1f-ZwV"/>
+                                                                                    <constraint firstAttribute="trailing" secondItem="EE9-z1-F17" secondAttribute="trailing" constant="25" id="RdR-zJ-5sR"/>
                                                                                     <constraint firstItem="TOE-Q2-8fb" firstAttribute="leading" secondItem="QI2-nz-UoN" secondAttribute="leading" constant="25" id="YKm-td-xWB"/>
                                                                                     <constraint firstItem="9LF-3X-JSh" firstAttribute="leading" secondItem="QI2-nz-UoN" secondAttribute="leading" constant="25" id="aVM-Zu-Dt3"/>
                                                                                     <constraint firstItem="MpL-2B-jZL" firstAttribute="leading" secondItem="QI2-nz-UoN" secondAttribute="leading" constant="25" id="c9y-Vc-uKl"/>
                                                                                     <constraint firstItem="Llq-U6-PSf" firstAttribute="leading" secondItem="QI2-nz-UoN" secondAttribute="leading" constant="25" id="cNp-HZ-PZr"/>
+                                                                                    <constraint firstItem="EE9-z1-F17" firstAttribute="leading" secondItem="QI2-nz-UoN" secondAttribute="leading" constant="25" id="krX-Bd-PNW"/>
                                                                                     <constraint firstAttribute="trailing" secondItem="MpL-2B-jZL" secondAttribute="trailing" constant="25" id="tu3-MH-e83"/>
                                                                                 </constraints>
                                                                             </stackView>
@@ -2145,6 +2161,7 @@ EE5leHQ
                     </view>
                     <connections>
                         <outlet property="anchorBottom" destination="r9K-Hk-onG" id="4ti-dW-6kl"/>
+                        <outlet property="btnDiagnostic" destination="EE9-z1-F17" id="Ykb-bX-xJw"/>
                         <outlet property="btnDisable" destination="MpL-2B-jZL" id="YIX-2U-IjG"/>
                         <outlet property="btnEmpty" destination="Llq-U6-PSf" id="nq6-IT-BHz"/>
                         <outlet property="btnMnemonic" destination="7Ql-rN-v6g" id="XAq-gL-3Ip"/>
@@ -2246,7 +2263,7 @@ EE5leHQ
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTextFieldBg">
-            <color red="0.59200000762939453" green="0.59200000762939453" blue="0.59200000762939453" alpha="0.14200000464916229" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.58823529411764708" green="0.58823529411764708" blue="0.58823529411764708" alpha="0.14200000464916229" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.070588235294117646" green="0.086274509803921567" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

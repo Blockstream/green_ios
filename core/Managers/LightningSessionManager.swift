@@ -354,6 +354,10 @@ public class LightningSessionManager: SessionManager {
     public func closeChannels() throws {
         try lightBridge?.closeLspChannels()
     }
+
+    public func diagnosticData() async -> String? {
+        return try? self.lightBridge?.breezSdk?.generateDiagnosticData()
+    }
 }
 
 extension LightningSessionManager: EventListener {

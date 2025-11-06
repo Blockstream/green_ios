@@ -119,7 +119,9 @@ struct LTSettingsViewModel {
     var blockHeight: UInt32? {
         return lightningSession.nodeState?.blockHeight
     }
-
+    func diagnosticData() async -> String? {
+        await lightningSession.diagnosticData()
+    }
     init(lightningSession: LightningSessionManager, hideActions: Bool) {
         self.lightningSession = lightningSession
         self.hideActions = hideActions
