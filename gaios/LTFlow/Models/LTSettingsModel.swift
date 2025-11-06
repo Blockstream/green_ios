@@ -6,9 +6,6 @@ enum LTSettingsCellType: CaseIterable {
     case id
     case channelsBalance
     case inboundLiquidity
-    case maxPayble
-    case maxSinglePaymentAmount
-    case maxReceivable
     case onchainBalanceSatoshi
     case blockHeight
 }
@@ -40,24 +37,6 @@ struct LTSettingsViewModel {
                 title: "id_inbound_liquidity".localized,
                 subtitle: nil,
                 value: inboundLiquidity,
-                hiddenIcon: true)
-        case .maxPayble:
-            return LTSettingCellModel(
-                title: "id_max_payable_amount".localized,
-                subtitle: nil,
-                value: maxPayble,
-                hiddenIcon: true)
-        case .maxSinglePaymentAmount:
-            return LTSettingCellModel(
-                title: "id_max_payment_amount".localized,
-                subtitle: "Single",
-                value: maxSinglePaymentAmount,
-                hiddenIcon: true)
-        case .maxReceivable:
-            return LTSettingCellModel(
-                title: "id_max_receivable_amount".localized,
-                subtitle: nil,
-                value: maxReceivable,
                 hiddenIcon: true)
         case .onchainBalanceSatoshi:
             return LTSettingCellModel(

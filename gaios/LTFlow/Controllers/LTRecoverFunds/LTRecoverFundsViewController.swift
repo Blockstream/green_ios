@@ -208,8 +208,8 @@ class LTRecoverFundsViewController: KeyboardViewController {
                 vc.viewModel = AlertViewModel(title: "id_refund".localized,
                                               hint: "id_refund_in_progress".localized)
             case .sweep:
-                vc.viewModel = AlertViewModel(title: "id_sweep".localized,
-                                              hint: "id_transaction_sent".localized)
+                vc.viewModel = AlertViewModel(title: "Node Onchain Balance".localized,
+                                              hint: "id_your_transaction_was".localized)
             case .sendAll:
                 vc.viewModel = AlertViewModel(title: "id_empty_lightning_account".localized,
                                               hint: "id_transaction_sent".localized)

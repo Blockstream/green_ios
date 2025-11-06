@@ -54,7 +54,7 @@ class LTSettingsViewController: UIViewController {
         btnEmpty.setTitle("id_empty_lightning_account".localized, for: .normal)
         btnDisable.setTitle("id_disable_lightning".localized, for: .normal)
         btnSwaps.setTitle("id_rescan_swaps".localized, for: .normal)
-        btnSweep.setTitle("id_sweep".localized, for: .normal)
+        btnSweep.setTitle("Transfer Node Onchain Balance".localized, for: .normal)
         btnSweep.isHidden = viewModel.onchainBalanceSatoshi ?? 0 == 0
         btnEmpty.isHidden = viewModel.channelsBalance ?? 0 == 0
         btnDiagnostic.setTitle("Generate diagnostic data", for: .normal)
