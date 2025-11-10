@@ -18,7 +18,7 @@ public class JadeCommands {
     public static let PIN_SERVER_ONION = "http://mrrxtq6tjpbnbm7vh5jt6mpjctn7ggyfy5wegvbeff3x7jrznqawlmid.onion"
     public static let PIN_SERVERv2_HTTPS = "https://j8d.io"
 
-    public static let MIN_ALLOWED_FW_VERSION = "0.1.44"
+    public static let MIN_ALLOWED_FW_VERSION = "1.0.37"
     public static let FEATURE_SECURE_BOOT = "SB"
 
     public let blockstreamUrls = [
