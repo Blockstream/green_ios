@@ -4,13 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
- 
-### Added
-- Added create account functionality in settings tab
 
+## [5.1.2] - 2025-11-12
+ 
 ### Changed
-- Wallet Security Tab: changed illustrations
 - Improved backup flow instructions
+- Update security icons and copy
+- Disable receive onchain for lightning node
+- Improve error messages for lightning in receive
+- Allow copy of lightning node diagnostic data in node info view
+
+### Fixed
+- Fix layout for send textfield when multiline input is pasted
+- Fix firmware update dialog layout
+- Fix sweep for lightning node onchain funds
+- Transaction status label in tx details for unconfirmed transactions
+- Removed invalid unicode characters from korean translations
 
 ## [5.1.1] - 2025-10-15
 
