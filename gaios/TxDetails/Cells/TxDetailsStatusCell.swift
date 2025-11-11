@@ -44,56 +44,66 @@ class TxDetailsStatusCell: UITableViewCell {
         lblStateDate.text = model.transaction.date(dateStyle: .long, timeStyle: .short)
         lblStateDate.isHidden = model.transaction.createdAtTs == 0
 
-        lblStateInfo.text = model.txStatusExtended
-
-        var step: Int = 0
-        var steps: Int = 0
-        steps = model.transaction.isLiquid ? 2 : 6
         let isLightning = model.transaction.subaccount?.gdkNetwork.lightning ?? false
+        // Handle Lightning transactions first
+        if isLightning {
+            let hasClosingTxId = !(model.transaction.closingTxid?.isEmpty ?? true)
+            let isRefundableSwap = model.transaction.isRefundableSwap ?? false
+            if isRefundableSwap {
+                lblStateTitle.text = "id_transaction_failed".localized
+                lblStateInfo.text = String(format: "id_your_transaction_failed_s".localized, "")
+                lblStateStatus.text = "id_failed".localized
+                applyColor(UIColor.gRedTx())
+                stateIcon.image = UIImage(named: "ic_tx_failed")!
+                return
+            }
+            applyColor(UIColor.gAccent())
+            lblStateTitle.text = "id_transaction_completed".localized
+            lblStateStatus.text = hasClosingTxId ? "id_close_channel".localized : model.txStatus
+            lblStateInfo.text = model.txStatusExtended
+            stateIcon.image = UIImage(named: "ic_tx_confirmed")!
+            return
+        }
 
-        if model.transaction.isRefundableSwap ?? false {
-            lblStateTitle.text = "id_transaction_failed".localized
-            lblStateInfo.text = String(format: "id_your_transaction_failed_s".localized, "")
-            lblStateStatus.text = "id_failed".localized
-            applyColor(UIColor.gRedTx())
-            stateIcon.image = UIImage(named: "ic_tx_failed")!
-        } else if model.transaction.isUnconfirmed(block: model.blockHeight) {
-//            lblStateTitle.text = String(format: "id_transaction_unconfirmed_ss".localized, "0", model.transaction.isLiquid ? "2": "6")
+        // Handle onchain transactions
+        let confirmations = calculateConfirmations(model)
+        let requiredConfirmations = getRequiredConfirmations(model)
+
+        switch confirmations {
+        case 0:
+            // Unconfirmed
             lblStateTitle.text = "id_unconfirmed".localized
             lblStateStatus.text = model.txUnconfirmedStatus
             lblStateInfo.text = "id_your_transaction_is_awaiting".localized
             applyColor(UIColor.gOrangeTx())
             setPendingIcon()
-        } else if !isLightning && model.transaction.isLiquid && model.blockHeight < model.transaction.blockHeight + 1 {
-            step = Int(model.blockHeight) - Int(model.transaction.blockHeight) + 1
-            if step == 1 {
-                lblStateTitle.text = String(format: "id_transaction_confirmed_ss".localized, "\(step)", "\(steps)")
-                lblStateStatus.text = model.txStatus
-                applyColor(UIColor.gAccent())
-                stateIcon.image = UIImage(named: "ic_tx_confirmed")!
-            } else {
-                lblStateTitle.text = String(format: "id_transaction_unconfirmed_ss".localized, "\(step)", "\(steps)")
-                lblStateStatus.text = model.txStatus
-                applyColor(UIColor.gOrangeTx())
-                setPendingIcon()
-            }
-        } else if !isLightning && !model.transaction.isLiquid && model.blockHeight < model.transaction.blockHeight + 5 {
-            if model.blockHeight >= model.transaction.blockHeight {
-                step = Int(model.blockHeight) - Int(model.transaction.blockHeight) + 1
-                lblStateTitle.text = String(format: "id_transaction_confirmed_ss".localized, "\(step)", "\(steps)")
-                lblStateStatus.text = model.txStatus
-                applyColor(UIColor.gAccent())
-                stateIcon.image = UIImage(named: "ic_tx_confirmed")!
-            }
-        } else {
+        case 1..<requiredConfirmations:
+            // Confirmed
+            lblStateTitle.text = String(format: "id_transaction_confirmed_ss".localized, "\(confirmations)", "\(requiredConfirmations)")
+            lblStateStatus.text = model.txStatus
+            lblStateInfo.text = model.txStatusExtended
+            applyColor(UIColor.gAccent())
+            stateIcon.image = UIImage(named: "ic_tx_confirmed")!
+        default:
+            // Completed
             applyColor(UIColor.gAccent())
             lblStateTitle.text = "id_transaction_completed".localized
             lblStateStatus.text = model.txStatus
-            if isLightning && !(model.transaction.closingTxid?.isEmpty ?? true) {
-                lblStateStatus.text = "id_close_channel".localized
-            }
+            lblStateInfo.text = model.txStatusExtended
             stateIcon.image = UIImage(named: "ic_tx_confirmed")!
         }
+    }
+
+    private func calculateConfirmations(_ model: TxDetailsStatusCellModel) -> Int {
+        guard model.transaction.blockHeight > 0 else { return 0 }
+        return max(0, Int(model.blockHeight) - Int(model.transaction.blockHeight) + 1)
+    }
+
+    private func getRequiredConfirmations(_ model: TxDetailsStatusCellModel) -> Int {
+        if model.transaction.subaccount?.gdkNetwork.lightning ?? false {
+            return 1 // Lightning transactions complete after 1 confirmation
+        }
+        return model.transaction.isLiquid ? 2 : 6
     }
 
     func setStyle() {
