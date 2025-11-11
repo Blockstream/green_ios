@@ -9,7 +9,12 @@ struct FeeEstimator {
     let session: SessionManager
 
     var defaultMinFee: UInt64 { session.gdkNetwork.liquid ? 100 : 1000 }
-    var feeEstimates = [UInt64](repeating: 100, count: 25)
+    var feeEstimates: [UInt64]
+
+    init(session: SessionManager) {
+        self.session = session
+        self.feeEstimates = Array(repeating: UInt64(session.gdkNetwork.liquid ? 100 : 1000), count: 25)
+    }
     var minFeeEstimate: UInt64? { feeEstimates.first }
     // var transactionPriority: TransactionPriority = .Medium
 
