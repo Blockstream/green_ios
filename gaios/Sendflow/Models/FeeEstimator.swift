@@ -8,12 +8,13 @@ import lightning
 struct FeeEstimator {
     let session: SessionManager
 
-    var defaultMinFee: UInt64 { session.gdkNetwork.liquid ? 100 : 1000 }
+    var defaultMinFee: UInt64
     var feeEstimates: [UInt64]
 
     init(session: SessionManager) {
         self.session = session
-        self.feeEstimates = Array(repeating: UInt64(session.gdkNetwork.liquid ? 100 : 1000), count: 25)
+        self.defaultMinFee = session.gdkNetwork.liquid ? 100 : 1000
+        self.feeEstimates = Array(repeating: defaultMinFee, count: 25)
     }
     var minFeeEstimate: UInt64? { feeEstimates.first }
     // var transactionPriority: TransactionPriority = .Medium
