@@ -25,6 +25,7 @@ class RecoveryVerifyViewController: UIViewController {
     var questionCounter: Int = 0
     var questionPosition: Int = 0
     var numberOfSteps: Int = 4
+    weak var subAccountCreateDelegate: AccountCreateRecoveryKeyDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -105,6 +106,11 @@ class RecoveryVerifyViewController: UIViewController {
     }
 
     func next() {
+        if (subAccountCreateDelegate != nil) {
+            let mnemonic = mnemonic.joined(separator: " ")
+            subAccountCreateDelegate?.didNewRecoveryPhrase(mnemonic)
+            return
+        }
         guard let account = AccountsRepository.shared.current else {
             return
         }

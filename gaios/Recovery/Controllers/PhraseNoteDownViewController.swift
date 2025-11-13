@@ -4,7 +4,7 @@ import gdk
 import core
 import greenaddress
 import ScreenShield
-class RecoveryCreateViewController: UIViewController {
+class PhraseNoteDownViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
@@ -24,11 +24,10 @@ class RecoveryCreateViewController: UIViewController {
     private var mnemonicSize: Int = 0
     private var mnemonic: [Substring]?
 
-    var wm: WalletManager? { WalletManager.current }
-    var session: SessionManager? { wm?.prominentSession }
-
     private var pageCounter = 0
-
+    var viewModel: PhraseNoteDownViewModel!
+    weak var subAccountCreateDelegate: AccountCreateRecoveryKeyDelegate?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -36,13 +35,11 @@ class RecoveryCreateViewController: UIViewController {
         setContent()
         setStyle()
 
-        Task {
-            let credentials = try? await wm?.prominentSession?.getCredentials(password: "")
-            mnemonic = credentials?.mnemonic?.split(separator: " ")
-            mnemonicSize = (mnemonic ?? []).count
-            loadWords()
-            pageControl.numberOfPages = mnemonicSize / Constants.wordsPerPage
-        }
+        mnemonic = viewModel.phrase.split(separator: " ")
+        mnemonicSize = (mnemonic ?? []).count
+        loadWords()
+        pageControl.numberOfPages = mnemonicSize / Constants.wordsPerPage
+
         addObserverUserDidTakeScreenshot()
     }
     override func viewDidAppear(_ animated: Bool) {
@@ -60,7 +57,7 @@ class RecoveryCreateViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "chevron.backward"), for: .normal)
         button.setTitle("id_back".localized, for: .normal)
-        button.addTarget(self, action: #selector(RecoveryCreateViewController.back(sender:)), for: .touchUpInside)
+        button.addTarget(self, action: #selector(PhraseNoteDownViewController.back(sender:)), for: .touchUpInside)
         button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: -5)
         button.sizeToFit()
         view.addSubview(button)
@@ -126,6 +123,7 @@ class RecoveryCreateViewController: UIViewController {
             let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryVerifyViewController") as? RecoveryVerifyViewController {
                 vc.mnemonic = mnemonic
+                vc.subAccountCreateDelegate = subAccountCreateDelegate
                 navigationController?.pushViewController(vc, animated: true)
             }
         } else {

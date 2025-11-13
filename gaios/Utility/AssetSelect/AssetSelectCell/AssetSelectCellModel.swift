@@ -19,19 +19,6 @@ class AssetSelectCellModel {
     init(anyLiquid: Bool) {
         self.anyLiquid = anyLiquid
     }
-    init(section: AssetExpandableSection) {
-        switch section {
-        case .anyLiquid:
-            anyLiquid = true
-        case .anyAmp:
-            anyAmp = true
-        case .asset(let assetId):
-            asset = WalletManager.current?.info(for: assetId)
-            icon = WalletManager.current?.image(for: assetId)
-        case .none:
-            break
-        }
-    }
     func isLBTC() -> Bool {
         return asset?.assetId == AssetInfo.lbtcId
     }

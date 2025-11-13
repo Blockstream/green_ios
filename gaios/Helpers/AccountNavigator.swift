@@ -7,6 +7,7 @@ import core
 enum BackupFlowType {
     case phrase
     case quiz
+    case addSubaccount
 }
 class AccountNavigator {
 
@@ -76,8 +77,15 @@ class AccountNavigator {
         instantiateViewController(storyboard: "OnBoard", identifier: "SetupNewViewController")
     }
     @MainActor
-    static func recover() -> RecoveryCreateViewController? {
-        instantiateViewController(storyboard: "Recovery", identifier: "RecoveryCreateViewController")
+    static func phraseNoteDown(phrase: String,
+                               subAccountCreateDelegate: AccountCreateRecoveryKeyDelegate? = nil) -> PhraseNoteDownViewController? {
+        let model = PhraseNoteDownViewModel(phrase)
+        if let vc: PhraseNoteDownViewController = instantiateViewController(storyboard: "Recovery", identifier: "PhraseNoteDownViewController") {
+            vc.viewModel = model
+            vc.subAccountCreateDelegate = subAccountCreateDelegate
+            return vc
+        }
+        return nil
     }
     @MainActor
     static func mnemonic() -> ShowMnemonicsViewController? {
@@ -86,7 +94,7 @@ class AccountNavigator {
     @MainActor
     static func backupIntro(_ type: BackupFlowType) -> ManualBackupViewController? {
         if let vc: ManualBackupViewController = instantiateViewController(storyboard: "WalletTab", identifier: "ManualBackupViewController") {
-            vc.backupFlowType = type
+            vc.viewModel = ManualBackupViewModel(type)
             return vc
         }
         return nil

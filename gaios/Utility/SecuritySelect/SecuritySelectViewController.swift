@@ -9,7 +9,8 @@ enum SecuritySelectSection: Int, CaseIterable {
 }
 
 protocol SecuritySelectViewControllerDelegate: AnyObject {
-    func didCreatedWallet(_ wallet: WalletItem)
+    func didCreateWallet()
+    func didUnarchiveWallet()
 }
 
 class SecuritySelectViewController: UIViewController {
@@ -29,8 +30,6 @@ class SecuritySelectViewController: UIViewController {
     weak var delegate: SecuritySelectViewControllerDelegate?
     var visibilityState: Bool = false
     var dialogJadeCheckViewController: DialogJadeCheckViewController?
-    var walletCreated: WalletItem?
-    var credentialsCreated: Credentials?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +46,7 @@ class SecuritySelectViewController: UIViewController {
         AnalyticsManager.shared.recordView(.addAccountChooseType, sgmt: AnalyticsManager.shared.sessSgmt(account))
     }
 
-    func unarchiveCreateDialog(completion: @escaping (Bool) -> ()) {
+    func unarchiveCreateDialog(completion: @escaping (Bool) -> Void) {
         let alert = UIAlertController(title: "id_archived_account".localized,
                                           message: "id_there_is_already_an_archived".localized,
                                           preferredStyle: .alert)
@@ -217,36 +216,16 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                     }
                 }
             } else {
-                accountCreate(policy)
+                let isLiquid = viewModel.anyLiquidAsset || viewModel.anyLiquidAmpAsset || viewModel.asset != "btc"
+                let params = CreateSubaccountParams(
+                    name: viewModel.uniqueName(policy.accountType, liquid: isLiquid),
+                    type: policy.accountType,
+                    recoveryMnemonic: nil,
+                    recoveryXpub: nil)
+                Task { await createSubaccount(policy: policy, params: params) }
             }
         default:
             break
-        }
-    }
-
-    func accountCreate(_ policy: PolicyCellType) {
-        // Derive key from jade for lightning wallet
-        if AccountsRepository.shared.current?.isJade ?? false && policy == .Lightning {
-            if WalletManager.current?.lightningSession?.logged ?? false {
-                self.showError("id_you_already_have_a_lightning".localized)
-                return
-            }
-            ltExportJadeViewController()
-            return
-        }
-        // For not jade wallet
-        startLoader(message: String(format: "id_creating_your_s_account".localized, policy.accountType.shortString))
-        Task {
-            do {
-                let wallet = try await viewModel.create(policy: policy, params: nil)
-                self.stopLoader()
-                if let wallet = wallet {
-                    self.didCreatedWallet(wallet)
-                }
-            } catch {
-                self.stopLoader()
-                self.showError(error)
-            }
         }
     }
 
@@ -261,51 +240,39 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     @MainActor
-    func ltExportJadeViewController() {
-        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "LTExportJadeViewController") as? LTExportJadeViewController {
-            vc.delegate = self
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
-    @MainActor
     func hideHWCheckDialog() {
         dialogJadeCheckViewController?.dismiss()
     }
 
-    func createSubaccount(policy: PolicyCellType, params: CreateSubaccountParams?) {
+    @MainActor
+    func createSubaccount(policy: PolicyCellType, params: CreateSubaccountParams) async {
         let isHW = AccountsRepository.shared.current?.isHW ?? false
         if isHW {
             showHWCheckDialog()
         } else {
             startLoader(message: String(format: "id_creating_your_s_account".localized, policy.accountType.shortString))
         }
-        Task {
-            do {
-                let wallet = try await viewModel.create(policy: policy, params: params)
-                await MainActor.run {
-                    self.stopLoader()
-                    DropAlert().success(message: "id_new_account_created".localized)
-                    navigationController?.popToRootViewController(animated: true)
-                    if let wallet = wallet {
-                        delegate?.didCreatedWallet(wallet)
-                    }
-                }
-            } catch {
-                self.showError(error)
-            }
+        let task = Task { try await viewModel.create(policy: policy, params: params) }
+        switch await task.result {
+        case .success(let action):
             self.stopLoader()
             if isHW {
-                hideHWCheckDialog()
+                self.hideHWCheckDialog()
             }
+            switch action {
+            case .created:
+                self.didCreateWallet()
+            case .unarchived:
+                self.didUnarchiveWallet()
+            }
+            navigationController?.popToRootViewController(animated: true)
+        case .failure(let error):
+            self.stopLoader()
+            if isHW {
+                self.hideHWCheckDialog()
+            }
+            self.showError(error)
         }
-    }
-}
-
-extension SecuritySelectViewController: LTExportJadeViewControllerDelegate {
-    func didExportedWallet() {
-        //didCreatedWallet(wallet, credentials: credentials)
     }
 }
 
@@ -367,38 +334,14 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
     }
 
     @MainActor
-    func didCreatedWallet(_ wallet: WalletItem, credentials: Credentials? = nil) {
-        walletCreated = wallet
-        credentialsCreated = credentials
-
-        // for not lightning subaccount creation: exit
-        if !wallet.isLightning {
-            DropAlert().success(message: "id_new_account_created".localized)
-            self.navigationController?.popViewController(animated: true)
-            self.delegate?.didCreatedWallet(wallet)
-            return
-        }
-
-        // only for lightning subaccount creation: add lightning shortcut
-        let account = AccountsRepository.shared.current
-        if let account = account, !account.isEphemeral && !(account.hidden ?? false) {
-            Task {
-                startLoader(message: "")
-                do {
-                    if let credentials = credentialsCreated {
-                        try await viewModel.addHWShortcutLightning(credentials)
-                    } else {
-                        try await viewModel.addSWShortcutLightning()
-                    }
-                    self.stopLoader()
-                    self.navigationController?.popViewController(animated: true)
-                    self.delegate?.didCreatedWallet(wallet)
-                } catch {
-                    self.stopLoader()
-                    self.showError(error)
-                }
-            }
-        }
+    func didCreateWallet() {
+        DropAlert().success(message: "id_new_account_created".localized)
+        delegate?.didCreateWallet()
+    }
+    @MainActor
+    func didUnarchiveWallet() {
+        DropAlert().success(message: "Account unarchived".localized)
+        delegate?.didUnarchiveWallet()
     }
 }
 
@@ -410,7 +353,7 @@ extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
                                             type: .twoOfThree,
                                             recoveryMnemonic: nil,
                                             recoveryXpub: key)
-        createSubaccount(policy: .TwoOfThreeWith2FA, params: params)
+        Task { await createSubaccount(policy: .TwoOfThreeWith2FA, params: params) }
     }
 
     func didNewRecoveryPhrase(_ mnemonic: String) {
@@ -420,7 +363,7 @@ extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
                                             type: .twoOfThree,
                                             recoveryMnemonic: mnemonic,
                                             recoveryXpub: nil)
-        createSubaccount(policy: .TwoOfThreeWith2FA, params: params)
+        Task { await createSubaccount(policy: .TwoOfThreeWith2FA, params: params) }
     }
 
     func didExistingRecoveryPhrase(_ mnemonic: String) {
@@ -430,6 +373,6 @@ extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
                                             type: .twoOfThree,
                                             recoveryMnemonic: mnemonic,
                                             recoveryXpub: nil)
-        createSubaccount(policy: .TwoOfThreeWith2FA, params: params)
+        Task { await createSubaccount(policy: .TwoOfThreeWith2FA, params: params) }
     }
 }

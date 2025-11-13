@@ -46,6 +46,7 @@ class AccountCreatePublicKeyViewController: UIViewController {
         containerKey.borderColor = UIColor.customTextFieldBg()
         lblErrorKey.isHidden = true
         btnNext.setStyle(.primaryDisabled)
+        view.backgroundColor = UIColor.gBlackBg()
     }
 
     func isValid() -> Bool {
@@ -75,7 +76,6 @@ class AccountCreatePublicKeyViewController: UIViewController {
     }
 
     func next() {
-        navigationController?.popViewController(animated: true)
         delegate?.didPublicKey(textViewKey.text ?? "")
     }
 

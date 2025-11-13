@@ -57,15 +57,13 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
 
     func setStyle() {
         cards.forEach { card in
-            card.layer.cornerRadius = 5.0
+            card.setStyle(CardStyle.defaultStyle)
         }
         cardHW.isHidden = true
+        view.backgroundColor = UIColor.gBlackBg()
     }
 
     func setActions() {
-        cards.forEach { card in
-            card.layer.cornerRadius = 5.0
-        }
         cardHW.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressCardHW)))
         cardNewPhrase.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressCardNewPhrase)))
         cardExistingPhrase.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressCardExistingPhrase)))
@@ -93,11 +91,11 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
         case .hw:
             DropAlert().warning(message: "id_this_feature_is_coming_soon".localized, delay: 3)
         case .newPhrase:
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController") as? OnBoardInfoViewController {
-                OnBoardInfoViewController.flowType = .subaccount
-                OnBoardInfoViewController.delegate = delegate
+            let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "ManualBackupViewController") as? ManualBackupViewController {
                 navigationController?.pushViewController(vc, animated: true)
+                vc.viewModel = ManualBackupViewModel(.addSubaccount)
+                vc.subAccountCreateDelegate = delegate
             }
         case .existingPhrase:
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)

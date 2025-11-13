@@ -231,7 +231,8 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         case .recoverWallet:
             restoreDialog()
         case .addSubaccount:
-            break//addSubaccount()
+            let mnemonic = mnemonic.prefix(upTo: 24).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            delegate?.didExistingRecoveryPhrase(mnemonic)
         }
     }
 

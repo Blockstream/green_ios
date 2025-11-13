@@ -223,12 +223,9 @@
 		3457F4B529239F2400EF33B5 /* DialogListCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457F4B429239F2400EF33B5 /* DialogListCellModel.swift */; };
 		3457F4B82923A72900EF33B5 /* WalletPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457F4B72923A72900EF33B5 /* WalletPrefs.swift */; };
 		3457F4BA2923B0B500EF33B5 /* AccountPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457F4B92923B0B500EF33B5 /* AccountPrefs.swift */; };
-		3457F4BD2924090400EF33B5 /* AssetExpandableSelectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457F4BC2924090400EF33B5 /* AssetExpandableSelectViewController.swift */; };
-		3457F4BF2924091600EF33B5 /* AssetExpandableSelectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457F4BE2924091600EF33B5 /* AssetExpandableSelectViewModel.swift */; };
 		34580EB126FCB78D00D3BEFC /* UITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34580EB026FCB78D00D3BEFC /* UITableView.swift */; };
 		3458AB10292D1F0B006EC7FB /* AnyAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3458AB0F292D1F0B006EC7FB /* AnyAssetCell.xib */; };
 		3458AB12292D1F25006EC7FB /* AnyAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3458AB11292D1F25006EC7FB /* AnyAssetCell.swift */; };
-		3458AB14292D2822006EC7FB /* AssetExpandableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3458AB13292D2822006EC7FB /* AssetExpandableView.xib */; };
 		345ADE052D3E560D00E7A20F /* HelpCenter.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345ADE042D3E560D00E7A20F /* HelpCenter.storyboard */; };
 		345ADE072D3E566800E7A20F /* ContactUsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345ADE062D3E566800E7A20F /* ContactUsViewController.swift */; };
 		345B28D12DCE54040075860A /* Illustration Rocket.riv in Resources */ = {isa = PBXBuildFile; fileRef = 345B28D02DCE54040075860A /* Illustration Rocket.riv */; };
@@ -380,11 +377,6 @@
 		34A2AF0027BBECD0006A01E9 /* WordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2AEFF27BBECD0006A01E9 /* WordCell.swift */; };
 		34A2AF0227BD378C006A01E9 /* FooterQrCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2AF0127BD378C006A01E9 /* FooterQrCell.swift */; };
 		34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A31EAE26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift */; };
-		34A75B61292B697A007995D7 /* OnBoardInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B60292B697A007995D7 /* OnBoardInfoViewController.swift */; };
-		34A75B64292B6A1E007995D7 /* OnBoardInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B63292B6A1E007995D7 /* OnBoardInfoViewModel.swift */; };
-		34A75B67292B6B78007995D7 /* OnBoardInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A75B66292B6B78007995D7 /* OnBoardInfoCell.xib */; };
-		34A75B69292B6B98007995D7 /* OnBoardInfoCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B68292B6B98007995D7 /* OnBoardInfoCellModel.swift */; };
-		34A75B6B292B6BA8007995D7 /* OnBoardInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6A292B6BA8007995D7 /* OnBoardInfoCell.swift */; };
 		34A75B6D292BD704007995D7 /* NetworkPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6C292BD704007995D7 /* NetworkPrefs.swift */; };
 		34A75B6F292BD9FC007995D7 /* PhrasePrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6E292BD9FC007995D7 /* PhrasePrefs.swift */; };
 		34A7F4FC2DE83CBE0003B9FE /* ScreenShield in Frameworks */ = {isa = PBXBuildFile; productRef = 34A7F4FB2DE83CBE0003B9FE /* ScreenShield */; };
@@ -417,10 +409,8 @@
 		34B385D629B888610097220B /* HWFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B385D529B888610097220B /* HWFlow.storyboard */; };
 		34B385D929B888E40097220B /* WelcomeJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B385D829B888E40097220B /* WelcomeJadeViewController.swift */; };
 		34B826C42608827F00579C0B /* Recovery.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B826C32608827F00579C0B /* Recovery.storyboard */; };
-		34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */; };
+		34B826CD2608830C00579C0B /* PhraseNoteDownViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826CC2608830C00579C0B /* PhraseNoteDownViewController.swift */; };
 		34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */; };
-		34B8DA0B2938FBC2001DA9B9 /* AccountCreateFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B8DA0A2938FBC2001DA9B9 /* AccountCreateFooterView.xib */; };
-		34B8DA0D2938FC0B001DA9B9 /* AccountCreateFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B8DA0C2938FC0B001DA9B9 /* AccountCreateFooterView.swift */; };
 		34BADA1B2637F65F00FB8011 /* Reactivate2faViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */; };
 		34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34BBCEF52971516F0057DF4A /* AccountAssetCell.xib */; };
 		34BBCEF82971518C0057DF4A /* AccountAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBCEF72971518C0057DF4A /* AccountAssetCell.swift */; };
@@ -436,16 +426,13 @@
 		34C1A4CB2E27A41800CB83D4 /* AccountSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C1A4CA2E27A41200CB83D4 /* AccountSettingsCell.swift */; };
 		34C1A4CD2E27A44200CB83D4 /* AccountSettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C1A4CC2E27A42F00CB83D4 /* AccountSettingsCellModel.swift */; };
 		34C246512670F0BB009E8FCE /* UINavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C246502670F0BB009E8FCE /* UINavigationController.swift */; };
-		34C67E722924D1B000A50F89 /* AssetExpandableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C67E712924D1B000A50F89 /* AssetExpandableView.swift */; };
-		34C67E772924F57F00A50F89 /* AccountSelectSubCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C67E752924F57F00A50F89 /* AccountSelectSubCell.swift */; };
-		34C67E782924F57F00A50F89 /* AccountSelectSubCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C67E762924F57F00A50F89 /* AccountSelectSubCell.xib */; };
-		34C67E7A2924F59700A50F89 /* AccountSelectSubCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */; };
 		34C680E82A72778200369639 /* DialogInputDenominationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C680E72A72778200369639 /* DialogInputDenominationViewController.swift */; };
 		34C680EA2A72779900369639 /* DialogInputDenominationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C680E92A72779900369639 /* DialogInputDenominationViewModel.swift */; };
 		34C680EE2A72784900369639 /* DialogInputDenominationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C680ED2A72784900369639 /* DialogInputDenominationCell.xib */; };
 		34C680F02A72786500369639 /* DialogInputDenominationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C680EF2A72786500369639 /* DialogInputDenominationCell.swift */; };
 		34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */; };
 		34C8585629F9012C004A3F83 /* LTFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34C8585529F9012C004A3F83 /* LTFlow.storyboard */; };
+		34C89A922ED5A1280059248F /* ManualBackupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C89A912ED5A1110059248F /* ManualBackupViewModel.swift */; };
 		34C8BD6A2BED132A00AE9CC4 /* ReEnable2fa.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34C8BD692BED132A00AE9CC4 /* ReEnable2fa.storyboard */; };
 		34C8BD6D2BED13F200AE9CC4 /* ReEnable2faViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8BD6C2BED13F200AE9CC4 /* ReEnable2faViewController.swift */; };
 		34C8E77629BF868500C84066 /* DeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77429BF868500C84066 /* DeviceCell.swift */; };
@@ -459,6 +446,7 @@
 		34C9E10926B92F0B00200D2F /* DynamicTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C9E10826B92F0B00200D2F /* DynamicTableView.swift */; };
 		34CAEBA3288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAEBA2288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift */; };
 		34CBA41F270AE23800C85B05 /* Overview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CBA41E270AE23800C85B05 /* Overview.swift */; };
+		34CC84662EC63B86005E27EB /* PhraseNoteDownViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CC84652EC63B7A005E27EB /* PhraseNoteDownViewModel.swift */; };
 		34CD34912C7D98CF00018824 /* VerifyOnDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CD34902C7D98CF00018824 /* VerifyOnDeviceViewController.swift */; };
 		34CD34932C7D98E700018824 /* VerifyOnDeviceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CD34922C7D98E700018824 /* VerifyOnDeviceViewModel.swift */; };
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
@@ -1226,12 +1214,9 @@
 		3457F4B429239F2400EF33B5 /* DialogListCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogListCellModel.swift; sourceTree = "<group>"; };
 		3457F4B72923A72900EF33B5 /* WalletPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletPrefs.swift; sourceTree = "<group>"; };
 		3457F4B92923B0B500EF33B5 /* AccountPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountPrefs.swift; sourceTree = "<group>"; };
-		3457F4BC2924090400EF33B5 /* AssetExpandableSelectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExpandableSelectViewController.swift; sourceTree = "<group>"; };
-		3457F4BE2924091600EF33B5 /* AssetExpandableSelectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExpandableSelectViewModel.swift; sourceTree = "<group>"; };
 		34580EB026FCB78D00D3BEFC /* UITableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableView.swift; sourceTree = "<group>"; };
 		3458AB0F292D1F0B006EC7FB /* AnyAssetCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = AnyAssetCell.xib; path = gaios/Utility/AssetSelect/AssetSelectCell/AnyAssetCell.xib; sourceTree = SOURCE_ROOT; };
 		3458AB11292D1F25006EC7FB /* AnyAssetCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AnyAssetCell.swift; path = gaios/Utility/AssetSelect/AssetSelectCell/AnyAssetCell.swift; sourceTree = SOURCE_ROOT; };
-		3458AB13292D2822006EC7FB /* AssetExpandableView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AssetExpandableView.xib; sourceTree = "<group>"; };
 		345ADE042D3E560D00E7A20F /* HelpCenter.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HelpCenter.storyboard; sourceTree = "<group>"; };
 		345ADE062D3E566800E7A20F /* ContactUsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsViewController.swift; sourceTree = "<group>"; };
 		345B28D02DCE54040075860A /* Illustration Rocket.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Rocket.riv"; sourceTree = "<group>"; };
@@ -1395,11 +1380,6 @@
 		34A2AEFF27BBECD0006A01E9 /* WordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordCell.swift; sourceTree = "<group>"; };
 		34A2AF0127BD378C006A01E9 /* FooterQrCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooterQrCell.swift; sourceTree = "<group>"; };
 		34A31EAE26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorAuthenticationViewController.swift; sourceTree = "<group>"; };
-		34A75B60292B697A007995D7 /* OnBoardInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardInfoViewController.swift; sourceTree = "<group>"; };
-		34A75B63292B6A1E007995D7 /* OnBoardInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardInfoViewModel.swift; sourceTree = "<group>"; };
-		34A75B66292B6B78007995D7 /* OnBoardInfoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = OnBoardInfoCell.xib; path = gaios/Utility/SecuritySelect/Cells/OnBoardInfoCell.xib; sourceTree = SOURCE_ROOT; };
-		34A75B68292B6B98007995D7 /* OnBoardInfoCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OnBoardInfoCellModel.swift; path = gaios/Utility/SecuritySelect/Cells/OnBoardInfoCellModel.swift; sourceTree = SOURCE_ROOT; };
-		34A75B6A292B6BA8007995D7 /* OnBoardInfoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OnBoardInfoCell.swift; path = gaios/Utility/SecuritySelect/Cells/OnBoardInfoCell.swift; sourceTree = SOURCE_ROOT; };
 		34A75B6C292BD704007995D7 /* NetworkPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPrefs.swift; sourceTree = "<group>"; };
 		34A75B6E292BD9FC007995D7 /* PhrasePrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhrasePrefs.swift; sourceTree = "<group>"; };
 		34A8839D2BA30034004A1826 /* TxDetailsMultiAmountCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TxDetailsMultiAmountCell.xib; sourceTree = "<group>"; };
@@ -1432,11 +1412,9 @@
 		34B385D529B888610097220B /* HWFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HWFlow.storyboard; sourceTree = "<group>"; };
 		34B385D829B888E40097220B /* WelcomeJadeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeJadeViewController.swift; sourceTree = "<group>"; };
 		34B826C32608827F00579C0B /* Recovery.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Recovery.storyboard; sourceTree = "<group>"; };
-		34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryCreateViewController.swift; sourceTree = "<group>"; };
+		34B826CC2608830C00579C0B /* PhraseNoteDownViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhraseNoteDownViewController.swift; sourceTree = "<group>"; };
 		34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryVerifyViewController.swift; sourceTree = "<group>"; };
 		34B856DA28BDE5B400E053EE /* RemoteAlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteAlertManager.swift; sourceTree = "<group>"; };
-		34B8DA0A2938FBC2001DA9B9 /* AccountCreateFooterView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = AccountCreateFooterView.xib; path = gaios/Utility/AssetExpandableSelect/AccountCreateFooterView.xib; sourceTree = SOURCE_ROOT; };
-		34B8DA0C2938FC0B001DA9B9 /* AccountCreateFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountCreateFooterView.swift; path = gaios/Utility/AssetExpandableSelect/AccountCreateFooterView.swift; sourceTree = SOURCE_ROOT; };
 		34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reactivate2faViewController.swift; sourceTree = "<group>"; };
 		34BBCEF52971516F0057DF4A /* AccountAssetCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccountAssetCell.xib; sourceTree = "<group>"; };
 		34BBCEF72971518C0057DF4A /* AccountAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAssetCell.swift; sourceTree = "<group>"; };
@@ -1453,16 +1431,13 @@
 		34C1A4CC2E27A42F00CB83D4 /* AccountSettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsCellModel.swift; sourceTree = "<group>"; };
 		34C2464E2670ECE0009E8FCE /* AccountType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountType.swift; sourceTree = "<group>"; };
 		34C246502670F0BB009E8FCE /* UINavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UINavigationController.swift; sourceTree = "<group>"; };
-		34C67E712924D1B000A50F89 /* AssetExpandableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExpandableView.swift; sourceTree = "<group>"; };
-		34C67E752924F57F00A50F89 /* AccountSelectSubCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSelectSubCell.swift; sourceTree = "<group>"; };
-		34C67E762924F57F00A50F89 /* AccountSelectSubCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountSelectSubCell.xib; sourceTree = "<group>"; };
-		34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSelectSubCellModel.swift; sourceTree = "<group>"; };
 		34C680E72A72778200369639 /* DialogInputDenominationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogInputDenominationViewController.swift; sourceTree = "<group>"; };
 		34C680E92A72779900369639 /* DialogInputDenominationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogInputDenominationViewModel.swift; sourceTree = "<group>"; };
 		34C680ED2A72784900369639 /* DialogInputDenominationCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DialogInputDenominationCell.xib; path = gaios/Shared/Controllers/DialogInputDenomination/DialogInputDenominationCell.xib; sourceTree = SOURCE_ROOT; };
 		34C680EF2A72786500369639 /* DialogInputDenominationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogInputDenominationCell.swift; sourceTree = "<group>"; };
 		34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogOTAViewController.swift; sourceTree = "<group>"; };
 		34C8585529F9012C004A3F83 /* LTFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LTFlow.storyboard; sourceTree = "<group>"; };
+		34C89A912ED5A1110059248F /* ManualBackupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupViewModel.swift; sourceTree = "<group>"; };
 		34C8BD692BED132A00AE9CC4 /* ReEnable2fa.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ReEnable2fa.storyboard; sourceTree = "<group>"; };
 		34C8BD6C2BED13F200AE9CC4 /* ReEnable2faViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReEnable2faViewController.swift; sourceTree = "<group>"; };
 		34C8E77429BF868500C84066 /* DeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCell.swift; sourceTree = "<group>"; };
@@ -1476,6 +1451,7 @@
 		34C9E10826B92F0B00200D2F /* DynamicTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicTableView.swift; sourceTree = "<group>"; };
 		34CAEBA2288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogLoginPassphraseViewController.swift; sourceTree = "<group>"; };
 		34CBA41E270AE23800C85B05 /* Overview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Overview.swift; sourceTree = "<group>"; };
+		34CC84652EC63B7A005E27EB /* PhraseNoteDownViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhraseNoteDownViewModel.swift; sourceTree = "<group>"; };
 		34CD34902C7D98CF00018824 /* VerifyOnDeviceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyOnDeviceViewController.swift; sourceTree = "<group>"; };
 		34CD34922C7D98E700018824 /* VerifyOnDeviceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyOnDeviceViewModel.swift; sourceTree = "<group>"; };
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -2145,7 +2121,6 @@
 				3472C3992B27277E00811453 /* Browser */,
 				343BC9452AA700BF00F0FEE5 /* GreenPicker */,
 				34DBF1792A442F4D00066479 /* MagnifyQRViewController */,
-				3457F4BB292408BE00EF33B5 /* AssetExpandableSelect */,
 				3420471E291C127E00EDE945 /* AssetSelect */,
 				3420471D291C126B00EDE945 /* SecuritySelect */,
 				3420471B291BFFEF00EDE945 /* Utility.storyboard */,
@@ -2589,29 +2564,6 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		3457F4BB292408BE00EF33B5 /* AssetExpandableSelect */ = {
-			isa = PBXGroup;
-			children = (
-				34B8DA092938FAB1001DA9B9 /* AccountCreateFooterView */,
-				3457F4C02924092A00EF33B5 /* Cells */,
-				3457F4BC2924090400EF33B5 /* AssetExpandableSelectViewController.swift */,
-				3457F4BE2924091600EF33B5 /* AssetExpandableSelectViewModel.swift */,
-			);
-			path = AssetExpandableSelect;
-			sourceTree = "<group>";
-		};
-		3457F4C02924092A00EF33B5 /* Cells */ = {
-			isa = PBXGroup;
-			children = (
-				34C67E712924D1B000A50F89 /* AssetExpandableView.swift */,
-				3458AB13292D2822006EC7FB /* AssetExpandableView.xib */,
-				34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */,
-				34C67E752924F57F00A50F89 /* AccountSelectSubCell.swift */,
-				34C67E762924F57F00A50F89 /* AccountSelectSubCell.xib */,
-			);
-			path = Cells;
-			sourceTree = "<group>";
-		};
 		3458AB0E292D1EE0006EC7FB /* AnyAssetCell */ = {
 			isa = PBXGroup;
 			children = (
@@ -2935,6 +2887,7 @@
 			isa = PBXGroup;
 			children = (
 				348401FE2DB0FD8A00A91C65 /* ManualBackupViewController.swift */,
+				34C89A912ED5A1110059248F /* ManualBackupViewModel.swift */,
 			);
 			path = ManualBackup;
 			sourceTree = "<group>";
@@ -2988,7 +2941,6 @@
 			isa = PBXGroup;
 			children = (
 				81DE63422DDE2F5700AB79DB /* SetupNewMoreActionsViewController.swift */,
-				34A75B62292B6984007995D7 /* OnBoardInfo */,
 				3497935B25F8B18C0029ECB1 /* SetPinViewController.swift */,
 				34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */,
 				3497935A25F8B18C0029ECB1 /* WalletSettingsViewController.swift */,
@@ -3064,26 +3016,6 @@
 				349F71E829C21945007B9154 /* DialogCountlyViewController.swift */,
 			);
 			path = DialogCountly;
-			sourceTree = "<group>";
-		};
-		34A75B62292B6984007995D7 /* OnBoardInfo */ = {
-			isa = PBXGroup;
-			children = (
-				34A75B65292B6B54007995D7 /* Cells */,
-				34A75B60292B697A007995D7 /* OnBoardInfoViewController.swift */,
-				34A75B63292B6A1E007995D7 /* OnBoardInfoViewModel.swift */,
-			);
-			path = OnBoardInfo;
-			sourceTree = "<group>";
-		};
-		34A75B65292B6B54007995D7 /* Cells */ = {
-			isa = PBXGroup;
-			children = (
-				34A75B6A292B6BA8007995D7 /* OnBoardInfoCell.swift */,
-				34A75B68292B6B98007995D7 /* OnBoardInfoCellModel.swift */,
-				34A75B66292B6B78007995D7 /* OnBoardInfoCell.xib */,
-			);
-			path = Cells;
 			sourceTree = "<group>";
 		};
 		34A883BA2BAB017E004A1826 /* MoreInfo */ = {
@@ -3278,21 +3210,12 @@
 		34B826C72608828C00579C0B /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */,
+				34B826CC2608830C00579C0B /* PhraseNoteDownViewController.swift */,
+				34CC84652EC63B7A005E27EB /* PhraseNoteDownViewModel.swift */,
 				34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */,
 				34FAB30B2D9553A500317454 /* BackupSuccessViewController.swift */,
 			);
 			path = Controllers;
-			sourceTree = "<group>";
-		};
-		34B8DA092938FAB1001DA9B9 /* AccountCreateFooterView */ = {
-			isa = PBXGroup;
-			children = (
-				34B8DA0C2938FC0B001DA9B9 /* AccountCreateFooterView.swift */,
-				34B8DA0A2938FBC2001DA9B9 /* AccountCreateFooterView.xib */,
-			);
-			name = AccountCreateFooterView;
-			path = ../AccountCreateFooterView;
 			sourceTree = "<group>";
 		};
 		34BF09DC2A658B9C00523E4C /* DialogQR */ = {
@@ -4880,13 +4803,11 @@
 				34F615242E424AF2007D38F9 /* TFAHeaderCell.xib in Resources */,
 				34E0CA8C2981395600695304 /* Survey.storyboard in Resources */,
 				3460D2FF2BC02F8700CB8033 /* PrivacyInfo.xcprivacy in Resources */,
-				34A75B67292B6B78007995D7 /* OnBoardInfoCell.xib in Resources */,
 				34465B992D075629002E5033 /* GenuineCheckFlow.storyboard in Resources */,
 				34B0D00B2CE2555300A90080 /* ActionsSheetCell.xib in Resources */,
 				34742D3C2CE4AB400064F327 /* AssetToBuyCell.xib in Resources */,
 				34A883A62BA82C11004A1826 /* TxDetailsActionCell.xib in Resources */,
 				347372B52E5F39F600FE2BEA /* AppSettingsCell.xib in Resources */,
-				34B8DA0B2938FBC2001DA9B9 /* AccountCreateFooterView.xib in Resources */,
 				345ADE052D3E560D00E7A20F /* HelpCenter.storyboard in Resources */,
 				342F980C29351415005876A8 /* DialogEnable2faCell.xib in Resources */,
 				34F615282E425A26007D38F9 /* TFACell.xib in Resources */,
@@ -4929,7 +4850,6 @@
 				345B28E92DD1E7600075860A /* Illustration Wallet.riv in Resources */,
 				34FAB33A2D9BF51100317454 /* SecurityLevelCell.xib in Resources */,
 				345B28D92DD1DAAE0075860A /* animation_04_jade_v1.riv in Resources */,
-				3458AB14292D2822006EC7FB /* AssetExpandableView.xib in Resources */,
 				3428750F2D551DEB003FB5AE /* LangCell.xib in Resources */,
 				3483D09929FBDAF800C85106 /* LTInfoCell.xib in Resources */,
 				34B0D0042CE2553100A90080 /* ActionsSheetFlow.storyboard in Resources */,
@@ -4944,7 +4864,6 @@
 				3488FC69290AE26E00122628 /* BalanceCell.xib in Resources */,
 				347FD0AD25FFA91700BB3FAB /* Home.storyboard in Resources */,
 				3418BAEA2743FA2E00F9B2D0 /* TransactionBarItem.xib in Resources */,
-				34C67E782924F57F00A50F89 /* AccountSelectSubCell.xib in Resources */,
 				340EF8D928B3718D001AE87B /* WalletListCell.xib in Resources */,
 				345B28E32DD1E5830075860A /* Illustration Envelope.riv in Resources */,
 				34A883AC2BA85F10004A1826 /* TxDetailsInfoCell.xib in Resources */,
@@ -5132,6 +5051,7 @@
 				34A883A02BA30050004A1826 /* TxDetailsMultiAmountCell.swift in Sources */,
 				344F1C0C26B7CC4D009293E6 /* TwoFaMethodsCell.swift in Sources */,
 				816685D42BEBC12E00B03B02 /* SendAmountViewModel.swift in Sources */,
+				34C89A922ED5A1280059248F /* ManualBackupViewModel.swift in Sources */,
 				34B385D929B888E40097220B /* WelcomeJadeViewController.swift in Sources */,
 				816685D22BEBBEB400B03B02 /* SendAddressInputViewModel.swift in Sources */,
 				3497936E25F8B18C0029ECB1 /* ProgressView.swift in Sources */,
@@ -5139,7 +5059,6 @@
 				3415CB0D2A67BFE500B66882 /* AddressAuthCell.swift in Sources */,
 				34F580042BA1ED1C00DCB076 /* TxDetailsAmountCell.swift in Sources */,
 				34A883C32BAB037A004A1826 /* TxDetailsMoreInfoCellModel.swift in Sources */,
-				34C67E772924F57F00A50F89 /* AccountSelectSubCell.swift in Sources */,
 				34145FD22DBA3F6E00F725E0 /* SelectProviderViewModel.swift in Sources */,
 				345ED1F429C088DC00BD9071 /* GetStartedOnBoardViewController.swift in Sources */,
 				81DE63432DDE2F6600AB79DB /* SetupNewMoreActionsViewController.swift in Sources */,
@@ -5198,6 +5117,7 @@
 				3457F4BA2923B0B500EF33B5 /* AccountPrefs.swift in Sources */,
 				81DAEE052DD4110F00635591 /* ReceiveAssetCellModel.swift in Sources */,
 				81DAEE062DD4110F00635591 /* ReceiveAssetCell.swift in Sources */,
+				34CC84662EC63B86005E27EB /* PhraseNoteDownViewModel.swift in Sources */,
 				34F6152A2E425A46007D38F9 /* TFACell.swift in Sources */,
 				3497936A25F8B18C0029ECB1 /* WalletSettingsViewController.swift in Sources */,
 				34D66CED29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift in Sources */,
@@ -5257,7 +5177,6 @@
 				817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */,
 				814A9CC72DDCE78D004AE73F /* LTSettingCellModel.swift in Sources */,
 				814A9CC82DDCE78D004AE73F /* LTSettingCell.swift in Sources */,
-				34B8DA0D2938FC0B001DA9B9 /* AccountCreateFooterView.swift in Sources */,
 				3415862129EE80AC005002D9 /* WOSetupViewController.swift in Sources */,
 				34C680F02A72786500369639 /* DialogInputDenominationCell.swift in Sources */,
 				812DBDC42977EE7F002992D6 /* TwoFactorSettingsViewModel.swift in Sources */,
@@ -5272,7 +5191,6 @@
 				344EF1C12C10525300689D63 /* TxDetailsTotalsCell.swift in Sources */,
 				347372B22E5F354700FE2BEA /* AppSettingsViewController.swift in Sources */,
 				81E56A692C2476950012A5A3 /* QRUnlockSignDialogViewController.swift in Sources */,
-				34A75B6B292B6BA8007995D7 /* OnBoardInfoCell.swift in Sources */,
 				34C680E82A72778200369639 /* DialogInputDenominationViewController.swift in Sources */,
 				343471072C45109600CB6F27 /* LTRemoveShortcutViewController.swift in Sources */,
 				818D0D372ED4E928004AE5DF /* LocalNotification.swift in Sources */,
@@ -5300,11 +5218,9 @@
 				34560B8529BA28F7007E916F /* SetupJadeViewModel.swift in Sources */,
 				342F980E29351444005876A8 /* DialogEnable2faCell.swift in Sources */,
 				345E1A82261EE6CD00A1D934 /* DrawerAnimator.swift in Sources */,
-				34A75B64292B6A1E007995D7 /* OnBoardInfoViewModel.swift in Sources */,
 				34FAB3442D9C2EC500317454 /* PreferenceCellModel.swift in Sources */,
 				812DBDBE2972509A002992D6 /* WatchOnlySettingsViewModel.swift in Sources */,
 				34F57FF82BA1EA0000DCB076 /* TxDetailsViewModel.swift in Sources */,
-				34C67E722924D1B000A50F89 /* AssetExpandableView.swift in Sources */,
 				8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */,
 				34C1A4C52E27A0B800CB83D4 /* AccountSettingsViewModel.swift in Sources */,
 				81A773052A81029200C9FC5C /* LTRecoverFundsViewController.swift in Sources */,
@@ -5387,7 +5303,6 @@
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
 				340EF8D828B3718D001AE87B /* WalletListCell.swift in Sources */,
 				34675B0A29409D9900771D50 /* Common.swift in Sources */,
-				34C67E7A2924F59700A50F89 /* AccountSelectSubCellModel.swift in Sources */,
 				8138A5232ED0E7DF00C901E4 /* JadeManager.swift in Sources */,
 				349984182E32255C00737E9F /* WatchonlyCell.swift in Sources */,
 				671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */,
@@ -5414,7 +5329,6 @@
 				FF29CA7822374F8D0035F95A /* UILabel.swift in Sources */,
 				342F98102935145A005876A8 /* DialogEnable2faCellModel.swift in Sources */,
 				8127DB1C2AFF7396002489AC /* ScanResult.swift in Sources */,
-				3457F4BD2924090400EF33B5 /* AssetExpandableSelectViewController.swift in Sources */,
 				346EB2722BE8BB290043139F /* AddressDisplay.swift in Sources */,
 				812DBDC2297261F1002992D6 /* WatchOnlySettingsCell.swift in Sources */,
 				34F9081C2E8D4C8900D82934 /* WalletListPrefs.swift in Sources */,
@@ -5428,8 +5342,7 @@
 				348A71062D8AE02C00490B55 /* WelcomeView.swift in Sources */,
 				34FB697727FEF9D000A13197 /* AccountArchiveCell.swift in Sources */,
 				34BC63632D0979BA001CC38F /* PromoLayout1Cell.swift in Sources */,
-				34A75B69292B6B98007995D7 /* OnBoardInfoCellModel.swift in Sources */,
-				34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */,
+				34B826CD2608830C00579C0B /* PhraseNoteDownViewController.swift in Sources */,
 				34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */,
 				344D57D12D71B6A4009725A3 /* TabSecurityVC.swift in Sources */,
 				3418BAE82743FA1600F9B2D0 /* TransactionBarItem.swift in Sources */,
@@ -5461,7 +5374,6 @@
 				345402E42A1E42F2002CB598 /* DialogDenominationViewModel.swift in Sources */,
 				8177EE042B6C82E500C2271C /* Resolver.swift in Sources */,
 				6DF2DEE923F38314005F16E9 /* HelpViewController.swift in Sources */,
-				3457F4BF2924091600EF33B5 /* AssetExpandableSelectViewModel.swift in Sources */,
 				344471BE2C46B31F0051957E /* DialogGroupListViewModel.swift in Sources */,
 				814A9CC22DDCE1EC004AE73F /* LTCreateViewController.swift in Sources */,
 				348402022DB21ECD00A91C65 /* EditProtectionViewController.swift in Sources */,
@@ -5478,7 +5390,6 @@
 				344915E32A0A3C8000D35818 /* LTExperimentalViewController.swift in Sources */,
 				34D535E629A77D4B00D3B5C5 /* MoreOptPrefs.swift in Sources */,
 				347372F02E65A66F00FE2BEA /* ElectrumCell.swift in Sources */,
-				34A75B61292B697A007995D7 /* OnBoardInfoViewController.swift in Sources */,
 				34FB697927FEFE5400A13197 /* PopoverMenuUnarchiveViewController.swift in Sources */,
 				348401F72DAE322100A91C65 /* UISegmentedControl.swift in Sources */,
 				34560B8329BA257E007E916F /* SetupJadeViewController.swift in Sources */,
