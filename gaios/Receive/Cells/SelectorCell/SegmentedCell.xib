@@ -19,7 +19,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="gwC-5a-La5">
-                        <rect key="frame" x="25" y="4" width="304" height="41"/>
+                        <rect key="frame" x="25" y="0.0" width="304" height="41"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="40" id="fGg-bJ-ESo"/>
                         </constraints>
@@ -37,7 +37,7 @@
                     <constraint firstItem="gwC-5a-La5" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="25" id="1Nu-Cq-tNi"/>
                     <constraint firstAttribute="bottom" secondItem="gwC-5a-La5" secondAttribute="bottom" constant="4" id="EwQ-7w-Gix"/>
                     <constraint firstAttribute="trailing" secondItem="gwC-5a-La5" secondAttribute="trailing" constant="25" id="Ybc-Es-P8s"/>
-                    <constraint firstItem="gwC-5a-La5" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="4" id="kzX-34-INI"/>
+                    <constraint firstItem="gwC-5a-La5" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="kzX-34-INI"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>

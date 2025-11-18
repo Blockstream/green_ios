@@ -18,7 +18,7 @@ class ChangeAccountCell: UITableViewCell {
     }
 
     func configure(name: String, type: String, onTap: (() -> Void)?) {
-        lblAccount.text = "\("id_account".localized): \(name) - (\(type))"
+        lblAccount.text = "\("id_account".localized): \(name)"
 //        self.lblName.text = name
 //        self.onTap = onTap
 //        self.iconDisclose.isHidden = onTap == nil

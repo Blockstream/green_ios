@@ -91,11 +91,11 @@ class AmountCell: UITableViewCell {
 
     func reload() {
         textField.isEnabled = enabled
-        btnEdit.isHidden = enabled
-        btnCancel.isHidden = !enabled
-        btnPaste.isHidden = !enabled
-        btnCancel.isHidden = !(textField.text?.count ?? 0 > 0)
-        btnPaste.isHidden = textField.text?.count ?? 0 > 0
+//        btnEdit.isHidden = enabled
+//        btnCancel.isHidden = enabled
+//        btnPaste.isHidden = !enabled
+//        btnCancel.isHidden = !(textField.text?.count ?? 0 > 0)
+//        btnPaste.isHidden = textField.text?.count ?? 0 > 0
         let balance = "\(model?.maxLimitAmount ?? "") \(model?.denomText ?? "")"
         lblAmount.text = String(format: "id_max_limit_s".localized, balance)
         if model.scope == .reverseSwap {
@@ -103,6 +103,10 @@ class AmountCell: UITableViewCell {
             bottomStackPad.constant = model.showMessage ? 10 : -24
         }
         lblAsset.attributedText = model?.denomUnderlineText
+
+        btnPaste.isHidden = true // always hidden
+        btnEdit.isHidden = true  // always hidden
+        btnCancel.isHidden = enabled
     }
 
     func toReceiveAmount(show: Bool) {
@@ -145,11 +149,17 @@ class AmountCell: UITableViewCell {
         perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0)
     }
 
+    func responderOn() {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+            self.textField.becomeFirstResponder()
+        }
+    }
+
     @IBAction func onEdit(_ sender: Any) {
-        enabled = true
-        reload()
-        textField.becomeFirstResponder()
-        delegate?.textFieldEnabled()
+//        enabled = true
+//        reload()
+//        textField.becomeFirstResponder()
+//        delegate?.textFieldEnabled()
     }
 
     @IBAction func onSwitch(_ sender: Any) {
@@ -157,15 +167,23 @@ class AmountCell: UITableViewCell {
     }
 
     @IBAction func btnPaste(_ sender: Any) {
-        if let text = UIPasteboard.general.string {
-            textField.text = text
-            textFieldDidChange(textField)
-        }
+//        if let text = UIPasteboard.general.string {
+//            textField.text = text
+//            textFieldDidChange(textField)
+//        }
     }
 
     @IBAction func btnCancel(_ sender: Any) {
-        textField.text = ""
-        textFieldDidChange(textField)
+
+        enabled = true
+        self.reload()
+//        textField.becomeFirstResponder()
+        self.delegate?.textFieldEnabled()
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+            self.textField.text = ""
+            self.textFieldDidChange(self.textField)
+
+        }
     }
 
     func errorState(text: String) {
@@ -204,12 +222,12 @@ class AmountCell: UITableViewCell {
             lblAmount.isHidden = false
             if model.scope == .reverseSwap {
                 moreInfoView.isHidden = true
-                lblToReceiveHint.isHidden = model.hideSubamount
+                lblToReceiveHint.isHidden = model.hideSubamount || model.isFiat
                 lblToReceiveHint.text = model.subamountText
             }
         case .aboveInboundLiquidity:
             let amount = Int64(model.breezSdk?.nodeInfo?.inboundLiquiditySatoshi ?? 0)
-            let text = String(format: "The amount is above your inbound liquidity. Please type an amount lower than %@ (%@).",  model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
+            let text = String(format: "The amount is above your inbound liquidity. Please type an amount lower than %@ (%@).", model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
             errorState(text: text)
         case .tooHigh:
             let amount = Int64(model.breezSdk?.nodeInfo?.maxReceivableSatoshi ?? 0)

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -19,24 +19,24 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QNX-w7-Hb8">
-                        <rect key="frame" x="25" y="5" width="304" height="63"/>
+                        <rect key="frame" x="25" y="0.0" width="304" height="68"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="rightArrow" translatesAutoresizingMaskIntoConstraints="NO" id="OD3-aI-KfZ">
-                                <rect key="frame" x="272" y="21.666666666666668" width="20" height="20.000000000000004"/>
+                                <rect key="frame" x="272" y="24" width="20" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="20" id="HXV-XK-B5N"/>
                                     <constraint firstAttribute="height" constant="20" id="M0V-Ew-rY7"/>
                                 </constraints>
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ntw_btc" translatesAutoresizingMaskIntoConstraints="NO" id="kYV-l5-c29">
-                                <rect key="frame" x="24" y="19.666666666666668" width="24" height="24.000000000000004"/>
+                                <rect key="frame" x="24" y="22" width="24" height="24"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="24" id="2Ng-04-KO3"/>
                                     <constraint firstAttribute="width" constant="24" id="Cv4-YB-p2b"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_asset" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tiD-WM-kgf">
-                                <rect key="frame" x="64" y="23" width="200" height="17"/>
+                                <rect key="frame" x="64" y="25.666666666666671" width="200" height="17"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -68,7 +68,7 @@
                 <constraints>
                     <constraint firstItem="dan-i2-WCd" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="3BS-xh-4gw"/>
                     <constraint firstAttribute="bottom" secondItem="QNX-w7-Hb8" secondAttribute="bottom" constant="5" id="4gh-kT-Q9P"/>
-                    <constraint firstItem="QNX-w7-Hb8" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="5" id="Slj-CV-IGI"/>
+                    <constraint firstItem="QNX-w7-Hb8" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Slj-CV-IGI"/>
                     <constraint firstAttribute="trailing" secondItem="QNX-w7-Hb8" secondAttribute="trailing" constant="25" id="ceK-Er-foH"/>
                     <constraint firstItem="QNX-w7-Hb8" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="25" id="kDq-Tc-CzZ"/>
                     <constraint firstAttribute="trailing" secondItem="dan-i2-WCd" secondAttribute="trailing" id="uvM-aJ-k90"/>

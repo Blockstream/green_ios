@@ -37,17 +37,18 @@
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YCy-SF-Z6T">
                                                         <rect key="frame" x="40" y="0.0" width="272" height="272"/>
                                                         <subviews>
-                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="graphic" translatesAutoresizingMaskIntoConstraints="NO" id="yJC-t0-tfc">
-                                                                <rect key="frame" x="0.0" y="0.0" width="272" height="272"/>
+                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_tx_success_check" translatesAutoresizingMaskIntoConstraints="NO" id="yJC-t0-tfc">
+                                                                <rect key="frame" x="56" y="0.0" width="160" height="160"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="160" id="LP5-7r-1sf"/>
+                                                                    <constraint firstAttribute="width" constant="160" id="QAe-Lp-JjQ"/>
+                                                                </constraints>
                                                             </imageView>
                                                         </subviews>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <constraints>
                                                             <constraint firstItem="yJC-t0-tfc" firstAttribute="top" secondItem="YCy-SF-Z6T" secondAttribute="top" id="3NL-WD-34r"/>
-                                                            <constraint firstAttribute="width" secondItem="YCy-SF-Z6T" secondAttribute="height" id="Stc-WK-gfW"/>
-                                                            <constraint firstAttribute="trailing" secondItem="yJC-t0-tfc" secondAttribute="trailing" id="YMA-UZ-Ytn"/>
-                                                            <constraint firstAttribute="bottom" secondItem="yJC-t0-tfc" secondAttribute="bottom" id="agW-SD-2yH"/>
-                                                            <constraint firstItem="yJC-t0-tfc" firstAttribute="leading" secondItem="YCy-SF-Z6T" secondAttribute="leading" id="wpO-oz-th3"/>
+                                                            <constraint firstItem="yJC-t0-tfc" firstAttribute="centerX" secondItem="YCy-SF-Z6T" secondAttribute="centerX" id="COL-Lm-hox"/>
                                                         </constraints>
                                                     </view>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="BZD-gf-FQG">
@@ -93,11 +94,11 @@
                                                     <constraint firstAttribute="trailing" secondItem="BZD-gf-FQG" secondAttribute="trailing" constant="36" id="E0d-Xw-pat"/>
                                                     <constraint firstItem="BZD-gf-FQG" firstAttribute="top" secondItem="YCy-SF-Z6T" secondAttribute="bottom" id="EmK-HH-LAo"/>
                                                     <constraint firstAttribute="trailing" secondItem="6Nr-Ci-aWK" secondAttribute="trailing" constant="50" id="H50-c6-shK"/>
+                                                    <constraint firstItem="YCy-SF-Z6T" firstAttribute="top" secondItem="XAd-uV-EPJ" secondAttribute="top" id="OBQ-12-fg1"/>
                                                     <constraint firstItem="6Nr-Ci-aWK" firstAttribute="top" secondItem="BZD-gf-FQG" secondAttribute="bottom" constant="30" id="WQ9-kI-h2F"/>
                                                     <constraint firstItem="YCy-SF-Z6T" firstAttribute="leading" secondItem="XAd-uV-EPJ" secondAttribute="leading" constant="40" id="as6-FC-z7S"/>
                                                     <constraint firstItem="BZD-gf-FQG" firstAttribute="leading" secondItem="XAd-uV-EPJ" secondAttribute="leading" constant="36" id="fTl-MJ-cXa"/>
                                                     <constraint firstAttribute="trailing" secondItem="YCy-SF-Z6T" secondAttribute="trailing" constant="40" id="qtk-2Z-Zmg"/>
-                                                    <constraint firstItem="YCy-SF-Z6T" firstAttribute="top" secondItem="XAd-uV-EPJ" secondAttribute="top" id="rqq-uV-P1i"/>
                                                     <constraint firstItem="6Nr-Ci-aWK" firstAttribute="leading" secondItem="XAd-uV-EPJ" secondAttribute="leading" constant="50" id="tKx-8e-y7T"/>
                                                 </constraints>
                                             </view>
@@ -106,6 +107,7 @@
                                         <constraints>
                                             <constraint firstItem="XAd-uV-EPJ" firstAttribute="width" secondItem="uQq-0r-7xc" secondAttribute="width" multiplier="0.85" id="1PF-ci-Njp"/>
                                             <constraint firstItem="XAd-uV-EPJ" firstAttribute="centerY" secondItem="uQq-0r-7xc" secondAttribute="centerY" constant="-30" id="DFI-S3-9E9"/>
+                                            <constraint firstItem="yJC-t0-tfc" firstAttribute="top" secondItem="uQq-0r-7xc" secondAttribute="top" constant="121.5" id="rzQ-gy-7Mc"/>
                                             <constraint firstItem="XAd-uV-EPJ" firstAttribute="centerX" secondItem="uQq-0r-7xc" secondAttribute="centerX" id="zbk-sq-w0a"/>
                                         </constraints>
                                     </view>
@@ -146,7 +148,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0b1-Oz-ezF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3937" y="2416"/>
+            <point key="canvasLocation" x="3936.2318840579715" y="2415.4017857142858"/>
         </scene>
         <!--Experimental View Controller-->
         <scene sceneID="9Ug-Tv-Skc">
@@ -2249,7 +2251,6 @@ EE5leHQ
         </scene>
     </scenes>
     <resources>
-        <image name="graphic" width="750" height="485"/>
         <image name="ic_any_asset" width="18" height="18.5"/>
         <image name="ic_cancel" width="24" height="24"/>
         <image name="ic_clipboard" width="24" height="24.5"/>
@@ -2258,6 +2259,7 @@ EE5leHQ
         <image name="ic_lightning_lnurl_auth" width="440" height="440"/>
         <image name="ic_magnify_qr" width="19" height="19"/>
         <image name="ic_refresh_arrows" width="20" height="18"/>
+        <image name="ic_tx_success_check" width="306" height="306"/>
         <image name="rightArrow" width="9" height="14"/>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

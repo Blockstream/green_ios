@@ -164,7 +164,17 @@ class ReceiveViewController: KeyboardViewController {
         footerLabel.isHidden = viewModel.type != .lwkSwap
         reloadNavigationBtns()
         viewModel.reloadBackupCards()
-        tableView.reloadData()
+        tableView.reloadData { [weak self] in
+            if self?.viewModel.type == .lwkSwap {
+                if let cells = self?.tableView?.visibleCells {
+                    for cell in cells {
+                        if let c = cell as? AmountCell {
+                            c.responderOn()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     func reloadNavigationBtns() {
@@ -756,8 +766,8 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.configure(
                     selected: selectedSegment,
                     onLeftTap: { [weak self] in
-                        self?.viewModel.type = .address;
-                        self?.selectedSegment = 0;
+                        self?.viewModel.type = .address
+                        self?.selectedSegment = 0
                         self?.reload() },
                     onRightTap: { [weak self] in
                         self?.prepareReverseSwap()
@@ -842,7 +852,7 @@ extension ReceiveViewController {
         let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
         section.backgroundColor = UIColor.gBlackBg()
         let title = UILabel(frame: .zero)
-        title.setStyle(.sectionTitle)
+        title.setStyle(.txtSectionHeader)
         title.text = txt
         title.numberOfLines = 0
         title.translatesAutoresizingMaskIntoConstraints = false
