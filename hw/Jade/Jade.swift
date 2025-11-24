@@ -371,10 +371,10 @@ extension Jade {
         if verInfo.jadeFeatures.contains(Jade.FEATURE_SECURE_BOOT) {
             // Production Jade (Secure-Boot [and flash-encryption] enabled)
 
-            return "/bin/\(JadeFmwPath.from(verInfo.boardType).rawValue)/"
+            return "bin/\(JadeFmwPath.from(verInfo.boardType).rawValue)/"
         } else {
             // Unsigned/development/testing Jade
-            return "/bin/\(JadeFmwPath.from(verInfo.boardType).rawValue)dev/"
+            return "bin/\(JadeFmwPath.from(verInfo.boardType).rawValue)dev/"
         }
     }
 
