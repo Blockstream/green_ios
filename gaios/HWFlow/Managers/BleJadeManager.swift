@@ -5,31 +5,10 @@ import gdk
 import UIKit
 import core
 
-class JadeManager {
+class BleJadeManager: JadeManager {
 
-    let jade: Jade
-    var pinServerSession: SessionManager?
     var version: JadeVersionInfo?
     var hash: String?
-    var warningPinShowed = false
-
-    var customWhitelistUrls = [String]()
-    var persistCustomWhitelistUrls: [String] {
-        get { UserDefaults.standard.array(forKey: "whitelist_domains") as? [String] ?? [] }
-        set { UserDefaults.standard.setValue(customWhitelistUrls, forKey: "whitelist_domains") }
-    }
-
-    func domain(from url: String) -> String? {
-        let url = url.starts(with: "http://") || url.starts(with: "https://") ? url : "http://\(url)"
-        let urlComponents = URLComponents(string: url)
-        if let host = urlComponents?.host {
-            if let port = urlComponents?.port {
-                return "\(host):\(port)"
-            }
-            return host
-        }
-        return nil
-    }
 
     var peripheral: Peripheral? {
         if let connection = jade.connection as? BleJadeConnection {
@@ -42,18 +21,13 @@ class JadeManager {
         peripheral?.name
     }
 
-    init(connection: HWConnectionProtocol) {
-        jade = Jade(connection: connection)
-        jade.gdkRequestDelegate = self
-    }
-
     public func connect() async throws {
         try await jade.connection.open()
     }
 
-    public func disconnect() async throws {
+    public override func disconnect() async throws {
         try await jade.connection.close()
-        customWhitelistUrls = []
+        try await super.disconnect()
     }
 
     public func version() async throws -> JadeVersionInfo {
@@ -61,8 +35,16 @@ class JadeManager {
         self.version = version
         return version
     }
-
-    func connectPinServer(testnet: Bool? = nil) async throws {
+    
+    public func isTestnet() async throws -> Bool {
+        if version == nil {
+            _ = try await version()
+        }
+        return version?.jadeNetworks == "TEST"
+        
+    }
+/*
+    override func connectPinServer(testnet: Bool? = nil) async throws {
         if pinServerSession == nil {
             if version == nil {
                 _ = try await version()
@@ -73,7 +55,7 @@ class JadeManager {
         }
         try await pinServerSession?.connect()
     }
-
+*/
     func getMasterXpub(chain: String ) async throws -> String {
         let version = try await version()
         let _: HWDevice = .defaultJade(fmwVersion: version.jadeVersion)
@@ -83,7 +65,8 @@ class JadeManager {
     func authenticating(testnet: Bool? = nil) async throws -> Bool {
         _ = try await jade.addEntropy()
         let version = try await version()
-        try? await connectPinServer(testnet: testnet)
+        let testnet = try await isTestnet()
+        try await connectPinServer(testnet: testnet)
         let chain = pinServerSession?.gdkNetwork.chain ?? "mainnet"
         switch version.jadeState {
         case "READY":
@@ -201,125 +184,5 @@ class JadeManager {
         let verifyAttestation = RSAVerifyParams(pem: extPubKey, challenge: pemChallenge.hex, signature: signAttestationResult.extSignature.hex)
         let verifiedAttestation = try? await session.rsaVerify(details: verifyAttestation)
         return verifiedAttestationJade?.result ?? false && verifiedAttestation?.result ?? false
-    }
-}
-
-extension JadeManager: JadeGdkRequest {
-    func bcurEncode(params: Any) async throws -> Any {
-        guard let params = params as? BcurEncodeParams else {
-            throw BLEManagerError.genericErr(txt: "Invalid bcur")
-        }
-        let res = try await pinServerSession?.bcurEncode(params: params)
-        guard let res = res else {
-            throw BLEManagerError.genericErr(txt: "Invalid bcur")
-        }
-        return res
-    }
-
-    @MainActor
-    func showUrlValidationWarning(domains: [String], completion: @escaping (UIAlertOption) -> () = { _ in }) {
-        if warningPinShowed {
-            completion(.continue)
-            return
-        }
-        DispatchQueue.main.async {
-            let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-            if let vc = hwFlow.instantiateViewController(withIdentifier: "PinServerWarnViewController") as? PinServerWarnViewController {
-                vc.onSupport = {
-                    if let url = URL(string: ExternalUrls.pinServerSupport + Common.versionNumber) {
-                        SafeNavigationManager.shared.navigate( url )
-                    }
-                    // navigating info center sends cancel event
-                    completion(.cancel)
-                }
-                vc.onConnect = { [weak self] notAskAgain in
-                    self?.warningPinShowed = true
-                    self?.customWhitelistUrls += domains
-                    if notAskAgain {
-                        self?.persistCustomWhitelistUrls += self?.customWhitelistUrls ?? []
-                    }
-                    completion(.continue)
-                }
-                vc.onClose = {
-                    completion(.cancel)
-                }
-                vc.domains = domains
-                vc.modalPresentationStyle = .overFullScreen
-                UIApplication.topViewController()?.present(vc, animated: false, completion: nil)
-            }
-        }
-    }
-
-    @MainActor
-    func showTorWarning(domains: [String], completion: @escaping (UIAlertOption) -> () = { _ in }) {
-        DispatchQueue.main.async {
-            let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-            if let vc = hwFlow.instantiateViewController(withIdentifier: "EnableTorViewController") as? EnableTorViewController {
-                vc.onConnect = { () in
-                    completion(.continue)
-                }
-                vc.onClose = { () in
-                    completion(.cancel)
-                }
-                vc.domains = domains
-                vc.modalPresentationStyle = .overFullScreen
-                UIApplication.topViewController()?.present(vc, animated: false, completion: nil)
-            }
-        }
-    }
-
-    @MainActor
-    func showUrlValidationWarning(domains: [String]) async -> UIAlertOption {
-        await withCheckedContinuation { continuation in
-            showUrlValidationWarning(domains: domains) { result in
-                continuation.resume(with: .success(result))
-            }
-        }
-    }
-
-    @MainActor
-    func showTorWarning(domains: [String]) async -> UIAlertOption {
-        await withCheckedContinuation { continuation in
-            showTorWarning(domains: domains) { result in
-                continuation.resume(with: .success(result))
-            }
-        }
-    }
-
-    func validateTor(urls: [String]) async -> Bool {
-        if urls.allSatisfy({ $0.contains(".onion") || $0.isEmpty }) && AppSettings.shared.gdkSettings?.tor == false {
-            switch await showTorWarning(domains: urls) {
-            case .continue:
-                if AppSettings.shared.gdkSettings?.tor == true {
-                    try? await self.pinServerSession?.disconnect()
-                    try? await self.pinServerSession?.connect()
-                }
-                return true
-            case .cancel:
-                return false
-            }
-        } else {
-            return true
-        }
-    }
-
-    func urlValidation(urls: [String]) async -> Bool {
-        let whitelistUrls = jade.blockstreamUrls + customWhitelistUrls + persistCustomWhitelistUrls
-        let whitelistDomains = whitelistUrls.compactMap { domain(from: $0) }
-        let domains = urls.filter { !$0.isEmpty }
-            .compactMap { domain(from: $0) }
-        let isUrlSafe = domains.allSatisfy { domain in whitelistDomains.contains(domain) }
-        if isUrlSafe {
-            return true
-        }
-        switch await showUrlValidationWarning(domains: domains) {
-        case .continue: return true
-        case .cancel: return false
-        }
-    }
-
-    func httpRequest(params: [String: Any]) async -> [String: Any]? {
-        try? await connectPinServer()
-        return self.pinServerSession?.httpRequest(params: params)
     }
 }

@@ -598,6 +598,7 @@
 		8135873D2DBFCC460000116B /* HWDialogConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8135873C2DBFCC400000116B /* HWDialogConnectViewController.swift */; };
 		8135873F2DBFCC8C0000116B /* HWDialogs.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8135873E2DBFCC8C0000116B /* HWDialogs.storyboard */; };
 		813872962A04AF450092CFD2 /* LNExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 813872952A04AF450092CFD2 /* LNExtensions.swift */; };
+		8138A5232ED0E7DF00C901E4 /* JadeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8138A5222ED0E7D500C901E4 /* JadeManager.swift */; };
 		81430C0D2C85D2A000C57B3E /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81430C0C2C85D2A000C57B3E /* Enums.swift */; };
 		814A9CBD2DDCDDB5004AE73F /* LTSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814A9CBC2DDCDDAE004AE73F /* LTSettingsViewController.swift */; };
 		814A9CC02DDCDF9A004AE73F /* LTSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814A9CBF2DDCDF95004AE73F /* LTSettingsModel.swift */; };
@@ -1614,6 +1615,7 @@
 		8135873E2DBFCC8C0000116B /* HWDialogs.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HWDialogs.storyboard; sourceTree = "<group>"; };
 		813872932A0480E20092CFD2 /* LightningSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningSessionManager.swift; sourceTree = "<group>"; };
 		813872952A04AF450092CFD2 /* LNExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNExtensions.swift; sourceTree = "<group>"; };
+		8138A5222ED0E7D500C901E4 /* JadeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeManager.swift; sourceTree = "<group>"; };
 		81430C0C2C85D2A000C57B3E /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		814A9CBC2DDCDDAE004AE73F /* LTSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTSettingsViewController.swift; sourceTree = "<group>"; };
 		814A9CBF2DDCDF95004AE73F /* LTSettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTSettingsModel.swift; sourceTree = "<group>"; };
@@ -4291,11 +4293,12 @@
 		81B0DDBB2DA5D33200B036FB /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				8138A5222ED0E7D500C901E4 /* JadeManager.swift */,
+				816184642A3B8AC1007D6569 /* BleJadeManager.swift */,
+				81E56A542C2476940012A5A3 /* QRJadeManager.swift */,
 				817A0B402A41D48600E2F80D /* BleLedgerManager.swift */,
 				818BA7192A30839B00DFB03A /* BleHwManager.swift */,
-				816184642A3B8AC1007D6569 /* BleJadeManager.swift */,
 				818BA7142A2F913C00DFB03A /* CentralManager.swift */,
-				81E56A542C2476940012A5A3 /* QRJadeManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -5272,6 +5275,7 @@
 				340EF8D828B3718D001AE87B /* WalletListCell.swift in Sources */,
 				34675B0A29409D9900771D50 /* Common.swift in Sources */,
 				34C67E7A2924F59700A50F89 /* AccountSelectSubCellModel.swift in Sources */,
+				8138A5232ED0E7DF00C901E4 /* JadeManager.swift in Sources */,
 				349984182E32255C00737E9F /* WatchonlyCell.swift in Sources */,
 				671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */,
 				347FD0B125FFA98300BB3FAB /* HomeViewController.swift in Sources */,

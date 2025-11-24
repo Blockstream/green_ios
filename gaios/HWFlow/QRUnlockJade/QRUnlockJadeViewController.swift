@@ -222,7 +222,7 @@ class QRUnlockJadeViewController: UIViewController {
             return
         }
         do {
-            let bcurHandshake = try await vm.jade.handshakeInit(bcur: bcur)
+            let bcurHandshake = try await vm.jade.qrauth(bcur: bcur)
             await MainActor.run {
                 vm.scope = .handshakeInitReply
                 qrBcur = bcurHandshake

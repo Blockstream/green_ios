@@ -64,7 +64,7 @@ class BleHwManager {
     static let shared = BleHwManager()
     var centralManager: CentralManager
     var type: DeviceType = .Jade
-    var jade: JadeManager?
+    var jade: BleJadeManager?
     var ledger: BleLedgerManager?
     var walletManager: WalletManager?
     var peripheralID: UUID? {
@@ -104,7 +104,7 @@ class BleHwManager {
         switch type {
         case .Jade:
             let connection = BleJadeConnection(peripheral: peripheral, centralManager: centralManager)
-            jade = JadeManager(connection: connection)
+            jade = BleJadeManager(connection: connection)
             ledger = nil
         case .Ledger:
             let impl = BleLedger(peripheral: peripheral, centralManager: centralManager)

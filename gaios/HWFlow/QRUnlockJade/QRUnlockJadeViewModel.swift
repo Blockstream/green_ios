@@ -24,7 +24,7 @@ class QRUnlockJadeViewModel {
         self.testnet = testnet
         self.askXpub = askXpub
         self.account = Account(name: "Jade", network: testnet ? .testnetSS : .bitcoinSS, isJade: true, watchonly: true)
-        jade = QRJadeManager(testnet: testnet)
+        jade = QRJadeManager(network: testnet ? .testnetSS : .bitcoinSS)
     }
 
     func stepTitle() -> String {
@@ -122,7 +122,7 @@ class QRUnlockJadeViewModel {
 
     func exportPsbt(psbt: String) async throws -> BcurEncodedData {
         let params = BcurEncodeParams(urType: "crypto-psbt", data: psbt)
-        guard let res = try await jade.device?.gdkRequestDelegate?.bcurEncode(params: params) as? BcurEncodedData else {
+        guard let res = try await jade.jade.gdkRequestDelegate?.bcurEncode(params: params) as? BcurEncodedData else {
             throw HWError.Abort("Invalid response")
         }
         return res
@@ -130,7 +130,7 @@ class QRUnlockJadeViewModel {
 
     func signPsbt(psbt: String) async throws -> BcurEncodedData {
         let params = BcurEncodeParams(urType: "crypto-psbt", data: psbt)
-        guard let res = try await jade.device?.gdkRequestDelegate?.bcurEncode(params: params) as? BcurEncodedData else {
+        guard let res = try await jade.jade.gdkRequestDelegate?.bcurEncode(params: params) as? BcurEncodedData else {
             throw HWError.Abort("Invalid response")
         }
         return res
