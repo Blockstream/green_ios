@@ -3,7 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## Unreleased
+
+## [5.1.3] - 2025-11-28
+
+#### Changed
+- Check custom oracle URLs in QR mode
+- Increase  minimum firmware version to 1.0.38
 
 ## [5.1.2] - 2025-11-12
  
