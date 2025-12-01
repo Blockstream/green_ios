@@ -362,6 +362,8 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
         switch TabHomeSection(rawValue: section) {
         case .assets, .chart:
             return sectionHeaderH
+        case .card:
+            return walletModel.alertCardCellModel.count > 0 ? 10.0 : 0.1
         default:
             return 0.1
         }
