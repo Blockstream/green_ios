@@ -174,19 +174,26 @@ class SendAddressInputViewController: KeyboardViewController {
     }
 
     func nextLwkLightning() {
-        if viewModel.preferredAccount == nil && viewModel.liquidSubaccountsWithFunds.count >= 1 {
+        if viewModel.preferredAccount == nil {
             // open liquid subaccount selection: go in account/asset screen
             var accounts = viewModel.liquidSubaccountsWithFunds
             if let lightningSubaccount = viewModel.lightningSubaccount {
                 accounts.insert(lightningSubaccount, at: 0)
             }
-            let model = AccountAssetViewModel(
-                accounts: accounts,
-                createTx: viewModel.createTx,
-                funded: true,
-                showBalance: true,
-                showAssets: false)
-            presentAccountAssetViewController(model: model)
+            if accounts.count == 1 {
+                didSelectAccountAsset(
+                    account: accounts[0],
+                    asset: AssetInfo.lbtc
+                )
+            } else {
+                let model = AccountAssetViewModel(
+                    accounts: accounts,
+                    createTx: viewModel.createTx,
+                    funded: true,
+                    showBalance: true,
+                    showAssets: false)
+                presentAccountAssetViewController(model: model)
+            }
         } else if let subaccount = viewModel.preferredAccount ?? viewModel.liquidSubaccountsWithFunds.first {
             // use the preselected subaccount or not first empty subaccount
             didSelectAccountAsset(

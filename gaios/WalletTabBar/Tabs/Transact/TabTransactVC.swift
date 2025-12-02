@@ -374,13 +374,23 @@ extension TabTransactVC: AssetSelectViewControllerDelegate {
     func didSelectAnyAsset(_ type: AnyAssetType) {
         self.assetId = nil
         self.anyAsset = type
-        selectAccountScreen(assetId: AssetInfo.lbtcId, accounts: getAccounts())
+        let accounts = getAccounts()
+        if accounts.count == 1 {
+            didSelectAccount(accounts.first)
+        } else {
+            selectAccountScreen(assetId: AssetInfo.lbtcId, accounts: accounts)
+        }
     }
 
     func didSelectAsset(_ assetId: String) {
         self.assetId = assetId
         self.anyAsset = nil
-        selectAccountScreen(assetId: assetId, accounts: getAccounts())
+        let accounts = getAccounts()
+        if accounts.count == 1 {
+            didSelectAccount(accounts.first)
+        } else {
+            selectAccountScreen(assetId: assetId, accounts: accounts)
+        }
     }
 }
 extension TabTransactVC: DialogAccountsViewControllerDelegate {
