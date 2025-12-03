@@ -10,7 +10,7 @@ enum SecurityState {
     case alerted
 }
 class WalletModel {
-    
+
     var wm: WalletManager? { WalletManager.current }
     var mainAccount: Account? { AccountsRepository.shared.current }
     var session: SessionManager? { wm?.prominentSession }
@@ -19,20 +19,20 @@ class WalletModel {
     var isTxLoading = true // on init is always true
     var isBalanceLoading = true
     var expiredSubaccounts = [WalletItem]()
-    
+
     /// load visible subaccounts
     var subaccounts: [WalletItem] { wm?.subaccounts.filter { !($0.hidden) } ?? [] }
     var watchOnly: Bool { wm?.isWatchonly ?? false}
     var headerIcon: UIImage { return UIImage(named: wm?.prominentNetwork.gdkNetwork.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white) }
-    
+
     /// Cached data
     var cachedTransactions = [String: [Transactions]]()
     var cachedBalance: AssetAmountList?
     var cachedMeldTransactions = [Transaction]()
-    
+
     /// if no accounts show the layer
     var welcomeLayerVisibility: (() -> Void)?
-    
+
     /// cell models
     var txCellModels = [TransactionCellModel]()
     var balanceCellModel: BalanceCellModel?
@@ -45,13 +45,15 @@ class WalletModel {
             .nonZeroAmounts()
             .compactMap { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1, masked: hideBalance, hidden: false) } ?? []
     }
-    
+
     var remoteAlert: RemoteAlert?
-    
+
     var balanceDisplayMode: BalanceDisplayMode = .denom
-    
+
     var analyticsDone = false
+
     var isFirstLoad = false
+
     var hideBalance: Bool {
         get {
             return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
@@ -60,7 +62,7 @@ class WalletModel {
             UserDefaults.standard.set(newValue, forKey: AppStorageConstants.hideBalance.rawValue)
         }
     }
-    
+
     var fetchingTxs = false
     var securityState = SecurityState.alerted
     var currency: String? {
@@ -69,7 +71,7 @@ class WalletModel {
         }
         return nil
     }
-    
+
     init() {
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .walletOverview, networks: wm?.activeNetworks ?? []).first
         if let promo = PromoManager.shared.promoCellModels(.homeTab).first?.promo,
@@ -77,7 +79,7 @@ class WalletModel {
             PromoManager.shared.promoView(promo: promo, source: source)
         }
     }
-    
+
     func getAssetId() -> String {
         let lSubs: [WalletItem] = subaccounts.filter { $0.gdkNetwork.liquid == true }
         if lSubs.count == subaccounts.count && lSubs.count > 0 {
@@ -86,14 +88,19 @@ class WalletModel {
             return "btc"
         }
     }
+
     func fetchBalances(discovery: Bool) async throws {
-        
         var subaccounts: [WalletItem] = try await wm?.subaccounts(discovery) ?? []
         let balances = try await wm?.balances(subaccounts: subaccounts)
-        
-        for subaccount in subaccounts where (subaccount.hidden == true && accountIsFunded(subaccount)) {
-            try await unarchiveSubaccount(subaccount)
+        for subaccount in subaccounts {
+            if subaccount.hidden == true && accountIsFunded(subaccount) {
+                try await unarchiveSubaccount(subaccount)
+            }
+            if isFirstLoad == true && subaccount.hidden == false && subaccount.type == .segwitWrapped && !accountIsFunded(subaccount) {
+                try await archiveSubaccount(subaccount)
+            }
         }
+        isFirstLoad = false
         subaccounts = try await wm?.subaccounts(false) ?? []
         if let balances = balances {
             cachedBalance = AssetAmountList(balances)
@@ -112,6 +119,11 @@ class WalletModel {
         guard let session = WalletManager.current?.sessions[subaccount.gdkNetwork.network] else { return }
         let params = UpdateSubaccountParams(subaccount: subaccount.pointer, hidden: false)
         try? await session.updateSubaccount(params)
+    }
+    func archiveSubaccount(_ account: WalletItem) async throws {
+        guard let session = wm?.sessions[account.gdkNetwork.network] else { return }
+        let params = UpdateSubaccountParams(subaccount: account.pointer, hidden: true)
+        try await session.updateSubaccount(params)
     }
     func reloadBalances() {
         if let cachedBalance = self.cachedBalance {

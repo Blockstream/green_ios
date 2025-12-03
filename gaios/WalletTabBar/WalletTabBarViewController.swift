@@ -75,7 +75,9 @@ class WalletTabBarViewController: UITabBarController {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
         if walletModel.isFirstLoad {
-            walletModel.isFirstLoad = false
+            // moved this reset in model
+            // after discovery completes
+            // walletModel.isFirstLoad = false
             // load welcome dialog
             addWelcomeDialog()
             // load backup alert
@@ -91,7 +93,7 @@ class WalletTabBarViewController: UITabBarController {
         walletModel.reloadTransactions()
         updateTabs([.home, .transact])
     }
-    
+
     func addWelcomeDialog() {
         // load welcome dialog
         if let view = UIApplication.shared.delegate?.window??.rootViewController?.view {
