@@ -29,8 +29,12 @@ class AppNotifications: NSObject {
             DispatchQueue.main.async {
                 switch settings.authorizationStatus {
                 case .denied:
-                    // User has previously denied permission. Show custom dialog.
-                    self.showManualEnableAlert(from: viewController)
+                    // User has previously denied permission. Show custom dialog only once.
+                    let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
+                    let hasShownPrompt = defaults?.bool(forKey: "notificationNagAlertV0") ?? false
+                    if !hasShownPrompt {
+                        self.showManualEnableAlert(from: viewController)
+                    }
                 case .notDetermined:
                     // Permission hasn't been requested yet. Request it normally.
                     self.requestNotificationPermission()
@@ -65,8 +69,6 @@ class AppNotifications: NSObject {
             message: "Enable seamless background payments and real-time updates on your BTC purchases.",
             preferredStyle: .alert
         )
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alertController.addAction(cancelAction)
         let settingsAction = UIAlertAction(title: "Enable in Settings", style: .default) { _ in
             // Redirect user to app's notification settings
             if let settingsURLString = UIApplication.notificationSettingsURLString,
@@ -77,6 +79,17 @@ class AppNotifications: NSObject {
             }
         }
         alertController.addAction(settingsAction)
+        alertController.preferredAction = settingsAction
+
+        let dontAskAction = UIAlertAction(title: "Don't Ask Again", style: .default) { _ in
+            // Set flag to prevent showing this alert again
+            let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
+            defaults?.set(true, forKey: "notificationNagAlertV0")
+        }
+        alertController.addAction(dontAskAction)
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
         viewController.present(alertController, animated: true, completion: nil)
     }
 }
