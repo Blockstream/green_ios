@@ -61,15 +61,16 @@ class AppNotifications: NSObject {
 
     private func showManualEnableAlert(from viewController: UIViewController) {
         let alertController = UIAlertController(
-            title: "Notifications Disabled",
-            message: "Enable notifications in your device settings.",
+            title: "Enable Notifications",
+            message: "Enable seamless background payments and real-time updates on your BTC purchases.",
             preferredStyle: .alert
         )
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
-        let settingsAction = UIAlertAction(title: "Settings", style: .default) { _ in
+        let settingsAction = UIAlertAction(title: "Enable in Settings", style: .default) { _ in
             // Redirect user to app's notification settings
-            if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+            if let settingsURLString = UIApplication.notificationSettingsURLString,
+               let settingsURL = URL(string: settingsURLString) {
                 if UIApplication.shared.canOpenURL(settingsURL) {
                     UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
                 }
