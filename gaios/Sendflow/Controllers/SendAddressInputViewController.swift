@@ -180,7 +180,9 @@ class SendAddressInputViewController: KeyboardViewController {
             if let lightningSubaccount = viewModel.lightningSubaccount {
                 accounts.insert(lightningSubaccount, at: 0)
             }
-            if accounts.count == 1 {
+            if accounts.count == 0 {
+                enableError(true, text: "id_insufficient_funds".localized)
+            } else if accounts.count == 1 {
                 didSelectAccountAsset(
                     account: accounts[0],
                     asset: AssetInfo.lbtc
