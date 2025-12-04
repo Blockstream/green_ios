@@ -142,7 +142,7 @@ public class LwkSessionManager: SessionManager {
             webhook: webhook)
         let data = try res.serialize()
         let swapId = try res.swapId()
-        _ = try await BoltzController.shared.create(id: swapId, data: data, isPending: true, xpubHashId: xpubHashId, invoice: nil)
+        _ = try await BoltzController.shared.create(id: swapId, data: data, isPending: true, xpubHashId: xpubHashId, invoice: invoice)
         return res
     }
     /*
