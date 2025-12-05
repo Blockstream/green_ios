@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Unreleased
 
+## [5.1.4] - 2025-12-10
+
+### Added
+- Cross chain transfers between liquid and lightning
+- Bug fixes
+
 ## [5.1.3] - 2025-11-28
 
 #### Changed
