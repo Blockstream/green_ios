@@ -88,12 +88,13 @@ class OnboardViewModel {
         try await checkWalletsJustRestored(account: account, credentials: credentials)
         // login
         let walletIdentifier = try wallet.prominentSession?.walletIdentifier(credentials: credentials)
-        let lightningCredentials = try wallet.deriveLightningCredentials(from: credentials)
-        // add lightning auth into keychain
-        try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: lightningCredentials, for: account.keychainLightning)
+        let boltzCredentials = try wallet.deriveBoltzCredentials(from: credentials)
+        // add boltz auth into keychain
+        try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: boltzCredentials, for: account.keychain)
         let res = try await wallet.login(
             credentials: credentials,
-            lightningCredentials: lightningCredentials,
+            lightningCredentials: nil,
+            boltzCredentials: boltzCredentials,
             device: nil,
             masterXpub: nil,
             fullRestore: true,
@@ -133,12 +134,13 @@ class OnboardViewModel {
         } else {
             credentials = try await addBiometricData(wallet: wallet, account: account, credentials: credentials)
         }
-        let lightningCredentials = try wallet.deriveLightningCredentials(from: credentials)
-        try AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: lightningCredentials, for: account.keychainLightning)
+        let boltzCredentials = try wallet.deriveBoltzCredentials(from: credentials)
+        try AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: boltzCredentials, for: account.keychain)
         let walletIdentifier = try wallet.prominentSession?.walletIdentifier(credentials: credentials)
         let res = try await wallet.login(
             credentials: credentials,
-            lightningCredentials: lightningCredentials,
+            lightningCredentials: nil,
+            boltzCredentials: boltzCredentials,
             device: nil,
             masterXpub: nil,
             fullRestore: false,

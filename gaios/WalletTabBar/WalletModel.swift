@@ -404,7 +404,16 @@ class WalletModel {
         let account = AccountsRepository.shared.current
         let credentials = try? await wm?.prominentSession?.getCredentials(password: "")
         let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account?.keychainLightning ?? "")
-        _ = try await wm?.login(credentials: credentials, lightningCredentials: lightningCredentials, device: wm?.hwDevice, masterXpub: nil, fullRestore: false, parentWalletId: nil)
+        let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: account?.keychain ?? "")
+        let walletIdentifier = try wm?.prominentSession?.walletIdentifier(credentials: credentials)
+        _ = try await wm?.login(
+            credentials: credentials,
+            lightningCredentials: lightningCredentials,
+            boltzCredentials: boltzCredentials,
+            device: wm?.hwDevice,
+            masterXpub: nil,
+            fullRestore: false,
+            parentWalletId: walletIdentifier)
         _ = try await wm?.subaccounts()
     }
 }

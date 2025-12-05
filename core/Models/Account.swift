@@ -85,7 +85,16 @@ public struct Account: Codable, Equatable {
     public var hasWoCredentials: Bool { hasAuthentication(.AuthKeyWoCredentials) }
     public var hasWoBioCredentials: Bool { hasAuthentication(.AuthKeyWoBioCredentials) }
     public var hasLightningKey: Bool { hasAuthentication(.AuthKeyLightning) }
+    public var hasBoltzKey: Bool { hasAuthentication(.AuthKeyBoltz) }
     public var hasPin: Bool { hasManualPin || hasBioPin }
+    
+    public var lightningKey: Credentials { get throws {
+        try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: keychainLightning)
+    }}
+    public var boltzKey: Credentials { get throws {
+        try AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: keychain)
+    }}
+    
 
     public var icon: UIImage {
         get {

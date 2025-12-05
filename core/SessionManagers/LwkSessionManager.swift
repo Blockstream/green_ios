@@ -44,8 +44,11 @@ public enum BoltzSwapTypes: String {
     case ReverseSubmarine = "reverse"
 }
 
+
+
 public class LwkSessionManager: SessionManager {
 
+    static let BOLTZ_BIP85_INDEX: UInt32 = 26589
     static let BASE_URL = "https://green-webhooks.blockstream.com/"
     static let DEV_BASE_URL = "https://green-webhooks.dev.blockstream.com/"
     var network = Network.mainnet()

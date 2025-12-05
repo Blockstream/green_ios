@@ -49,6 +49,7 @@ public class AuthenticationTypeHandler {
         case AuthKeyLightning = "com.blockstream.green.auth_key_credentials" // for lightning credentials
         case AuthKeyWoCredentials = "com.blockstream.green.auth_key_wo_credentials" // for wathonly credentials
         case AuthKeyWoBioCredentials = "com.blockstream.green.auth_key_wo_bio_credentials" // for wathonly credentials with bio auth
+        case AuthKeyBoltz = "com.blockstream.green.auth_key_boltz" // for lwk boltz
     }
 
     static let PrivateKeyPathSize = 32
@@ -259,7 +260,7 @@ public class AuthenticationTypeHandler {
             switch method {
             case .AuthKeyBiometric, .AuthKeyPrivate:
                 q[kSecAttrAccessible] = kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
-            case .AuthKeyLightning, .AuthCertLightning:
+            case .AuthKeyLightning, .AuthCertLightning, .AuthKeyBoltz:
                 q[kSecAttrAccessible] = kSecAttrAccessibleAfterFirstUnlock
             case .AuthKeyPIN, .AuthKeyWoCredentials:
                 q[kSecAttrAccessible] = kSecAttrAccessibleWhenUnlocked
@@ -440,7 +441,7 @@ public class AuthenticationTypeHandler {
     }
 
     public static func setCredentials(method: AuthType, credentials: Credentials, for label: String) throws {
-        guard [AuthType.AuthKeyLightning, AuthType.AuthKeyWoCredentials, AuthType.AuthKeyWoBioCredentials].contains(method) else {
+        guard [AuthType.AuthKeyLightning, AuthType.AuthKeyWoCredentials, AuthType.AuthKeyWoBioCredentials, AuthType.AuthKeyBoltz].contains(method) else {
             throw AuthError.SecurityError("Invalid method")
         }
         try AuthenticationTypeHandler.setAuth(method: method, data: credentials, for: label)
@@ -457,7 +458,7 @@ public class AuthenticationTypeHandler {
         return try getAuth(method: method, for: label)
     }
     public static func getCredentials(method: AuthType, for label: String) throws -> Credentials {
-        guard [AuthType.AuthKeyLightning, AuthType.AuthKeyWoCredentials, AuthType.AuthKeyWoBioCredentials].contains(method) else {
+        guard [AuthType.AuthKeyLightning, AuthType.AuthKeyBoltz, AuthType.AuthKeyWoCredentials, AuthType.AuthKeyWoBioCredentials].contains(method) else {
             throw AuthError.SecurityError("Invalid method")
         }
         return try getAuth(method: method, for: label)

@@ -91,7 +91,7 @@ class NotificationService: UNNotificationServiceExtension {
             dismiss: shutdown
         )
         let task = Task {
-            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
+            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: account.keychain)
             guard let mnemonic = credentials.mnemonic else {
                 logger.error("\(self.TAG, privacy: .public): Mnemonic not found")
                 throw NotificationError.Failed

@@ -202,6 +202,7 @@ class BleHwManager {
                 let res = try await walletManager.login(
                    credentials: nil,
                    lightningCredentials: derivedCredentials,
+                   boltzCredentials: nil,
                    device: device,
                    masterXpub: masterXpub,
                    fullRestore: false,

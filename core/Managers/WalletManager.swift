@@ -307,6 +307,7 @@ public class WalletManager {
         session: SessionManager,
         credentials: Credentials?,
         lightningCredentials: Credentials?,
+        boltzCredentials: Credentials?,
         device: HWDevice?,
         masterXpub: String?,
         fullRestore: Bool,
@@ -323,7 +324,7 @@ public class WalletManager {
                 }
             case .lwkMainnet:
                 // Connect and login Lwk
-                if let session = lwkSession, let credentials = lightningCredentials {
+                if let session = lwkSession, let credentials = boltzCredentials {
                     loginUserResult = try await loginLWK(lwk: session, credentials: credentials, parentWalletId: parentWalletId)
                 }
             default:
@@ -344,6 +345,7 @@ public class WalletManager {
     public func login(
         credentials: Credentials?,
         lightningCredentials: Credentials?,
+        boltzCredentials: Credentials?,
         device: HWDevice?,
         masterXpub: String?,
         fullRestore: Bool,
@@ -358,6 +360,7 @@ public class WalletManager {
                     session: session,
                     credentials: credentials,
                     lightningCredentials: lightningCredentials,
+                    boltzCredentials: boltzCredentials,
                     device: device,
                     masterXpub: masterXpub,
                     fullRestore: fullRestore,
@@ -647,6 +650,19 @@ public class WalletManager {
         }
     }
 
+    public func deriveBoltzCredentials(from credentials: Credentials) throws -> Credentials {
+        guard let mnemonic = credentials.mnemonic else {
+            throw GaError.GenericError("No such mnemonic")
+        }
+        let bip85Key = Wally.bip85FromMnemonic(
+            mnemonic: mnemonic,
+            passphrase: credentials.bip39Passphrase,
+            isTestnet: false,
+            index: LwkSessionManager.BOLTZ_BIP85_INDEX)
+        return Credentials(
+            mnemonic: bip85Key,
+            bip39Passphrase: credentials.bip39Passphrase)
+    }
     public func deriveLightningCredentials(from credentials: Credentials) throws -> Credentials {
         guard let mnemonic = credentials.mnemonic else {
             throw GaError.GenericError("No such mnemonic")

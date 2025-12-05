@@ -63,16 +63,19 @@ class LoginViewModel {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = HwPopupResolver()
-        if !account.hasLightningKey {
-            let lightningCredentials = try wm.deriveLightningCredentials(from: credentials)
-            try AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: lightningCredentials, for: account.keychainLightning)
+        if !account.hasBoltzKey {
+            let boltzCredentials = try wm.deriveBoltzCredentials(from: credentials)
+            try AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: boltzCredentials, for: account.keychain)
         }
-        var lightningCredentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
-        lightningCredentials.bip39Passphrase = credentials.bip39Passphrase
+        var lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
+        lightningCredentials?.bip39Passphrase = credentials.bip39Passphrase
+        var boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: account.keychain)
+        boltzCredentials?.bip39Passphrase = credentials.bip39Passphrase
         let walletIdentifier = try wm.prominentSession?.walletIdentifier(credentials: credentials)
         let res = try await wm.login(
             credentials: credentials,
             lightningCredentials: lightningCredentials,
+            boltzCredentials: boltzCredentials,
             device: nil,
             masterXpub: nil,
             fullRestore: false,
