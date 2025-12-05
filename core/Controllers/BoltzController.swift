@@ -83,6 +83,14 @@ public actor BoltzController {
         return item
     }
 
+    public func upsert(id: String, data: String, isPending: Bool, xpubHashId: String, invoice: String?) async throws {
+        if let swapID = try? await BoltzController.shared.fetchID(byId: id) {
+            try? await update(with: swapID, newData: data)
+        } else {
+            _ = try? await create(id: id, data: data, isPending: true, xpubHashId: xpubHashId, invoice: data)
+        }
+    }
+
     /// Fetch object of a 'BoltzSwap' from his id.
     public func get(with id: NSManagedObjectID) async throws -> BoltzSwap? {
         // objectWithID: efficiently uses in-memory information or the store as needed

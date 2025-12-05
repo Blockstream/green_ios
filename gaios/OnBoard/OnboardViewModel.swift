@@ -101,7 +101,12 @@ class OnboardViewModel {
             parentWalletId: walletIdentifier)
         account.xpubHashId = res?.xpubHashId
         account.walletHashId = res?.walletHashId
-        AnalyticsManager.shared.importWallet(account: account)
+        // restore previous swaps
+        if let liquidSubaccount = wallet.liquidSubaccounts.first, let xpubHashId = res?.xpubHashId {
+            if let liquidAddress = try await liquidSubaccount.session?.getReceiveAddress(subaccount: liquidSubaccount.pointer).address {
+                try await wallet.lwkSession?.restoreSwaps(address: liquidAddress, xpubHashId: xpubHashId)
+            }
+        }
         // cleanup previous restored account
         if let restoreAccountId = OnboardViewModel.restoreAccountId {
             if let restoredAccount = AccountsRepository.shared.get(for: restoreAccountId) {
@@ -109,6 +114,8 @@ class OnboardViewModel {
                 await AccountsRepository.shared.remove(restoredAccount)
             }
         }
+        // notify analytics
+        AnalyticsManager.shared.importWallet(account: account)
         return (account, wallet)
     }
 

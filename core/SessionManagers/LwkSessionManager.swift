@@ -282,6 +282,30 @@ public class LwkSessionManager: SessionManager {
         let btc = lbtc?["BTC"] as? [String: Any]
         return BoltzSubmarineSwapInfoLBTC.from(btc ?? [:]) as? BoltzSubmarineSwapInfoLBTC
     }
+
+    nonisolated public func restoreSwaps(address: String, xpubHashId: String) async throws {
+        logger.info("Restoring swaps, recover address \(address)")
+        guard let boltzSession = boltzSession else {
+            return
+        }
+        let address = try Address(s: address)
+        let list = try boltzSession.swapRestore()
+        let reverseSwaps = try boltzSession.restorableReverseSwaps(swapList: list, claimAddress: address)
+        for reverseSwap in reverseSwaps {
+            let invoice = try boltzSession.restoreInvoice(data: reverseSwap)
+            let swapId = try invoice.swapId()
+            let data = try invoice.serialize()
+            try? await BoltzController.shared.upsert(id: swapId, data: data, isPending: true, xpubHashId: xpubHashId, invoice: data)
+        }
+        
+        let submarineSwaps = try boltzSession.restorableSubmarineSwaps(swapList: list, refundAddress: address)
+        for submarineSwap in submarineSwaps {
+            let pay = try boltzSession.restorePreparePay(data: submarineSwap)
+            let swapId = try pay.swapId()
+            let data = try pay.serialize()
+            try? await BoltzController.shared.upsert(id: swapId, data: data, isPending: true, xpubHashId: xpubHashId, invoice: data)
+        }
+    }
 }
 
 extension LwkSessionManager: Logging {
