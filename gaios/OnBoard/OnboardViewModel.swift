@@ -102,18 +102,6 @@ class OnboardViewModel {
         account.xpubHashId = res?.xpubHashId
         account.walletHashId = res?.walletHashId
         AnalyticsManager.shared.importWallet(account: account)
-        // check existing lightning subaccount
-        if let lightningSession = wallet.lightningSession,
-           AppSettings.shared.experimental && lightningSession.logged {
-            let balance = try await lightningSession.getBalance(subaccount: 0, numConfs: 0)
-            let txs = try await lightningSession.transactions(subaccount: 0)
-            if txs.list.isEmpty && balance[AssetInfo.btcId] ?? 0 == 0 {
-                // remove session
-                try? await lightningSession.disconnect()
-                await lightningSession.removeDatadir(credentials: lightningCredentials)
-                _ = try? await wallet.subaccounts()
-            }
-        }
         // cleanup previous restored account
         if let restoreAccountId = OnboardViewModel.restoreAccountId {
             if let restoredAccount = AccountsRepository.shared.get(for: restoreAccountId) {
