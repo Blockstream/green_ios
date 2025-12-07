@@ -88,7 +88,9 @@ public class LightningBridge {
     }
 
     public func balance() -> UInt64? {
-        return updateNodeInfo()?.channelsBalanceSatoshi
+        guard let info = updateNodeInfo() else { return nil }
+        // Total balance = channels + on-chain funds
+        return info.channelsBalanceSatoshi + info.onchainBalanceSatoshi
     }
 
     public func parseBolt11(bolt11: String) -> LnInvoice? {
