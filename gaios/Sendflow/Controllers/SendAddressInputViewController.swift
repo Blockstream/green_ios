@@ -148,16 +148,27 @@ class SendAddressInputViewController: KeyboardViewController {
         let res = await Task.detached {
             try await self.viewModel.parse()
             try await self.viewModel.loadSubaccountBalance()
-            // check lightning available cases
             let viewModel = await self.viewModel
-            let lightningSubaccount = viewModel?.lightningSubaccount
-            if let lightningTx = viewModel?.createTx, lightningSubaccount == nil && lightningTx.isLightning {
-                if lightningTx.txType == .bolt11 && lightningTx.anyAmounts ?? false {
-                    throw TransactionError.invalid(localizedDescription: "Invoice without amount not supported")
-                } else if lightningTx.txType == .lnurl {
-                    throw TransactionError.invalid(localizedDescription: "LNURL not supported")
+            guard let lightningTx = viewModel?.createTx else {
+                return
+            }
+            // check bolt11
+            if lightningTx.isLightning && [TxType.bolt11, TxType.lnurl].contains(lightningTx.txType) {
+                if let lightningSubaccount = viewModel?.lightningSubaccount {
+                    // check channel balance on existing lightning subaccount
+                    if viewModel?.lightningSession?.nodeState?.channelsBalanceMsat.satoshi ?? 0 == 0 {
+                        throw TransactionError.invalid(localizedDescription: "id_insufficient_funds")
+                    }
                 } else {
-                    throw TransactionError.invalid(localizedDescription: "No lightning available")
+                    // without exist lightning subaccount
+                    if lightningTx.txType == .lnurl {
+                        throw TransactionError.invalid(localizedDescription: "LNURL not supported")
+                    } else if lightningTx.anyAmounts ?? false {
+                        throw TransactionError.invalid(localizedDescription: "Invoice without amount not supported")
+                    } else {
+                        // default lwk errors
+                        _ = try await viewModel?.parseLwkLightning()
+                    }
                 }
             }
         }.result

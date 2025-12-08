@@ -4,6 +4,7 @@ import gdk
 import greenaddress
 import hw
 import core
+import AsyncAlgorithms
 
 enum SecurityState {
     case normal

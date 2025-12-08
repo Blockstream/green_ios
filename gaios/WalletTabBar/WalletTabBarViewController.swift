@@ -1,6 +1,7 @@
 import UIKit
 import core
 import gdk
+import AsyncAlgorithms
 
 class WalletTabBarViewController: UITabBarController {
 
@@ -89,9 +90,9 @@ class WalletTabBarViewController: UITabBarController {
         }
         setSecurityState(BackupHelper.shared.needsBackup(walletId: AccountsRepository.shared.current?.id) ? .alerted : .normal)
         // reload tabs content on appear
-        walletModel.reloadBalances()
-        walletModel.reloadTransactions()
-        updateTabs([.home, .transact])
+        Task.detached { [weak self] in
+            await self?.monitorReloads()
+        }
     }
 
     func addWelcomeDialog() {
@@ -198,14 +199,24 @@ class WalletTabBarViewController: UITabBarController {
         }
     }
 
+    private let channelReloads = AsyncChannel<Bool>()
+
     func reload(discovery: Bool) async {
+        await channelReloads.send(discovery)
+    }
+
+    func monitorReloads() async {
+        for await discovery in channelReloads {
+            await reloadDiscovery(discovery: discovery)
+        }
+    }
+
+    func reloadDiscovery(discovery: Bool) async {
+        logger.info("WTB reload discovery \(discovery, privacy: .public)")
         if walletModel.paused {
+            logger.info("WTB reload paused")
             return
         }
-        if isReloading {
-            return
-        }
-        isReloading = true
         try? await self.walletModel.fetchBalances(discovery: discovery)
         walletModel.reloadBalances()
         updateTabs([.home, .transact])
@@ -214,10 +225,8 @@ class WalletTabBarViewController: UITabBarController {
         updateTabs([.home, .transact])
         walletModel.reloadPromoCards()
         walletModel.reloadBackupCards()
-
-        isReloading = false
         self.updateTabs([.home, .transact])
-        logger.info("reload discovery \(discovery, privacy: .public)")
+        logger.info("WTB reload success")
     }
 
     func reloadChart() async {

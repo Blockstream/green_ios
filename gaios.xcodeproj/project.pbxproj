@@ -791,6 +791,7 @@
 		81CCDF082B9F3E3800C8490C /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CCDF072B9F3E3800C8490C /* Logger.swift */; };
 		81CDF3452BF2D50500AA4C19 /* SendHWConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CDF3442BF2D50500AA4C19 /* SendHWConfirmViewModel.swift */; };
 		81D404E12A1D6138002631F5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D404E02A1D6138002631F5 /* Utils.swift */; };
+		81D6B3072EE8189400A637C4 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 81D6B3062EE8189400A637C4 /* AsyncAlgorithms */; };
 		81D932132A77968500356D06 /* DialogSignViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D932122A77968500356D06 /* DialogSignViewModel.swift */; };
 		81DAEE042DD4110F00635591 /* ReceiveAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81DAEE022DD4110E00635591 /* ReceiveAssetCell.xib */; };
 		81DAEE052DD4110F00635591 /* ReceiveAssetCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DAEE012DD4110E00635591 /* ReceiveAssetCellModel.swift */; };
@@ -1864,6 +1865,7 @@
 				81961B3C29E4F4A200E9B94D /* greenaddress.framework in Frameworks */,
 				819FDFC02EC1F38C00C8CE66 /* LiquidWalletKit in Frameworks */,
 				34A7F4FC2DE83CBE0003B9FE /* ScreenShield in Frameworks */,
+				81D6B3072EE8189400A637C4 /* AsyncAlgorithms in Frameworks */,
 				8173B8EC2AB19DB800C15C85 /* ZendeskSupportSDK in Frameworks */,
 				8177ED8E2B6C688C00C2271C /* core.framework in Frameworks */,
 				81961A6129E46B5600E9B94D /* gdk.framework in Frameworks */,
@@ -4533,6 +4535,7 @@
 				34F0EC2A2D783E140017C276 /* DGCharts */,
 				34A7F4FB2DE83CBE0003B9FE /* ScreenShield */,
 				819FDFBF2EC1F38C00C8CE66 /* LiquidWalletKit */,
+				81D6B3062EE8189400A637C4 /* AsyncAlgorithms */,
 			);
 			productName = gaios;
 			productReference = 676FCF1C1F9D0CF800354E93 /* gaios.app */;
@@ -4791,6 +4794,7 @@
 				34F0EC292D783E140017C276 /* XCRemoteSwiftPackageReference "Charts" */,
 				34A7F4FA2DE83CBE0003B9FE /* XCRemoteSwiftPackageReference "ScreenShield" */,
 				81B0DC412E9478EC00CE6F5D /* XCRemoteSwiftPackageReference "lwk-swift" */,
+				81D6B3052EE8189400A637C4 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
 			);
 			productRefGroup = 676FCF1D1F9D0CF800354E93 /* Products */;
 			projectDirPath = "";
@@ -7493,6 +7497,14 @@
 				revision = 1892410d13fceccd7cf91f803f06f110efc215b3;
 			};
 		};
+		81D6B3052EE8189400A637C4 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-async-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -7570,6 +7582,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 81B2350D2A6A8BCD00B8FF5D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */;
 			productName = Countly;
+		};
+		81D6B3062EE8189400A637C4 /* AsyncAlgorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81D6B3052EE8189400A637C4 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
+			productName = AsyncAlgorithms;
 		};
 /* End XCSwiftPackageProductDependency section */
 

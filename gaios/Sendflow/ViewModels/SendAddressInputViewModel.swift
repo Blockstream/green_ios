@@ -53,14 +53,11 @@ class SendAddressInputViewModel {
         self.assetId = assetId
     }
 
-    private func parseLwkLightning() async throws -> CreateTx? {
-        guard let input = input else {
-            return nil
-        }
-        let bolt11 = input.replacingOccurrences(of: "lightning:", with: "")
+    func parseLwkLightning() async throws -> CreateTx {
+        let bolt11 = (input ?? "").replacingOccurrences(of: "lightning:", with: "")
         let invoice = try Bolt11Invoice(s: bolt11)
         guard let satoshi = invoice.amountMilliSatoshis()?.satoshi else {
-            return nil
+            throw TransactionError.invalid(localizedDescription: "Invoice without amount not supported")
         }
         let addressee = Addressee.from(address: invoice.description, satoshi: Int64(satoshi), assetId: AssetInfo.lbtcId, txType: .lwkSwap)
         return CreateTx(addressee: addressee, txType: .lwkSwap)

@@ -46,11 +46,12 @@ class SendLightningViewModel {
         let xpub = AccountsRepository.shared.current?.xpubHashId
         let existingSwapIds = try await BoltzController.shared.fetchIDs(byXpubHashId: xpub, byInvoice: invoice)
         if let swapId = existingSwapIds.first {
-            let swap = try await BoltzController.shared.get(with: swapId)
-            guard let pay = try await lwk.restorePreparePay(data: swap?.data ?? "") else {
-                throw GaError.GenericError("Invalid restored swap")
+            if let swap = try await BoltzController.shared.get(with: swapId), swap.type == .Submarine, let data = swap.data {
+                guard let pay = try await lwk.restorePreparePay(data: data) else {
+                    throw GaError.GenericError("Invalid restored swap")
+                }
+                return pay
             }
-            return pay
         }
         let address = try await liquidSession.getReceiveAddress(subaccount: liquidAccount.pointer)
         guard let address = address.address else {
