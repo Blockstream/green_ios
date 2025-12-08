@@ -59,8 +59,10 @@ class SendAddressInputViewModel {
         }
         let bolt11 = input.replacingOccurrences(of: "lightning:", with: "")
         let invoice = try Bolt11Invoice(s: bolt11)
-        let satoshi = invoice.amountMilliSatoshis()?.satoshi
-        let addressee = Addressee.from(address: invoice.description, satoshi: Int64(satoshi ?? 0), assetId: AssetInfo.lbtcId, txType: .lwkSwap)
+        guard let satoshi = invoice.amountMilliSatoshis()?.satoshi else {
+            return nil
+        }
+        let addressee = Addressee.from(address: invoice.description, satoshi: Int64(satoshi), assetId: AssetInfo.lbtcId, txType: .lwkSwap)
         return CreateTx(addressee: addressee, txType: .lwkSwap)
     }
 
@@ -78,7 +80,7 @@ class SendAddressInputViewModel {
             if anyAmounts == true {
                 addressee?.satoshi = nil
             }
-            let lightningType = lightningSession.lightBridge?.parseBoltOrLNUrl(input: input)
+            let lightningType = LightningBridge.parseBoltOrLNUrl(input: input)
             let txType: TxType = { switch lightningType {
                 case .bolt11(_): return .bolt11
                 default: return .lnurl
@@ -196,15 +198,13 @@ class SendAddressInputViewModel {
             createTx = res
             return
         }
-        if let res = try await parseLwkLightning() {
+        if let res = try? await parseLwkLightning() {
             createTx = res
             return
         }
-        if lightningSession?.logged ?? false {
-            if let res = try await parseBreezLightning() {
-                createTx = res
-                return
-            }
+        if let res = try await parseBreezLightning() {
+            createTx = res
+            return
         }
         if let res = try? await parsePsbtBitcoin() {
             createTx = res

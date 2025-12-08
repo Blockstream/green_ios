@@ -163,7 +163,7 @@ public class LightningSessionManager: SessionManager {
         let invoiceOrLnUrl = addressee?.address
         let satoshi = tx.anyAmouts ? UInt64(addressee?.satoshi ?? 0) : nil
         let comment = tx.memo ?? ""
-        switch lightBridge?.parseBoltOrLNUrl(input: invoiceOrLnUrl) {
+        switch LightningBridge.parseBoltOrLNUrl(input: invoiceOrLnUrl) {
         case .bolt11(let invoice):
             // Check for expiration
             print ("Expire in \(invoice.expiry)")
@@ -224,7 +224,7 @@ public class LightningSessionManager: SessionManager {
     public override func createTransaction(tx: Transaction) async throws -> Transaction {
         let address = tx.addressees.first?.address ?? ""
         let userInputSatoshi = tx.addressees.first?.satoshi ?? 0
-        switch lightBridge?.parseBoltOrLNUrl(input: address) {
+        switch LightningBridge.parseBoltOrLNUrl(input: address) {
         case .bolt11(let invoice):
             // Check for expiration
             print ("Expire in \(invoice.expiry)")
@@ -273,7 +273,7 @@ public class LightningSessionManager: SessionManager {
     }
 
     public override func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?, network: NetworkSecurityCase?) async throws -> ValidateAddresseesResult {
-        guard let inputType = lightBridge?.parseBoltOrLNUrl(input: input) else {
+        guard let inputType = LightningBridge.parseBoltOrLNUrl(input: input) else {
             throw GaError.GenericError()
         }
         switch inputType {
@@ -288,20 +288,17 @@ public class LightningSessionManager: SessionManager {
             if let satoshi = invoice.amountSatoshi {
                 let subaccount = try await subaccount(0)
                 subaccount.satoshi = try await getBalance(subaccount: 0, numConfs: 0)
-                //if let error = generateLightningError(account: subaccount, satoshi: satoshi) {
-                //    return ValidateAddresseesResult(isValid: true, errors: [error], addressees: [])
-                //}
             }
             let addr = Addressee.fromLnInvoice(invoice, fallbackAmount: 0)
             return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
-        case .lnUrlPay(let data, let bip353Address):
-            let addr = Addressee.fromRequestData(data, input: input, satoshi: nil)
-            return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
-        case .lnUrlAuth, .lnUrlWithdraw:
-            let addr = Addressee.from(address: input, satoshi: nil, assetId: nil)
-            return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
+        case .lnUrlPay:
+            return ValidateAddresseesResult(isValid: false, errors: ["LNURL not supported"], addressees: [])
+        case .lnUrlAuth:
+            return ValidateAddresseesResult(isValid: false, errors: ["LNURL Auth not supported"], addressees: [])
+        case .lnUrlWithdraw:
+            return ValidateAddresseesResult(isValid: false, errors: ["LNURL Withdraw not supported"], addressees: [])
         case .nodeId, .url, .lnUrlError:
-            return ValidateAddresseesResult(isValid: false, errors: ["Unsupported"], addressees: [])
+            return ValidateAddresseesResult(isValid: false, errors: ["Not supported"], addressees: [])
         }
     }
 

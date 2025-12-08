@@ -108,12 +108,7 @@ class SendAddressInputViewController: KeyboardViewController {
         if enable {
             infoBg.backgroundColor = UIColor.gRedWarn()
             infoView.isHidden = false
-            if (
-                text ?? "").starts(with: "InvalidBolt11Invoice") {
-                lblInvalid.text = "Invalid invoice. Paste a standard bolt11 invoice with an amount."
-            } else {
-                lblInvalid.text = text?.localized ?? ""
-            }
+            lblInvalid.text = text?.localized ?? ""
         } else {
             infoBg.backgroundColor = .clear
             infoView.isHidden = true
@@ -153,6 +148,18 @@ class SendAddressInputViewController: KeyboardViewController {
         let res = await Task.detached {
             try await self.viewModel.parse()
             try await self.viewModel.loadSubaccountBalance()
+            // check lightning available cases
+            let viewModel = await self.viewModel
+            let lightningSubaccount = viewModel?.lightningSubaccount
+            if let lightningTx = viewModel?.createTx, lightningSubaccount == nil && lightningTx.isLightning {
+                if lightningTx.txType == .bolt11 && lightningTx.anyAmounts ?? false {
+                    throw TransactionError.invalid(localizedDescription: "Invoice without amount not supported")
+                } else if lightningTx.txType == .lnurl {
+                    throw TransactionError.invalid(localizedDescription: "LNURL not supported")
+                } else {
+                    throw TransactionError.invalid(localizedDescription: "No lightning available")
+                }
+            }
         }.result
         switch res {
         case .success:

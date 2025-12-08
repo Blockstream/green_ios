@@ -103,7 +103,7 @@ public class LightningBridge {
         }
     }
 
-    public func parseBoltOrLNUrl(input: String?) -> InputType? {
+    public static func parseBoltOrLNUrl(input: String?) -> InputType? {
         guard let input = input else { return nil }
         do {
             return try parseInput(s: input)
