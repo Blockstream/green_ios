@@ -16,7 +16,7 @@ extension LwkError {
     public func description() -> String {
         switch self {
         case .Generic(msg: let msg):
-            return msg
+            return msg.replacingOccurrences(of: "BoltzApi(HTTP(\"\\\"", with: "").replacingOccurrences(of: "\\\"\"))", with: "")
         case .PoisonError(msg: let msg):
             return "Poison Error \(msg)"
         case .MagicRoutingHint(_, _, _):

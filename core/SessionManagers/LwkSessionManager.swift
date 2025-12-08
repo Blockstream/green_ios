@@ -44,8 +44,6 @@ public enum BoltzSwapTypes: String {
     case ReverseSubmarine = "reverse"
 }
 
-
-
 public class LwkSessionManager: SessionManager {
 
     static let BOLTZ_BIP85_INDEX: UInt32 = 26589
@@ -76,12 +74,12 @@ public class LwkSessionManager: SessionManager {
         return Transactions(list: [])
     }
     public override func loginUser(_ params: HWDevice) async throws -> LoginUserResult {
-        throw GaError.GenericError("Not supported")
+        throw LwkError.Generic(msg: "Not supported")
     }
 
     public override func loginUser(_ params: Credentials) async throws -> LoginUserResult {
         guard let secret = params.mnemonic else {
-            throw GaError.GenericError("Invalid mnemonic")
+            throw LwkError.Generic(msg: "Invalid mnemonic")
         }
         let client = try network.defaultElectrumClient()
         let builder = BoltzSessionBuilder(
@@ -97,7 +95,7 @@ public class LwkSessionManager: SessionManager {
         boltzSession = try BoltzSession.fromBuilder(builder: builder)
         logged = true
         guard let walletHash = try walletIdentifier(credentials: params) else {
-            throw GaError.GenericError("Invalid wallet hash")
+            throw LwkError.Generic(msg: "Invalid wallet hash")
         }
         return LoginUserResult(xpubHashId: walletHash.xpubHashId, walletHashId: walletHash.walletHashId)
     }
@@ -169,7 +167,7 @@ public class LwkSessionManager: SessionManager {
         let persistentId = try? await BoltzController.shared.fetchID(byId: swapId)
         guard let peristentId = persistentId else {
             logger.error("LWK \(swapId, privacy: .public) not found")
-            throw GaError.GenericError("Swap not found")
+            throw LwkError.Generic(msg: "Swap not found")
         }
         var state = PaymentState.continue
         repeat {
@@ -214,7 +212,7 @@ public class LwkSessionManager: SessionManager {
         let persistentId = try? await BoltzController.shared.fetchID(byId: swapId)
         guard let persistentId = persistentId else {
             logger.error("LWK \(swapId, privacy: .public) not found")
-            throw GaError.GenericError("Swap not found")
+            throw LwkError.Generic(msg: "Swap not found")
         }
         var state = PaymentState.continue
         repeat {
