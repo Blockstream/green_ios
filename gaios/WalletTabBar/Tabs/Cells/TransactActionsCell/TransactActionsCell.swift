@@ -52,6 +52,12 @@ class TransactActionsCell: UITableViewCell {
         lblSend.text = TransactActions.send.name
         lblReceive.text = TransactActions.receive.name
         controlBuy.isHidden = onBuy == nil
+
+        // Handle disabled state for send button
+        if onSend == nil {
+            controlSend.alpha = 0.3
+            controlSend.isUserInteractionEnabled = false
+        }
     }
     @objc func didTapBuy() {
         controlBuy.pressAnimate { [weak self] in
@@ -60,13 +66,17 @@ class TransactActionsCell: UITableViewCell {
 
     }
     @objc func didTapSend() {
-        controlSend.pressAnimate { [weak self] in
-            self?.onSend?()
+        if controlSend.isUserInteractionEnabled {
+            controlSend.pressAnimate { [weak self] in
+                self?.onSend?()
+            }
         }
     }
     @objc func didTapReceive() {
-        controlReceive.pressAnimate { [weak self] in
-            self?.onReceive?()
+        if controlReceive.isUserInteractionEnabled {
+            controlReceive.pressAnimate { [weak self] in
+                self?.onReceive?()
+            }
         }
     }
 }

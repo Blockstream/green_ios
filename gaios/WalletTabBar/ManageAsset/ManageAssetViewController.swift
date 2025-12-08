@@ -309,9 +309,14 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
                 let onBuy: (() -> Void)? = viewModel.isBTCAsset ? { [weak self] in
                     self?.buy()
                 } : nil
-                cell.configure(onBuy: onBuy, onSend: {[weak self] in
-                    self?.send()
-                }, onReceive: {[weak self] in
+                let onSend: (() -> Void)? = {
+                    if viewModel.assetId == AssetInfo.lightningId {
+                        return viewModel.canSendLightning() ? { [weak self] in self?.send() } : nil
+                    } else {
+                        return { [weak self] in self?.send() }
+                    }
+                }()
+                cell.configure(onBuy: onBuy, onSend: onSend, onReceive: {[weak self] in
                     self?.receive()
                 })
                 cell.selectionStyle = .none

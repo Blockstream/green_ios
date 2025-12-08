@@ -151,4 +151,11 @@ class ManageAssetViewModel {
             method: .AuthKeyLightning,
             forNetwork: account.keychainLightning)
     }
+
+    func canSendLightning() -> Bool {
+        guard let lightningSession = wm?.lightningSession else {
+            return false
+        }
+        return (lightningSession.nodeState?.channelsBalanceSatoshi ?? 0) > 0
+    }
 }
