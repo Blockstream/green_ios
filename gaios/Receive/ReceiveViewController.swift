@@ -230,9 +230,9 @@ class ReceiveViewController: KeyboardViewController {
     }
     @MainActor
     func scrollToBottom() {
-        DispatchQueue.main.async {
-            let indexPath = IndexPath(row: 0, section: self.sections.count-1)
-            self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {[weak self] in
+            let indexPath = IndexPath(row: 0, section: (self?.sections.count ?? 1) - 1)
+            self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
         }
     }
     func newAddressAsync() async {
