@@ -345,4 +345,8 @@ class ReceiveViewModel {
             UserDefaults.standard.set(newValue?.id, forKey: label)
         }
     }
+
+    var hasLwkSession: Bool {
+        return wm.lwkSession?.logged ?? false
+    }
 }

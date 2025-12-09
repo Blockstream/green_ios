@@ -37,6 +37,12 @@ class ManageAssetViewModel {
         }
         return list
     }
+    var ctaCellModels: [ActionCellModel] {
+        if assetId == AssetInfo.lightningId && hasOnchainFunds() {
+            return [ActionCellModel(.lightningTransfer)]
+        }
+        return []
+    }
     var hideBalance: Bool {
         get {
             return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
@@ -157,5 +163,20 @@ class ManageAssetViewModel {
             return false
         }
         return (lightningSession.nodeState?.channelsBalanceSatoshi ?? 0) > 0
+    }
+    func hasOnchainFunds() -> Bool {
+        guard let lightningSession = wm?.lightningSession else {
+            return false
+        }
+        return (lightningSession.nodeState?.onchainBalanceSatoshi ?? 0) > 0
+    }
+    func ltRecoverFundsViewModelSweep() -> LTRecoverFundsViewModel? {
+        guard let subaccount = WalletManager.current?.lightningSubaccount else {
+            return nil
+        }
+        return LTRecoverFundsViewModel(
+            wallet: subaccount,
+            amount: wm?.lightningSession?.nodeState?.onchainBalanceSatoshi ?? 0,
+            type: .sweep)
     }
 }

@@ -113,6 +113,9 @@
 		342F980E29351444005876A8 /* DialogEnable2faCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342F980D29351444005876A8 /* DialogEnable2faCell.swift */; };
 		342F98102935145A005876A8 /* DialogEnable2faCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342F980F2935145A005876A8 /* DialogEnable2faCellModel.swift */; };
 		342F9812293518C6005876A8 /* Enable2faPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342F9811293518C6005876A8 /* Enable2faPrefs.swift */; };
+		3433D02B2EE80D58004D7DC7 /* ActionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3433D02A2EE80D58004D7DC7 /* ActionCell.xib */; };
+		3433D02D2EE80D6E004D7DC7 /* ActionCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3433D02C2EE80D66004D7DC7 /* ActionCellModel.swift */; };
+		3433D02F2EE80D93004D7DC7 /* ActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3433D02E2EE80D93004D7DC7 /* ActionCell.swift */; };
 		343471072C45109600CB6F27 /* LTRemoveShortcutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343471062C45109600CB6F27 /* LTRemoveShortcutViewController.swift */; };
 		34347663268228C600D7AD43 /* AddWalletUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34347662268228C600D7AD43 /* AddWalletUITests.swift */; };
 		343476662682299B00D7AD43 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343476652682299B00D7AD43 /* Screen.swift */; };
@@ -1110,6 +1113,9 @@
 		342F980D29351444005876A8 /* DialogEnable2faCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogEnable2faCell.swift; sourceTree = "<group>"; };
 		342F980F2935145A005876A8 /* DialogEnable2faCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DialogEnable2faCellModel.swift; path = gaios/Shared/Controllers/DialogList/Cells/DialogListCell/DialogEnable2faCellModel.swift; sourceTree = SOURCE_ROOT; };
 		342F9811293518C6005876A8 /* Enable2faPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enable2faPrefs.swift; sourceTree = "<group>"; };
+		3433D02A2EE80D58004D7DC7 /* ActionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ActionCell.xib; path = gaios/WalletTabBar/Tabs/Cells/ActionCell/ActionCell.xib; sourceTree = SOURCE_ROOT; };
+		3433D02C2EE80D66004D7DC7 /* ActionCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCellModel.swift; sourceTree = "<group>"; };
+		3433D02E2EE80D93004D7DC7 /* ActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCell.swift; sourceTree = "<group>"; };
 		343471062C45109600CB6F27 /* LTRemoveShortcutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTRemoveShortcutViewController.swift; sourceTree = "<group>"; };
 		34347662268228C600D7AD43 /* AddWalletUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWalletUITests.swift; sourceTree = "<group>"; };
 		343476652682299B00D7AD43 /* Screen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
@@ -2242,6 +2248,16 @@
 			path = DialogEnable2faCell;
 			sourceTree = "<group>";
 		};
+		3433D0292EE80D3C004D7DC7 /* ActionCell */ = {
+			isa = PBXGroup;
+			children = (
+				3433D02A2EE80D58004D7DC7 /* ActionCell.xib */,
+				3433D02C2EE80D66004D7DC7 /* ActionCellModel.swift */,
+				3433D02E2EE80D93004D7DC7 /* ActionCell.swift */,
+			);
+			path = ActionCell;
+			sourceTree = "<group>";
+		};
 		343476642682298B00D7AD43 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
@@ -2475,6 +2491,7 @@
 		344D57D62D71BF20009725A3 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				3433D0292EE80D3C004D7DC7 /* ActionCell */,
 				349984142E32250100737E9F /* WatchonlyCell */,
 				81928F8E2DC508080016108E /* SecurityLevelCell */,
 				81928F8D2DC508010016108E /* TabHeaderCell */,
@@ -4932,6 +4949,7 @@
 				8150EE1D2BB7248C00E70A12 /* greenlight_device_key.txt in Resources */,
 				34F0EC312D78402E0017C276 /* PriceChartCell.xib in Resources */,
 				34B385D629B888610097220B /* HWFlow.storyboard in Resources */,
+				3433D02B2EE80D58004D7DC7 /* ActionCell.xib in Resources */,
 				344915EE2A0CE26700D35818 /* ReceiveAddressCell.xib in Resources */,
 				3457F4A72923943C00EF33B5 /* Dialogs.storyboard in Resources */,
 				347372F52E6700DC00FE2BEA /* ProxyCell.xib in Resources */,
@@ -5259,6 +5277,7 @@
 				34FE20172A1CADC200301746 /* DialogDetailCell.swift in Sources */,
 				3423CC032E2E3487007CEC13 /* AccountDescriptorCellModel.swift in Sources */,
 				349693C62CFEF613000F308E /* JadeAsset.swift in Sources */,
+				3433D02D2EE80D6E004D7DC7 /* ActionCellModel.swift in Sources */,
 				34560B8529BA28F7007E916F /* SetupJadeViewModel.swift in Sources */,
 				342F980E29351444005876A8 /* DialogEnable2faCell.swift in Sources */,
 				345E1A82261EE6CD00A1D934 /* DrawerAnimator.swift in Sources */,
@@ -5471,6 +5490,7 @@
 				3469A2482887D56E00B2F640 /* Date.swift in Sources */,
 				3445499329FBFC8F006725D2 /* LTNoteCell.swift in Sources */,
 				344D57FD2D75E751009725A3 /* TabViewController.swift in Sources */,
+				3433D02F2EE80D93004D7DC7 /* ActionCell.swift in Sources */,
 				81F7FE722BE2FD4D00F44FC2 /* AppNotifications.swift in Sources */,
 				34FE20122A1CA1FC00301746 /* DialogNodeViewController.swift in Sources */,
 				34E4E8892E293C400061DB16 /* AccountArchiveCellModel.swift in Sources */,

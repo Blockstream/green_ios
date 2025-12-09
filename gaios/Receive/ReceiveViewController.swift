@@ -709,7 +709,9 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
         case ReceiveSection.asset:
             let action: (() -> Void)? = viewModel.allowChange ? { [weak self] in self?.didSelectAssetRow() } : nil
             if let cell = tableView.dequeueReusableCell(withIdentifier: "ReceiveAssetCell") as? ReceiveAssetCell {
-                cell.configure(model: viewModel.receiveAssetCellModel, onTap: action)
+                cell.configure(model: viewModel.receiveAssetCellModel,
+                               hasLwkSession: viewModel.hasLwkSession,
+                               onTap: action)
                 cell.selectionStyle = .none
                 return cell
             }

@@ -5,6 +5,7 @@ import core
 enum ManageAseetSection: Int, CaseIterable {
     case assetBalance
     case actions
+    case cta
     case accounts
     case transactions
 }
@@ -22,7 +23,7 @@ class ManageAssetViewController: UIViewController {
         if viewModel.account == nil {
             return [.assetBalance, .accounts]
         } else {
-            return [.assetBalance, .actions, .transactions]
+            return [.assetBalance, .actions, .cta, .transactions]
         }
     }
     override func viewDidLoad() {
@@ -64,7 +65,7 @@ class ManageAssetViewController: UIViewController {
     }
 
     func register() {
-        ["AssetBalanceCell", "TransactActionsCell", "TransactionCell", "DialogAccountCell"].forEach {
+        ["AssetBalanceCell", "TransactActionsCell", "TransactionCell", "DialogAccountCell", "ActionCell"].forEach {
             tableView?.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
@@ -245,6 +246,19 @@ class ManageAssetViewController: UIViewController {
             } catch { showError(error) }
         }
     }
+    func lightningTransfer() {
+        if let viewModel = viewModel.ltRecoverFundsViewModelSweep() {
+            pushLTRecoverFundsViewController(viewModel)
+        }
+    }
+    func pushLTRecoverFundsViewController(_ model: LTRecoverFundsViewModel) {
+        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTRecoverFundsViewController") as? LTRecoverFundsViewController {
+            vc.viewModel = model
+            vc.modalPresentationStyle = .overFullScreen
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
     @MainActor
     func showArchivedSuccess() {
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
@@ -279,6 +293,8 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
             return 1
         case .actions:
             return 1
+        case .cta:
+            return viewModel.ctaCellModels.count
         case .accounts:
             return viewModel.accountCellModels.count
         case .transactions:
@@ -311,6 +327,19 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
                 }()
                 cell.configure(onBuy: onBuy, onSend: onSend, onReceive: {[weak self] in
                     self?.receive()
+                })
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .cta:
+            let model = viewModel.ctaCellModels[indexPath.row]
+            if let cell = tableView.dequeueReusableCell(withIdentifier: ActionCell.identifier, for: indexPath) as? ActionCell {
+                cell.configure(model: model,
+                               onAction: {[weak self] in
+                    switch model.type {
+                    case .lightningTransfer:
+                        self?.lightningTransfer()
+                    }
                 })
                 cell.selectionStyle = .none
                 return cell

@@ -41,11 +41,40 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0HR-Js-6MO">
+                                <rect key="frame" x="163" y="21.333333333333329" width="121" height="25.666666666666671"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_shortcut_light" translatesAutoresizingMaskIntoConstraints="NO" id="6Ug-Iq-7Tk">
+                                        <rect key="frame" x="8" y="7.6666666666666679" width="10" height="10"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="10" id="byL-v8-lsM"/>
+                                            <constraint firstAttribute="width" constant="10" id="gdr-Mx-gow"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_light_ready" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ueb-gA-0hM">
+                                        <rect key="frame" x="23" y="4.9999999999999991" width="90" height="15.666666666666664"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="6Ug-Iq-7Tk" firstAttribute="centerY" secondItem="Ueb-gA-0hM" secondAttribute="centerY" id="9qV-vo-abd"/>
+                                    <constraint firstItem="6Ug-Iq-7Tk" firstAttribute="leading" secondItem="0HR-Js-6MO" secondAttribute="leading" constant="8" id="Itg-aR-Ctz"/>
+                                    <constraint firstItem="Ueb-gA-0hM" firstAttribute="top" secondItem="0HR-Js-6MO" secondAttribute="top" constant="5" id="l29-Yj-fS9"/>
+                                    <constraint firstAttribute="trailing" secondItem="Ueb-gA-0hM" secondAttribute="trailing" constant="8" id="nT6-88-Gu8"/>
+                                    <constraint firstItem="Ueb-gA-0hM" firstAttribute="leading" secondItem="6Ug-Iq-7Tk" secondAttribute="trailing" constant="5" id="rnU-8f-JzF"/>
+                                    <constraint firstAttribute="bottom" secondItem="Ueb-gA-0hM" secondAttribute="bottom" constant="5" id="xIj-zU-FV1"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" name="gGrayCard"/>
                         <constraints>
                             <constraint firstItem="tiD-WM-kgf" firstAttribute="centerY" secondItem="QNX-w7-Hb8" secondAttribute="centerY" id="4tW-JO-t1p"/>
+                            <constraint firstItem="0HR-Js-6MO" firstAttribute="centerY" secondItem="QNX-w7-Hb8" secondAttribute="centerY" id="5BL-5m-rgQ"/>
                             <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="tiD-WM-kgf" secondAttribute="bottom" constant="22" id="6wL-ga-i4p"/>
+                            <constraint firstAttribute="trailing" secondItem="0HR-Js-6MO" secondAttribute="trailing" constant="20" id="DO4-xB-reV"/>
                             <constraint firstItem="tiD-WM-kgf" firstAttribute="leading" secondItem="kYV-l5-c29" secondAttribute="trailing" constant="16" id="FO7-iz-FX5"/>
                             <constraint firstItem="OD3-aI-KfZ" firstAttribute="leading" secondItem="tiD-WM-kgf" secondAttribute="trailing" constant="8" id="Mgn-w9-Uqr"/>
                             <constraint firstItem="kYV-l5-c29" firstAttribute="leading" secondItem="QNX-w7-Hb8" secondAttribute="leading" constant="24" id="U4R-Jd-p1i"/>
@@ -80,13 +109,17 @@
             <connections>
                 <outlet property="bg" destination="QNX-w7-Hb8" id="cjj-bi-9EV"/>
                 <outlet property="iconDisclose" destination="OD3-aI-KfZ" id="Cwv-bh-v2h"/>
+                <outlet property="iconLightReady" destination="6Ug-Iq-7Tk" id="2SS-6t-L64"/>
                 <outlet property="imgView" destination="kYV-l5-c29" id="o6X-Lx-98w"/>
                 <outlet property="lblAsset" destination="tiD-WM-kgf" id="l1O-Ls-F8K"/>
+                <outlet property="lblLightReady" destination="Ueb-gA-0hM" id="pfK-Wp-fSj"/>
+                <outlet property="viewLightReady" destination="0HR-Js-6MO" id="sbz-ST-den"/>
             </connections>
             <point key="canvasLocation" x="13.740458015267174" y="41.197183098591552"/>
         </tableViewCell>
     </objects>
     <resources>
+        <image name="ic_shortcut_light" width="14.333333015441895" height="17.666666030883789"/>
         <image name="ntw_btc" width="24" height="24"/>
         <image name="rightArrow" width="9" height="14"/>
         <namedColor name="gBlackBg">

@@ -30,4 +30,7 @@ class ReceiveAssetCellModel {
             }
         }
     }
+    func isLBTC() -> Bool {
+        return asset?.assetId == AssetInfo.lbtcId
+    }
 }
