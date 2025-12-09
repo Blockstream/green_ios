@@ -15,7 +15,7 @@ class QRUnlockJadeViewModel {
     var scope: QRUnlockScope
     var oracle: String?
     var testnet: Bool
-    let account: Account
+    var account: Account
     var jade: QRJadeManager
     var askXpub: Bool
 
@@ -101,10 +101,14 @@ class QRUnlockJadeViewModel {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: account.keychain) {
             let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
-            try await wm.loginWatchonly(credentials: credentials)
+            let res = try await wm.loginWatchonly(credentials: credentials)
+            account.xpubHashId = res?.xpubHashId
+            account.walletHashId = res?.walletHashId
         } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: account.keychain) {
             let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
-            try await wm.loginWatchonly(credentials: credentials)
+            let res = try await wm.loginWatchonly(credentials: credentials)
+            account.xpubHashId = res?.xpubHashId
+            account.walletHashId = res?.walletHashId
         } else {
             let session = wm.prominentSession!
             let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain)
@@ -114,7 +118,9 @@ class QRUnlockJadeViewModel {
             try await session.connect()
             let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
             let credentials = try await session.decryptWithPin(decrypt)
-            try await wm.loginWatchonly(credentials: credentials)
+            let res = try await wm.loginWatchonly(credentials: credentials)
+            account.xpubHashId = res?.xpubHashId
+            account.walletHashId = res?.walletHashId
         }
         AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly)
         return wm

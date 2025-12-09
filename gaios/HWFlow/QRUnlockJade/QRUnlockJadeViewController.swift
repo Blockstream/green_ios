@@ -343,6 +343,7 @@ extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate
             switch await task.result {
             case .success(let wallet):
                 if let wallet = wallet {
+                    AccountsRepository.shared.current = vm.account
                     success(wallet: wallet, account: vm.account)
                 }
             case .failure(let error):
@@ -356,6 +357,7 @@ extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate
         stopLoader()
         dismiss(animated: true) {
             if let credentials = self.credentials {
+                AccountsRepository.shared.current = account
                 self.delegate?.login(credentials: credentials, wallet: wallet, account: account)
             }
         }
