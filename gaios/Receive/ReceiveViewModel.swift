@@ -184,7 +184,8 @@ class ReceiveViewModel {
     }
     var infoLwkSwapCellModel: LTInfoCellModel {
         let sats = Int64(satoshi ?? 0)
-        let fee = Int64(22)
+        // Fee is lockup fee + boltz fee + claim fee. We hardcode claim value for 1in 1out tx
+        let fee = Int64(22) + Int64((try? self.lwkInvoice?.fee()) ?? 0)
         if sats - fee >= 0 {
             if let balance = Balance.fromSatoshi(Int64(sats - fee), assetId: "btc") {
                 let (value, denom) = balance.toDenom(inputDenomination)
