@@ -21,6 +21,7 @@ enum ReceiveSection: Int, CaseIterable {
     case address
     case infoReceiveAmount
     case infoExpiredIn
+    case infoLwkSwap
     case note
     case segmented
 }
@@ -128,7 +129,7 @@ class ReceiveViewController: KeyboardViewController {
                 if lightningAmountEditing {
                     return [.asset, .account, .segmented, .amount]
                 } else {
-                    return [.asset, .account, .segmented, .amount, .address]
+                    return [.asset, .account, .segmented, .amount, .address, .infoLwkSwap]
                 }
             default:
                 if viewModel.wm.lwkSession?.logged ?? false {
@@ -218,6 +219,7 @@ class ReceiveViewController: KeyboardViewController {
         let res = Task.detached(priority: .background) { [weak self] in
             try await self?.viewModel.wm.lwkSession?.handleInvoice(invoice: invoice)
         }
+        scrollToBottom()
         switch await res.result {
         case .success(let res):
             logger.info("BOLTZ waiting: \(res == PaymentState.success ? "Success" : "Failed" )")
@@ -226,7 +228,13 @@ class ReceiveViewController: KeyboardViewController {
             logger.error("BOLTZ waiting error: \(err.description().localized, privacy: .public)")
         }
     }
-
+    @MainActor
+    func scrollToBottom() {
+        DispatchQueue.main.async {
+            let indexPath = IndexPath(row: 0, section: self.sections.count-1)
+            self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+        }
+    }
     func newAddressAsync() async {
         loading = true
         reload()
@@ -241,7 +249,6 @@ class ReceiveViewController: KeyboardViewController {
             switch viewModel.type {
             case .lwkSwap:
                 await waitingSwapCompletion()
-                break
             default:
                 break
             }
@@ -676,6 +683,8 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
             return 1
         case ReceiveSection.infoExpiredIn:
             return 1
+        case ReceiveSection.infoLwkSwap:
+            return 1
         case ReceiveSection.note:
             return 1
         case ReceiveSection.segmented:
@@ -752,6 +761,12 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
         case ReceiveSection.infoExpiredIn:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "LTInfoCell") as? LTInfoCell {
                 cell.configure(model: viewModel.infoExpiredInCellModel)
+                cell.selectionStyle = .none
+                return cell
+            }
+        case ReceiveSection.infoLwkSwap:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "LTInfoCell") as? LTInfoCell {
+                cell.configure(model: viewModel.infoLwkSwapCellModel)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -837,6 +852,8 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
         case .infoReceiveAmount:
             return nil
         case .infoExpiredIn:
+            return nil
+        case .infoLwkSwap:
             return nil
         }
     }

@@ -179,10 +179,25 @@ class ReceiveViewModel {
     var infoExpiredInCellModel: LTInfoCellModel {
         LTInfoCellModel(
             title: "id_expiration".localized,
-            hint1: "", //"In \(abs(invoice?.expiringInMinutes ?? 0)) minutes",
+            hint1: "", // "In \(abs(invoice?.expiringInMinutes ?? 0)) minutes",
             hint2: "")
     }
+    var infoLwkSwapCellModel: LTInfoCellModel {
+        let sats = Int64(satoshi ?? 0)
+        let fee = Int64((try? self.lwkInvoice?.fee()) ?? 0)
 
+        if let balance = Balance.fromSatoshi(Int64(sats - fee), assetId: "btc") {
+            let (value, denom) = balance.toDenom(inputDenomination)
+            let (fiat, currency) = balance.toFiat()
+            return LTInfoCellModel(title: "Amount you will receive:".localized,
+                                   hint1: "\(value) \(denom)",
+                                   hint2: "\(fiat) \(currency)")
+        }
+        return LTInfoCellModel(
+            title: "Amount you will receive:".localized,
+            hint1: "\(sats - fee)", // "In \(abs(invoice?.expiringInMinutes ?? 0)) minutes",
+            hint2: "")
+    }
     var noteCellModel: LTNoteCellModel {
         return LTNoteCellModel(note: description ?? "id_note".localized)
     }
