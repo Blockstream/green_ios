@@ -338,7 +338,7 @@ extension LTRecoverFundsViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch LTRecoverFundsSection(rawValue: section) {
         case .address:
-            return headerView("id_receive".localized)
+            return headerView("id_address".localized)
         case .amount:
             return headerView("id_amount".localized)
         case .fee:
