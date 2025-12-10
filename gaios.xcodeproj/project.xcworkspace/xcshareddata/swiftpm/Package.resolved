@@ -1,5 +1,5 @@
 {
-  "originHash" : "361c37148b88922f0b0ab73da17f5672969c462b7c48d53ce86f8e203d294f1c",
+  "originHash" : "0cce8d641617bb91c95e12b0dfee74521e17ef37099c6578a36c1dec9e2e0fe9",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -149,8 +149,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/blockstream/lwk-swift",
       "state" : {
-        "revision" : "a1d01f0bd0a8fcab9f19ab16b8a6e477ce405a40",
-        "version" : "0.12.7"
+        "revision" : "65a773369172901bc8d01f7e6dfbc38b2574cebd",
+        "version" : "0.12.8"
       }
     },
     {

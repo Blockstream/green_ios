@@ -7506,7 +7506,7 @@
 			repositoryURL = "https://github.com/blockstream/lwk-swift";
 			requirement = {
 				kind = exactVersion;
-				version = 0.12.7;
+				version = 0.12.8;
 			};
 		};
 		81B2350D2A6A8BCD00B8FF5D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */ = {
