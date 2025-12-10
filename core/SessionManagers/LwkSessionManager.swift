@@ -90,6 +90,7 @@ public class LwkSessionManager: SessionManager {
             logging: self,
             polling: true,
             timeoutAdvance: 10_000,
+            referralId: "blockstream",
             randomPreimages: true
         )
         boltzSession = try BoltzSession.fromBuilder(builder: builder)
