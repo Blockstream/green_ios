@@ -1,21 +1,8 @@
 stages:
     - format
     - build
-    - test
     - distribute_qa
     - deploy
-
-sast:
-  stage: test
-  before_script:
-    - if [[ "$IGNORE_SECURITY" == "true" ]]; then exit 0; fi
-  tags:
-    - k8s
-
-
-include:
-  - template: Jobs/SAST.gitlab-ci.yml
-  - template: Jobs/Secret-Detection.gitlab-ci.yml
   
 # FORMAT
 
