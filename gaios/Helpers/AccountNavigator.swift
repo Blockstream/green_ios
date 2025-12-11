@@ -58,13 +58,21 @@ class AccountNavigator {
     }
 
     @MainActor
-    static func logged(accountId: String, isFirstLoad: Bool = false) -> UIViewController? {
+    static func logged(accountId: String, isFirstLoad: Bool = false) -> WalletTabBarViewController {
+        return walletTabBarViewController(accountId: accountId, isFirstLoad: isFirstLoad)
+    }
+    
+    @MainActor
+    static func walletTabBarViewController(accountId: String, isFirstLoad: Bool) -> WalletTabBarViewController {
+        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
         let account = AccountsRepository.shared.get(for: accountId)!
-        let walletModel = WalletModel()
-        let vc: WalletTabBarViewController? = instantiateViewController(storyboard: "WalletTab", identifier: "WalletTabBarViewController")
-        vc?.walletModel = walletModel
-        vc?.walletModel?.isFirstLoad = isFirstLoad
-        return vc
+        let walletTabBarModel = WalletTabBarModel(
+            wallet: WalletsRepository.shared.getOrAdd(for: account),
+            mainAccount: account,
+            isFirstLoad: isFirstLoad)
+        return storyboard.instantiateViewController(identifier: "WalletTabBarViewController") { coder in
+            WalletTabBarViewController(coder: coder, walletTabBarModel: walletTabBarModel)
+        }
     }
 
     @MainActor
@@ -101,11 +109,10 @@ class AccountNavigator {
     }
     @MainActor
     static func navLogged(accountId: String, isFirstLoad: Bool = false) {
-        if let vc = logged(accountId: accountId, isFirstLoad: isFirstLoad) {
-            let nv = UINavigationController()
-            nv.setViewControllers([vc], animated: true)
-            changeRoot(root: nv)
-        }
+        let vc = logged(accountId: accountId, isFirstLoad: isFirstLoad)
+        let nv = UINavigationController()
+        nv.setViewControllers([vc], animated: true)
+        changeRoot(root: nv)
     }
 
     @MainActor

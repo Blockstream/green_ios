@@ -17,7 +17,6 @@ class WatchOnlySettingsViewModel {
             [WOSection.Singlesig]
         }
     }
-    var items = [WOSection: [SettingsItemData]]()
     var multisigCellModels = [WatchOnlySettingsCellModel]()
     var singlesigCellModels = [WatchOnlySettingsCellModel]()
 

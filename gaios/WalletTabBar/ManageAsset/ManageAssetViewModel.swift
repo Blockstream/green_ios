@@ -4,44 +4,101 @@ import gdk
 import greenaddress
 import hw
 import core
+import AsyncAlgorithms
 
 class ManageAssetViewModel {
 
-    var wm: WalletManager? { WalletManager.current }
-    var session: SessionManager? { wm?.prominentSession }
-    var settings: Settings? { session?.settings }
-    var paused: Bool { !(wm?.activeSessions.filter { $0.value.paused }.isEmpty ?? false) }
+    let walletDataModel: WalletDataModel
+    let wallet: WalletManager
+    var mainAccount: Account
+    var assetId: String
+    var selectedSubaccount: WalletItem?
 
-    /// load visible subaccounts
-    var subaccounts: [WalletItem] { wm?.subaccounts.filter { !($0.hidden) } ?? [] }
-    var watchOnly: Bool { wm?.isWatchonly ?? false}
+    var state = WalletState()
+    var onUpdate: ((RefreshFeature?) -> Void)?
+    var observationTask: Task<Void, Never>?
 
-    /// Cached data
-    var cachedTransactions = [Transaction]()
-    var cachedMeldTransactions = [Transaction]()
-
-    var walletModel: WalletModel?
-
-    /// cell models
-    var txCellModels = [TransactionCellModel]()
-
-    var accountCellModels: [AccountCellModel] {
-        var list = [AccountCellModel]()
-        for account in accounts() {
-            let satohi = account.satoshi?[assetId]
-            list += [
-                AccountCellModel(
-                    account: account,
-                    satoshi: satohi,
-                    assetId: assetId)]
+    var subaccounts: [WalletItem] {
+        if assetId == AssetInfo.lightningId {
+            return state.subaccounts.filter { $0.networkType.lightning }
+        } else if assetId == AssetInfo.btcId || assetId == AssetInfo.testId {
+            return state.subaccounts.filter { $0.networkType.bitcoin }
+        } else if assetId == AssetInfo.lbtcId || assetId == AssetInfo.ltestId {
+            return state.subaccounts.filter { $0.networkType.liquid }
+        } else {
+            return state.subaccounts.filter { $0.networkType.liquid && $0.hasAsset(assetId) }
         }
-        return list
     }
-    var ctaCellModels: [ActionCellModel] {
+    var balances: [String: Int64]? {
+        state.balances
+    }
+    var totals: (String, Int64)? {
+        state.totals
+    }
+    var assetAmountList: AssetAmountList? {
+        state.assetAmountList
+    }
+    var txs: [Transaction]? {
+        if let selectedSubaccount {
+            return state.nestedTxs[selectedSubaccount.id]?[assetId]
+        }
+        return nil
+    }
+    var actions: [ActionCardType] {
         if assetId == AssetInfo.lightningId && hasOnchainFunds() {
-            return [ActionCellModel(.lightningTransfer)]
+            return [.lightningTransfer]
         }
         return []
+    }
+
+    init(walletDataModel: WalletDataModel, wallet: WalletManager, mainAccount: Account, assetId: String, selectedSubaccount: WalletItem?) {
+        self.walletDataModel = walletDataModel
+        self.wallet = wallet
+        self.mainAccount = mainAccount
+        self.assetId = assetId
+        self.selectedSubaccount = selectedSubaccount
+        startObserving()
+        Task { try await self.subscribeNotifications() }
+    }
+
+    private func startObserving() {
+        observationTask = Task {
+            // Subscribe to the Actor's multi-subscriber AsyncStream which now yields
+            // `WalletDataModel.SubscriberUpdate` (state + optional single RefreshFeature).
+            for await update in await walletDataModel.states() {
+                self.state = update.state
+                self.onUpdate?(update.feature)
+            }
+        }
+    }
+
+    func refresh() {
+        Task {
+            if let selectedSubaccount {
+                await walletDataModel.triggerRefresh(features: [.balance, .nestedTxs(subaccount: selectedSubaccount.id, assetId: assetId)])
+            } else {
+                await walletDataModel.triggerRefresh(features: [.balance])
+            }
+        }
+    }
+
+    deinit {
+        observationTask?.cancel()
+    }
+
+    private func subscribeNotifications() async throws {
+        for await notification in wallet.notificationStream {
+            switch notification {
+            case .newBlock(blockheight: let blockheight):
+                refresh()
+            case .newTransaction(transaction: let transaction):
+                refresh()
+            case .reconnected:
+                refresh()
+            default:
+                break
+            }
+        }
     }
     var hideBalance: Bool {
         get {
@@ -51,99 +108,24 @@ class ManageAssetViewModel {
             UserDefaults.standard.set(newValue, forKey: AppStorageConstants.hideBalance.rawValue)
         }
     }
-
-    var fetchingTxs = false
-    var currency: String? {
-        if let settings = settings {
-            return settings.pricing["currency"]
-        }
-        return nil
-    }
-    var assetId: String
-    var satoshi: Int64 = 0
-    var account: WalletItem?
-    var isBTCAsset: Bool {
-        "BTC" == assetId.uppercased()
-    }
-    init(assetId: String, account: WalletItem? = nil, walletModel: WalletModel?) {
-        self.assetId = assetId
-        self.walletModel = walletModel
-        if let account {
-            self.account = account
-            return
-        }
-        if accounts().count == 1 {
-            self.account = accounts()[0]
-        }
-    }
-    func fetchBalances() async throws {
-        if let account {
-            self.satoshi = account.satoshi?[assetId] ?? 0
-        } else {
-            var sum: Int64 = 0
-            for account in accounts() {
-                sum += account.satoshi?[assetId] ?? 0
-            }
-            self.satoshi = sum
-        }
-    }
-    func existPendingTransaction() -> Bool {
-        for tx in cachedTransactions where tx.blockHeight == 0 {
-            return true
-        }
-        return false
-    }
-    func fetchTransactions() async throws {
-        guard let wm = wm, !fetchingTxs else {
-            return
-        }
-        fetchingTxs = true
-
-        let txs = try await wm.allTransactions(subaccounts: account == nil ? accounts() : [account!])
-        cachedTransactions = txs.filter {
-            for amount in $0.amounts where amount.key == assetId {
-                return true
-            }
-            return false
-        }
-        // get meld transactions
-        if let account, let walletModel {
-            if let cachedMeldTransactions = try? await walletModel.getMeldTransactions(account) {
-                self.cachedMeldTransactions = cachedMeldTransactions
-            }
-        }
-        txCellModels = (cachedMeldTransactions + cachedTransactions)
-            .map { tx in
-                let blockHeight = tx.isLiquid ? wm.liquidBlockHeight() : wm.bitcoinBlockHeight()
-                return TransactionCellModel(tx: tx, blockHeight: blockHeight ?? 0)
-            }
-
-        fetchingTxs = false
-    }
-
-    func accounts() -> [WalletItem] {
-        subaccounts.filter({ $0.satoshi?.keys.contains(assetId) ?? false })
-    }
     func renameSubaccount(name: String) async throws {
-        guard let account = account, let session = wm?.sessions[account.gdkNetwork.network] else {
-            return
-        }
-        let params = UpdateSubaccountParams(subaccount: account.pointer, name: name)
-        try await session.renameSubaccount(params)
-        self.account = try await wm?.subaccountUpdate(account: account)
+        guard let selectedSubaccount else { return }
+        let params = UpdateSubaccountParams(subaccount: selectedSubaccount.pointer, name: name)
+        try await selectedSubaccount.session?.renameSubaccount(params)
+        _ = try await wallet.subaccountUpdate(account: selectedSubaccount)
+        refresh()
     }
     func archiveSubaccount() async throws {
-        guard let account = account, let session = wm?.sessions[account.gdkNetwork.network] else {
-            return
-        }
-        let params = UpdateSubaccountParams(subaccount: account.pointer, hidden: true)
-        try await session.updateSubaccount(params)
-        self.account = try await wm?.subaccountUpdate(account: account)
+        guard let selectedSubaccount else { return }
+        let params = UpdateSubaccountParams(subaccount: selectedSubaccount.pointer, hidden: true)
+        try await selectedSubaccount.session?.updateSubaccount(params)
+        _ = try await wallet.subaccountUpdate(account: selectedSubaccount)
+        refresh()
     }
     var isFunded: Bool? {
-        if let account {
-            if account.satoshi == nil { return false }
-            if let sats = account.satoshi?[assetId] {
+        if let selectedSubaccount {
+            if selectedSubaccount.satoshi == nil { return false }
+            if let sats = selectedSubaccount.satoshi?[assetId] {
                 return sats > 0
             }
         }
@@ -159,24 +141,12 @@ class ManageAssetViewModel {
     }
 
     func canSendLightning() -> Bool {
-        guard let lightningSession = wm?.lightningSession else {
-            return false
-        }
-        return (lightningSession.nodeState?.channelsBalanceSatoshi ?? 0) > 0
+        return (wallet.lightningSession?.nodeState?.channelsBalanceSatoshi ?? 0) > 0
     }
     func hasOnchainFunds() -> Bool {
-        guard let lightningSession = wm?.lightningSession else {
-            return false
-        }
-        return (lightningSession.nodeState?.onchainBalanceSatoshi ?? 0) > 0
+        return (wallet.lightningSession?.nodeState?.onchainBalanceSatoshi ?? 0) > 0
     }
-    func ltRecoverFundsViewModelSweep() -> LTRecoverFundsViewModel? {
-        guard let subaccount = WalletManager.current?.lightningSubaccount else {
-            return nil
-        }
-        return LTRecoverFundsViewModel(
-            wallet: subaccount,
-            amount: wm?.lightningSession?.nodeState?.onchainBalanceSatoshi ?? 0,
-            type: .sweep)
+    func currency() -> String? {
+        wallet.prominentSession?.settings?.pricing["currency"]
     }
 }

@@ -6,7 +6,7 @@ enum BalanceDisplayMode {
     case denom
     case fiat
 
-    func next(_ isBTC: Bool) -> BalanceDisplayMode {
+    func next() -> BalanceDisplayMode {
         switch self {
         case .denom:
             return .fiat

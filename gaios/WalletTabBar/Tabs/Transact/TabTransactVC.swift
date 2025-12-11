@@ -5,9 +5,18 @@ import core
 class TabTransactVC: TabViewController {
 
     @IBOutlet weak var tableView: UITableView?
-
     var assetId: String?
     var anyAsset: AnyAssetType?
+    let viewModel: TabTransactVM
+
+    init?(coder: NSCoder, viewModel: TabTransactVM) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("You must create this view controller with a view model.")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -15,11 +24,23 @@ class TabTransactVC: TabViewController {
 
         register()
         setContent()
+        viewModel.onUpdate = { [weak self] feature in
+            DispatchQueue.main.async {
+                self?.onUpdate(feature: feature)
+            }
+        }
+        viewModel.refresh(features: [.balance, .txs(reset: true)])
     }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        reloadSections([.balance], animated: false)
+    func onUpdate(feature: RefreshFeature?) {
+        switch feature {
+        case .balance, .txs, .backupCards, .alertCards, .settings, .subaccounts:
+            if tableView?.refreshControl?.isRefreshing == true {
+                tableView?.refreshControl?.endRefreshing()
+            }
+            tableView?.reloadData()
+        default:
+            break
+        }
     }
 
     func setContent() {
@@ -37,12 +58,8 @@ class TabTransactVC: TabViewController {
     }
 
     @objc func pull(_ sender: UIRefreshControl? = nil) {
-        Task.detached { [weak self] in
-            await self?.walletTab.reload(discovery: true)
-            await MainActor.run { [weak self] in
-                self?.tableView?.refreshControl?.endRefreshing()
-            }
-        }
+        viewModel.currentPage = 0
+        viewModel.refresh(features: [.balance, .txs(reset: true)])
     }
 
     @MainActor
@@ -56,53 +73,38 @@ class TabTransactVC: TabViewController {
         }
     }
 
-    func selectAssetScreen() {
-        guard let wm = walletModel.wm else { return }
-        let hasSubaccountAmp = !wm.subaccounts.filter({ $0.type == .amp }).isEmpty
-        let hasLiquid = !wm.subaccounts.filter({ $0.networkType.liquid }).isEmpty
-        let assetIds = wm.selectableAssets()
-        let list = AssetAmountList.from(assetIds: assetIds ?? [])
-        let model = AssetSelectViewModel(
-            assets: list,
-            enableAnyLiquidAsset: hasLiquid,
-            enableAnyAmpAsset: hasSubaccountAmp)
+    func pushAssetSelectViewController() {
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-            vc.viewModel = model
+            vc.viewModel = viewModel.assetSelectViewModel(subaccounts: viewModel.subaccounts ?? [])
             vc.dismissOnSelect = false
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    func selectAccountScreen(assetId: String, accounts: [WalletItem]) {
+    func pushDialogAccountsViewController(assetId: String, subaccounts: [WalletItem]) {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAccountsViewController") as? DialogAccountsViewController {
-
-            let model = DialogAccountsViewModel(
-                title: "id_account_selector".localized,
-                hint: "id_choose_which_account_you_want".localized,
-                isSelectable: true,
-                assetId: assetId,
-                accounts: accounts,
-                hideBalance: walletModel.hideBalance)
-            vc.viewModel = model
+            vc.viewModel = viewModel.dialogAccountsViewModel(assetId: assetId, subaccounts: subaccounts, hideBalance: viewModel.hideBalance ?? false)
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
         }
     }
+    
     func receive() {
-//        receiveScreen(walletModel)
-        selectAssetScreen()
+        pushAssetSelectViewController()
     }
     func buy() {
-        buyScreen(walletModel)
+        Task {
+            await buyScreen(currency: viewModel.defaultCurrency ?? "USD", hideBalance: viewModel.hideBalance ?? false)
+        }
     }
     func send() {
-        sendScreen(walletModel, input: nil)
+        sendScreen(input: nil)
     }
     func onTxTap(_ indexPath: IndexPath) {
-        let tx = walletModel.txCellModels[indexPath.row].tx
+        guard let tx = viewModel.txs?[indexPath.row] else { return }
         if tx.isMeldPayment ?? false {
             // nothing
         } else if tx.isLightningSwap ?? false {
@@ -113,6 +115,15 @@ class TabTransactVC: TabViewController {
             }
         } else {
             txScreen(tx)
+        }
+    }
+
+    func txScreen(_ tx: Transaction) {
+        let storyboard = UIStoryboard(name: "TxDetails", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "TxDetailsViewController") as? TxDetailsViewController, let wallet = tx.subaccount {
+            vc.vm = TxDetailsViewModel(wallet: wallet, transaction: tx)
+            vc.delegate = self
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }
@@ -132,14 +143,13 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
         case .actions:
             return 1
         case .transactions:
-            return walletModel.txCellModels.count
+            return viewModel.txs?.count ?? 0
         default:
             return 0
         }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
         switch TabTransactSection(rawValue: indexPath.section) {
         case .actions:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactActionsCell.identifier, for: indexPath) as? TransactActionsCell {
@@ -155,7 +165,8 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .header:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
-                cell.configure(title: "id_transact".localized, icon: walletModel.headerIcon, tab: .transact, onTap: {[weak self] in
+                let headerIcon = UIImage(named: AccountsRepository.shared.current?.networkType.testnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white)
+                cell.configure(title: "id_transact".localized, icon: headerIcon, tab: .transact, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
                 })
                 cell.selectionStyle = .none
@@ -163,29 +174,44 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .balance:
             if let cell = tableView.dequeueReusableCell(withIdentifier: BalanceCell.identifier, for: indexPath) as? BalanceCell {
-
-                cell.configure(model: walletModel.balanceCellModel,
-                               hideBalance: walletModel.hideBalance,
-                               hideBtnExchange: true,
-                               onHide: {[weak self] value in
-                    self?.walletTab.onHide(value)
-                },
-                               onAssets: {}, onConvert: {
-                    Task { [weak self] in
-                        try? await self?.walletModel.rotateBalanceDisplayMode()
-                        await MainActor.run { self?.reloadSections([.balance], animated: false) }
-                    }
-                }, onExchange: {})
+                let balanceItem = BalanceItem(satoshi: viewModel.totals?.1, assetId: viewModel.totals?.0)
+                cell.configure(
+                    item: balanceItem,
+                    denomBalance: viewModel.balanceDisplayMode,
+                    hideBalance: viewModel.hideBalance,
+                    hideBtnExchange: true,
+                    onHide: {[weak self] value in
+                        Task { [weak self] in
+                            self?.viewModel.hideBalance = value
+                            self?.reloadSections([.balance], animated: false)
+                        }
+                    },
+                    onAssets: {},
+                    onConvert: {
+                        Task { [weak self] in
+                            await self?.viewModel.rotateBalanceDisplayMode()
+                            self?.reloadSections([.balance], animated: false)
+                        }
+                    }, onExchange: {
+                        
+                    })
                 cell.selectionStyle = .none
                 return cell
             }
         case .transactions:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactionCell.identifier, for: indexPath) as? TransactionCell {
-                cell.configure(model: walletModel.txCellModels[indexPath.row], hideBalance: walletModel.hideBalance, onTap: {[weak self] in
-                    self?.onTxTap(indexPath)
-                })
-                cell.selectionStyle = .none
-                return cell
+                let wm = WalletManager.current
+                if let tx = viewModel.txs?[indexPath.row] {
+                    let blockHeight = tx.isLiquid ? wm?.liquidBlockHeight() : wm?.bitcoinBlockHeight()
+                    cell.configure(
+                        model: TransactionCellModel(tx: tx, blockHeight: blockHeight ?? 0),
+                        hideBalance: viewModel.hideBalance ?? false,
+                        onTap: {[weak self] in
+                            self?.onTxTap(indexPath)
+                        })
+                    cell.selectionStyle = .none
+                    return cell
+                }
             }
         default:
             break
@@ -206,7 +232,7 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         switch TabTransactSection(rawValue: section) {
         case .transactions:
-            if walletModel.txCellModels.count == 0 && !walletTab.isReloading {
+            if viewModel.txs?.count == 0 {
                 return footerH
             }
             return 0.1
@@ -235,7 +261,7 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         switch TabTransactSection(rawValue: section) {
         case .transactions:
-            if walletModel.txCellModels.count == 0 && !walletTab.isReloading {
+            if viewModel.txs?.count == 0 {
                 return sectionFooter("id_you_dont_have_any_transactions".localized)
             }
             return nil
@@ -310,29 +336,13 @@ extension TabTransactVC {
 extension TabTransactVC: UITableViewDataSourcePrefetching {
    // incremental transactions fetching from gdk
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        guard viewModel.txsCanLoadMore ?? false == true else { return } // there's no more data
+        let threshold = (viewModel.txs?.count ?? 0) - 10 // Trigger when within 5 rows of the end
         let filteredIndexPaths = indexPaths.filter { $0.section == TabTransactSection.transactions.rawValue }
         let row = filteredIndexPaths.last?.row ?? 0
-        if row >= (walletModel.txCellModels.count - 1) && walletModel.txCellModels.count >= 30 {
-            Task { [weak self] in await self?.getTransactions() }
+        if row >= threshold {
+            viewModel.refresh(features: [.txs(reset: false)])
         }
-
-    }
-
-    func getTransactions() async {
-        let task = Task.detached { [weak self] in
-            try await self?.walletModel.fetchTransactions(reset: false)
-        }
-        switch await task.result {
-        case .success:
-            walletModel.reloadTransactions()
-            reloadSections([.transactions], animated: false)
-        case .failure(let error):
-            print("Failed to fetch transactions: \(error)")
-        }
-    }
-
-    func getBitcoinSubaccounts() -> [WalletItem] {
-        WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
     func getLiquidSubaccounts() -> [WalletItem] {
         WalletManager.current?.liquidSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
@@ -378,7 +388,7 @@ extension TabTransactVC: AssetSelectViewControllerDelegate {
         if accounts.count == 1 {
             didSelectAccount(accounts.first)
         } else {
-            selectAccountScreen(assetId: AssetInfo.lbtcId, accounts: accounts)
+            pushDialogAccountsViewController(assetId: AssetInfo.lbtcId, subaccounts: accounts)
         }
     }
 
@@ -389,7 +399,7 @@ extension TabTransactVC: AssetSelectViewControllerDelegate {
         if accounts.count == 1 {
             didSelectAccount(accounts.first)
         } else {
-            selectAccountScreen(assetId: assetId, accounts: accounts)
+            pushDialogAccountsViewController(assetId: assetId, subaccounts: accounts)
         }
     }
 }
@@ -402,5 +412,11 @@ extension TabTransactVC: DialogAccountsViewControllerDelegate {
             vc.viewModel = ReceiveViewModel(waParam)
             navigationController?.pushViewController(vc, animated: true)
         }
+    }
+}
+
+extension TabTransactVC: TxDetailsViewControllerDelegate {
+    func onMemoEdit() {
+        viewModel.refresh(features: [.txs(reset: true)])
     }
 }

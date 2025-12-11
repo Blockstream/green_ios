@@ -1,5 +1,34 @@
 import UIKit
 import core
+import gdk
+
+struct BalanceItem: Hashable {
+    let satoshi: Int64?
+    let assetId: String?
+    
+    var value: String? {
+        guard let satoshi else { return nil }
+        if let balance = Balance.fromSatoshi(satoshi, assetId: assetId ?? AssetInfo.btcId)?.toDenom() {
+            if satoshi == 0 {
+                return "0 \(balance.1)"
+            } else {
+                return "\(balance.0) \(balance.1)"
+            }
+        }
+        return nil
+    }
+    var fiat: String? {
+        guard let satoshi else { return nil }
+        if let balance = Balance.fromSatoshi(satoshi, assetId: assetId ?? AssetInfo.btcId)?.toFiat() {
+            if satoshi == 0 {
+                return "0 \(balance.1)"
+            } else {
+                return "\(balance.0) \(balance.1)"
+            }
+        }
+        return nil
+    }
+}
 
 class BalanceCell: UITableViewCell {
 
@@ -17,13 +46,14 @@ class BalanceCell: UITableViewCell {
     @IBOutlet weak var btnExchangeAlign: NSLayoutConstraint!
     @IBOutlet weak var lblLoadingAssets: UILabel!
 
-    private var model: BalanceCellModel?
+    private var item: BalanceItem?
     private var onAssets: (() -> Void)?
     private var onConvert: (() -> Void)?
     private var onHide: ((Bool) -> Void)?
     private var onExchange: (() -> Void)?
     private let iconW: CGFloat = 20.0
     private var hideBalance = false
+    private var denomBalance = BalanceDisplayMode.denom
 
     class var identifier: String { return String(describing: self) }
 
@@ -39,71 +69,45 @@ class BalanceCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(model: BalanceCellModel?,
+    func configure(item: BalanceItem?,
+                   denomBalance: BalanceDisplayMode,
                    hideBalance: Bool,
                    hideBtnExchange: Bool,
                    onHide: ((Bool) -> Void)?,
                    onAssets: (() -> Void)?,
                    onConvert: (() -> Void)?,
                    onExchange: (() -> Void)?) {
+        self.item = item
         self.hideBalance = hideBalance
-        self.model = model
+        self.denomBalance = denomBalance
         lblBalanceValue.text = ""
         lblBalanceFiat.text = ""
         btnExchange.isHidden = hideBtnExchange
-
-        let assetsCount = model?.cachedBalance.nonZeroAmounts().count ?? 0
+        //let assetsCount = model?.cachedBalance.nonZeroAmounts().count ?? 0
         assetsBox.isHidden = true // assetsCount < 2
-
-        let uLineAttr = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
-        let str = NSAttributedString(string: String(format: "id_d_assets_in_total".localized, assetsCount), attributes: uLineAttr)
-        btnAssets.setAttributedTitle(str, for: .normal)
+        btnAssets.isHidden = true
+        iconsView.isHidden = false
+        //let uLineAttr = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
+        //let str = NSAttributedString(string: String(format: "id_d_assets_in_total".localized, assetsCount), attributes: uLineAttr)
+        //btnAssets.setAttributedTitle(str, for: .normal)
         self.onAssets = onAssets
         self.onHide = onHide
         self.onConvert = onConvert
         self.onExchange = onExchange
-        refreshVisibility()
-        for v in iconsStack.subviews {
-            v.removeFromSuperview()
-        }
-        let assets = model?.cachedBalance
-        var icons: [UIImage] = []
-        for asset in assets?.ids ?? [] {
-            if let icon = assets?.image(for: asset) {
-                if icons.count > 0 {
-                    if icon != icons.last {
-                        icons.append(icon)
-                    }
-                } else {
-                    icons.append(icon)
-                }
-            }
-        }
-        icons = Array(icons.prefix(10))
-        iconsStackWidth.constant = CGFloat(icons.count) * iconW - CGFloat(icons.count - 1) * 5.0
-        setImages(icons)
-        iconsView.isHidden = false // !showAccounts || !gdkNetwork.liquid
+        refreshVisibility()// !showAccounts || !gdkNetwork.liquid
 
         // future usage
         lblLoadingAssets.isHidden = true
     }
 
-    func setImages(_ images: [UIImage]) {
-        for img in images {
-            let imageView = UIImageView()
-            imageView.image = img
-            iconsStack.addArrangedSubview(imageView)
-        }
-    }
-
     func refreshVisibility() {
-        let idle = model == nil || self.model?.value == "--"
+        let idle = item?.value == nil
         if idle {
             loader.startAnimating()
         } else {
             loader.stopAnimating()
         }
-        btnExchangeAlign.constant = model == nil ? 0 : -8
+        btnExchangeAlign.constant = idle ? 0 : -8
         lblBalanceValue.isHidden = idle
         lblBalanceFiat.isHidden = true // model == nil
         if hideBalance {
@@ -111,9 +115,9 @@ class BalanceCell: UITableViewCell {
             lblBalanceFiat.attributedText = Common.obfuscate(color: .gray, size: 12, length: 5)
             btnEye.setImage(UIImage(named: "ic_eye_closed"), for: .normal)
         } else {
-            lblBalanceValue.text = self.model?.value
-            lblBalanceFiat.text = self.model?.valueChange
             btnEye.setImage(UIImage(named: "ic_eye_flat"), for: .normal)
+            lblBalanceValue.text = denomBalance == .fiat ? self.item?.fiat : self.item?.value
+            lblBalanceFiat.text = denomBalance == .denom ? self.item?.value : self.item?.fiat
         }
     }
 

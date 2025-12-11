@@ -84,6 +84,7 @@ public class WalletManager {
         return activeSessions.keys.compactMap { NetworkSecurityCase(rawValue: $0) }
     }
 
+    // Constructor
     public init(prominentNetwork: NetworkSecurityCase?) {
         self.mainnet = prominentNetwork?.gdkNetwork.mainnet ?? true
         self.prominentNetwork = prominentNetwork ?? .bitcoinSS
@@ -114,11 +115,11 @@ public class WalletManager {
     public func addSession(for network: NetworkSecurityCase) {
         switch network {
         case .lightning:
-            sessions[network.rawValue] = LightningSessionManager(network)
+            sessions[network.rawValue] = LightningSessionManager(network, newNotificationDelegate: self)
         case .lwkMainnet:
-            sessions[network.rawValue] = LwkSessionManager(network: Network.mainnet())
+            sessions[network.rawValue] = LwkSessionManager(network: Network.mainnet(), newNotificationDelegate: self)
         default:
-            sessions[network.rawValue] = SessionManager(network)
+            sessions[network.rawValue] = SessionManager(network, newNotificationDelegate: self)
         }
     }
 
@@ -518,14 +519,14 @@ public class WalletManager {
     }
 
     public func subaccount(account: WalletItem) async throws -> WalletItem? {
-        let res = try? await account.session?.subaccount(account.pointer)
+        let res = try await account.session?.subaccount(account.pointer)
         if let res = res, let row = self.subaccounts.firstIndex(where: {$0.pointer == account.pointer && $0.gdkNetwork == account.gdkNetwork}) {
             self.subaccounts[row] = res
         }
         return res
     }
     public func subaccountUpdate(account: WalletItem) async throws -> WalletItem? {
-        let res = try? await account.session?.subaccount(account.pointer)
+        let res = try await account.session?.subaccount(account.pointer)
         if let res = res, let row = self.subaccounts.firstIndex(where: {$0.pointer == account.pointer && $0.gdkNetwork == account.gdkNetwork}) {
             res.satoshi = account.satoshi
             res.hasTxs = account.hasTxs
@@ -534,11 +535,11 @@ public class WalletManager {
         return res
     }
     public func balances(subaccounts: [WalletItem]) async throws -> [String: Int64] {
-        let balances = await withTaskGroup(of: [String: Int64].self, returning: [[String: Int64]].self) { group in
+        let balances = try await withThrowingTaskGroup(of: [String: Int64].self, returning: [[String: Int64]].self) { group in
             for account in subaccounts.enumerated() {
                 group.addTask {
                     let acc = account.element
-                    let satoshi = try? await acc.session?.getBalance(subaccount: acc.pointer, numConfs: 0)
+                    let satoshi = try await acc.session?.getBalance(subaccount: acc.pointer, numConfs: 0)
                     if let index = self.subaccounts.firstIndex(where: { $0.id == acc.id }), let satoshi = satoshi {
                         self.subaccounts[index].satoshi = satoshi
                         self.subaccounts[index].hasTxs = satoshi.count > 1 ? true : account.element.hasTxs
@@ -547,7 +548,7 @@ public class WalletManager {
                     return satoshi ?? [:]
                 }
             }
-            return await group.reduce(into: [[String: Int64]]()) { partial, result in
+            return try await group.reduce(into: [[String: Int64]]()) { partial, result in
                 partial += [result]
             }
         }
@@ -620,6 +621,7 @@ public class WalletManager {
         }
         return transactions
     }
+
     public func bitcoinBlockHeight() -> UInt32? {
         return bitcoinSubaccounts.first?.session?.blockHeight
     }
@@ -628,6 +630,10 @@ public class WalletManager {
         return liquidSubaccounts.first?.session?.blockHeight
     }
 
+    public func isPaused() -> Bool {
+        activeSessions.filter({ !$0.value.paused }).count != activeSessions.count
+    }
+    
     public func pause() async {
         logger.info("WM pause networkDisconnect")
         await withTaskGroup(of: Void.self) { group -> () in
@@ -716,6 +722,47 @@ public class WalletManager {
             .map { $0.assetId }
         return assetIds
     }
+    
+    // Handle Notifications Stream
+    private var notificationContinuation: AsyncStream<EventNotificationTypes>.Continuation?
+    public lazy var notificationStream: AsyncStream<EventNotificationTypes> = {
+        AsyncStream { continuation in
+            self.notificationContinuation = continuation
+        }
+    }()
+}
+extension WalletManager: NewNotificationDelegate {
+    public func didReceive(event: EventNotificationTypes, networkType: NetworkSecurityCase) {
+        switch event {
+        case .newBlock(blockheight: let blockheight):
+            logger.info("WalletManager didReceive newBlock \(blockheight) on \(networkType.rawValue)")
+            notificationContinuation?.yield(event)
+        case .newSubaccount(subaccount: let subaccount):
+            logger.info("WalletManager didReceive newSubaccount \(subaccount.pointer) on \(networkType.rawValue)")
+            notificationContinuation?.yield(event)
+        case .newTransaction(transaction: let transaction):
+            logger.info("WalletManager didReceive newTransaction \(transaction.txHash) on \(networkType.rawValue)")
+            notificationContinuation?.yield(event)
+        case .twoFactorReset:
+            logger.info("WalletManager didReceive twoFactorReset on \(networkType.rawValue)")
+            notificationContinuation?.yield(event)
+        case .updateSettings(settings: let settings):
+            logger.info("WalletManager didReceive updateSettings on \(networkType.rawValue)")
+            notificationContinuation?.yield(event)
+        case .disconnected:
+            logger.info("WalletManager didReceive disconnected on \(networkType.rawValue)")
+            notificationContinuation?.yield(event)
+        case .reconnected:
+            logger.info("WalletManager didReceive reconnected on \(networkType.rawValue)")
+            // Reconnect all logged sessions
+            if !isPaused() {
+                notificationContinuation?.yield(event)
+            }
+        case .tor(data: let data):
+            logger.info("WalletManager didReceive tor on \(networkType.rawValue)")
+            notificationContinuation?.yield(event)
+        }
+    }
 }
 extension WalletManager {
 
@@ -737,12 +784,12 @@ extension WalletManager {
 }
 extension WalletManager: AssetsProvider {
     public func getAssets(params: gdk.GetAssetsParams) -> gdk.GetAssetsResult? {
-        let session = activeLiquidSessions.first ?? liquidSinglesigSession ?? SessionManager(liquidSinglesigNetwork)
+        let session = activeLiquidSessions.first ?? liquidSinglesigSession ?? SessionManager(liquidSinglesigNetwork, newNotificationDelegate: nil)
         return session.getAssets(params: params)
     }
 
     public func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) async throws {
-        let session = activeLiquidSessions.first ?? liquidSinglesigSession ?? SessionManager(liquidSinglesigNetwork)
+        let session = activeLiquidSessions.first ?? liquidSinglesigSession ?? SessionManager(liquidSinglesigNetwork, newNotificationDelegate: nil)
         if refresh {
             try await session.connect()
         }

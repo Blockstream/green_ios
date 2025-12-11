@@ -639,7 +639,7 @@ public struct GdkInit: Codable {
         let cacheDir = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         var logLevel = "none"
 #if DEBUG
-        logLevel = "info"
+        logLevel = "none"
 #endif
         return GdkInit(datadir: appSupportDir?.path,
                        tordir: cacheDir?.path,

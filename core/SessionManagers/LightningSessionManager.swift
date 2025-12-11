@@ -366,7 +366,9 @@ public class LightningSessionManager: SessionManager {
         }
         try? await disconnect()
     }
-
+    func hasOnchainFunds() -> Bool {
+        return (nodeState?.onchainBalanceSatoshi ?? 0) > 0
+    }
 }
 
 extension LightningSessionManager: EventListener {

@@ -53,8 +53,8 @@ public class LwkSessionManager: SessionManager {
     public var boltzSession: BoltzSession?
     var xpubHashId: String?
 
-    public init(network: Network = Network.mainnet(), boltzSession: BoltzSession? = nil, xpubHashId: String? = nil) {
-        super.init(NetworkSecurityCase.lwkMainnet)
+    public init(network: Network = Network.mainnet(), boltzSession: BoltzSession? = nil, xpubHashId: String? = nil, newNotificationDelegate: NewNotificationDelegate?) {
+        super.init(NetworkSecurityCase.lwkMainnet, newNotificationDelegate: newNotificationDelegate)
         self.network = network
         self.boltzSession = boltzSession
         self.xpubHashId = xpubHashId

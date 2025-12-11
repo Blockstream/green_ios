@@ -34,42 +34,42 @@ enum TabSettingsSection: Int, CaseIterable {
     case support
 }
 class TabViewController: UIViewController {
-
     var sectionHeaderH: CGFloat = 54.0
     var footerH: CGFloat = 54.0
-
-    var walletModel: WalletModel {
-        // swiftlint:disable force_cast
-        let mainTab = parent as! WalletTabBarViewController
-        return mainTab.walletModel
-    }
-
+    
     var walletTab: WalletTabBarViewController {
         // swiftlint:disable force_cast
         parent as! WalletTabBarViewController
     }
-}
-extension TabViewController {
 
-    func buyScreen(_ walletModel: WalletModel) {
+    func checkUKRegion() -> Bool {
+        return Locale.current.region?.identifier == "GB"
+    }
+    func getCountlyRemoteConfigEnableBuyIosUk() -> Bool {
+        return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigEnableBuyIosUk) as? Bool ?? false
+    }
+    func getBitcoinSubaccounts() -> [WalletItem] {
+        WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+    }
+    func buyScreen(currency: String, hideBalance: Bool) {
         AnalyticsManager.shared.buyInitiate(account: AccountsRepository.shared.current)
-        if !self.walletTab.getCountlyRemoteConfigEnableBuyIosUk() && self.walletTab.checkUKRegion() {
+        if !getCountlyRemoteConfigEnableBuyIosUk() && checkUKRegion() {
             showAlert(title: "id_buy_btc".localized, message: "id_feature_unavailable_in_the_uk".localized)
             return
         }
-        if self.walletTab.getBitcoinSubaccounts().isEmpty {
+        if getBitcoinSubaccounts().isEmpty {
             showAlert(title: "id_buy_btc".localized, message: "id_feature_unavailable_for_liquid".localized)
             return
         }
         let storyboard = UIStoryboard(name: "BuyBTCFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "BuyBTCViewController") as? BuyBTCViewController {
             vc.viewModel = BuyBTCViewModel(
-                currency: walletModel.currency,
-                hideBalance: walletModel.hideBalance)
+                currency: currency,
+                hideBalance: hideBalance)
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    func sendScreen(_ walletModel: WalletModel, input: String?) {
+    func sendScreen(input: String?) {
         let sendAddressInputViewModel = SendAddressInputViewModel(
             input: input,
             preferredAccount: nil,
@@ -81,15 +81,7 @@ extension TabViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    func txScreen(_ tx: Transaction) {
-        let storyboard = UIStoryboard(name: "TxDetails", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "TxDetailsViewController") as? TxDetailsViewController, let wallet = tx.subaccount {
-            vc.vm = TxDetailsViewModel(wallet: wallet, transaction: tx)
-            vc.delegate = self
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-    func receiveScreen(_ walletModel: WalletModel) {
+    func receiveScreen() {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
             vc.viewModel = ReceiveViewModel()
@@ -126,13 +118,6 @@ extension TabViewController: DialogCompareSecurityViewControllerDelegate {
             SafeNavigationManager.shared.navigate( ExternalUrls.buyJadePlus )
         case .none:
             break
-        }
-    }
-}
-extension TabViewController: TxDetailsViewControllerDelegate {
-    func onMemoEdit() {
-        Task { [weak self] in
-            await self?.walletTab.reload(discovery: false)
         }
     }
 }

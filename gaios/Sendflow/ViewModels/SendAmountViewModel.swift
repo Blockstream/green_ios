@@ -287,7 +287,7 @@ class SendAmountViewModel {
                 return tx
             }
             if var addressee = createTx.addressee {
-                if let networkType = session?.networkType, networkType.multisig && (networkType.bitcoin || networkType.testnet) {
+                if let networkType = session?.networkType, networkType.bitcoin || networkType.testnet {
                     addressee.assetId = nil
                 }
                 tx.addressees = [addressee]

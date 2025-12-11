@@ -1,11 +1,22 @@
 import UIKit
 import core
 import gdk
+import greenaddress
+
 class TabHomeVC: TabViewController {
 
+    private let viewModel: TabHomeVM
     @IBOutlet weak var tableView: UITableView?
-
     var timeFrame: ChartTimeFrame = .day
+
+    init?(coder: NSCoder, viewModel: TabHomeVM) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("You must create this view controller with a view model.")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -13,15 +24,31 @@ class TabHomeVC: TabViewController {
 
         register()
         setContent()
+        viewModel.onUpdate = { [weak self] feature in
+            DispatchQueue.main.async {
+                self?.onUpdate(feature: feature)
+            }
+        }
+        viewModel.refresh(features: [.alertCards, .promos, .balance, .subaccounts, .priceChart])
+    }
+
+    func onUpdate(feature: RefreshFeature?) {
+        switch feature {
+        case .alertCards, .promos, .balance, .subaccounts, .priceChart, .settings:
+            if tableView?.refreshControl?.isRefreshing == true {
+                tableView?.refreshControl?.endRefreshing()
+            }
+            tableView?.reloadData()
+        default:
+            break
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        tableView?.reloadData()
-
         if let url = URLSchemeManager.shared.url {
             URLSchemeManager.shared.url = nil
-            sendScreen(walletModel, input: url.absoluteString)
+            sendScreen(input: url.absoluteString)
         }
     }
 
@@ -38,28 +65,13 @@ class TabHomeVC: TabViewController {
     }
 
     @objc func pull(_ sender: UIRefreshControl? = nil) {
-        Task.detached { [weak self] in
-            await self?.walletTab.reloadChart()
-            await self?.walletTab.reload(discovery: true)
-            await MainActor.run { [weak self] in
-                self?.tableView?.refreshControl?.endRefreshing()
-            }
-        }
-    }
-
-    @MainActor
-    func reloadSections(_ sections: [TabHomeSection], animated: Bool) {
-        if animated {
-            tableView?.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .fade)
-        } else {
-            UIView.performWithoutAnimation {
-                tableView?.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
-            }
-        }
+        viewModel.refresh(features: [.discover])
     }
 
     func buy() {
-        buyScreen(walletModel)
+        Task {
+            await buyScreen(currency: viewModel.defaultCurrency ?? "USD", hideBalance: viewModel.hideBalance)
+        }
     }
 }
 
@@ -82,29 +94,21 @@ extension TabHomeVC { // navigation
         }
     }
     func promoDismiss() {
-        walletModel.reloadPromoCards()
-        reloadSections([.promo], animated: true)
+        viewModel.refresh(features: [.promos])
     }
     func backupAlertDismiss() {
-        Task {
-            BackupHelper.shared.addToDismissed(walletId: walletModel.mainAccount?.id, position: .homeTab)
-            walletModel.reloadBackupCards()
-            reloadSections([.backup], animated: true)
-        }
+        BackupHelper.shared.addToDismissed(walletId: viewModel.mainAccount.id, position: .homeTab)
+        viewModel.refresh(features: [.alertCards])
     }
-    func presentReEnable2fa() {
+    func presentReEnable2fa() async {
         let storyboard = UIStoryboard(name: "ReEnable2fa", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReEnable2faViewController") as? ReEnable2faViewController {
-            vc.vm = walletModel.reEnable2faViewModel()
+            vc.vm = ReEnable2faViewModel(expiredSubaccounts: await viewModel.getExpiredSubaccounts() ?? [])
             navigationController?.pushViewController(vc, animated: true)
         }
     }
     func remoteAlertDismiss() {
-        Task {
-            walletModel.remoteAlert = nil
-            await walletModel.reloadAlertCards()
-            reloadSections([.card], animated: true)
-        }
+        viewModel.dismissRemoteAlert()
     }
     func systemMessageScreen(msg: SystemMessage) {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
@@ -128,34 +132,32 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-
         switch TabHomeSection(rawValue: section) {
         case .header:
             return 1
         case .balance:
             return 1
         case .backup:
-            return walletModel.backupCardCellModel.count
+            return viewModel.backupCards.count
         case .card:
-            return walletModel.alertCardCellModel.count
+            return viewModel.alertCards.count
         case .assets:
-            return walletModel.walletAssetCellModels.count
+            return viewModel.balances?.count ?? 0
         case .chart:
             return 1
         case .promo:
-            return walletModel.promoCardCellModel.count
+            return viewModel.promos.count
         default:
             return 0
         }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
         switch TabHomeSection(rawValue: indexPath.section) {
-
         case .header:
+            let headerIcon = UIImage(named: AccountsRepository.shared.current?.networkType.testnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white)
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
-                cell.configure(title: "id_home".localized, icon: walletModel.headerIcon, tab: .home, onTap: {[weak self] in
+                cell.configure(title: "id_home".localized, icon: headerIcon, tab: .home, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
                 })
                 cell.selectionStyle = .none
@@ -163,25 +165,36 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .balance:
             if let cell = tableView.dequeueReusableCell(withIdentifier: BalanceCell.identifier, for: indexPath) as? BalanceCell {
-
-                cell.configure(model: walletModel.balanceCellModel,
-                               hideBalance: walletModel.hideBalance,
-                               hideBtnExchange: true,
-                               onHide: {[weak self] value in
-                    self?.walletTab.onHide(value)
-                },
-                               onAssets: {}, onConvert: {
-                    Task { [weak self] in
-                        try? await self?.walletModel.rotateBalanceDisplayMode()
-                        await MainActor.run { self?.reloadSections([.balance], animated: false) }
-                    }
-                }, onExchange: { })
+                let balanceItem = BalanceItem(satoshi: viewModel.totals?.1, assetId: viewModel.totals?.0)
+                cell.configure(
+                    item: balanceItem,
+                    denomBalance: viewModel.state.balanceDisplayMode,
+                    hideBalance: viewModel.hideBalance,
+                    hideBtnExchange: true,
+                    onHide: {[weak self] value in
+                        Task {
+                            self?.viewModel.hideBalance = value
+                            await MainActor.run {
+                                self?.tableView?.reloadData()
+                            }
+                        }
+                    },
+                    onAssets: {}, onConvert: {
+                        Task { [weak self] in
+                            await self?.viewModel.rotateBalanceDisplayMode()
+                            await MainActor.run {
+                                self?.tableView?.reloadData()
+                            }
+                        }
+                    },
+                    onExchange: {
+                    })
                 cell.selectionStyle = .none
                 return cell
             }
         case .backup:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell {
-                let alertCard = walletModel.backupCardCellModel[indexPath.row]
+                let alertCard = AlertCardCellModel(type: viewModel.backupCards[indexPath.row])
                 switch alertCard.type {
                 case .backup:
                     cell.configure(alertCard,
@@ -202,7 +215,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .card:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell {
-                let alertCard = walletModel.alertCardCellModel[indexPath.row]
+                let alertCard = AlertCardCellModel(type: viewModel.alertCards[indexPath.row])
                 switch alertCard.type {
                 case .reset(let msg), .dispute(let msg):
                     cell.configure(alertCard,
@@ -253,12 +266,11 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                         Task { [weak self] in
                             self?.startLoader(message: "id_connecting".localized)
                             let task = Task.detached { [weak self] in
-                                try await self?.walletModel.relogin()
+                                try await self?.viewModel.relogin()
                             }
                             switch await task.result {
                             case .success:
-                                await self?.walletModel.reloadAlertCards()
-                                await self?.walletTab.reload(discovery: false)
+                                self?.viewModel.refresh(features: [.alertCards, .subaccounts, .balance, .txs(reset: true)])
                                 self?.stopLoader()
                             case .failure(let error):
                                 self?.stopLoader()
@@ -266,7 +278,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                             }
                         }
                     }
-                    cell.configure(walletModel.alertCardCellModel[indexPath.row],
+                    cell.configure(alertCard,
                                    onLeft: nil,
                                    onRight: handleAlertGesture,
                                    onDismiss: nil)
@@ -284,7 +296,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                     cell.configure(alertCard,
                                    onLeft: nil,
                                    onRight: {[weak self] in
-                        self?.presentReEnable2fa()
+                        Task { await self?.presentReEnable2fa() }
                     },
                                    onDismiss: nil)
                 case .backup:
@@ -297,7 +309,9 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .assets:
             if let cell = tableView.dequeueReusableCell(withIdentifier: WalletAssetCell.identifier, for: indexPath) as? WalletAssetCell {
-                cell.configure(model: walletModel.walletAssetCellModels[indexPath.row], onTap: { self.didSelectAssetRowAt(indexPath: indexPath)})
+                let item = viewModel.assetAmountList?.amounts[indexPath.row] as? (String, Int64)
+                let walletAssetCellModel = WalletAssetCellModel(assetId: item?.0 ?? "btc", satoshi: item?.1 ?? 0, masked: viewModel.hideBalance, hidden: false)
+                cell.configure(model: walletAssetCellModel, onTap: { self.didSelectAssetRowAt(indexPath: indexPath)})
                 cell.selectionStyle = .none
                 return cell
             }
@@ -305,9 +319,9 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: PriceChartCell.identifier, for: indexPath) as? PriceChartCell {
                 cell.configure(
                     PriceChartCellModel(
-                        priceChartModel: Api.shared.priceCache,
+                        priceChartModel: viewModel.priceCache,
                         currency: Api.shared.currency,
-                        isReloading: Api.shared.priceCache == nil),
+                        isReloading: viewModel.priceCache == nil),
                     timeFrame: timeFrame,
                     onBuy: {[weak self] in
                         self?.buy()
@@ -318,7 +332,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case .promo:
-            let cellModel = walletModel.promoCardCellModel[indexPath.row]
+            let cellModel = viewModel.promos[indexPath.row]
             if cellModel.promo.layout_small == 2 {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout2Cell", for: indexPath) as? PromoLayout2Cell {
                     cell.configure(cellModel, onAction: { [weak self] in
@@ -363,7 +377,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
         case .assets, .chart:
             return sectionHeaderH
         case .card:
-            return walletModel.alertCardCellModel.count > 0 ? 10.0 : 0.1
+            return viewModel.alertCards.count > 0 ? 10.0 : 0.1
         default:
             return 0.1
         }
@@ -372,7 +386,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         switch TabHomeSection(rawValue: section) {
         case .assets:
-            if walletModel.walletAssetCellModels.count == 0 {
+            if viewModel.balances?.count == 0 {
                 return footerH
             }
             return 0.1
@@ -403,7 +417,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         switch TabHomeSection(rawValue: section) {
         case .assets:
-            if walletModel.walletAssetCellModels.count == 0 {
+            if viewModel.balances?.count == 0 {
                 return sectionFooter("id_you_dont_have_any_assets_yet".localized)
             }
             return nil
@@ -422,24 +436,24 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     func didSelectAssetRowAt(indexPath: IndexPath) {
-        let model = walletModel.walletAssetCellModels[indexPath.row]
+        let amounts = viewModel.assetAmountList?.amounts[indexPath.row]
+        let assetId = amounts?.0 ?? "btc"
+        let subaccounts = viewModel.subaccounts?.filter({$0.satoshi?.keys.contains(assetId) ?? false })
+        let vc = manageAssetViewController(assetId: assetId, subaccounts: subaccounts ?? [])
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    @MainActor func manageAssetViewController(assetId: String, subaccounts: [WalletItem]) -> ManageAssetViewController {
         let storyboard = UIStoryboard(name: "ManageAsset", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "ManageAssetViewController") as? ManageAssetViewController {
-            vc.viewModel = ManageAssetViewModel(assetId: model.assetId, walletModel: walletModel)
-            navigationController?.pushViewController(vc, animated: true)
+        let viewModel = ManageAssetViewModel(
+            walletDataModel: viewModel.walletDataModel,
+            wallet: viewModel.wallet,
+            mainAccount: viewModel.mainAccount,
+            assetId: assetId,
+            selectedSubaccount: subaccounts.count == 1 ? subaccounts.first : nil)
+        return storyboard.instantiateViewController(identifier: "ManageAssetViewController") { coder in
+            ManageAssetViewController(coder: coder, viewModel: viewModel)
         }
-        /* legacy action
-        let model = walletModel.walletAssetCellModels[indexPath.row]
-        let name = WalletManager.current?.info(for: model.assetId).name ?? ""
-        let dialogModel = DialogAccountsViewModel(
-            title: name,
-            hint: "Your " + name + " total balance is the sum of the balances across these accounts.",
-            isSelectable: false,
-            assetId: model.assetId,
-            accounts: walletModel.accountsBy(model.assetId),
-            hideBalance: walletModel.hideBalance)
-        accountsScreen(model: dialogModel)
-         */
     }
 }
 extension TabHomeVC {

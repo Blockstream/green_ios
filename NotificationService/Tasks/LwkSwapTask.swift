@@ -68,7 +68,7 @@ public class LwkSwapTask {
             logger.info("LwkSwapTask: Swap not pending")
         }
         GdkInit.defaults().run()
-        let lwk = LwkSessionManager()
+        let lwk = LwkSessionManager(newNotificationDelegate: nil)
         try await lwk.connect()
         _ = try await lwk.loginUser(Credentials(mnemonic: secret))
         let data = swapData.data(using: .utf8, allowLossyConversion: false)

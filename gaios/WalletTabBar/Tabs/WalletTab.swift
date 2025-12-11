@@ -33,28 +33,4 @@ enum WalletTab: Int, CaseIterable {
     var tabItem: UITabBarItem {
         UITabBarItem(title: tabName, image: tabIcon, selectedImage: tabIcon)
     }
-    static func tabTransactVC() -> TabTransactVC {
-        // swiftlint:disable force_cast
-        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "TabTransactVC") as! TabTransactVC
-        return vc
-    }
-    static func tabSecurityVC() -> TabSecurityVC {
-        // swiftlint:disable force_cast
-        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "TabSecurityVC") as! TabSecurityVC
-        return vc
-    }
-    static func tabSettingsVC() -> TabSettingsVC {
-        // swiftlint:disable force_cast
-        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "TabSettingsVC") as! TabSettingsVC
-        return vc
-    }
-    static func tabHomeVC() -> TabHomeVC {
-        // swiftlint:disable force_cast
-        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "TabHomeVC") as! TabHomeVC
-        return vc
-    }
 }

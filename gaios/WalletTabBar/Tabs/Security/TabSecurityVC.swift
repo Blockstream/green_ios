@@ -6,53 +6,43 @@ class TabSecurityVC: TabViewController {
 
     @IBOutlet weak var tableView: UITableView!
     private var completion: (() -> Void)?
+    let viewModel: TabSecurityVM
 
-    var backupCardCellModel = [AlertCardCellModel]()
-    var unlockCellModel: [PreferenceCellModel] {
-        var list = [PreferenceCellModel]()
-        let hasBiometricUnlock = walletModel.mainAccount?.hasBioPin == true || walletModel.mainAccount?.hasWoBioCredentials == true
-        let hasManualPin = walletModel.mainAccount?.hasManualPin == true
-        let isWatchonly = walletModel.mainAccount?.isWatchonly ?? false
-        let isHW = walletModel.mainAccount?.isHW ?? false
-        if !isWatchonly && !isHW {
-            list.append(PreferenceCellModel(preferenceType: .bio, state: hasBiometricUnlock ? .on : .off))
-            list.append(PreferenceCellModel(preferenceType: .pin, state: hasManualPin ? .on : .off))
-        }
-        return list
+    init?(coder: NSCoder, viewModel: TabSecurityVM) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
     }
-    var jadeCellModel: [PreferenceCellModel] {
-        let isHW = walletModel.mainAccount?.isJade ?? false
-        if !isHW {
-            return []
-        }
-        let boardType = walletModel.mainAccount?.boardType ?? BleHwManager.shared.jade?.version?.boardType
-        switch boardType {
-        case .some(.v2):
-            return [
-                PreferenceCellModel(preferenceType: .genuineCheck, state: .unknown),
-                PreferenceCellModel(preferenceType: .fwUpdate, state: .unknown)]
-        default:
-            return [PreferenceCellModel(preferenceType: .fwUpdate, state: .unknown)]
-        }
+
+    required init?(coder: NSCoder) {
+        fatalError("You must create this view controller with a view model.")
     }
-    var recoveryCellModel: [PreferenceCellModel] {
-        let isWatchonly = walletModel.wm?.isWatchonly ?? false
-        let isHW = walletModel.mainAccount?.isHW ?? false
-        if !isWatchonly && !isHW {
-            return [PreferenceCellModel(preferenceType: .recoveryPhrase, state: .unknown)]
-        }
-        return []
-    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.gBlackBg()
-
+        
         register()
         setContent()
+        viewModel.onUpdate = { [weak self] feature in
+            DispatchQueue.main.async {
+                self?.onUpdate(feature: feature)
+            }
+        }
+        viewModel.refresh(features: [.security])
+    }
+    func onUpdate(feature: RefreshFeature?) {
+        switch feature {
+        case .security:
+            if tableView?.refreshControl?.isRefreshing == true {
+                tableView?.refreshControl?.endRefreshing()
+            }
+            tableView?.reloadData()
+        default:
+            break
+        }
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        reloadAlertCards()
         tableView.reloadData()
     }
     func setContent() {
@@ -71,23 +61,6 @@ class TabSecurityVC: TabViewController {
             self?.tableView.refreshControl?.endRefreshing()
         }
     }
-    @MainActor
-    func reloadSections(_ sections: [TabHomeSection], animated: Bool) {
-        if animated {
-            tableView?.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
-        } else {
-            UIView.performWithoutAnimation {
-                tableView?.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
-            }
-        }
-    }
-    func reloadAlertCards() {
-        var cards: [AlertCardType] = []
-        if BackupHelper.shared.needsBackup(walletId: walletModel.mainAccount?.id) && BackupHelper.shared.isDismissed(walletId: walletModel.mainAccount?.id, position: .securityTab) == false {
-            cards.append(.backup)
-        }
-        self.backupCardCellModel = cards.map { AlertCardCellModel(type: $0) }
-    }
     func onCompare() {
         securityCompareScreen()
     }
@@ -105,7 +78,7 @@ class TabSecurityVC: TabViewController {
     func onPreferenceCell(_ model: PreferenceCellModel) {
         switch model.type {
         case .bio:
-            if walletModel.mainAccount?.isHW ?? false {
+            if viewModel.mainAccount.isHW {
                 DropAlert().error(message: "Toggle is not supported with Hardware Wallet")
             } else {
                 editProtection(type: model.hasTouchID ? .touchID : .faceID, action: model.state == .on ? .disable : .enable)
@@ -122,6 +95,8 @@ class TabSecurityVC: TabViewController {
                 vc.viewModel = ManualBackupViewModel(.phrase)
                 navigationController?.pushViewController(vc, animated: true)
             }
+        case .header:
+            return
         }
     }
     func onGenuineCheck() {
@@ -257,38 +232,19 @@ extension TabSecurityVC: UpdateFirmwareViewControllerDelegate {
 extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return TabSecuritySection.allCases.count
+        return viewModel.security.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-
-        switch TabSecuritySection(rawValue: section) {
-        case .header:
-            return 1
-        case .level:
-            return (walletModel.wm?.isWatchonly == true) ? 0 : 1
-        case .watchonly:
-            return (walletModel.wm?.isWatchonly == true) ? 1 : 0
-        case .jade:
-            return walletModel.mainAccount?.isJade ?? false ? jadeCellModel.count : 0
-        case .backup:
-            return backupCardCellModel.count
-        case .unlock:
-            return unlockCellModel.count
-        case .recovery:
-            return recoveryCellModel.count
-        default:
-            return 0
-        }
+        return viewModel.security[section].items.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-        switch TabSecuritySection(rawValue: indexPath.section) {
-
+        switch viewModel.security[indexPath.section].section {
         case .header:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
-                cell.configure(title: "id_security".localized, icon: walletModel.headerIcon, tab: .security, onTap: {[weak self] in
+                let headerIcon = UIImage(named: AccountsRepository.shared.current?.networkType.testnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white)
+                cell.configure(title: "id_security".localized, icon: headerIcon, tab: .security, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
                 })
                 cell.selectionStyle = .none
@@ -296,7 +252,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .level:
             if let cell = tableView.dequeueReusableCell(withIdentifier: SecurityLevelCell.identifier, for: indexPath) as? SecurityLevelCell {
-                cell.configure(isHW: walletModel.mainAccount?.isHW == true, onCompare: {[weak self] in
+                cell.configure(isHW: viewModel.mainAccount.isHW == true, onCompare: {[weak self] in
                     self?.onCompare()
                 })
                 cell.selectionStyle = .none
@@ -312,7 +268,8 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .jade:
             if let cell = tableView.dequeueReusableCell(withIdentifier: PreferenceCell.identifier, for: indexPath) as? PreferenceCell {
-                let model = jadeCellModel[indexPath.row]
+                let type = viewModel.security[indexPath.section].items[indexPath.row]
+                let model = PreferenceCellModel(preferenceType: type, state: .unknown)
                 cell.configure(model: model,
                                onTap: {[weak self] in
                     self?.onPreferenceCell(model)
@@ -322,36 +279,42 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .backup:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell {
-                let alertCard = backupCardCellModel[indexPath.row]
-                switch alertCard.type {
-                case .backup:
-                    cell.configure(alertCard,
-                                   onLeft: {[weak self] in
-                        if let vc = AccountNavigator.backupIntro(.quiz) {
-                            self?.navigationController?.pushViewController(vc, animated: true)
-                        }
-                    },
-                                   onRight: nil,
-                                   onDismiss: nil)
+                if let backup = viewModel.backupCards.first {
+                    let alertCard = AlertCardCellModel(type: backup)
+                    cell.configure(
+                        alertCard,
+                        onLeft: {[weak self] in
+                            if let vc = AccountNavigator.backupIntro(.quiz) {
+                                self?.navigationController?.pushViewController(vc, animated: true)
+                            }
+                        },
+                        onRight: nil,
+                        onDismiss: nil)
+                    cell.selectionStyle = .none
+                    return cell
+                }
+            }
+        case .unlock:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: PreferenceCell.identifier, for: indexPath) as? PreferenceCell {
+                let type = viewModel.security[indexPath.section].items[indexPath.row]
+                switch type {
+                case .bio:
+                    let hasBiometricUnlock = viewModel.mainAccount.hasBioPin || viewModel.mainAccount.hasWoBioCredentials
+                    let bio = PreferenceCellModel(preferenceType: .bio, state: hasBiometricUnlock ? .on : .off)
+                    cell.configure(model: bio, onTap: {[weak self] in self?.onPreferenceCell(bio) })
+                case .pin:
+                    let hasManualPin = viewModel.mainAccount.hasManualPin
+                    let pin = PreferenceCellModel(preferenceType: .pin, state: hasManualPin ? .on : .off)
+                    cell.configure(model: pin, onTap: {[weak self] in self?.onPreferenceCell(pin) })
                 default:
                     break
                 }
                 cell.selectionStyle = .none
                 return cell
             }
-        case .unlock:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: PreferenceCell.identifier, for: indexPath) as? PreferenceCell {
-                let model = unlockCellModel[indexPath.row]
-                cell.configure(model: model,
-                               onTap: {[weak self] in
-                    self?.onPreferenceCell(model)
-                })
-                cell.selectionStyle = .none
-                return cell
-            }
         case .recovery:
             if let cell = tableView.dequeueReusableCell(withIdentifier: PreferenceCell.identifier, for: indexPath) as? PreferenceCell {
-                let model = recoveryCellModel[indexPath.row]
+                let model = PreferenceCellModel(preferenceType: .recoveryPhrase, state: .unknown)
                 cell.configure(model: model,
                                onTap: {[weak self] in
                     self?.onPreferenceCell(model)
@@ -367,67 +330,28 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch TabSecuritySection(rawValue: section) {
-        case .jade:
-            return jadeCellModel.count > 0 ? sectionHeaderH : 0.1
-        case .unlock:
-            return unlockCellModel.count > 0 ? sectionHeaderH : 0.1
-        case .recovery:
-            return recoveryCellModel.count > 0 ? sectionHeaderH : 0.1
-        default:
-            return 0.1
-        }
+        viewModel.security[section].items.count > 0 ? sectionHeaderH : 0.1
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        switch TabSecuritySection(rawValue: section) {
-        case .header:
-            return 0.1
-            // return headerH
-        default:
-            return 0.1
-        }
+        return 0.1
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch TabSecuritySection(rawValue: indexPath.section) {
-        default:
-            return UITableView.automaticDimension
-        }
+        return UITableView.automaticDimension
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-
-        switch TabSecuritySection(rawValue: section) {
+        let section = viewModel.security[section]
+        switch section.section {
         case .jade:
-            return jadeCellModel.count > 0 ? sectionHeader("id_your_jade".localized) : nil
+            return section.items.count > 0 ? sectionHeader("id_your_jade".localized) : nil
         case .unlock:
-            return unlockCellModel.count > 0 ? sectionHeader("id_unlock_method".localized) : nil
+            return section.items.count > 0 ? sectionHeader("id_unlock_method".localized) : nil
         case .recovery:
-            return recoveryCellModel.count > 0 ? sectionHeader("id_recovery_method".localized) : nil
+            return section.items.count > 0 ? sectionHeader("id_recovery_method".localized) : nil
         default:
             return nil
-        }
-    }
-
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        switch TabSecuritySection(rawValue: section) {
-        default:
-            return nil
-        }
-    }
-
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        switch TabSecuritySection(rawValue: indexPath.section) {
-        default:
-            return nil // indexPath
-        }
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch TabSecuritySection(rawValue: indexPath.section) {
-        default:
-            break
         }
     }
 }

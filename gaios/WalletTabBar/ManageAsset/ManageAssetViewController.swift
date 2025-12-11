@@ -2,7 +2,7 @@ import UIKit
 import gdk
 import core
 
-enum ManageAseetSection: Int, CaseIterable {
+enum ManageAssetSection: Int, CaseIterable {
     case assetBalance
     case actions
     case cta
@@ -13,14 +13,22 @@ enum ManageAseetSection: Int, CaseIterable {
 class ManageAssetViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView?
-    private var notificationObservers: [NSObjectProtocol] = []
-    var viewModel: ManageAssetViewModel!
+    let viewModel: ManageAssetViewModel
+
+    init?(coder: NSCoder, viewModel: ManageAssetViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("You must create this view controller with a view model.")
+    }
+    
     var sectionHeaderH: CGFloat = 54.0
     var footerH: CGFloat = 54.0
-    var isReloading = false
 
-    var sections: [ManageAseetSection] {
-        if viewModel.account == nil {
+    var sections: [ManageAssetSection] {
+        if viewModel.selectedSubaccount == nil {
             return [.assetBalance, .accounts]
         } else {
             return [.assetBalance, .actions, .cta, .transactions]
@@ -29,35 +37,38 @@ class ManageAssetViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.gBlackBg()
-
-        register()
-        setContent()
-        setupNotifications()
-        Task { [weak self] in
-            await self?.reload(discovery: false)
-        }
-        if viewModel.account != nil {
-            loadNavigationBtns()
-        }
         tableView?.refreshControl = UIRefreshControl()
         tableView?.refreshControl!.tintColor = UIColor.white
         tableView?.refreshControl!.addTarget(self, action: #selector(pull(_:)), for: .valueChanged)
+        register()
+        reloadTitle()
+        reloadNavigation()
+        viewModel.onUpdate = { [weak self] feature in
+            DispatchQueue.main.async {
+                self?.onUpdate(feature: feature)
+            }
+        }
+        viewModel.refresh()
+    }
+    func onUpdate(feature: RefreshFeature?) {
+        switch feature {
+        case .alertCards, .balance, .subaccounts, .nestedTxs(_, _):
+            if tableView?.refreshControl?.isRefreshing == true {
+                tableView?.refreshControl?.endRefreshing()
+            }
+            tableView?.reloadData()
+        default:
+            break
+        }
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView?.reloadData()
     }
-    deinit {
-        notificationObservers.forEach { observer in
-            NotificationCenter.default.removeObserver(observer)
-        }
-        notificationObservers = []
-    }
-    func setContent() {
-        if viewModel.account != nil, viewModel.accounts().count > 1 {
-            title = viewModel.account?.localizedName
-        }
-        if viewModel.account == nil {
+    func reloadTitle() {
+        if let subaccount = viewModel.selectedSubaccount {
+            title = subaccount.localizedName
+        } else {
             let asset = WalletManager.current?.info(for: viewModel.assetId)
             let name = asset?.name ?? asset?.assetId
             title = name
@@ -69,29 +80,29 @@ class ManageAssetViewController: UIViewController {
             tableView?.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
-    func loadNavigationBtns() {
-        let settingsBtn = UIButton(type: .system)
-        settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
-        settingsBtn.setImage(UIImage(named: "ic_nav_disclose"), for: .normal)
-        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: settingsBtn)]
-    }
-    @objc func pull(_ sender: UIRefreshControl? = nil) {
-        Task.detached { [weak self] in
-            await self?.reload(discovery: false)
-            await MainActor.run { [weak self] in
-                self?.tableView?.refreshControl?.endRefreshing()
-            }
+    func reloadNavigation() {
+        if viewModel.selectedSubaccount != nil {
+            let settingsBtn = UIButton(type: .system)
+            settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+            settingsBtn.setImage(UIImage(named: "ic_nav_disclose"), for: .normal)
+            settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
+            navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: settingsBtn)]
+        } else {
+            navigationItem.rightBarButtonItems = []
         }
     }
+    @objc func pull(_ sender: UIRefreshControl? = nil) {
+        viewModel.refresh()
+    }
     @objc func settingsBtnTapped() {
-        if viewModel.account?.isLightning ?? false {
+        guard let subaccount = viewModel.selectedSubaccount else { return }
+        if subaccount.isLightning {
             openLTSettingsViewController()
             return
         }
         var actions: [AccountSettingsType] = []
         if !(WalletManager.current?.isWatchonly ?? false) {
-            actions.append(.rename(current: viewModel.account?.localizedName ?? ""))
+            actions.append(.rename(current: subaccount.localizedName))
         }
         actions.append(.watchonly)
         actions.append(.archive)
@@ -113,7 +124,7 @@ class ManageAssetViewController: UIViewController {
         sendScreen()
     }
     func onTxTap(_ indexPath: IndexPath) {
-        let tx = viewModel.txCellModels[indexPath.row].tx
+        guard let tx = viewModel.txs?[indexPath.row] else { return }
         if tx.isMeldPayment ?? false {
             // nothing
         } else if tx.isLightningSwap ?? false {
@@ -126,85 +137,31 @@ class ManageAssetViewController: UIViewController {
             txScreen(tx)
         }
     }
+
     func onAccountTap(_ indexPath: IndexPath) {
-        if let model = viewModel?.accountCellModels[indexPath.row],
-           let assetId = model.assetId {
-            let storyboard = UIStoryboard(name: "ManageAsset", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "ManageAssetViewController") as? ManageAssetViewController {
-                vc.viewModel = ManageAssetViewModel(assetId: assetId,
-                                                    account: model.account,
-                                                    walletModel: self.viewModel.walletModel)
-                navigationController?.pushViewController(vc, animated: true)
-            }
+        let subaccount = viewModel.subaccounts[indexPath.row]
+        let vm = ManageAssetViewModel(
+            walletDataModel: viewModel.walletDataModel,
+            wallet: viewModel.wallet,
+            mainAccount: viewModel.mainAccount,
+            assetId: viewModel.assetId,
+            selectedSubaccount: subaccount
+        )
+        let storyboard = UIStoryboard(name: "ManageAsset", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: "ManageAssetViewController") { coder in
+            ManageAssetViewController(coder: coder, viewModel: vm)
         }
+        navigationController?.pushViewController(vc, animated: true)
     }
-    func reload(discovery: Bool) async {
-        if viewModel.paused {
-            return
-        }
-        if isReloading {
-            return
-        }
-        isReloading = true
-        try? await self.viewModel.fetchBalances()
-        reloadSections([.assetBalance], animated: false)
-        if viewModel.account != nil {
-            _ = try? await viewModel.fetchTransactions()
-        }
-        isReloading = false
-        self.tableView?.reloadData()
-    }
+
     @MainActor
-    func reloadSections(_ sections: [ManageAseetSection], animated: Bool) {
+    func reloadSections(_ sections: [ManageAssetSection], animated: Bool) {
         if animated {
             tableView?.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .fade)
         } else {
             UIView.performWithoutAnimation {
                 tableView?.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
             }
-        }
-    }
-    func handleEvent(_ eventType: EventType, details: [AnyHashable: Any]) {
-        switch eventType {
-        case .Block:
-            if viewModel.existPendingTransaction() {
-                Task.detached { [weak self] in
-                    await self?.reload(discovery: false)
-                }
-            }
-        case .Settings, .AssetsUpdated, .Ticker:
-            tableView?.reloadData()
-        default:
-            Task.detached { [weak self] in
-                await self?.reload(discovery: false)
-            }
-        }
-    }
-    func setupNotifications() {
-        let observer = NotificationCenter.default.addObserver(
-            forName: UIApplication.willEnterForegroundNotification,
-            object: UIApplication.shared,
-            queue: .main,
-            using: { [weak self] _ in
-                self?.handleForegroundEvent()
-            })
-        notificationObservers.append(observer)
-        EventType.allCases.forEach {
-            let observer = NotificationCenter.default.addObserver(
-                forName: NSNotification.Name(rawValue: $0.rawValue),
-                object: nil,
-                queue: .main,
-                using: { [weak self] notification in
-                    if let eventType = EventType(rawValue: notification.name.rawValue) {
-                        self?.handleEvent(eventType, details: notification.userInfo ?? [:])
-                    }
-                })
-            notificationObservers.append(observer)
-        }
-    }
-    func handleForegroundEvent() {
-        Task.detached { [weak self] in
-            await self?.reload(discovery: false)
         }
     }
     func accountRename(_ name: String) {
@@ -219,7 +176,7 @@ class ManageAssetViewController: UIViewController {
     }
     func showDescriptor() {
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountDescriptorViewController") as? AccountDescriptorViewController, let account = viewModel.account {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountDescriptorViewController") as? AccountDescriptorViewController, let account = viewModel.selectedSubaccount {
             vc.viewModel = AccountDescriptorViewModel(account: account)
             // vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
@@ -231,7 +188,7 @@ class ManageAssetViewController: UIViewController {
                 startLoader(message: "id_renaming".localized)
                 try await viewModel.renameSubaccount(name: name)
                 stopLoader()
-                setContent()
+                reloadTitle()
             } catch { showError(error) }
         }
     }
@@ -241,15 +198,16 @@ class ManageAssetViewController: UIViewController {
                 startLoader(message: "id_archiving".localized)
                 try await viewModel.archiveSubaccount()
                 stopLoader()
-//                delegate?.didArchiveAccount()
                 showArchivedSuccess()
             } catch { showError(error) }
         }
     }
     func lightningTransfer() {
-        if let viewModel = viewModel.ltRecoverFundsViewModelSweep() {
-            pushLTRecoverFundsViewController(viewModel)
-        }
+        let viewModel = LTRecoverFundsViewModel(
+            wallet: viewModel.selectedSubaccount,
+            amount: viewModel.selectedSubaccount?.lightningSession?.nodeState?.onchainBalanceSatoshi ?? 0,
+            type: .sweep)
+        pushLTRecoverFundsViewController(viewModel)
     }
     func pushLTRecoverFundsViewController(_ model: LTRecoverFundsViewModel) {
         let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
@@ -269,7 +227,7 @@ class ManageAssetViewController: UIViewController {
         }
     }
     func openLTSettingsViewController() {
-        guard let lightningSession = viewModel.wm?.lightningSession else {
+        guard let lightningSession = viewModel.selectedSubaccount?.lightningSession else {
             DropAlert().warning(message: "Create a lightning account")
             return
         }
@@ -294,62 +252,63 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
         case .actions:
             return 1
         case .cta:
-            return viewModel.ctaCellModels.count
+            return viewModel.actions.count
         case .accounts:
-            return viewModel.accountCellModels.count
+            return viewModel.subaccounts.count
         case .transactions:
-            return viewModel.txCellModels.count
+            return viewModel.txs?.count ?? 0
         }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
         switch sections[indexPath.section] {
         case .assetBalance:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AssetBalanceCell.identifier, for: indexPath) as? AssetBalanceCell {
-                cell.configure(assetId: viewModel.assetId,
-                               satoshi: viewModel.satoshi,
-                               hideBalance: viewModel.hideBalance)
+                var satoshi: Int64?
+                if let subaccount = viewModel.selectedSubaccount {
+                    satoshi = subaccount.satoshi?[viewModel.assetId]
+                } else {
+                    satoshi = viewModel.balances?[viewModel.assetId]
+                }
+                cell.configure(
+                    assetId: viewModel.assetId,
+                    satoshi: satoshi ?? 0,
+                    hideBalance: viewModel.hideBalance)
                 cell.selectionStyle = .none
                 return cell
             }
         case .actions:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactActionsCell.identifier, for: indexPath) as? TransactActionsCell {
-                let onBuy: (() -> Void)? = viewModel.isBTCAsset ? { [weak self] in
-                    self?.buy()
-                } : nil
-                let onSend: (() -> Void)? = {
-                    if viewModel.assetId == AssetInfo.lightningId {
-                        return viewModel.canSendLightning() ? { [weak self] in self?.send() } : nil
-                    } else {
-                        return { [weak self] in self?.send() }
-                    }
-                }()
-                cell.configure(onBuy: onBuy, onSend: onSend, onReceive: {[weak self] in
-                    self?.receive()
-                })
+                cell.configure(onBuy: self.buy, onSend: self.send, onReceive: self.receive)
                 cell.selectionStyle = .none
                 return cell
             }
         case .cta:
-            let model = viewModel.ctaCellModels[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: ActionCell.identifier, for: indexPath) as? ActionCell {
-                cell.configure(model: model,
-                               onAction: {[weak self] in
-                    switch model.type {
-                    case .lightningTransfer:
-                        self?.lightningTransfer()
-                    }
-                })
+                let action = viewModel.actions[indexPath.row]
+                let model = ActionCellModel(action)
+                cell.configure(
+                    model: model,
+                    onAction: {[weak self] in
+                        switch model.type {
+                        case .lightningTransfer:
+                            self?.lightningTransfer()
+                        }
+                    })
                 cell.selectionStyle = .none
                 return cell
             }
         case .accounts:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: DialogAccountCell.identifier, for: indexPath) as? DialogAccountCell, let model = viewModel?.accountCellModels[indexPath.row] {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: DialogAccountCell.identifier, for: indexPath) as? DialogAccountCell {
+                let subaccount = viewModel.subaccounts[indexPath.row]
+                let model = AccountCellModel(
+                    account: subaccount,
+                    satoshi: subaccount.satoshi?[viewModel.assetId],
+                    assetId: viewModel.assetId)
                 cell.configure(
                     model: model,
                     isSelectable: true,
-                    hideBalance: viewModel?.hideBalance ?? false,
+                    hideBalance: viewModel.hideBalance,
                     onTap: {[weak self] in
                         self?.onAccountTap(indexPath)
                     })
@@ -357,8 +316,11 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
                 return cell
             }
         case .transactions:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: TransactionCell.identifier, for: indexPath) as? TransactionCell {
-                cell.configure(model: viewModel.txCellModels[indexPath.row], hideBalance: viewModel.hideBalance, onTap: {[weak self] in
+            if let cell = tableView.dequeueReusableCell(withIdentifier: TransactionCell.identifier, for: indexPath) as? TransactionCell, let tx = viewModel.txs?[indexPath.row] {
+                let wm = WalletManager.current
+                let blockHeight = tx.isLiquid ? wm?.liquidBlockHeight() : wm?.bitcoinBlockHeight()
+                let model = TransactionCellModel(tx: tx, blockHeight: blockHeight ?? 0)
+                cell.configure(model: model, hideBalance: viewModel.hideBalance, onTap: {[weak self] in
                     self?.onTxTap(indexPath)
                 })
                 cell.selectionStyle = .none
@@ -374,7 +336,7 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
         case .transactions:
             return sectionHeaderH
         case .accounts:
-            return viewModel.accountCellModels.count > 0 ? sectionHeaderH : 0.1
+            return viewModel.subaccounts.count > 0 ? sectionHeaderH : 0.1
         default:
             return 0.1
         }
@@ -383,7 +345,7 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         switch sections[section] {
         case .transactions:
-            if viewModel.txCellModels.count == 0 && !isReloading {
+            if viewModel.txs?.count == 0 {
                 return footerH
             }
             return 0.1
@@ -414,7 +376,7 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         switch sections[section] {
         case .transactions:
-            if viewModel.txCellModels.count == 0 && !isReloading {
+            if viewModel.txs?.count == 0 {
                 return sectionFooter("id_you_dont_have_any_transactions".localized)
             }
             return nil
@@ -504,8 +466,8 @@ extension ManageAssetViewController {
         let storyboard = UIStoryboard(name: "BuyBTCFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "BuyBTCViewController") as? BuyBTCViewController {
             vc.viewModel = BuyBTCViewModel(
-                account: viewModel.account,
-                currency: viewModel.currency,
+                account: viewModel.selectedSubaccount,
+                currency: viewModel.currency(),
                 hideBalance: viewModel.hideBalance)
             navigationController?.pushViewController(vc, animated: true)
         }
@@ -513,7 +475,7 @@ extension ManageAssetViewController {
     func sendScreen() {
         let sendAddressInputViewModel = SendAddressInputViewModel(
             input: nil,
-            preferredAccount: viewModel.account,
+            preferredAccount: viewModel.selectedSubaccount,
             txType: nil,
             assetId: viewModel.assetId)
 
@@ -533,7 +495,7 @@ extension ManageAssetViewController {
     }
     func receiveScreen() {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController, let account = viewModel.account {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController, let account = viewModel.selectedSubaccount {
             let waParam: (WalletItem, String) = (account, viewModel.assetId)
             vc.viewModel = ReceiveViewModel(waParam)
             navigationController?.pushViewController(vc, animated: true)
@@ -570,9 +532,7 @@ extension ManageAssetViewController {
 }
 extension ManageAssetViewController: TxDetailsViewControllerDelegate {
     func onMemoEdit() {
-        Task { [weak self] in
-            await self?.reload(discovery: false)
-        }
+        viewModel.refresh()
     }
 }
 extension ManageAssetViewController: AccountSettingsViewControllerDelegate {
@@ -581,11 +541,10 @@ extension ManageAssetViewController: AccountSettingsViewControllerDelegate {
         case .rename(let current):
             accountRename(current)
         case .watchonly:
-            if viewModel.account?.isSinglesig == true {
+            if viewModel.selectedSubaccount?.isSinglesig == true {
                 showDescriptor()
-            } else if viewModel.account?.isMultisig == true {
-                if let network = viewModel.account?.network,
-                   let session = viewModel.wm?.sessions[network] {
+            } else if viewModel.selectedSubaccount?.isMultisig == true {
+                if let session = viewModel.selectedSubaccount?.session {
                     openWatchOnly(session: session)
                 }
             }

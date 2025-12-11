@@ -40,7 +40,8 @@ class OnboardViewModel {
 
     func checkWalletsJustRestored(account: Account, credentials: Credentials) async throws {
         // Avoid to restore an existing wallets
-        let xpub = try await getXpubHashId(session: SessionManager(account.networkType), credentials: credentials)
+        let session = SessionManager(account.networkType, newNotificationDelegate: nil)
+        let xpub = try await getXpubHashId(session: session, credentials: credentials)
         let prevAccounts = AccountsRepository.shared.find(xpubHashId: xpub ?? "")?
             .filter {
                 $0.networkType == account.networkType &&

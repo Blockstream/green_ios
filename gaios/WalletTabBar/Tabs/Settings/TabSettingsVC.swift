@@ -7,22 +7,40 @@ import hw
 class TabSettingsVC: TabViewController {
 
     @IBOutlet weak var tableView: UITableView!
+    let viewModel: TabSettingsVM
 
-    var session = { WalletManager.current?.prominentSession }()
-    var viewModel = TabSettingsModel()
-    var account: Account? { get { walletModel.mainAccount } }
+    init?(coder: NSCoder, viewModel: TabSettingsVM) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("You must create this view controller with a view model.")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.gBlackBg()
-
         register()
         setContent()
+        viewModel.onUpdate = { [weak self] feature in
+            DispatchQueue.main.async {
+                self?.onUpdate(feature: feature)
+            }
+        }
+        viewModel.refresh(features: [.settings])
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
-        initViewModel()
+    func onUpdate(feature: RefreshFeature?) {
+        switch feature {
+        case .settings:
+            if tableView?.refreshControl?.isRefreshing == true {
+                tableView?.refreshControl?.endRefreshing()
+            }
+            tableView?.reloadData()
+        default:
+            break
+        }
     }
 
     func setContent() {
@@ -37,70 +55,36 @@ class TabSettingsVC: TabViewController {
         }
     }
     @objc func pull(_ sender: UIRefreshControl? = nil) {
-        viewModel.load()
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {[weak self] in
-            self?.tableView.refreshControl?.endRefreshing()
-        }
-    }
-
-    func initViewModel() {
-        viewModel.reloadTableView = { [weak self] in
-            DispatchQueue.main.async {
-                self?.tableView.reloadData()
-            }
-        }
-        viewModel.load()
-    }
-    func getSwitchValue() -> Bool {
-        guard let screenlock = session?.settings?.getScreenLock() else {
-            DropAlert().error(message: "id_operation_failure".localized)
-            return false
-        }
-        if screenlock == .None {
-            return false
-        } else if screenlock == .All {
-            return true
-        } else if screenlock == .FaceID || screenlock == .TouchID {
-            // this should never happen
-            logger.info("no pin exists but faceid/touchid is enabled" )
-            return true
-        } else if screenlock == .Pin {
-            return false
-        }
-        return false
-    }
-    func comingSoon() {
-        let alert = UIAlertController(title: "Coming soon...", message: "", preferredStyle: UIAlertController.Style.alert)
-        alert.addAction(UIAlertAction(title: "id_ok".localized, style: UIAlertAction.Style.default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
+        viewModel.refresh(features: [.settings])
     }
 }
 extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.sections.count
+        logger.info("TabSettingsVC numberOfSections \(self.viewModel.settings.count)")
+        return viewModel.settings.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.getCellModelsForSection(at: section)?.count ?? 0
+        return viewModel.settings[section].items.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-        switch TabSettingsSection(rawValue: indexPath.section) {
-
+        switch viewModel.settings[indexPath.section].section {
         case .header:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
-                cell.configure(title: "id_settings".localized, icon: walletModel.headerIcon, tab: .settings, onTap: {[weak self] in
+                let headerIcon = UIImage(named: viewModel.mainAccount.networkType.testnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white)
+                cell.configure(title: "id_settings".localized, icon: headerIcon, tab: .settings, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
                 })
                 cell.selectionStyle = .none
                 return cell
             }
         default:
-            let vm = viewModel.getCellModel(at: indexPath)
             if let cell = tableView.dequeueReusableCell(withIdentifier: SettingsCell.identifier, for: indexPath) as? SettingsCell {
-                cell.viewModel = vm
+                let settingItem = viewModel.settings[indexPath.section].items[indexPath.row]
+                let cellModel = viewModel.getSettingsItemCellModel(for: settingItem)
+                cell.viewModel = cellModel
                 cell.selectionStyle = .none
                 return cell
             }
@@ -110,7 +94,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch viewModel.sections[section] {
+        switch viewModel.settings[section].section {
         case .header:
             return 0.1
         case .support:
@@ -129,8 +113,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-
-        switch viewModel.sections[section] {
+        switch viewModel.settings[section].section {
         case .header:
             return nil
         case .wallet:
@@ -149,20 +132,19 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
         tableView.deselectRow(at: indexPath, animated: true)
-        let item = viewModel.getCellModel(at: indexPath)
-        switch item?.type {
+        let item = viewModel.settings[indexPath.section].items[indexPath.row]
+        switch item {
         case .header:
             return
         case .support:
             walletTab.presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true), isPush: true)
         case .unifiedDenominationExchange:
-            showDenominationExchange()
+            presentDenominationExchange()
         case .logout:
             walletTab.userLogout()
         case .rename:
-            walletTab.rename()
+            presentDialogRenameViewController()
         case .lightning:
             if viewModel.hasLightning() {
                 openLTSettingsViewController()
@@ -203,8 +185,6 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .createAccount:
             createAccount()
-        case .none:
-            break
         }
     }
 
@@ -218,7 +198,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
             stopLoader()
             if let subaccount = viewModel.getSubaccountsAmp().first {
                 presentDialogAmpId(subaccount)
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.newSubaccount.rawValue), object: nil, userInfo: nil)
+                viewModel.refresh(features: [.subaccounts])
             }
         case .failure(let err):
             stopLoader()
@@ -360,7 +340,7 @@ extension TabSettingsVC {
     }
 
     func openLTSettingsViewController() {
-        guard let lightningSession = viewModel.wm?.lightningSession else {
+        guard let lightningSession = viewModel.wallet.lightningSession else {
             DropAlert().warning(message: "Create a lightning account")
             return
         }
@@ -391,7 +371,7 @@ extension TabSettingsVC {
 //        }
     }
 
-    func showDenominationExchange() {
+    func presentDenominationExchange() {
         let ltFlow = UIStoryboard(name: "DenominationExchangeFlow", bundle: nil)
         if let vc = ltFlow.instantiateViewController(withIdentifier: "DenominationExchangeViewController") as? DenominationExchangeViewController {
             vc.modalPresentationStyle = .overFullScreen
@@ -401,9 +381,8 @@ extension TabSettingsVC {
     }
 
     func showAutoLogout() {
-        guard let settings = session?.settings else { return }
+        guard let settings = viewModel.wallet.prominentSession?.settings else { return }
         let list = [AutoLockType.minute.string, AutoLockType.twoMinutes.string, AutoLockType.fiveMinutes.string, AutoLockType.tenMinutes.string, AutoLockType.sixtyMinutes.string]
-
         let dialogViewModel = DialogListViewModel(
             title: "id_auto_logout_timeout".localized,
             type: .autoLogoutPrefs,
@@ -419,15 +398,16 @@ extension TabSettingsVC {
                         Task {
                             self.startAnimating()
                             do {
-                                _ = try await self.session?.changeSettings(settings: settings)
+                                _ = try await self.viewModel.session?.changeSettings(settings: settings)
                                 await MainActor.run {
-                                    self.viewModel.load()
+                                    self.stopAnimating()
+                                    self.viewModel.refresh(features: [.settings])
                                     self.dismiss(animated: true)
                                 }
                             } catch {
+                                self.stopAnimating()
                                 self.showError(error)
                             }
-                            self.stopAnimating()
                         }
                     }
                 )
@@ -440,13 +420,24 @@ extension TabSettingsVC {
             self.present(dialogViewController, animated: true, completion: nil)
         }
     }
+
+    func presentDialogRenameViewController() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRenameViewController") as? DialogRenameViewController {
+            vc.delegate = self
+            vc.index = nil
+            vc.prefill = viewModel.mainAccount.name
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
 }
 
 extension TabSettingsVC: DialogWatchOnlySetUpViewControllerDelegate {
     func watchOnlyDidUpdate(_ action: WatchOnlySetUpAction) {
         switch action {
         case .save, .delete:
-            viewModel.load()
+            viewModel.refresh(features: [.settings])
         default:
             break
         }
@@ -455,17 +446,15 @@ extension TabSettingsVC: DialogWatchOnlySetUpViewControllerDelegate {
 
 extension TabSettingsVC: DenominationExchangeViewControllerDelegate {
     func onDenominationExchangeSave() {
-        self.viewModel.load()
-        walletModel.reloadBalances()
-        walletTab.updateTabs([.home, .transact])
+        self.tableView.reloadData()
+        viewModel.refresh(features: [.subaccounts, .balance, .txs(reset: true), .priceChart])
     }
 }
 
 extension TabSettingsVC: AccountArchiveViewControllerDelegate {
     func archiveDidChange() {
-        Task { [weak self] in
-            await self?.walletTab.reload(discovery: false)
-        }
+        self.tableView.reloadData()
+        viewModel.refresh(features: [.subaccounts, .balance, .txs(reset: true)])
     }
 }
 
@@ -479,5 +468,15 @@ extension TabSettingsVC: DialogAccountsViewControllerDelegate {
 extension TabSettingsVC: TFAViewControllerDelegate {
     func sendLogout() {
         walletTab.userLogout()
+    }
+}
+
+extension TabSettingsVC: DialogRenameViewControllerDelegate {
+
+    func didRename(name: String, index: String?) {
+        self.tableView.reloadData()
+        viewModel.refresh(features: [.subaccounts, .balance, .txs(reset:true)])
+    }
+    func didCancel() {
     }
 }

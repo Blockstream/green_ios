@@ -37,7 +37,7 @@ class LoginViewModel {
             // need decrypt with pin server
             let pin = withPIN ?? pinData.plaintextBiometric
             let decryptData = DecryptWithPinParams(pin: pin ?? "", pinData: pinData)
-            let session = SessionManager(account.networkType)
+            let session = SessionManager(account.networkType, newNotificationDelegate: nil)
             try await session.connect()
             return try await session.decryptWithPin(decryptData)
         }

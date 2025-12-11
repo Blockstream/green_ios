@@ -32,6 +32,7 @@ public class SessionManager {
     public var gdkFailures = [String]()
     public var hwProtocol: HWProtocol?
     public let uuid = UUID()
+    public var newNotificationDelegate: NewNotificationDelegate?
 
     // Serial reconnect queue for network events
     public let reconnectionTasks = SerialTasks<Void>()
@@ -44,8 +45,9 @@ public class SessionManager {
         get { twoFactorConfig?.twofactorReset.isResetActive }
     }
 
-    public init(_ networkType: NetworkSecurityCase) {
+    public init(_ networkType: NetworkSecurityCase, newNotificationDelegate: NewNotificationDelegate?) {
         self.networkType = networkType
+        self.newNotificationDelegate = newNotificationDelegate
         self.gdkNetwork = GdkNetworks.get(networkType: networkType)
         session = GDKSession()
     }
@@ -648,7 +650,20 @@ public class SessionManager {
         try await wrapper(fun: session?.rsaVerify, params: details)
     }
 }
- 
+
+public enum EventNotificationTypes {
+    case newBlock(blockheight: UInt32)
+    case newSubaccount(subaccount: SubaccountEvent)
+    case newTransaction(transaction: TransactionEvent)
+    case twoFactorReset
+    case updateSettings(settings: Settings)
+    case disconnected
+    case reconnected
+    case tor(data: TorNotification)
+}
+public protocol NewNotificationDelegate {
+    func didReceive(event: EventNotificationTypes, networkType: NetworkSecurityCase)
+}
 
 extension SessionManager {
     @MainActor
@@ -658,36 +673,27 @@ extension SessionManager {
                 let data = notification?[event.rawValue] as? [String: Any] else {
             return
         }
-        log("newNotification", notification ?? [:])
+        logger.info("newNotification \(notification.debugDescription.prefix(100))")
         switch event {
         case .Block:
             guard let height = data["block_height"] as? UInt32 else { break }
             blockHeight = height
-            if !paused {
-                // avoid to refresh contents if session is not resumed yet
-                post(event: .Block, userInfo: data)
-            }
+            newNotificationDelegate?.didReceive(event: .newBlock(blockheight: height), networkType: networkType)
         case .Subaccount:
-            _ = SubaccountEvent.from(data) as? SubaccountEvent
-            post(event: .Block, userInfo: data)
-            post(event: .Transaction, userInfo: data)
+            guard let subaccountEvent = SubaccountEvent.from(data) as? SubaccountEvent else { break }
+            newNotificationDelegate?.didReceive(event: .newSubaccount(subaccount: subaccountEvent), networkType: networkType)
         case .Transaction:
-            post(event: .Transaction, userInfo: data)
-            let txEvent = TransactionEvent.from(data) as? TransactionEvent
-            if txEvent?.type == "incoming" {
-                txEvent?.subAccounts.forEach { pointer in
-                    post(event: .AddressChanged, userInfo: ["pointer": UInt32(pointer)])
-                }
-                DispatchQueue.main.async {
-                    // DropAlert().success(message: "id_new_transaction".localized)
-                }
-            }
+            guard let txEvent = TransactionEvent.from(data) as? TransactionEvent else { break }
+            newNotificationDelegate?.didReceive(event: .newTransaction(transaction: txEvent), networkType: networkType)
         case .TwoFactorReset:
-            Task { try? await loadTwoFactorConfig() }
-            post(event: .TwoFactorReset, userInfo: data)
+            Task {
+                _ = try? await loadTwoFactorConfig()
+                newNotificationDelegate?.didReceive(event: .twoFactorReset, networkType: networkType)
+            }
         case .Settings:
-            settings = Settings.from(data)
-            post(event: .Settings, userInfo: data)
+            guard let settings = Settings.from(data) else { break }
+            self.settings = settings
+            newNotificationDelegate?.didReceive(event: .updateSettings(settings: settings), networkType: networkType)
         case .Network:
             guard let connection = Connection.from(data) as? Connection else { return }
             let hasElectrumUrl = !(getPersonalElectrumServer()?.isEmpty ?? true)
@@ -701,7 +707,7 @@ extension SessionManager {
             // notify disconnected network state
             if connection.currentState == "disconnected" {
                 paused = true
-                self.post(event: EventType.Network, userInfo: data)
+                newNotificationDelegate?.didReceive(event: .disconnected, networkType: networkType)
                 return
             }
             // Restore connection through hidden login
@@ -711,15 +717,17 @@ extension SessionManager {
                     try await reconnect()
                     logger.info("GDK \(self.gdkNetwork.network, privacy: .public) reconnected")
                     paused = false
-                    post(event: EventType.Network, userInfo: data)
+                    newNotificationDelegate?.didReceive(event: .reconnected, networkType: networkType)
                 } catch {
                     logger.error("GDK Error on reconnected: \(error.localizedDescription, privacy: .public)")
                 }
             }
         case .Tor:
-            post(event: .Tor, userInfo: data)
+            if let torData = TorNotification.from(data) as? TorNotification {
+                newNotificationDelegate?.didReceive(event: .tor(data: torData), networkType: networkType)
+            }
         case .Ticker:
-            post(event: .Ticker, userInfo: data)
+            break
         default:
             break
         }
