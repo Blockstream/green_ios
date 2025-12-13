@@ -251,21 +251,15 @@ class SendAddressInputViewController: KeyboardViewController {
         } else if viewModel.liquidSubaccountsWithFunds.isEmpty {
             // check there are any liquid funds: display dialog
             enableError(true, text: "id_insufficient_funds".localized)
-        } else if let account = viewModel.preferredAccount {
-            viewModel.createTx?.subaccount = account
-            if let assetId = viewModel.assetId ?? viewModel.createTx?.assetId {
-                viewModel.createTx?.assetId = assetId
-            }
-            presentSendAmountViewController()
-        } else if viewModel.liquidSubaccountsWithFunds.count == 1,
-                let subaccount = viewModel.liquidSubaccountsWithFunds.first {
-            // preselect the liquid subaccount: go in amount screen
-            if let assetId = viewModel.assetId ?? viewModel.createTx?.assetId {
+        } else if viewModel.preferredAccount != nil || viewModel.liquidSubaccountsWithFunds.count == 1 {
+            let subaccount = viewModel.preferredAccount ?? viewModel.liquidSubaccountsWithFunds.first
+            if let assetId = viewModel.assetId {
                 viewModel.createTx?.assetId = assetId
                 viewModel.createTx?.subaccount = subaccount
                 presentSendAmountViewController()
-            } else if subaccount.manyAssets == 1 {
+            } else if subaccount?.manyAssets == 1 {
                 viewModel.createTx?.subaccount = subaccount
+                viewModel.createTx?.assetId = subaccount?.satoshi?.keys.first
                 presentSendAmountViewController()
             } else {
                 let model = AccountAssetViewModel(
