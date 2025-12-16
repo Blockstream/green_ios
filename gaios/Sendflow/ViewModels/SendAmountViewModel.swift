@@ -287,7 +287,10 @@ class SendAmountViewModel {
             } else if !createTx.sendAll && (createTx.satoshi == nil || createTx.satoshi == 0) {
                 return tx
             }
-            if let addressee = createTx.addressee {
+            if var addressee = createTx.addressee {
+                if let networkType = session?.networkType, networkType.multisig && (networkType.bitcoin || networkType.testnet) {
+                    addressee.assetId = nil
+                }
                 tx.addressees = [addressee]
             }
         case .sweep:
