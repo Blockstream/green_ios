@@ -208,10 +208,6 @@ class BleHwManager {
                    fullRestore: false,
                    parentWalletId: walletId
                 )
-                // block to login on bip32 passphrase jade wallet
-                if let hashId1 = account.walletHashId, let hashId2 = res?.walletHashId, hashId1 != hashId2 {
-                    throw GaError.GenericError("Wallet hash is different from the previous wallet")
-                }
                 account.xpubHashId = res?.xpubHashId
                 account.walletHashId = res?.walletHashId
             }

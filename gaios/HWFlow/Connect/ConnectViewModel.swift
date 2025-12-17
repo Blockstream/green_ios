@@ -207,14 +207,10 @@ class ConnectViewModel: NSObject {
             let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
             updateState?(.login)
             let res = try await wm.loginWatchonly(credentials: credentials)
-            account.xpubHashId = res?.xpubHashId
-            account.walletHashId = res?.walletHashId
         case .AuthKeyWoBioCredentials:
             let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
             updateState?(.login)
             let res = try await wm.loginWatchonly(credentials: credentials)
-            account.xpubHashId = res?.xpubHashId
-            account.walletHashId = res?.walletHashId
         case .AuthKeyBiometric, .AuthKeyPIN:
             let session = wm.prominentSession!
             AnalyticsManager.shared.loginWalletStart()
@@ -224,8 +220,6 @@ class ConnectViewModel: NSObject {
             let credentials = try await session.decryptWithPin(decrypt)
             updateState?(.login)
             let res = try await wm.loginWatchonly(credentials: credentials)
-            account.xpubHashId = res?.xpubHashId
-            account.walletHashId = res?.walletHashId
         default:
             throw HWError.Declined("")
         }
