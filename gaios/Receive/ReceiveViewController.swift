@@ -48,7 +48,7 @@ class ReceiveViewController: KeyboardViewController {
     var selectedSegment: Int = 0
 
     var showVerify: Bool {
-        return viewModel.wm.isJade && !viewModel.account.isLightning && viewModel.type == .address
+        AccountsRepository.shared.current?.isJade ?? false && !viewModel.account.isLightning && viewModel.type == .address
     }
 
     override func viewDidLoad() {
