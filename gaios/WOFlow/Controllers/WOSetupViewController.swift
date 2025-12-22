@@ -40,6 +40,10 @@ class WOSetupViewController: KeyboardViewController {
         usernameTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))
         passwordTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))
         AnalyticsManager.shared.recordView(.onBoardWatchOnlyCredentials)
+        view.accessibilityIdentifier = AccessibilityIds.WOSetupScreen.view
+        loginButton.accessibilityIdentifier = AccessibilityIds.WOSetupScreen.btnNext
+        usernameTextField.accessibilityIdentifier = AccessibilityIds.WOSetupScreen.textfieldUsername
+        passwordTextField.accessibilityIdentifier = AccessibilityIds.WOSetupScreen.textfieldPassword
     }
 
     func setContent() {

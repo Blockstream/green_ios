@@ -20,9 +20,6 @@ class AssetsListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "id_select_asset".localized
-
-        view.accessibilityIdentifier = AccessibilityIdentifiers.AssetsListScreen.view
-        tableView.accessibilityIdentifier = AccessibilityIdentifiers.AssetsListScreen.table
     }
 
     override func viewWillAppear(_ animated: Bool) {

@@ -8,7 +8,7 @@ extension UITextView {
 
         let flexSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         let done: UIBarButtonItem = UIBarButtonItem(title: "id_done".localized, style: UIBarButtonItem.Style.done, target: self, action: myAction)
-        done.accessibilityIdentifier = AccessibilityIdentifiers.KeyboardView.done
+        done.accessibilityIdentifier = AccessibilityIds.KeyboardView.done
 
         var items = [UIBarButtonItem]()
         items.append(flexSpace)
@@ -29,7 +29,7 @@ extension UITextView {
 
         let flexSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         let doneBtnItem: UIBarButtonItem = UIBarButtonItem(title: "id_done".localized, style: UIBarButtonItem.Style.done, target: self, action: myAction)
-        doneBtnItem.accessibilityIdentifier = AccessibilityIdentifiers.KeyboardView.done
+        doneBtnItem.accessibilityIdentifier = AccessibilityIds.KeyboardView.done
 
         let pasteBtn = UIButton(type: .system)
         pasteBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)

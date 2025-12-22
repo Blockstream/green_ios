@@ -95,6 +95,9 @@ class DialogCountlyViewController: UIViewController {
 // #endif
 
         detailsExpand.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressExpandDetails)))
+        view.accessibilityIdentifier = AccessibilityIds.DialogAnalyticsScreen.view
+        btnAllow.accessibilityIdentifier = AccessibilityIds.DialogAnalyticsScreen.btnAllowDataCollection
+        btnDeny.accessibilityIdentifier = AccessibilityIds.DialogAnalyticsScreen.btnDenyDataCollection
     }
 
     @objc func didSwipe(gesture: UIGestureRecognizer) {

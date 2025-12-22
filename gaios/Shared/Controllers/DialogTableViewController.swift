@@ -23,8 +23,6 @@ class DialogTableViewController: UIViewController {
         setContent()
         setStyle()
         view.alpha = 0.0
-
-        view.accessibilityIdentifier = AccessibilityIdentifiers.DialogReceiveMoreOptionsScreen.view
     }
 
     func setContent() {

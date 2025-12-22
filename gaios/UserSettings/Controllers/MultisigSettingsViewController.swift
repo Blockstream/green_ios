@@ -12,10 +12,7 @@ class MultisigSettingsViewController: UIViewController {
         super.viewDidLoad()
 
         title = session.gdkNetwork.chain
-        view.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.view
-
         AnalyticsManager.shared.recordView(.walletSettings, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
-
         initViewModel()
     }
 

@@ -13,8 +13,6 @@ class WatchOnlySettingsViewController: UIViewController {
         super.viewDidLoad()
 
         title = "id_watchonly".localized
-        view.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.view
-
         AnalyticsManager.shared.recordView(.walletSettings, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
     }
 

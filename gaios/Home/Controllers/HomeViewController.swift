@@ -16,6 +16,7 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var newWalletView: UIView!
     @IBOutlet weak var lblNewWallet: UILabel!
     @IBOutlet weak var lblWallets: UILabel!
+    @IBOutlet weak var btnNewWallet: UIButton!
 
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
@@ -40,6 +41,8 @@ class HomeViewController: UIViewController {
         AnalyticsManager.shared.appLoadingFinished()
         PromoManager.shared.delegate = self
         loadNavigationBtns()
+        view.accessibilityIdentifier = AccessibilityIds.HomeScreen.view
+        btnNewWallet.accessibilityIdentifier = AccessibilityIds.HomeScreen.btnSetUpNewWallet
     }
 
     override func viewWillAppear(_ animated: Bool) {

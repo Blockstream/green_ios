@@ -33,6 +33,7 @@ class SetupNewViewController: UIViewController {
         setContent()
         setStyle()
         loadNavigationBtns()
+        view.accessibilityIdentifier = AccessibilityIds.SetupNewScreen.view
     }
 
     @objc func back(sender: UIBarButtonItem) {
@@ -43,6 +44,7 @@ class SetupNewViewController: UIViewController {
         lblTitle.text = ""
         lblSubtitle.text = "id_create_a_new_wallet_to_begin".localized
         btnCta1.setTitle("id_set_up_mobile_wallet".localized, for: .normal)
+        btnCta1.accessibilityIdentifier = AccessibilityIds.SetupNewScreen.btnSetUpMobileWallet
         btnCta2.setStyle(.underline(txt: "id_restore_from_backup".localized, color: UIColor.gAccent()))
         let riveView = RiveModel.createWallet.createRiveView()
         animateView.addSubview(riveView)

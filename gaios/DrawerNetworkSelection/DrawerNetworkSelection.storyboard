@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AcC-7I-Z2v">
-                                <rect key="frame" x="0.0" y="48" width="414" height="44"/>
+                                <rect key="frame" x="0.0" y="96" width="414" height="44"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PUw-TH-UDX">
                                         <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
@@ -56,23 +56,23 @@
                                 </constraints>
                             </view>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_logo_blockstream" translatesAutoresizingMaskIntoConstraints="NO" id="hq7-Ge-K40">
-                                <rect key="frame" x="25" y="122" width="156" height="35"/>
+                                <rect key="frame" x="25" y="170" width="156" height="35"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_wallets" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qNG-qV-XvX">
-                                <rect key="frame" x="25" y="202.5" width="364" height="19.5"/>
+                                <rect key="frame" x="25" y="250.5" width="364" height="19.5"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="qcp-QV-GxT">
-                                <rect key="frame" x="0.0" y="238" width="414" height="528"/>
+                                <rect key="frame" x="0.0" y="286" width="414" height="446"/>
                                 <connections>
                                     <outlet property="dataSource" destination="gdl-iy-vFF" id="ttr-5C-Ype"/>
                                     <outlet property="delegate" destination="gdl-iy-vFF" id="Waj-wC-7h1"/>
                                 </connections>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="n6A-Tk-XT1">
-                                <rect key="frame" x="20" y="776" width="374" height="66"/>
+                                <rect key="frame" x="20" y="742" width="374" height="66"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mom-VD-Wx3">
                                         <rect key="frame" x="20" y="23.5" width="310" height="19.5"/>
@@ -137,6 +137,8 @@
                     </view>
                     <navigationItem key="navigationItem" id="g8w-YA-LAo"/>
                     <connections>
+                        <outlet property="btnAddWallet" destination="rBP-H4-nVn" id="X5Z-dE-w4m"/>
+                        <outlet property="btnClose" destination="PUw-TH-UDX" id="k5A-hj-8Xf"/>
                         <outlet property="btnSettings" destination="N4v-ca-3gl" id="u9Z-mO-Wo7"/>
                         <outlet property="lblNewWallet" destination="mom-VD-Wx3" id="UCX-4u-sqp"/>
                         <outlet property="lblWallets" destination="qNG-qV-XvX" id="5xC-eB-rmT"/>

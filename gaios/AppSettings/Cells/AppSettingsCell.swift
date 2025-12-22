@@ -54,6 +54,7 @@ class AppSettingsCell: UITableViewCell {
         case .testnet:
             lblTitle.text = "id_enable_testnet".localized
             lblHint.text = ""
+            actionSwitch.accessibilityIdentifier = AccessibilityIds.AppSettingsScreen.switchEnableTestnet
         case .help:
             lblTitle.text = "id_help_us_improve".localized
             lblHint.text = "id_enable_limited_usage_data".localized
@@ -61,6 +62,7 @@ class AppSettingsCell: UITableViewCell {
         case .experimental:
             lblTitle.text = "id_enable_experimental_features".localized
             lblHint.text = "id_experimental_features_might".localized
+            actionSwitch.accessibilityIdentifier = AccessibilityIds.AppSettingsScreen.switchEnableExperimental
         case .language:
             lblTitle.text = "id_language".localized
             lblHint.text = ""

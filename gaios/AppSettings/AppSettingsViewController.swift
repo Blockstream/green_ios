@@ -21,6 +21,7 @@ class AppSettingsViewController: KeyboardViewController {
         setContent()
         setStyle()
         AnalyticsManager.shared.recordView(.appSettings)
+        view.accessibilityIdentifier = AccessibilityIds.AppSettingsScreen.view
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

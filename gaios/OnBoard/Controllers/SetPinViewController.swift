@@ -38,10 +38,13 @@ class SetPinViewController: UIViewController {
         customBack()
         setActions()
 
-        view.accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.view
-        keyButton![0].accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.btn1
-        keyButton![1].accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.btn2
-        btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.nextBtn
+        view.accessibilityIdentifier = AccessibilityIds.SetPinScreen.view
+        for n in 0...9 {
+            keyButton![n].accessibilityIdentifier = AccessibilityIds.SetPinScreen.btnPinNumber(n)
+        }
+        btnNext.accessibilityIdentifier = AccessibilityIds.SetPinScreen.btnConfirm
+        cancelButton.accessibilityIdentifier = AccessibilityIds.SetPinScreen.btnCancel
+        deleteButton.accessibilityIdentifier = AccessibilityIds.SetPinScreen.btnUndo
 
         if actionPin == .set {
             switch self.pinFlow {

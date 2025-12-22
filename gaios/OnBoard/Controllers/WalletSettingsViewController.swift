@@ -85,12 +85,12 @@ class WalletSettingsViewController: KeyboardViewController {
 
     @IBOutlet weak var lblElectrumTls: UILabel!
     @IBOutlet weak var switchElectrumTls: UISwitch!
-    
+
     @IBOutlet weak var cardMeld: UIView!
     @IBOutlet weak var switchMeld: UISwitch!
     @IBOutlet weak var lblMeldTitle: UILabel!
     @IBOutlet weak var lblMeldSubtitle: UILabel!
-    
+
     weak var delegate: WalletSettingsViewControllerDelegate?
 
     override func viewDidLoad() {
@@ -107,12 +107,6 @@ class WalletSettingsViewController: KeyboardViewController {
         setContent()
         setStyle()
         reload()
-
-        view.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.view
-        switchTor.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.torSwitch
-        btnSave.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.saveBtn
-        btnCancel.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.cancelBtn
-        switchTestnet.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.testnetSwitch
         switchAnalytics.isOn = AnalyticsManager.shared.consent == .authorized
 
         AnalyticsManager.shared.recordView(.appSettings)

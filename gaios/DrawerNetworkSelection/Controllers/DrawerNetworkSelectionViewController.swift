@@ -17,6 +17,8 @@ class DrawerNetworkSelectionViewController: UIViewController {
     @IBOutlet weak var newWalletView: UIView!
     @IBOutlet weak var lblNewWallet: UILabel!
     @IBOutlet weak var lblWallets: UILabel!
+    @IBOutlet weak var btnAddWallet: UIButton!
+    @IBOutlet weak var btnClose: UIButton!
 
     var onSelection: ((Account) -> Void)?
     weak var delegate: DrawerNetworkSelectionDelegate?
@@ -31,6 +33,9 @@ class DrawerNetworkSelectionViewController: UIViewController {
         setContent()
         setStyle()
         tableView.register(UINib(nibName: "WalletListCell", bundle: nil), forCellReuseIdentifier: "WalletListCell")
+        view.accessibilityIdentifier = AccessibilityIds.DrawerScreen.view
+        btnAddWallet.accessibilityIdentifier = AccessibilityIds.DrawerScreen.btnSetUpNewWallet
+        btnClose.accessibilityIdentifier = AccessibilityIds.DrawerScreen.btnBack
     }
 
     override func viewDidAppear(_ animated: Bool) {

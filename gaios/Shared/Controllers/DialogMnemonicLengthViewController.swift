@@ -29,10 +29,6 @@ class DialogMnemonicLengthViewController: UIViewController {
         setContent()
         setStyle()
         view.alpha = 0.0
-
-        view.accessibilityIdentifier = AccessibilityIdentifiers.DialogMnemonicLengthScreen.view
-        btnLength12.accessibilityIdentifier = AccessibilityIdentifiers.DialogMnemonicLengthScreen.length12Btn
-        btnLength24.accessibilityIdentifier = AccessibilityIdentifiers.DialogMnemonicLengthScreen.length24Btn
     }
 
     func setContent() {

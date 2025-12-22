@@ -33,6 +33,8 @@ class GetStartedOnBoardViewController: UIViewController {
         setContent()
         setStyle()
         loadNavigationBtns()
+        view.accessibilityIdentifier = AccessibilityIds.GetStartedOnBoardScreen.view
+        btnGetStarted.accessibilityIdentifier = AccessibilityIds.GetStartedOnBoardScreen.btnGetStarted
     }
 
     @objc func back(sender: UIBarButtonItem) {
@@ -94,6 +96,7 @@ class GetStartedOnBoardViewController: UIViewController {
 
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
+        settingsBtn.accessibilityIdentifier = AccessibilityIds.GetStartedOnBoardScreen.btnOptionsMenu
         settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
         settingsBtn.setImage(UIImage(named: "ic_nav_disclose"), for: .normal)
         settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
