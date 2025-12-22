@@ -20,7 +20,6 @@ class SendAmountViewModel {
     var transaction: Transaction?
     var transactionPriority: TransactionPriority = .Medium
     var isFiat = false
-    var hasHW: Bool { wm?.isHW ?? false }
 
     var feeEstimator: FeeEstimator?
     var validateTask: Task<Transaction?, Error>?

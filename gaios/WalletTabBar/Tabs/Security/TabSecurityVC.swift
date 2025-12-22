@@ -37,7 +37,7 @@ class TabSecurityVC: TabViewController {
     }
     var recoveryCellModel: [PreferenceCellModel] {
         let isWatchonly = walletModel.wm?.isWatchonly ?? false
-        let isHW = walletModel.wm?.isHW ?? false
+        let isHW = walletModel.mainAccount?.isHW ?? false
         if !isWatchonly && !isHW {
             return [PreferenceCellModel(preferenceType: .recoveryPhrase, state: .unknown)]
         }
@@ -105,7 +105,7 @@ class TabSecurityVC: TabViewController {
     func onPreferenceCell(_ model: PreferenceCellModel) {
         switch model.type {
         case .bio:
-            if walletModel.wm?.isHW ?? false {
+            if walletModel.mainAccount?.isHW ?? false {
                 DropAlert().error(message: "Toggle is not supported with Hardware Wallet")
             } else {
                 editProtection(type: model.hasTouchID ? .touchID : .faceID, action: model.state == .on ? .disable : .enable)
@@ -295,7 +295,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .level:
             if let cell = tableView.dequeueReusableCell(withIdentifier: SecurityLevelCell.identifier, for: indexPath) as? SecurityLevelCell {
-                cell.configure(isHW: walletModel.wm?.isHW == true, onCompare: {[weak self] in
+                cell.configure(isHW: walletModel.mainAccount?.isHW == true, onCompare: {[weak self] in
                     self?.onCompare()
                 })
                 cell.selectionStyle = .none

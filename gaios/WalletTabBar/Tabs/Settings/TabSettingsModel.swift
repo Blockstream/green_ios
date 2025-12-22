@@ -45,7 +45,7 @@ class TabSettingsModel {
     var isEphemeral: Bool { wm?.isEphemeral ?? false }
     var isWatchonlySinglesig: Bool { (wm?.isWatchonly ?? false) && (mainAccount?.username?.isEmpty ?? true) }
     var isSinglesig: Bool { session?.gdkNetwork.electrum ?? true }
-    var isHW: Bool { wm?.isHW ?? false }
+    var isHW: Bool { AccountsRepository.shared.current?.isHW ?? false }
     var multiSigSession: SessionManager? { wm?.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }
 
     // reload all contents

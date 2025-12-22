@@ -118,7 +118,7 @@ class AddressAuthViewController: KeyboardViewController {
 
     func onSign(_ row: Int) {
         guard let model = viewModel?.listCellModelsFilter[safe: row] else { return }
-        if let wm = WalletManager.current, wm.isHW && wm.isWatchonly {
+        if let wm = WalletManager.current, let account = AccountsRepository.shared.current, account.isHW && wm.isWatchonly {
             selectedAddress = model.address
             presentConnectViewController()
         } else {
