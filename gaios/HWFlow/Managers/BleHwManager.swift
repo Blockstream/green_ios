@@ -184,7 +184,7 @@ class BleHwManager {
         }
     }
 
-    func login(account: Account) async throws -> (Account, WalletManager) {
+    func login(account: Account, fullRestore: Bool) async throws -> (Account, WalletManager) {
         AnalyticsManager.shared.loginWalletStart()
         var account = account
         let walletManager = WalletManager(prominentNetwork: account.networkType)
@@ -205,7 +205,7 @@ class BleHwManager {
                    boltzCredentials: nil,
                    device: device,
                    masterXpub: masterXpub,
-                   fullRestore: false,
+                   fullRestore: fullRestore,
                    parentWalletId: walletId
                 )
                 account.xpubHashId = res?.xpubHashId

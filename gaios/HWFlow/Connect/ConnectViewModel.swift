@@ -148,7 +148,7 @@ class ConnectViewModel: NSObject {
         _ = try await bleHwManager.jade?.silentMasterBlindingKey()
         // login
         updateState?(.login)
-        let (account, wm) = try await bleHwManager.login(account: account)
+        let (account, wm) = try await bleHwManager.login(account: account, fullRestore: firstConnection)
         self.account = account
         AccountsRepository.shared.current = account
         if storeConnection {
@@ -187,7 +187,7 @@ class ConnectViewModel: NSObject {
         }
         // login
         updateState?(.login)
-        let (account, wm) = try await bleHwManager.login(account: account)
+        let (account, wm) = try await bleHwManager.login(account: account, fullRestore: firstConnection)
         // use updated account
         self.account = account
         AccountsRepository.shared.current = account
