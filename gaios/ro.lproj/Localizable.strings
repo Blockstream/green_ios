@@ -1837,3 +1837,4 @@
 "id_your_wallet_is_not_yet_fully" = "Portofelul dvs nu este securizat la maximum. \nVă rugăm să activați autentificarea cu doi factori.";
 "id_your_watchonly_username_and" = "Numele de utilizator și parola necesare unei logări în modul watch-only vor fi stocate pe acest dispozitiv fără a fi criptate. Dacă dispozitivul dvs este compromis, atunci terțe părți vor putea să aibă acces la istoricul dvs de tranzacții. Apăsați \"OK\" pentru a continua.";
 "id_youve_entered_an_invalid_pin" = "You've entered an invalid PIN too many times.";
+"id_billing" = "Facturare";

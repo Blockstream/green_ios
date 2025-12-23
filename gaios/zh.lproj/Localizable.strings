@@ -1837,3 +1837,4 @@
 "id_your_wallet_is_not_yet_fully" = "你的钱包还没完成安全设置。\n请开启双重验证。";
 "id_your_watchonly_username_and" = "你的watch-only用户名和密码会被以非加密形式保存在当前设备上。如果你的设备被入侵，第三方会拥有查看你的转账记录的权限。点击“OK”继续。";
 "id_youve_entered_an_invalid_pin" = "您输入无效PIN的次数过多。";
+"id_billing" = "计费";

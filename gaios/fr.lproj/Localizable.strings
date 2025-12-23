@@ -1837,3 +1837,4 @@
 "id_your_wallet_is_not_yet_fully" = "Votre portefeuille n'est pas complètement sécurisé.\nVeuillez activer un deuxième facteur d'authentification.";
 "id_your_watchonly_username_and" = "Votre nom d'utilisateur et votre mot de passe pour la surveillance seulement seront stockés en clair sur cet appareil. Si votre appareil est compromis, des tiers peuvent avoir accès à l'historique de vos transactions. Appuyez sur \"OK\" pour continuer.";
 "id_youve_entered_an_invalid_pin" = "Vous avez entré un code PIN invalide un trop grand nombre de fois.";
+"id_billing" = "Facturation";

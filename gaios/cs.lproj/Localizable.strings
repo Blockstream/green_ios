@@ -1837,3 +1837,4 @@
 "id_your_wallet_is_not_yet_fully" = "Vaše peněženka ještě není zcela zabezpečená.\nAktivujte prosím 2-Faktorové ověřování.";
 "id_your_watchonly_username_and" = "Vaše uživatelské jméno a heslo pro Pouze-pro-sledování bude na tomto zařízení uloženo nešifrované. Pokud je zařízení ohroženo, mohou třetí strany získat přístup k vaší historii transakcí. Pokračujte stisknutím tlačítka „OK“.";
 "id_youve_entered_an_invalid_pin" = "Příliš mnohokrát jste zadali neplatný kód PIN.";
+"id_billing" = "Fakturace";

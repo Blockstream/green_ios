@@ -1837,3 +1837,4 @@
 "id_your_wallet_is_not_yet_fully" = "Ví của bạn chưa bảo mật đầy đủ\nLàm ơn kích hoạt xác thực 2 lớp";
 "id_your_watchonly_username_and" = "Tên người dùng và mật khẩu chỉ xem của bạn sẽ được lưu trữ không được mã hóa trên thiết bị này. Nếu thiết bị của bạn bị xâm phạm, bên thứ ba có thể truy cập vào lịch sử giao dịch của bạn. Nhấn \"OK\" để tiếp tục.";
 "id_youve_entered_an_invalid_pin" = "You've entered an invalid PIN too many times.";
+"id_billing" = "Thanh toán";

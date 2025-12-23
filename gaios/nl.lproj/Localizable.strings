@@ -1837,3 +1837,4 @@
 "id_your_wallet_is_not_yet_fully" = "Je wallet is nog niet volledig beveiligd.\nSchakel tweetrapsauthenticatie in.";
 "id_your_watchonly_username_and" = "Je gebruikersnaam en wachtwoord voor watch-only worden onversleuteld op dit apparaat opgeslagen. Als je apparaat is gecompromitteerd, kunnen derden toegang krijgen tot je transactiegeschiedenis. Druk op \"OK\" om verder te gaan.";
 "id_youve_entered_an_invalid_pin" = "Je hebt te vaak een ongeldige PIN ingevoerd.";
+"id_billing" = "Facturatie";

@@ -14,12 +14,13 @@ class SelectCountryViewController: KeyboardViewController {
     @IBOutlet weak var handle: UIView!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var searchTextField: SearchTextField!
-    @IBOutlet weak var anchorBottom: NSLayoutConstraint!
+
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var tableView: UITableView!
 
+    @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     weak var delegate: SelectCountryViewControllerDelegate?
 
     var viewModel: SelectCountryViewModel!
@@ -137,7 +138,7 @@ class SelectCountryViewController: KeyboardViewController {
         }, completion: { _ in
             self.dismiss(animated: false, completion: nil)
             if let indexPath = indexPath {
-                self.delegate?.didSelectCountry(self.viewModel.filteredCountries[indexPath.row])
+                self.delegate?.didSelectCountry(self.viewModel.searchedCountries[indexPath.row])
             }
         })
     }
@@ -153,12 +154,12 @@ extension SelectCountryViewController: UITableViewDelegate, UITableViewDataSourc
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.filteredCountries.count
+        return viewModel.searchedCountries.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: SelectCountryCell.identifier, for: indexPath) as? SelectCountryCell {
-            let model = SelectCountryCellModel(country: viewModel.filteredCountries[indexPath.row])
+            let model = SelectCountryCellModel(country: viewModel.searchedCountries[indexPath.row])
             cell.configure(model: model, onTap: { [weak self] in
                 self?.didSelect(indexPath)
             })

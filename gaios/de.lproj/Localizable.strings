@@ -1837,3 +1837,4 @@
 "id_your_wallet_is_not_yet_fully" = "Deine Wallet ist noch nicht vollständig gesichert. \nBitte aktiviere die Zwei-Faktor Authentifizierung.";
 "id_your_watchonly_username_and" = "Dein Watch-Only Benutzername und Passwort werden unverschlüsselt auf diesem Gerät gespeichert. Sollte dein Gerät kompromittiert werden, können Dritte Zugang zu deinem Transaktionsverlauf erhalten. Drücke \"OK\", um fortzufahren.";
 "id_youve_entered_an_invalid_pin" = "Du hast zu oft eine ungültige PIN eingegeben.";
+"id_billing" = "Abrechnung";
