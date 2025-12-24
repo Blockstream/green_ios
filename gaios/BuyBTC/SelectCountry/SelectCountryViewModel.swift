@@ -12,7 +12,7 @@ class SelectCountryViewModel {
         let query = searchText
             .lowercased()
             .replacingOccurrences(of: " ", with: "")
-            .folding(options: .diacriticInsensitive, locale: .current);
+            .folding(options: .diacriticInsensitive, locale: .current)
 
         guard !query.isEmpty else { searchedCountries = Country.allMeld(); return }
 

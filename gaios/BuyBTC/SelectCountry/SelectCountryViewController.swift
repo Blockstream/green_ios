@@ -72,7 +72,7 @@ class SelectCountryViewController: KeyboardViewController {
             self,
             action: #selector(searchFieldDidChange),
             for: .editingChanged
-        );
+        )
 
         ["SelectCountryCell" ].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
