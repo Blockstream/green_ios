@@ -1837,3 +1837,4 @@
 "id_your_wallet_is_not_yet_fully" = "Il tuo wallet non è ancora completamente al sicuro.\nAbilita Autenticazione a Due Fattori.";
 "id_your_watchonly_username_and" = "Il tuo username e la tua password watch-only verranno salvati in chiaro su questo dispositivo. Se il tuo dispositivo è compromesso, soggetti terzi possono accedere alle cronologia delle tue transazioni. Premi OK per continuare.";
 "id_youve_entered_an_invalid_pin" = "PIN non valido inserito troppe volte.";
+"id_billing" = "Fatturazione";

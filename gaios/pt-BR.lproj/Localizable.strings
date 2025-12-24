@@ -1837,3 +1837,4 @@
 "id_your_wallet_is_not_yet_fully" = "Sua carteira não está completamente segura.\nPor favor, ative o 2FA.";
 "id_your_watchonly_username_and" = "Seu nome de usuário e senha serão gravados de forma não criptografada neste aparelho. Se seu aparelho estiver exposto, terceiros podem obter acesso ao seu histórico de transações. Pressione \"OK\" para continuar.";
 "id_youve_entered_an_invalid_pin" = "Você inseriu um PIN inválido muitas vezes.";
+"id_billing" = "Faturamento";

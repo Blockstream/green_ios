@@ -1837,3 +1837,4 @@
 "id_your_wallet_is_not_yet_fully" = "Su cartera aún no está completamente protegida.\nHabilite la autenticación de dos factores.";
 "id_your_watchonly_username_and" = "Su nombre de usuario y contraseña del modo de solo lectura se guardarán sin encriptar en este dispositivo. Si su dispositivo queda expuesto, cualquier tercero podría acceder a su historial de transacciones. Presione \"OK\" para continuar.";
 "id_youve_entered_an_invalid_pin" = "Ha ingresado un PIN inválido demasiadas veces.";
+"id_billing" = "Facturación";
