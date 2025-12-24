@@ -14,11 +14,13 @@ enum DialogType: CaseIterable {
     case redeemPrefs
     case debugPrefs
     case walletListPrefs
+    case autoLogoutPrefs
 }
 
 enum DialogCellType: CaseIterable {
     case list
     case enable2fa
+    case autoLogout
 }
 
 protocol DialogCellModel: AnyObject {
