@@ -46,7 +46,7 @@ class DialogListViewController: UIViewController {
         view.addSubview(blurredView)
         view.sendSubviewToBack(blurredView)
 
-        ["DialogListCell", "DialogEnable2faCell" ].forEach {
+        ["DialogListCell", "DialogEnable2faCell", "AutoLogoutCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
 
@@ -157,6 +157,12 @@ extension DialogListViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case.enable2fa:
             if let cell = tableView.dequeueReusableCell(withIdentifier: DialogEnable2faCell.identifier, for: indexPath) as? DialogEnable2faCell, let vm = viewModel {
+                cell.configure(vm.items[indexPath.row])
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .autoLogout:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: AutoLogoutCell.identifier, for: indexPath) as? AutoLogoutCell, let vm = viewModel {
                 cell.configure(vm.items[indexPath.row])
                 cell.selectionStyle = .none
                 return cell

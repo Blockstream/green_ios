@@ -403,27 +403,42 @@ extension TabSettingsVC {
     func showAutoLogout() {
         guard let settings = session?.settings else { return }
         let list = [AutoLockType.minute.string, AutoLockType.twoMinutes.string, AutoLockType.fiveMinutes.string, AutoLockType.tenMinutes.string, AutoLockType.sixtyMinutes.string]
-        let selected = settings.autolock.string
-        let alert = UIAlertController(title: "id_auto_logout_timeout".localized, message: "", preferredStyle: .actionSheet)
-        list.forEach { (item: String) in
-            alert.addAction(UIAlertAction(title: item, style: item == selected  ? .destructive : .default) { _ in
-                settings.autolock = AutoLockType.from(item)
-                Task {
-                    self.startAnimating()
-                    do {
-                        _ = try await self.session?.changeSettings(settings: settings)
-                        await MainActor.run {
-                            self.viewModel.load()
+
+        let dialogViewModel = DialogListViewModel(
+            title: "id_auto_logout_timeout".localized,
+            type: .autoLogoutPrefs,
+            items: list
+                .enumerated()
+                .map { index, element in AutoLogoutCellModel(
+                    title: element,
+                    index: index,
+                    selected: element == settings.autolock.string,
+                    onSelected: { [weak self] index in
+                        guard let self = self else { return }
+                        settings.autolock = AutoLockType.from(list[index])
+                        Task {
+                            self.startAnimating()
+                            do {
+                                _ = try await self.session?.changeSettings(settings: settings)
+                                await MainActor.run {
+                                    self.viewModel.load()
+                                    self.dismiss(animated: true)
+                                }
+                            } catch {
+                                self.showError(error)
+                            }
+                            self.stopAnimating()
                         }
-                    } catch {
-                        self.showError(error)
                     }
-                    self.stopAnimating()
-                }
+                )
             })
+
+        let dialogStoryboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let dialogViewController = dialogStoryboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            dialogViewController.viewModel = dialogViewModel
+            dialogViewController.modalPresentationStyle = .overFullScreen
+            self.present(dialogViewController, animated: true, completion: nil)
         }
-        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in })
-        self.present(alert, animated: true, completion: nil)
     }
 }
 

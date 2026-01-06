@@ -560,6 +560,9 @@
 		34FF27A527C7E5A7008FD72C /* DialogReceiveMoreOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FF27A427C7E5A7008FD72C /* DialogReceiveMoreOptions.swift */; };
 		34FF27AE27CCE926008FD72C /* DialogCustomFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FF27AD27CCE926008FD72C /* DialogCustomFee.swift */; };
 		34FF27B027CD0689008FD72C /* DialogMnemonicLength.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FF27AF27CD0689008FD72C /* DialogMnemonicLength.swift */; };
+		586EB69D2EFB1EF200DFAEF6 /* AutoLogoutCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586EB69C2EFB1EEB00DFAEF6 /* AutoLogoutCell.swift */; };
+		586EB69F2EFB1EFC00DFAEF6 /* AutoLogoutCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586EB69E2EFB1EF400DFAEF6 /* AutoLogoutCellModel.swift */; };
+		586EB6A52EFB223300DFAEF6 /* AutoLogoutCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 586EB6A42EFB223300DFAEF6 /* AutoLogoutCell.xib */; };
 		6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */; };
 		671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */; };
 		67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */ = {isa = PBXBuildFile; fileRef = 67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */; };
@@ -1579,6 +1582,9 @@
 		34FF27A427C7E5A7008FD72C /* DialogReceiveMoreOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveMoreOptions.swift; sourceTree = "<group>"; };
 		34FF27AD27CCE926008FD72C /* DialogCustomFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCustomFee.swift; sourceTree = "<group>"; };
 		34FF27AF27CD0689008FD72C /* DialogMnemonicLength.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogMnemonicLength.swift; sourceTree = "<group>"; };
+		586EB69C2EFB1EEB00DFAEF6 /* AutoLogoutCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoLogoutCell.swift; sourceTree = "<group>"; };
+		586EB69E2EFB1EF400DFAEF6 /* AutoLogoutCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoLogoutCellModel.swift; sourceTree = "<group>"; };
+		586EB6A42EFB223300DFAEF6 /* AutoLogoutCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AutoLogoutCell.xib; sourceTree = "<group>"; };
 		6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRCodeReaderView.swift; sourceTree = "<group>"; };
 		671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicWordCell.swift; sourceTree = "<group>"; };
 		67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = KeyboardSuggestions.xib; sourceTree = "<group>"; };
@@ -2558,6 +2564,7 @@
 		3457F4AF2923986D00EF33B5 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				586EB6992EFB1D5000DFAEF6 /* AutoLogoutCell */,
 				342F980A29350788005876A8 /* DialogEnable2faCell */,
 				342F980929350773005876A8 /* DialogListCell */,
 			);
@@ -3681,6 +3688,16 @@
 				34FE20132A1CA98000301746 /* DialogNodeViewModel.swift */,
 			);
 			path = DialogNode;
+			sourceTree = "<group>";
+		};
+		586EB6992EFB1D5000DFAEF6 /* AutoLogoutCell */ = {
+			isa = PBXGroup;
+			children = (
+				586EB6A42EFB223300DFAEF6 /* AutoLogoutCell.xib */,
+				586EB69E2EFB1EF400DFAEF6 /* AutoLogoutCellModel.swift */,
+				586EB69C2EFB1EEB00DFAEF6 /* AutoLogoutCell.swift */,
+			);
+			path = AutoLogoutCell;
 			sourceTree = "<group>";
 		};
 		676FCF131F9D0CF800354E93 = {
@@ -4984,6 +5001,7 @@
 				3484020C2DB8E7B200A91C65 /* BuyBTCFlow.storyboard in Resources */,
 				34C1A4C92E27A3F400CB83D4 /* AccountSettingsCell.xib in Resources */,
 				344D57CC2D71B5B5009725A3 /* WalletTab.storyboard in Resources */,
+				586EB6A52EFB223300DFAEF6 /* AutoLogoutCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5145,6 +5163,7 @@
 				34C680EA2A72779900369639 /* DialogInputDenominationViewModel.swift in Sources */,
 				344D57CF2D71B5E7009725A3 /* TabTransactVC.swift in Sources */,
 				34465BA12D082EF7002E5033 /* GenuineCheckEndViewController.swift in Sources */,
+				586EB69D2EFB1EF200DFAEF6 /* AutoLogoutCell.swift in Sources */,
 				6D0983C623FC848C00289ACA /* HelpCell.swift in Sources */,
 				8173B8F22AB1B10C00C15C85 /* DialogViewController.swift in Sources */,
 				3497936C25F8B18C0029ECB1 /* StrokeColorAnimation.swift in Sources */,
@@ -5404,6 +5423,7 @@
 				34580EB126FCB78D00D3BEFC /* UITableView.swift in Sources */,
 				34DA78A62D807F3F0022FBB1 /* DialogAccountsViewController.swift in Sources */,
 				345402F72A20A6A7002CB598 /* LTAuthViewController.swift in Sources */,
+				586EB69F2EFB1EFC00DFAEF6 /* AutoLogoutCellModel.swift in Sources */,
 				34742D3E2CE4AB670064F327 /* AssetToBuyCell.swift in Sources */,
 				348A71062D8AE02C00490B55 /* WelcomeView.swift in Sources */,
 				34FB697727FEF9D000A13197 /* AccountArchiveCell.swift in Sources */,
