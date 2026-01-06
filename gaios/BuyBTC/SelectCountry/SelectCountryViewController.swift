@@ -9,17 +9,18 @@ enum SelectCountrySection: CaseIterable {
     // case common
     case all
 }
-class SelectCountryViewController: UIViewController {
-
+class SelectCountryViewController: KeyboardViewController {
     @IBOutlet weak var tappableBg: UIView!
     @IBOutlet weak var handle: UIView!
-    @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     @IBOutlet weak var lblTitle: UILabel!
+    @IBOutlet weak var searchTextField: SearchTextField!
+
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var tableView: UITableView!
 
+    @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     weak var delegate: SelectCountryViewControllerDelegate?
 
     var viewModel: SelectCountryViewModel!
@@ -38,6 +39,24 @@ class SelectCountryViewController: UIViewController {
         return containerView
     }()
 
+    override func keyboardWillShow(notification: Notification) {
+        super.keyboardWillShow(notification: notification)
+        guard
+            let frame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
+        else { return }
+
+        let bottomInset = frame.height - view.safeAreaInsets.bottom
+
+        tableView.contentInset.bottom = bottomInset
+        tableView.verticalScrollIndicatorInsets.bottom = bottomInset
+    }
+
+    override func keyboardWillHide(notification: Notification) {
+        super.keyboardWillHide(notification: notification)
+        tableView.contentInset.bottom = 0
+        tableView.verticalScrollIndicatorInsets.bottom = 0
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -46,6 +65,14 @@ class SelectCountryViewController: UIViewController {
 
         view.addSubview(blurredView)
         view.sendSubviewToBack(blurredView)
+
+        searchTextField.padding = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
+
+        searchTextField.addTarget(
+            self,
+            action: #selector(searchFieldDidChange),
+            for: .editingChanged
+        )
 
         ["SelectCountryCell" ].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
@@ -61,8 +88,12 @@ class SelectCountryViewController: UIViewController {
             tappableBg.addGestureRecognizer(tapToClose)
     }
 
-    @objc func didSwipe(gesture: UIGestureRecognizer) {
+    @objc func searchFieldDidChange(_ textField: UITextField) {
+        viewModel?.searchCountries(textField.text ?? "")
+        tableView.reloadData()
+    }
 
+    @objc func didSwipe(gesture: UIGestureRecognizer) {
         if let swipeGesture = gesture as? UISwipeGestureRecognizer {
             switch swipeGesture.direction {
             case .down:
@@ -74,11 +105,12 @@ class SelectCountryViewController: UIViewController {
     }
 
     @objc func didTap(gesture: UIGestureRecognizer) {
-
         dismiss(nil)
     }
 
     func setContent() {
+        searchTextField.text = ""
+        searchTextField.placeholder = "id_search".localized
         lblTitle.text = viewModel?.title ?? ""
         lblHint.text = viewModel?.hint ?? ""
     }
@@ -106,7 +138,7 @@ class SelectCountryViewController: UIViewController {
         }, completion: { _ in
             self.dismiss(animated: false, completion: nil)
             if let indexPath = indexPath {
-                self.delegate?.didSelectCountry(self.viewModel.countries[indexPath.row])
+                self.delegate?.didSelectCountry(self.viewModel.searchedCountries[indexPath.row])
             }
         })
     }
@@ -122,12 +154,12 @@ extension SelectCountryViewController: UITableViewDelegate, UITableViewDataSourc
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.countries.count
+        return viewModel.searchedCountries.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: SelectCountryCell.identifier, for: indexPath) as? SelectCountryCell {
-            let model = SelectCountryCellModel(country: viewModel.countries[indexPath.row])
+            let model = SelectCountryCellModel(country: viewModel.searchedCountries[indexPath.row])
             cell.configure(model: model, onTap: { [weak self] in
                 self?.didSelect(indexPath)
             })
