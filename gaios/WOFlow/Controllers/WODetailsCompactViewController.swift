@@ -140,7 +140,6 @@ class WODetailsCompactViewController: KeyboardViewController {
             try? await wm.getSession(for: network ?? .bitcoinSS)?.connect()
             let loginUserResult = try await wm.getSession(for: network ?? .bitcoinSS)?.loginUser(credentials)
             _ = try await wm.subaccounts()
-            try? await wm.loadRegistry()
             wm.isWatchonly = true
             account.xpubHashId = loginUserResult?.xpubHashId
             try await viewModel.setupSinglesig(credentials: credentials)

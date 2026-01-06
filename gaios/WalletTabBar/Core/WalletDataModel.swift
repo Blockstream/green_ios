@@ -58,7 +58,7 @@ actor WalletDataModel {
     private func subscribeNotifications() async throws {
         for await notification in wallet.notificationStream {
             switch notification {
-            case .newBlock(blockheight: let blockheight):
+            case .newBlock:
                 logger.info("WalletModel newBlock")
                 // Update content if exist an unconfirmed tx
                 let pendings = state.txs?.filter { $0.blockHeight == 0 }
@@ -66,18 +66,18 @@ actor WalletDataModel {
                     await performFetchBalance()
                     await performFetchTransactions(reset: true)
                 }
-            case .newSubaccount(subaccount: let subaccount):
+            case .newSubaccount:
                 await performFetchSubaccounts(refresh: false)
                 await performFetchBalance()
                 await performFetchTransactions(reset: true)
-            case .newTransaction(transaction: let transaction):
+            case .newTransaction:
                 logger.info("WalletModel newTransaction")
                 await performFetchBalance()
                 await performFetchTransactions(reset: true)
             case .twoFactorReset:
                 await performFetchSubaccounts(refresh: false)
                 await performSettings()
-            case .updateSettings(settings: let settings):
+            case .updateSettings:
                 await performFetchSubaccounts(refresh: false)
                 await performSettings()
             case .disconnected:
@@ -85,7 +85,17 @@ actor WalletDataModel {
             case .reconnected:
                 await performFetchBalance()
                 await performFetchTransactions(reset: true)
-            case .tor(data: let data):
+            case .tor:
+                break
+            case .refreshAssets:
+                await performFetchBalance()
+            case .invoicePaid:
+                await performFetchBalance()
+                await performFetchTransactions(reset: true)
+            case .paymentSucceed:
+                await performFetchBalance()
+                await performFetchTransactions(reset: true)
+            case .paymentFailed:
                 break
             }
         }

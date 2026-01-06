@@ -46,6 +46,13 @@ class WalletTabBarViewController: UITabBarController {
         }
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        Task.detached { [weak self] in
+            try await self?.walletTabBarModel.wallet.refreshRegistryIfNeeded()
+        }
+    }
+
     func setupRemoteNotifications() async {
         let res = Task.detached(priority: .background) { [weak self] in
             try await self?.walletTabBarModel.registerNotifications()

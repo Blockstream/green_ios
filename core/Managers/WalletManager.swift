@@ -57,6 +57,7 @@ public class WalletManager {
     public var isJade: Bool { hwDevice?.isJade ?? false }
     public var isLedger: Bool { hwDevice?.isLedger ?? false }
     public var hwDevice: HWDevice?
+    public var updatedRegistryAt: Double?
 
     public var popupResolver: PopupResolverDelegate? {
         didSet {
@@ -199,7 +200,6 @@ public class WalletManager {
             throw HWError.Disconnected("id_you_are_not_connected")
         }
         _ = try await subaccounts()
-        try? await loadRegistry()
         isWatchonly = true
         return loginUserResult
     }
@@ -393,8 +393,6 @@ public class WalletManager {
             try? await self.syncSettings()
         }
         _ = try? await self.prominentSession?.loadSettings()
-        logger.info("WM loadRegistry")
-        try? await self.loadRegistry()
         return loginUserDatas.first { $0.key == prominentNetwork }?.value
     }
 
@@ -487,15 +485,6 @@ public class WalletManager {
             }
             return try await group.reduce(into: [SystemMessage]()) { partial, res in
                 partial += [res]
-            }
-        }
-    }
-
-    public func loadRegistry() async throws {
-        try await registry.cache(provider: self)
-        Task.detached { [weak self] in
-            if let self = self {
-                try await self.registry.refreshIfNeeded(provider: self)
             }
         }
     }
@@ -761,13 +750,30 @@ extension WalletManager: NewNotificationDelegate {
         case .tor(data: let data):
             logger.info("WalletManager didReceive tor on \(networkType.rawValue)")
             notificationContinuation?.yield(event)
+        case .refreshAssets:
+            logger.info("WalletManager didReceive refreshAssets on \(networkType.rawValue)")
+            notificationContinuation?.yield(event)
+        case .invoicePaid:
+            logger.info("WalletManager didReceive invoicePaid on \(networkType.rawValue)")
+            notificationContinuation?.yield(event)
+        case .paymentSucceed:
+            logger.info("WalletManager didReceive paymentSucceed on \(networkType.rawValue)")
+            notificationContinuation?.yield(event)
+        case .paymentFailed:
+            logger.info("WalletManager didReceive paymentFailed on \(networkType.rawValue)")
+            notificationContinuation?.yield(event)
         }
     }
 }
 extension WalletManager {
 
-    public func refreshIfNeeded() async throws {
-        try await registry.refreshIfNeeded(provider: self)
+    public func refreshRegistryIfNeeded() async throws {
+        let interval = CFAbsoluteTimeGetCurrent() - (updatedRegistryAt ?? .zero)
+        if updatedRegistryAt == nil || interval > 120 {
+            registry.refresh(provider: self)
+            updatedRegistryAt = CFAbsoluteTimeGetCurrent()
+            notificationContinuation?.yield(.refreshAssets)
+        }
     }
 
     public func info(for key: String?) -> AssetInfo {
@@ -788,11 +794,9 @@ extension WalletManager: AssetsProvider {
         return session.getAssets(params: params)
     }
 
-    public func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) async throws {
+    public func refreshAssets(icons: Bool, assets: Bool) async throws {
         let session = activeLiquidSessions.first ?? liquidSinglesigSession ?? SessionManager(liquidSinglesigNetwork, newNotificationDelegate: nil)
-        if refresh {
-            try await session.connect()
-        }
-        return try await session.refreshAssets(icons: icons, assets: assets, refresh: refresh)
+        try await session.connect()
+        return try await session.refreshAssets(icons: icons, assets: assets)
     }
 }

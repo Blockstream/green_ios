@@ -376,25 +376,23 @@ extension LightningSessionManager: EventListener {
         logger.info("Breez event \(e.description, privacy: .public)")
         switch e {
         case .synced:
-            DispatchQueue.main.async {
-                self.post(event: .InvoicePaid)
-            }
+            break
         case .newBlock(let block):
             blockHeight = block
             DispatchQueue.main.async {
-                self.post(event: .Block)
+                self.newNotificationDelegate?.didReceive(event: .newBlock(blockheight: block), networkType: self.networkType)
             }
         case .invoicePaid(let data):
             DispatchQueue.main.async {
-                self.post(event: .InvoicePaid, object: data)
+                self.newNotificationDelegate?.didReceive(event: .invoicePaid, networkType: self.networkType)
             }
         case .paymentSucceed:
             DispatchQueue.main.async {
-                self.post(event: .PaymentSucceed)
+                self.newNotificationDelegate?.didReceive(event: .paymentSucceed, networkType: self.networkType)
             }
         case .paymentFailed:
             DispatchQueue.main.async {
-                self.post(event: .PaymentFailed)
+                self.newNotificationDelegate?.didReceive(event: .paymentFailed, networkType: self.networkType)
             }
         default:
             break

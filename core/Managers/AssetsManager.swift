@@ -4,7 +4,7 @@ import gdk
 
 public protocol AssetsProvider {
     func getAssets(params: GetAssetsParams) -> GetAssetsResult?
-    func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) async throws
+    func refreshAssets(icons: Bool, assets: Bool) async throws
 }
 
 public class AssetsManager {
@@ -83,19 +83,13 @@ public class AssetsManager {
         return qos.sync() { getImage(for: key ?? "", provider: provider) != nil }
     }
 
-    public func refreshIfNeeded(provider: AssetsProvider) async throws {
-        let interval = CFAbsoluteTimeGetCurrent() - (updatedAt ?? .zero)
-        if updatedAt == nil || interval > 120 {
-            try await provider.refreshAssets(icons: true, assets: true, refresh: true)
-            try await self.fetchFromCountly(provider: provider)
-            updatedAt = CFAbsoluteTimeGetCurrent()
-            let notification = NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue)
-            NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
+    public func refresh(provider: AssetsProvider) {
+        return qos.async() {
+            Task {
+                try await provider.refreshAssets(icons: true, assets: true)
+                try await self.fetchFromCountly(provider: provider)
+            }
         }
-    }
-
-    public func cache(provider: AssetsProvider) async throws {
-        try await provider.refreshAssets(icons: true, assets: true, refresh: false)
     }
 
     public func getAssetsFromCountly() async throws -> [EnrichedAsset] {

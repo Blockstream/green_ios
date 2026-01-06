@@ -414,8 +414,8 @@ public class SessionManager {
         try self.session?.convertAmount(input: input) ?? [:]
     }
 
-    public func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) async throws {
-        let params: [String: Bool] = ["icons": icons, "assets": assets, "refresh": refresh]
+    public func refreshAssets(icons: Bool, assets: Bool) async throws {
+        let params: [String: Bool] = ["icons": icons, "assets": assets]
         try self.session?.refreshAssets(params: params)
     }
 
@@ -660,6 +660,10 @@ public enum EventNotificationTypes {
     case disconnected
     case reconnected
     case tor(data: TorNotification)
+    case refreshAssets
+    case invoicePaid
+    case paymentSucceed
+    case paymentFailed
 }
 public protocol NewNotificationDelegate {
     func didReceive(event: EventNotificationTypes, networkType: NetworkSecurityCase)
@@ -728,6 +732,8 @@ extension SessionManager {
             }
         case .Ticker:
             break
+        case .AssetsUpdated:
+            newNotificationDelegate?.didReceive(event: .refreshAssets, networkType: networkType)
         default:
             break
         }
@@ -735,13 +741,5 @@ extension SessionManager {
 
     public func getPersonalElectrumServer() -> String? {
         return session?.netParams["electrum_url"] as? String
-    }
-
-    @MainActor
-    func post(event: EventType, object: Any? = nil, userInfo: [String: Any] = [:]) {
-        var data = userInfo
-        data["session_id"] = uuid.uuidString
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: event.rawValue),
-                                        object: object, userInfo: data)
     }
 }
