@@ -2,9 +2,16 @@ import Foundation
 import gdk
 import core
 
+struct BalanceRequest: Codable, Hashable {
+    let satoshi: Int64
+    let assetId: String?
+}
+
 extension Balance {
 
     static var session: SessionManager? { WalletManager.current?.prominentSession }
+    static var cache = [Int: Balance]()
+    private static let cacheQueue = DispatchQueue(label: "com.app.currencyCache")
 
     static func isBtc(_ assetId: String?) -> Bool {
         if assetId == nil {
@@ -17,27 +24,46 @@ extension Balance {
     }
 
     static func from(details: [String: Any]) -> Balance? {
-        if session?.paused ?? false {
-            // avoid blocking gdk mutex
+        do {
+            // convert
+            guard var res = try session?.convertAmount(input: details) else {
+                // return cached value
+                return nil
+            }
+            // normalize outputs
+            res["asset_info"] = details["asset_info"]
+            res["asset_id"] = details["asset_id"]
+            if res.keys.contains(AssetInfo.lightningId) {
+                res[AssetInfo.lightningId] = details["btc"]
+            }
+            // serialize balance
+            var balance = Balance.from(res) as? Balance
+            if let assetId = balance?.assetInfo?.assetId,
+               let value = res[assetId] as? String {
+                balance?.asset = [assetId: value]
+            }
+            // store cache balance
+            if let balance {
+                let assetId = details["asset_id"] as? String
+                let req = BalanceRequest(satoshi: balance.satoshi, assetId: assetId)
+                cacheQueue.async {
+                    cache[req.hashValue] = balance
+                }
+            }
+            return balance
+        } catch {
+            // Return cached result if available
+            if let satoshi = details["satoshi"] as? Int64 {
+                let assetId = details["asset_id"] as? String
+                let req = BalanceRequest(satoshi: satoshi, assetId: assetId)
+                var cachedResult: Balance?
+                cacheQueue.sync {
+                    cachedResult = cache[req.hashValue]
+                }
+                return cachedResult
+            }
             return nil
         }
-        // convert
-        guard var res = try? session?.convertAmount(input: details) else {
-            return nil
-        }
-        // normalize outputs
-        res["asset_info"] = details["asset_info"]
-        res["asset_id"] = details["asset_id"]
-        if res.keys.contains(AssetInfo.lightningId) {
-            res[AssetInfo.lightningId] = details["btc"]
-        }
-        // serialize balance
-        var balance = Balance.from(res) as? Balance
-        if let assetId = balance?.assetInfo?.assetId,
-            let value = res[assetId] as? String {
-            balance?.asset = [assetId: value]
-        }
-        return balance
     }
 
     static func fromFiat(_ fiat: String) -> Balance? {
