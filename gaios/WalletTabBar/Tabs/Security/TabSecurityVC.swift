@@ -20,7 +20,6 @@ class TabSecurityVC: TabViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.gBlackBg()
-        
         register()
         setContent()
         viewModel.onUpdate = { [weak self] feature in
@@ -289,7 +288,10 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
                             }
                         },
                         onRight: nil,
-                        onDismiss: nil)
+                        onDismiss: {
+                            BackupHelper.shared.addToDismissed(walletId: self.viewModel.mainAccount.id, position: .securityTab)
+                            tableView.reloadData()
+                        })
                     cell.selectionStyle = .none
                     return cell
                 }

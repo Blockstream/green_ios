@@ -22,9 +22,6 @@ class TabHomeVM: TabViewModel {
     var alertCards: [AlertCardType]  {
         state.alertCards
     }
-    var backupCards: [AlertCardType]  {
-        state.backupCards
-    }
     var promos: [PromoCellModel]  {
         state.promos
     }
@@ -65,5 +62,17 @@ class TabHomeVM: TabViewModel {
     func dismissRemoteAlert() {
         state.remoteAlerts?.removeFirst()
         refresh(features: [.alertCards])
+    }
+    var backupCards: [AlertCardType]  {
+        fetchBackupCards()
+    }
+    func fetchBackupCards() -> [AlertCardType] {
+        var cards: [AlertCardType] = []
+        if BackupHelper.shared.needsBackup(walletId: mainAccount.id) &&
+            BackupHelper.shared.isDismissed(walletId: mainAccount.id, position: .homeTab) == false &&
+            state.totals?.1 ?? 0 > 0 && !state.subaccounts.isEmpty {
+            cards.append(.backup)
+        }
+        return cards
     }
 }

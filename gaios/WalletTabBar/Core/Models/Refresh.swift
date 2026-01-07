@@ -7,7 +7,6 @@ enum RefreshFeature: Sendable, Hashable {
     case priceChart
     case discover
     case alertCards
-    case backupCards
     case promos
     case settings
     case security

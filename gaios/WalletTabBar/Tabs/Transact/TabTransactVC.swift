@@ -33,7 +33,7 @@ class TabTransactVC: TabViewController {
     }
     func onUpdate(feature: RefreshFeature?) {
         switch feature {
-        case .balance, .txs, .backupCards, .alertCards, .settings, .subaccounts:
+        case .balance, .txs, .alertCards, .settings, .subaccounts:
             if tableView?.refreshControl?.isRefreshing == true {
                 tableView?.refreshControl?.endRefreshing()
             }

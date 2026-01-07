@@ -177,10 +177,6 @@ actor WalletDataModel {
             logger.error("WalletDataModel performFetchPriceChart error: \(error.localizedDescription)")
         }
     }
-    private func performBackupCards() async {
-        let backupCards = await fetchBackupCards()
-        await update(.backupCards) { $0.backupCards = backupCards }
-    }
     private func performAlertCards() async {
         let (alertCards, remoteAlerts) = await fetchAlertCards()
         await update(.alertCards) {
@@ -220,8 +216,6 @@ actor WalletDataModel {
             await performSecurity()
         case .alertCards:
             await performAlertCards()
-        case .backupCards:
-            await performBackupCards()
         case .promos:
             await performPromos()
         case .settings:
@@ -263,15 +257,6 @@ actor WalletDataModel {
         return meldTxs.map({ Transaction($0.details, subaccountId: subaccount.id) })
     }
 
-    func fetchBackupCards() async -> [AlertCardType] {
-        var cards: [AlertCardType] = []
-        if BackupHelper.shared.needsBackup(walletId: mainAccount.id) &&
-            BackupHelper.shared.isDismissed(walletId: mainAccount.id, position: .homeTab) == false &&
-            state.totals?.1 ?? 0 > 0 && !state.subaccounts.isEmpty {
-            cards.append(.backup)
-        }
-        return cards
-    }
     func fetchAlertCards() async -> ([AlertCardType], [RemoteAlert]?) {
         var cards: [AlertCardType] = []
         if mainAccount.isEphemeral {
