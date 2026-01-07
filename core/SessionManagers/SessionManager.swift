@@ -549,21 +549,6 @@ public class SessionManager {
         return nil
     }
 
-    public func discovery(refresh: Bool, updateHidden: Bool) async throws {
-        if !gdkNetwork.singlesig {
-            return
-        }
-        let subaccounts = try await subaccounts(refresh)
-        let subaccount = subaccounts.filter({ $0.pointer == 0 }).first
-        if let subaccount = subaccount, !(subaccount.bip44Discovered ?? false) && !subaccount.hidden && subaccount.type == .segwitWrapped && updateHidden {
-            _ = try await updateSubaccount(UpdateSubaccountParams(subaccount: 0, hidden: true))
-        }
-        let segWits = subaccounts.filter({ $0.type == .segWit })
-        if segWits.isEmpty {
-            _ = try await createSubaccount(CreateSubaccountParams(name: "", type: .segWit))
-        }
-    }
-
     public func networkConnect() async {
         try? await reconnectionTasks.add {
             let hint = ReconnectHintParams(torHint: "connect", hint: "connect")

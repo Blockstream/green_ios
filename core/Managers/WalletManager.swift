@@ -42,10 +42,10 @@ public class WalletManager {
     // Prominent network used for login with stored credentials
     public let prominentNetwork: NetworkSecurityCase
 
-    // Cached subaccounts list
+    // Cached list of not hidden subaccounts
     public var subaccounts = [WalletItem]()
 
-    // Cached subaccounts list
+    // Registry asset manager
     public var registry: AssetsManager
 
     // Mainnet / testnet networks
@@ -304,6 +304,7 @@ public class WalletManager {
         return res
     }
 
+    // swiftlint: disable function_parameter_count
     public func loginSession(
         session: SessionManager,
         credentials: Credentials?,
@@ -312,6 +313,7 @@ public class WalletManager {
         device: HWDevice?,
         masterXpub: String?,
         fullRestore: Bool,
+        creation: Bool,
         parentWalletId: WalletIdentifier?)
     async throws -> LoginUserResult? {
         do {
@@ -330,11 +332,23 @@ public class WalletManager {
                 }
             default:
                 // Connect and login Gdk
-                loginUserResult = try await loginGdk(session: session, credentials: credentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
-                // discovery and add default subaccounts
-                let refresh = fullRestore && session.logged
                 let existDatadir = session.existDatadir(credentials: credentials, masterXpub: masterXpub)
-                try? await session.discovery(refresh: refresh, updateHidden: !existDatadir || fullRestore)
+                loginUserResult = try await loginGdk(session: session, credentials: credentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
+                // discovery subaccounts
+                let subaccounts = try await subaccounts(!creation && (!existDatadir || fullRestore))
+                // hide default wrapped segwit subaccount if not used
+                if creation || !existDatadir || fullRestore {
+                    let subaccount = subaccounts.filter({ $0.pointer == 0 && $0.type == .segwitWrapped && !$0.hidden && !($0.bip44Discovered ?? false) }).first
+                    if let subaccount = subaccount {
+                        _ = try await session.updateSubaccount(UpdateSubaccountParams(subaccount: subaccount.pointer, hidden: true))
+                    }
+                }
+                // create default native segwit subaccount if not exist on singlesig
+                if session.networkType.singlesig {
+                    if subaccounts.filter({ $0.type == .segWit }).isEmpty {
+                        _ = try await session.createSubaccount(CreateSubaccountParams(name: "", type: .segWit))
+                    }
+                }
             }
             return loginUserResult
         } catch {
@@ -350,6 +364,7 @@ public class WalletManager {
         device: HWDevice?,
         masterXpub: String?,
         fullRestore: Bool,
+        creation: Bool,
         parentWalletId: WalletIdentifier?
     ) async throws -> LoginUserResult? {
         isEphemeral = credentials?.bip39Passphrase != nil
@@ -365,6 +380,7 @@ public class WalletManager {
                     device: device,
                     masterXpub: masterXpub,
                     fullRestore: fullRestore,
+                    creation: creation,
                     parentWalletId: parentWalletId)
             } catch {
                 await failureSessionsError.add(for: session.networkType, error: error)
@@ -488,9 +504,13 @@ public class WalletManager {
             }
         }
     }
+    
+    public func notHiddenSubaccounts(_ refresh: Bool = false) async throws -> [WalletItem] {
+        return try await subaccounts(refresh).filter { !$0.hidden }
+    }
 
     public func subaccounts(_ refresh: Bool = false) async throws -> [WalletItem] {
-        self.subaccounts = try await withThrowingTaskGroup(of: [WalletItem].self, returning: [WalletItem].self) { [weak self] group in
+        let subaccounts = try await withThrowingTaskGroup(of: [WalletItem].self, returning: [WalletItem].self) { [weak self] group in
             for session in (self?.activeSessions ?? [String: SessionManager]()).values {
                 group.addTask { try await session.subaccounts(refresh) }
             }
@@ -504,7 +524,8 @@ public class WalletManager {
             }
             return subaccounts
         }
-        return self.subaccounts
+        self.subaccounts = subaccounts.filter { !$0.hidden }
+        return subaccounts
     }
 
     public func subaccount(account: WalletItem) async throws -> WalletItem? {

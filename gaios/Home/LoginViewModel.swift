@@ -79,6 +79,7 @@ class LoginViewModel {
             device: nil,
             masterXpub: nil,
             fullRestore: false,
+            creation: false,
             parentWalletId: walletIdentifier)
         account.xpubHashId = res?.xpubHashId
         account.walletHashId = res?.walletHashId

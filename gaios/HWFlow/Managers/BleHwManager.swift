@@ -206,6 +206,7 @@ class BleHwManager {
                    device: device,
                    masterXpub: masterXpub,
                    fullRestore: fullRestore,
+                   creation: false,
                    parentWalletId: walletId
                 )
                 account.xpubHashId = res?.xpubHashId

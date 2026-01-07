@@ -117,7 +117,7 @@ actor WalletDataModel {
     }
     private func performFetchSubaccounts(refresh: Bool) async {
         do {
-            let subaccounts = try await wallet.subaccounts(refresh)
+            let subaccounts = try await wallet.notHiddenSubaccounts(refresh)
             await update(.subaccounts) { $0.subaccounts = subaccounts }
         } catch {
             logger.error("WalletDataModel performFetchSubaccounts error: \(error.localizedDescription)")
@@ -126,7 +126,8 @@ actor WalletDataModel {
     private func performFetchTransactions(reset: Bool) async {
         do {
             let txsGdk = try await fetchGdkTransactions(subaccounts: state.subaccounts, page: reset ? 0 : state.currentPage, reset: reset, previous: [:])
-            let txsMeld = try? await fetchMeldTransactions(wallet.prominentSession?.subaccounts().first)
+            let prominentSubaccounts = try? await wallet.prominentSession?.subaccounts().filter({ !$0.hidden })
+            let txsMeld = try? await fetchMeldTransactions(prominentSubaccounts?.first)
             let list = txsGdk
                 .flatMap({$0.value})
                 .flatMap({$0.list})

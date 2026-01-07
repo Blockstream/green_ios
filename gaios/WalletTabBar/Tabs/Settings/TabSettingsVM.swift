@@ -5,11 +5,11 @@ import gdk
 import greenaddress
 
 class TabSettingsVM: TabViewModel {
-
+    
     var settings: [SettingSection] {
         state.settings
     }
-
+    
     // load wallet manager for current logged session
     var session: SessionManager? { wallet.prominentSession }
     var isWatchonly: Bool { wallet.isWatchonly }
@@ -18,7 +18,7 @@ class TabSettingsVM: TabViewModel {
     var isSinglesig: Bool { session?.gdkNetwork.electrum ?? true }
     var isHW: Bool { AccountsRepository.shared.current?.isHW ?? false }
     var multiSigSession: SessionManager? { wallet.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }
-
+    
     func getSettingsItemCellModel(for setting: SettingsItem) -> TabSettingsCellModel? {
         switch setting {
         case .header:
@@ -104,7 +104,7 @@ class TabSettingsVM: TabViewModel {
                 type: .createAccount)
         }
     }
-
+    
     func getDenominationExchangeInfo(settings: Settings, network: NetworkSecurityCase) -> NSMutableAttributedString {
         let den = settings.denomination.string(for: network.gdkNetwork)
         let pricing = settings.pricing["currency"] ?? ""
@@ -132,20 +132,25 @@ class TabSettingsVM: TabViewModel {
         guard let session = wallet.liquidMultisigSession else {
             throw GaError.GenericError("id_invalid_session".localized)
         }
+        let wasLoggedMultisig = session.logged
         try await session.connect()
-        if !session.logged {
-            if let device = wallet.hwDevice {
-                try await session.register(credentials: nil, hw: device)
-                _ = try await session.loginUser(device)
-            } else {
-                if let credentials = try await wallet.prominentSession?.getCredentials(password: "") {
-                    try await session.register(credentials: credentials, hw: nil)
-                    _ = try await session.loginUser(credentials)
-                }
+        guard session.connected else {
+            throw GaError.GenericError("id_connection_failed".localized)
+        }
+        if let device = wallet.hwDevice {
+            try await session.register(credentials: nil, hw: device)
+            _ = try await session.loginUser(device)
+        } else {
+            if let credentials = try await wallet.prominentSession?.getCredentials(password: "") {
+                try await session.register(credentials: credentials, hw: nil)
+                _ = try await session.loginUser(credentials)
             }
         }
         _ = try await session.createSubaccount(CreateSubaccountParams(name: uniqueAmpName(), type: .amp))
-        _ = try await session.updateSubaccount(UpdateSubaccountParams(subaccount: 0, hidden: false))
+        if !wasLoggedMultisig {
+            // hide default 0 multisig subaccount when creating a new multisig
+            _ = try await session.updateSubaccount(UpdateSubaccountParams(subaccount: 0, hidden: true))
+        }
         _ = try await wallet.subaccounts()
     }
 

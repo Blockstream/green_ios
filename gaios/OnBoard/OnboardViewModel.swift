@@ -99,6 +99,7 @@ class OnboardViewModel {
             device: nil,
             masterXpub: nil,
             fullRestore: true,
+            creation: false,
             parentWalletId: walletIdentifier)
         account.xpubHashId = res?.xpubHashId
         account.walletHashId = res?.walletHashId
@@ -140,6 +141,7 @@ class OnboardViewModel {
             device: nil,
             masterXpub: nil,
             fullRestore: false,
+            creation: true,
             parentWalletId: walletIdentifier)
         account.xpubHashId = res?.xpubHashId
         account.walletHashId = res?.walletHashId

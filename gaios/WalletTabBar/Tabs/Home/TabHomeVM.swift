@@ -49,6 +49,7 @@ class TabHomeVM: TabViewModel {
             device: wallet.hwDevice,
             masterXpub: nil,
             fullRestore: false,
+            creation: false,
             parentWalletId: walletIdentifier)
         _ = try await wallet.subaccounts()
     }

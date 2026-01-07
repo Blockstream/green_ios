@@ -265,9 +265,6 @@ public class LightningSessionManager: SessionManager {
         }
     }
 
-    public override func discovery(refresh: Bool, updateHidden: Bool) async throws {
-    }
-
     public func createInvoice(satoshi: UInt64, description: String) async throws -> ReceivePaymentResponse? {
         try lightBridge?.createInvoice(satoshi: satoshi, description: description)
     }
