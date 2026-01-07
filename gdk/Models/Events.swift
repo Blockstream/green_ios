@@ -8,9 +8,9 @@ public struct TransactionEvent: Codable {
         case satoshi = "satoshi"
     }
     public let txHash: String
-    public let type: String
-    public let subAccounts: [Int]
-    public let satoshi: UInt64
+    public let type: String?
+    public let subAccounts: [Int]?
+    public let satoshi: UInt64?
 }
 
 public struct SubaccountEvent: Codable {

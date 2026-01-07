@@ -27,7 +27,7 @@ public actor Failures {
 }
 
 public class WalletManager {
-
+    
     // Return current WalletManager used for the active user session
     public static var current: WalletManager? {
         if let account = AccountsRepository.shared.current {
@@ -35,15 +35,16 @@ public class WalletManager {
         }
         return nil
     }
-
+    
     // Hashmap of available networks with open session
     public var sessions = [String: SessionManager]()
-
+    
     // Prominent network used for login with stored credentials
     public let prominentNetwork: NetworkSecurityCase
-
-    // Cached list of not hidden subaccounts
+    
+    // Cached list of subaccounts
     public var subaccounts = [WalletItem]()
+    public var visibleSubaccounts: [WalletItem] { subaccounts.filter { !$0.hidden } }
 
     // Registry asset manager
     public var registry: AssetsManager
@@ -505,7 +506,7 @@ public class WalletManager {
         }
     }
     
-    public func notHiddenSubaccounts(_ refresh: Bool = false) async throws -> [WalletItem] {
+    public func visibleSubaccounts(_ refresh: Bool = false) async throws -> [WalletItem] {
         return try await subaccounts(refresh).filter { !$0.hidden }
     }
 
@@ -524,7 +525,7 @@ public class WalletManager {
             }
             return subaccounts
         }
-        self.subaccounts = subaccounts.filter { !$0.hidden }
+        self.subaccounts = subaccounts
         return subaccounts
     }
 
@@ -732,57 +733,75 @@ public class WalletManager {
             .map { $0.assetId }
         return assetIds
     }
-    
-    // Handle Notifications Stream
-    private var notificationContinuation: AsyncStream<EventNotificationTypes>.Continuation?
-    public lazy var notificationStream: AsyncStream<EventNotificationTypes> = {
-        AsyncStream { continuation in
-            self.notificationContinuation = continuation
-        }
-    }()
+
+    private var notificationSubscribers: [UUID: AsyncStream<EventNotificationTypes>.Continuation] = [:]
 }
 extension WalletManager: NewNotificationDelegate {
+    // Function for subscribers to get a new stream
+    public func addNotificationSubscriber() -> AsyncStream<EventNotificationTypes> {
+        let id = UUID()
+        return AsyncStream { continuation in
+            // Register the continuation
+            notificationSubscribers[id] = continuation
+            
+            // Clean up when the subscriber stops listening
+            continuation.onTermination = { @Sendable _ in
+                Task {
+                    await self.removeNotificationSubscriber(id: id)
+                }
+            }
+        }
+    }
+    private func removeNotificationSubscriber(id: UUID) {
+        notificationSubscribers.removeValue(forKey: id)
+    }
+    func broadcast(_ event: EventNotificationTypes) {
+        for continuation in notificationSubscribers.values {
+            continuation.yield(event)
+        }
+    }
+
     public func didReceive(event: EventNotificationTypes, networkType: NetworkSecurityCase) {
         switch event {
         case .newBlock(blockheight: let blockheight):
             logger.info("WalletManager didReceive newBlock \(blockheight) on \(networkType.rawValue)")
-            notificationContinuation?.yield(event)
+            broadcast(event)
         case .newSubaccount(subaccount: let subaccount):
             logger.info("WalletManager didReceive newSubaccount \(subaccount.pointer) on \(networkType.rawValue)")
-            notificationContinuation?.yield(event)
+            broadcast(event)
         case .newTransaction(transaction: let transaction):
             logger.info("WalletManager didReceive newTransaction \(transaction.txHash) on \(networkType.rawValue)")
-            notificationContinuation?.yield(event)
+            broadcast(event)
         case .twoFactorReset:
             logger.info("WalletManager didReceive twoFactorReset on \(networkType.rawValue)")
-            notificationContinuation?.yield(event)
+            broadcast(event)
         case .updateSettings(settings: let settings):
             logger.info("WalletManager didReceive updateSettings on \(networkType.rawValue)")
-            notificationContinuation?.yield(event)
+            broadcast(event)
         case .disconnected:
             logger.info("WalletManager didReceive disconnected on \(networkType.rawValue)")
-            notificationContinuation?.yield(event)
+            broadcast(event)
         case .reconnected:
             logger.info("WalletManager didReceive reconnected on \(networkType.rawValue)")
             // Reconnect all logged sessions
             if !isPaused() {
-                notificationContinuation?.yield(event)
+                broadcast(event)
             }
         case .tor(data: let data):
             logger.info("WalletManager didReceive tor on \(networkType.rawValue)")
-            notificationContinuation?.yield(event)
+            broadcast(event)
         case .refreshAssets:
             logger.info("WalletManager didReceive refreshAssets on \(networkType.rawValue)")
-            notificationContinuation?.yield(event)
+            broadcast(event)
         case .invoicePaid:
             logger.info("WalletManager didReceive invoicePaid on \(networkType.rawValue)")
-            notificationContinuation?.yield(event)
+            broadcast(event)
         case .paymentSucceed:
             logger.info("WalletManager didReceive paymentSucceed on \(networkType.rawValue)")
-            notificationContinuation?.yield(event)
+            broadcast(event)
         case .paymentFailed:
             logger.info("WalletManager didReceive paymentFailed on \(networkType.rawValue)")
-            notificationContinuation?.yield(event)
+            broadcast(event)
         }
     }
 }
@@ -793,7 +812,7 @@ extension WalletManager {
         if updatedRegistryAt == nil || interval > 120 {
             registry.refresh(provider: self)
             updatedRegistryAt = CFAbsoluteTimeGetCurrent()
-            notificationContinuation?.yield(.refreshAssets)
+            broadcast(.refreshAssets)
         }
     }
 

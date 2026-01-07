@@ -3,6 +3,10 @@ import UIKit
 import core
 import gdk
 
+protocol SystemMessageDelegate {
+    func didAcceptSystemMessage(_ message: SystemMessage)
+}
+
 class SystemMessageViewController: UIViewController {
 
     @IBOutlet weak var textView: UITextView!
@@ -11,6 +15,7 @@ class SystemMessageViewController: UIViewController {
     @IBOutlet weak var cancelBtn: UIButton!
     @IBOutlet weak var confirmBtn: UIButton!
     var msg: SystemMessage!
+    var delegate: SystemMessageDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,6 +59,7 @@ class SystemMessageViewController: UIViewController {
         Task {
             do {
                 try await session?.ackSystemMessage(message: self.msg.text)
+                delegate?.didAcceptSystemMessage(self.msg)
                 navigationController?.popViewController(animated: true)
             } catch {
                 self.showError("Error on system message")

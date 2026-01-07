@@ -16,12 +16,12 @@ actor WalletDataModel {
 
     // Channels
     private var subscribers: [UUID: AsyncStream<SubscriberUpdate>.Continuation] = [:]
-    private var notificationTask: Task<Void, Never>?
+    private var notificationTask: Task<Void, Error>?
 
     init(wallet: WalletManager, mainAccount: Account) {
         self.wallet = wallet
         self.mainAccount = mainAccount
-        Task { try await self.subscribeNotifications() }
+        notificationTask = Task { await self.subscribeNotifications() }
     }
 
     // Async Multi-Subscriber Stream
@@ -55,11 +55,13 @@ actor WalletDataModel {
         }
     }
 
-    private func subscribeNotifications() async throws {
-        for await notification in wallet.notificationStream {
+    private func subscribeNotifications() async {
+        logger.info("WalletDataModel subscribeNotifications")
+        let stream = wallet.addNotificationSubscriber()
+        for await notification in stream {
             switch notification {
             case .newBlock:
-                logger.info("WalletModel newBlock")
+                logger.info("WalletDataModel newBlock")
                 // Update content if exist an unconfirmed tx
                 let pendings = state.txs?.filter { $0.blockHeight == 0 }
                 if pendings?.count ?? 0 > 0 {
@@ -67,22 +69,27 @@ actor WalletDataModel {
                     await performFetchTransactions(reset: true)
                 }
             case .newSubaccount:
-                await performFetchSubaccounts(refresh: false)
-                await performFetchBalance()
-                await performFetchTransactions(reset: true)
+                logger.info("WalletDataModel newSubaccount")
+                //await performFetchSubaccounts(refresh: false)
+                //await performFetchBalance()
+                //await performFetchTransactions(reset: true)
             case .newTransaction:
-                logger.info("WalletModel newTransaction")
+                logger.info("WalletDataModel newTransaction")
                 await performFetchBalance()
                 await performFetchTransactions(reset: true)
             case .twoFactorReset:
+                logger.info("WalletDataModel twoFactorReset")
                 await performFetchSubaccounts(refresh: false)
                 await performSettings()
             case .updateSettings:
+                logger.info("WalletDataModel updateSettings")
                 await performFetchSubaccounts(refresh: false)
                 await performSettings()
             case .disconnected:
+                logger.info("WalletDataModel disconnected")
                 break
             case .reconnected:
+                logger.info("WalletDataModel reconnect")
                 await performFetchBalance()
                 await performFetchTransactions(reset: true)
             case .tor:
@@ -103,6 +110,7 @@ actor WalletDataModel {
 
     private func performFetchBalance() async {
         do {
+            let subaccounts = state.subaccounts
             let balances = try await wallet.balances(subaccounts: state.subaccounts)
             let totals = balances.filter { AssetInfo.baseIds.contains($0.0) }.map { $0.1 }.reduce(0, { (res, partial) in res + partial })
             let assetAmountList = AssetAmountList(balances)
@@ -117,7 +125,7 @@ actor WalletDataModel {
     }
     private func performFetchSubaccounts(refresh: Bool) async {
         do {
-            let subaccounts = try await wallet.notHiddenSubaccounts(refresh)
+            let subaccounts = try await wallet.visibleSubaccounts(refresh)
             await update(.subaccounts) { $0.subaccounts = subaccounts }
         } catch {
             logger.error("WalletDataModel performFetchSubaccounts error: \(error.localizedDescription)")
@@ -125,7 +133,8 @@ actor WalletDataModel {
     }
     private func performFetchTransactions(reset: Bool) async {
         do {
-            let txsGdk = try await fetchGdkTransactions(subaccounts: state.subaccounts, page: reset ? 0 : state.currentPage, reset: reset, previous: [:])
+            let subaccounts = state.subaccounts
+            let txsGdk = try await fetchGdkTransactions(subaccounts: subaccounts, page: reset ? 0 : state.currentPage, reset: reset, previous: [:])
             let prominentSubaccounts = try? await wallet.prominentSession?.subaccounts().filter({ !$0.hidden })
             let txsMeld = try? await fetchMeldTransactions(prominentSubaccounts?.first)
             let list = txsGdk
@@ -247,10 +256,9 @@ actor WalletDataModel {
     func fetchGdkTransactions(subaccounts: [WalletItem], page: Int, reset: Bool, previous: [String: [Transactions]]) async throws -> [String: [Transactions]] {
         // get gdk/lightning transactions
         let txs = try await wallet.pagedTransactions(subaccounts: subaccounts, of: reset ? 0 : page)
-        logger.info("WalletDataModel fetchGdkTransactions \(txs.count) 1txhash:\(txs.values.first?.list.first?.hash ?? "")")
         var cache = reset ? [:] : previous
         for (account, pagetxs) in txs {
-            cache[account] = (previous[account] ?? []) + [pagetxs]
+            cache[account] = (cache[account] ?? []) + [pagetxs]
         }
         return cache
     }
@@ -420,9 +428,12 @@ actor WalletDataModel {
     }
     
     // finish all active continuations
-    deinit {
+    func shutdown() {
+        logger.info("WalletDataModel shutdown")
         for cont in subscribers.values {
             cont.finish()
         }
+        notificationTask?.cancel()
+        subscribers.removeAll()
     }
 }

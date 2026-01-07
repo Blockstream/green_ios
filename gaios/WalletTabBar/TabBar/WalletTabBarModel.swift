@@ -24,6 +24,13 @@ class WalletTabBarModel {
         self.isFirstLoad = isFirstLoad
         self.walletDataModel = WalletDataModel(wallet: wallet, mainAccount: mainAccount)
     }
+
+    deinit {
+        Task { [walletDataModel] in
+            await walletDataModel.shutdown()
+        }
+    }
+    
     @MainActor func tabTransactVC() -> TabTransactVC {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
         let viewModel = TabTransactVM(walletDataModel: walletDataModel, wallet: wallet, mainAccount: mainAccount)

@@ -23,7 +23,7 @@ class ManageAssetViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("You must create this view controller with a view model.")
     }
-    
+
     var sectionHeaderH: CGFloat = 54.0
     var footerH: CGFloat = 54.0
 
@@ -48,7 +48,6 @@ class ManageAssetViewController: UIViewController {
                 self?.onUpdate(feature: feature)
             }
         }
-        viewModel.refresh()
     }
     func onUpdate(feature: RefreshFeature?) {
         switch feature {
@@ -57,6 +56,7 @@ class ManageAssetViewController: UIViewController {
                 tableView?.refreshControl?.endRefreshing()
             }
             tableView?.reloadData()
+            reloadTitle()
         default:
             break
         }
@@ -64,6 +64,7 @@ class ManageAssetViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView?.reloadData()
+        viewModel.refresh()
     }
     func reloadTitle() {
         if let subaccount = viewModel.selectedSubaccount {
@@ -182,24 +183,27 @@ class ManageAssetViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    func rename(_ name: String) {
-        Task {
-            do {
-                startLoader(message: "id_renaming".localized)
-                try await viewModel.renameSubaccount(name: name)
-                stopLoader()
-                reloadTitle()
-            } catch { showError(error) }
+    func rename(_ name: String) async {
+        startLoader(message: "id_renaming".localized)
+        let task = Task { try await viewModel.renameSubaccount(name: name) }
+        switch await task.result {
+        case .success:
+            stopLoader()
+            viewModel.refresh()
+        case .failure(let error):
+            stopLoader()
+            showError(error)
         }
     }
-    func archive() {
-        Task {
-            do {
-                startLoader(message: "id_archiving".localized)
-                try await viewModel.archiveSubaccount()
-                stopLoader()
-                showArchivedSuccess()
-            } catch { showError(error) }
+    func archive() async {
+        let task = Task { try await viewModel.archiveSubaccount() }
+        switch await task.result {
+        case .success:
+            viewModel.refresh()
+            presentArchivedSuccess()
+        case .failure(let error):
+            stopLoader()
+            showError(error)
         }
     }
     func lightningTransfer() {
@@ -218,7 +222,7 @@ class ManageAssetViewController: UIViewController {
         }
     }
     @MainActor
-    func showArchivedSuccess() {
+    func presentArchivedSuccess() {
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchivedViewController") as? AccountArchivedViewController {
             vc.delegate = self
@@ -299,8 +303,9 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
                 return cell
             }
         case .accounts:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: DialogAccountCell.identifier, for: indexPath) as? DialogAccountCell {
-                let subaccount = viewModel.subaccounts[indexPath.row]
+            let subaccount = viewModel.subaccounts[safe: indexPath.row]
+            let cell = tableView.dequeueReusableCell(withIdentifier: DialogAccountCell.identifier, for: indexPath) as? DialogAccountCell
+            if let cell, let subaccount {
                 let model = AccountCellModel(
                     account: subaccount,
                     satoshi: subaccount.satoshi?[viewModel.assetId],
@@ -549,13 +554,13 @@ extension ManageAssetViewController: AccountSettingsViewControllerDelegate {
                 }
             }
         case .archive:
-            archive()
+            Task { [weak self] in await self?.archive() }
         }
     }
 }
 extension ManageAssetViewController: DialogRenameViewControllerDelegate {
     func didRename(name: String, index: String?) {
-        rename(name)
+        Task { [weak self] in await self?.rename(name) }
     }
     func didCancel() {}
 }

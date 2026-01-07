@@ -71,7 +71,7 @@ class WalletTabBarViewController: UITabBarController {
         if walletTabBarModel.isFirstLoad {
             // moved this reset in model
             // after discovery completes
-            // walletModel.isFirstLoad = false
+            walletTabBarModel.isFirstLoad = false
             // load welcome dialog
             addWelcomeDialog()
             // load backup alert

@@ -2,9 +2,6 @@ import UIKit
 import gdk
 import core
 import Foundation
-import UIKit
-import core
-import gdk
 
 class TabTransactVM: TabViewModel {
     var txs: [Transaction]? {

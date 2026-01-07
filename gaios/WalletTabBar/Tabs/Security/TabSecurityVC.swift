@@ -241,8 +241,8 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch viewModel.security[indexPath.section].section {
         case .header:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
-                let headerIcon = UIImage(named: AccountsRepository.shared.current?.networkType.testnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white)
+            let headerIcon = UIImage(named: viewModel.mainAccount.gdkNetwork.mainnet ? "ic_wallet" : "ic_wallet_testnet")?.maskWithColor(color: .white)
+            if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell, let headerIcon {
                 cell.configure(title: "id_security".localized, icon: headerIcon, tab: .security, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
                 })

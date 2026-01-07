@@ -17,6 +17,7 @@ class ManageAssetViewModel {
     var state = WalletState()
     var onUpdate: ((RefreshFeature?) -> Void)?
     var observationTask: Task<Void, Never>?
+    var notificationTask: Task<Void, Never>?
 
     var subaccounts: [WalletItem] {
         if assetId == AssetInfo.lightningId {
@@ -57,18 +58,16 @@ class ManageAssetViewModel {
         self.mainAccount = mainAccount
         self.assetId = assetId
         self.selectedSubaccount = selectedSubaccount
-        startObserving()
-        Task { try await self.subscribeNotifications() }
+        observationTask = Task { await self.startObserving() }
+        notificationTask = Task { await self.subscribeNotifications() }
     }
 
-    private func startObserving() {
-        observationTask = Task {
-            // Subscribe to the Actor's multi-subscriber AsyncStream which now yields
-            // `WalletDataModel.SubscriberUpdate` (state + optional single RefreshFeature).
-            for await update in await walletDataModel.states() {
-                self.state = update.state
-                self.onUpdate?(update.feature)
-            }
+    private func startObserving() async {
+        // Subscribe to the Actor's multi-subscriber AsyncStream which now yields
+        // `WalletDataModel.SubscriberUpdate` (state + optional single RefreshFeature).
+        for await update in await walletDataModel.states() {
+            self.state = update.state
+            self.onUpdate?(update.feature)
         }
     }
 
@@ -77,23 +76,29 @@ class ManageAssetViewModel {
             if let selectedSubaccount {
                 await walletDataModel.triggerRefresh(features: [.balance, .nestedTxs(subaccount: selectedSubaccount.id, assetId: assetId)])
             } else {
-                await walletDataModel.triggerRefresh(features: [.balance])
+                await walletDataModel.triggerRefresh(features: [.subaccounts, .balance])
             }
         }
     }
 
     deinit {
         observationTask?.cancel()
+        notificationTask?.cancel()
     }
 
-    private func subscribeNotifications() async throws {
-        for await notification in wallet.notificationStream {
+    private func subscribeNotifications() async {
+        logger.info("ManageAssetViewModel subscribeNotifications")
+        let stream = wallet.addNotificationSubscriber()
+        for await notification in stream {
             switch notification {
             case .newBlock(blockheight: let blockheight):
+                logger.info("ManageAssetViewModel newBlock")
                 refresh()
             case .newTransaction(transaction: let transaction):
+                logger.info("ManageAssetViewModel newTransaction")
                 refresh()
             case .reconnected:
+                logger.info("ManageAssetViewModel reconnected")
                 refresh()
             default:
                 break
@@ -112,15 +117,18 @@ class ManageAssetViewModel {
         guard let selectedSubaccount else { return }
         let params = UpdateSubaccountParams(subaccount: selectedSubaccount.pointer, name: name)
         try await selectedSubaccount.session?.renameSubaccount(params)
-        _ = try await wallet.subaccountUpdate(account: selectedSubaccount)
-        refresh()
+        if let subaccount = try await wallet.subaccountUpdate(account: selectedSubaccount) {
+            self.selectedSubaccount = subaccount
+        }
     }
     func archiveSubaccount() async throws {
         guard let selectedSubaccount else { return }
         let params = UpdateSubaccountParams(subaccount: selectedSubaccount.pointer, hidden: true)
         try await selectedSubaccount.session?.updateSubaccount(params)
-        _ = try await wallet.subaccountUpdate(account: selectedSubaccount)
-        refresh()
+        if let subaccount = try await wallet.subaccountUpdate(account: selectedSubaccount) {
+            self.selectedSubaccount = subaccount
+        }
+        _ = try await wallet.subaccounts()
     }
     var isFunded: Bool? {
         if let selectedSubaccount {

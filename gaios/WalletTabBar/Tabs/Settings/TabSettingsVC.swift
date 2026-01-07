@@ -72,8 +72,8 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch viewModel.settings[indexPath.section].section {
         case .header:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
-                let headerIcon = UIImage(named: viewModel.mainAccount.networkType.testnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white)
+            let headerIcon = UIImage(named: viewModel.mainAccount.gdkNetwork.mainnet ? "ic_wallet" : "ic_wallet_testnet")?.maskWithColor(color: .white)
+            if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell, let headerIcon {
                 cell.configure(title: "id_settings".localized, icon: headerIcon, tab: .settings, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
                 })
@@ -474,8 +474,9 @@ extension TabSettingsVC: TFAViewControllerDelegate {
 extension TabSettingsVC: DialogRenameViewControllerDelegate {
 
     func didRename(name: String, index: String?) {
-        self.tableView.reloadData()
-        viewModel.refresh(features: [.subaccounts, .balance, .txs(reset:true)])
+        viewModel.mainAccount.name = name
+        AccountsRepository.shared.upsert(viewModel.mainAccount)
+        viewModel.refresh(features: [.settings, .subaccounts, .balance, .txs(reset: true)])
     }
     func didCancel() {
     }

@@ -114,6 +114,7 @@ extension TabHomeVC { // navigation
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SystemMessageViewController") as? SystemMessageViewController {
             vc.msg = msg
+            vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -155,8 +156,8 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch TabHomeSection(rawValue: indexPath.section) {
         case .header:
-            let headerIcon = UIImage(named: AccountsRepository.shared.current?.networkType.testnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white)
-            if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell {
+            let headerIcon = UIImage(named: viewModel.mainAccount.gdkNetwork.mainnet ? "ic_wallet" : "ic_wallet_testnet")?.maskWithColor(color: .white)
+            if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell, let headerIcon {
                 cell.configure(title: "id_home".localized, icon: headerIcon, tab: .home, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
                 })
@@ -501,5 +502,10 @@ extension TabHomeVC {
         ])
 
         return section
+    }
+}
+extension TabHomeVC: SystemMessageDelegate {
+    func didAcceptSystemMessage(_ message: gdk.SystemMessage) {
+        viewModel.refresh(features: [.alertCards])
     }
 }
