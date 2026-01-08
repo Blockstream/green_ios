@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+Send: add blinding step in airgapped signing
+
 ### Changed
 - Receive: architectural refactor and performance improvements
 - Bump GDK to 0.77.7

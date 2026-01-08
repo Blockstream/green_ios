@@ -172,6 +172,10 @@ public final class GdkNetworkBackend: NetworkBackend {
         return balance
     }
 
+    public func blindTransaction(tx: Transaction) async throws -> Transaction {
+        try await session.blindTransaction(tx: tx)
+    }
+
     public func getPsbt(tx: Transaction) async throws -> String? {
         try await session.getPsbt(tx: tx)
     }

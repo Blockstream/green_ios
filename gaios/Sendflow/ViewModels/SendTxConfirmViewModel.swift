@@ -199,7 +199,11 @@ class SendTxConfirmViewModel {
         guard let wm = wm, let gdkNetworkBackend = networkBackend as? GdkNetworkBackend else {
             throw TransactionError.invalid(localizedDescription: "Invalid transaction")
         }
-        unsignedPsbt = try await gdkNetworkBackend.getPsbt(tx: transaction)
+        var tx = transaction
+        if isLiquid {
+            tx = try await gdkNetworkBackend.blindTransaction(tx: tx)
+        }
+        unsignedPsbt = try await gdkNetworkBackend.getPsbt(tx: tx)
         let params = BcurEncodeParams(urType: "crypto-psbt", data: unsignedPsbt)
         guard let res = try await wm.bcurEncode(params: params) else {
             throw TransactionError.invalid(localizedDescription: "Invalid bcur")
