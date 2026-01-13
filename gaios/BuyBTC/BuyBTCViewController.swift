@@ -69,6 +69,7 @@ class BuyBTCViewController: KeyboardViewController {
         amountTextField.addTarget(self, action: #selector(BuyBTCViewController.textFieldDidChange(_:)),
                                   for: .editingChanged)
         loadAddress()
+        view.accessibilityIdentifier = AccessibilityIds.BuyBTCScreen.view
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -224,6 +225,7 @@ class BuyBTCViewController: KeyboardViewController {
         countryBtn.addTarget(self, action: #selector(onCountry), for: .touchUpInside)
         countryBtn.setTitle(viewModel.countryCode(), for: .normal)
         countryBtn.titleLabel?.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
+        countryBtn.accessibilityIdentifier = AccessibilityIds.BuyBTCScreen.btnBuyBTCOpenCountry
         items.append(UIBarButtonItem(customView: countryBtn))
         navigationItem.rightBarButtonItems = items
     }

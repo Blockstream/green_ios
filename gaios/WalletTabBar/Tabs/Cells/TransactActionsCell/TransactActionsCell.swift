@@ -35,6 +35,9 @@ class TransactActionsCell: UITableViewCell {
         controlSend.addGestureRecognizer(tapSend)
         let tapReceive = UITapGestureRecognizer(target: self, action: #selector(didTapReceive))
         controlReceive.addGestureRecognizer(tapReceive)
+        controlBuy.accessibilityIdentifier = AccessibilityIds.CommonElements.ctaViewBuy
+        controlSend.accessibilityIdentifier = AccessibilityIds.CommonElements.ctaViewSend
+        controlReceive.accessibilityIdentifier = AccessibilityIds.CommonElements.ctaViewReceive
     }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

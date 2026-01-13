@@ -20,6 +20,7 @@ class TabHeaderCell: UITableViewCell {
         lblWallet.setStyle(.txtCard)
         iconBox.layer.cornerRadius = iconBox.frame.size.width / 2
         iconBox.backgroundColor = UIColor.gAccent()
+        btnTap.accessibilityLabel = AccessibilityIds.CommonElements.btnHeaderTapOpenDrawer
     }
 
     func configure(title: String, icon: UIImage, tab: WalletTab, onTap: (() -> Void)?) {

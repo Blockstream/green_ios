@@ -6,6 +6,7 @@ class SelectCountryCell: UITableViewCell {
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
+    @IBOutlet weak var btnTap: UIButton!
     var onTap: (() -> Void)?
     class var identifier: String { return String(describing: self) }
 

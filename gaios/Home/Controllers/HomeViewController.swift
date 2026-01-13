@@ -318,6 +318,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                                indexPath: indexPath,
                                onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
                 cell.selectionStyle = .none
+                cell.buttonView.accessibilityIdentifier = AccessibilityIds.CommonElements.cellWalletSelect(indexPath.row)
                 return cell
             }
         case .ephWallet:
@@ -327,6 +328,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                                indexPath: indexPath,
                                onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
                 cell.selectionStyle = .none
+                cell.buttonView.accessibilityIdentifier = AccessibilityIds.CommonElements.cellWalletSelect(indexPath.row)
                 return cell
             }
         case .hwWallet:
@@ -337,6 +339,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                     indexPath: indexPath,
                     onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
                 cell.selectionStyle = .none
+                cell.buttonView.accessibilityIdentifier = AccessibilityIds.CommonElements.cellWalletSelect(indexPath.row)
                 return cell
             }
         default:

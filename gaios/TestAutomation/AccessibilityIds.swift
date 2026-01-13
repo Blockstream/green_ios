@@ -4,6 +4,21 @@ struct AccessibilityIds {
     struct KeyboardView {
         static let done = "done_btn"
     }
+    struct CommonElements {
+        static let btnHeaderTapOpenDrawer = "btn_header_tab_open_drawer"
+        static let ctaViewBuy = "cta_view_buy"
+        static let ctaViewSend = "cta_view_send"
+        static let ctaViewReceive = "cta_view_receive"
+        static func cellAssetSelect(_ idx: Int) -> String {
+            return "cell_asset_select_index_\(idx)"
+        }
+        static func cellCountrySelect(_ idx: Int) -> String {
+            return "cell_country_select_index_\(idx)"
+        }
+        static func cellWalletSelect(_ idx: Int) -> String {
+            return "cell_wallet_select_index_\(idx)"
+        }
+    }
     struct GetStartedOnBoardScreen {
         static let view = "view_get_started_on_board"
         static let btnOptionsMenu = "btn_get_started_on_board_options_menu"
@@ -48,5 +63,13 @@ struct AccessibilityIds {
         static let textfieldUsername = "textfield_wo_setup_username"
         static let textfieldPassword = "textfield_wo_setup_password"
         static let btnNext = "btn_wo_setup_next"
+    }
+    struct BuyBTCScreen {
+        static let view = "view_buy_btc"
+        static let btnBuyBTCOpenCountry = "btn_buy_btc_open_country"
+    }
+    struct SelectCountryScreen {
+        static let view = "view_select_country"
+        static let viewSelectCountryHandle = "view_select_country_handle"
     }
 }

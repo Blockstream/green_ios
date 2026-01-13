@@ -94,18 +94,21 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
                                showEditIcon: false,
                                hasLwkSession: viewModel.hasLwkSession)
                 cell.selectionStyle = .none
+                cell.assetSubview.accessibilityIdentifier = AccessibilityIds.CommonElements.cellAssetSelect(indexPath.row)
                 return cell
             }
         } else if indexPath.row == cnt {
             if let cell = tableView.dequeueReusableCell(withIdentifier: AnyAssetCell.identifier, for: indexPath) as? AnyAssetCell {
                 cell.configure(anyAssetTypes[0])
                 cell.selectionStyle = .none
+                cell.assetSubview.accessibilityIdentifier = AccessibilityIds.CommonElements.cellAssetSelect(indexPath.row)
                 return cell
             }
         } else if indexPath.row == cnt+1 {
             if let cell = tableView.dequeueReusableCell(withIdentifier: AnyAssetCell.identifier, for: indexPath) as? AnyAssetCell {
                 cell.configure(anyAssetTypes[1])
                 cell.selectionStyle = .none
+                cell.assetSubview.accessibilityIdentifier = AccessibilityIds.CommonElements.cellAssetSelect(indexPath.row)
                 return cell
             }
         }
@@ -114,6 +117,7 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
                 if let cell = tableView.dequeueReusableCell(withIdentifier: AnyAssetCell.identifier, for: indexPath) as? AnyAssetCell {
                     cell.configure(anyAssetTypes[0])
                     cell.selectionStyle = .none
+                    cell.assetSubview.accessibilityIdentifier = AccessibilityIds.CommonElements.cellAssetSelect(indexPath.row)
                     return cell
                 }
             }

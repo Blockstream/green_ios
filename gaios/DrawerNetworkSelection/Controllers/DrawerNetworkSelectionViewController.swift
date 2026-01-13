@@ -130,6 +130,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                                indexPath: indexPath,
                                onTap: { [weak self] indexPath in self?.onTap(indexPath) }
                 )
+                cell.buttonView.accessibilityIdentifier = AccessibilityIds.CommonElements.cellWalletSelect(indexPath.row)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -141,6 +142,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                                onTap: { [weak self] indexPath in self?.onTap(indexPath) }
                 )
                 cell.selectionStyle = .none
+                cell.buttonView.accessibilityIdentifier = AccessibilityIds.CommonElements.cellWalletSelect(indexPath.row)
                 return cell
             }
         case .hwWallet:
@@ -151,6 +153,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                                onTap: { [weak self] indexPath in self?.onTap(indexPath) }
                 )
                 cell.selectionStyle = .none
+                cell.buttonView.accessibilityIdentifier = AccessibilityIds.CommonElements.cellWalletSelect(indexPath.row)
                 return cell
             }
         default:

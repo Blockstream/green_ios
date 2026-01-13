@@ -86,6 +86,8 @@ class SelectCountryViewController: KeyboardViewController {
             self.view.addGestureRecognizer(swipeDown)
         let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTap))
             tappableBg.addGestureRecognizer(tapToClose)
+        view.accessibilityIdentifier = AccessibilityIds.SelectCountryScreen.view
+        handle.accessibilityIdentifier = AccessibilityIds.SelectCountryScreen.viewSelectCountryHandle
     }
 
     @objc func searchFieldDidChange(_ textField: UITextField) {
@@ -164,6 +166,7 @@ extension SelectCountryViewController: UITableViewDelegate, UITableViewDataSourc
                 self?.didSelect(indexPath)
             })
             cell.selectionStyle = .none
+            cell.btnTap.accessibilityIdentifier = AccessibilityIds.CommonElements.cellCountrySelect(indexPath.row)
             return cell
         }
         return UITableViewCell()
