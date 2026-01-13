@@ -3,7 +3,22 @@ stages:
     - build
     - distribute_qa
     - deploy
-  
+    - e2e
+
+# Global Variables
+variables:
+  GCS_BUCKET: "green-ios-builds"
+
+# Pipeline Rules - Jobs only appear when conditions match (no skipped state)
+.default_pipeline_rules:
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "schedule" && $CI_COMMIT_TAG == null
+
+.manual_pipeline_rules:
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "schedule" && $CI_COMMIT_TAG == null
+      when: manual
+
 # FORMAT
 
 .setup_env:
@@ -14,7 +29,9 @@ stages:
 
 test_format:
   stage: format
-  extends: .setup_env
+  extends:
+    - .setup_env
+    - .default_pipeline_rules
   tags:
     - mini
   script:
@@ -22,8 +39,10 @@ test_format:
 
 check_localization:
   stage: format
-  extends: .setup_env
-  needs: []  # Run in parallel with other format jobs
+  extends:
+    - .setup_env
+    - .default_pipeline_rules
+  needs: []
   tags:
     - mini
   script:
@@ -32,7 +51,7 @@ check_localization:
 # BUILD
 build_strings:
   stage: build
-  when: manual
+  extends: .manual_pipeline_rules
   artifacts:
     name: "green-ios-strings-$CI_COMMIT_REF_NAME"
     expire_in: 1 day
@@ -51,8 +70,9 @@ build_strings:
 
 qa_debug_simulator:
   stage: build
-  when: manual
-  extends: .setup_env
+  extends:
+    - .setup_env
+    - .manual_pipeline_rules
   tags:
     - mini
   artifacts:
@@ -70,7 +90,9 @@ qa_debug_simulator:
 
 development:
   stage: build
-  extends: .setup_env
+  extends:
+    - .setup_env
+    - .default_pipeline_rules
   tags:
     - osx-m4
   artifacts:
@@ -88,8 +110,9 @@ development:
 
 production:
   stage: build
-  when: manual
-  extends: .setup_env
+  extends:
+    - .setup_env
+    - .manual_pipeline_rules
   tags:
     - osx-m4
   artifacts:
@@ -118,6 +141,7 @@ production:
 
 distribute_development:
   stage: distribute_qa
+  extends: .default_pipeline_rules
   needs: ["development"]
   tags:
     - osx-m4
@@ -138,6 +162,7 @@ distribute_development:
 
 distribute_production:
   stage: distribute_qa
+  extends: .default_pipeline_rules
   needs: ["production"]
   tags:
     - osx-m4
@@ -159,8 +184,8 @@ distribute_production:
 # STORE
 
 upload_apple_store:
-  when: manual
   stage: deploy
+  extends: .manual_pipeline_rules
   needs: ["distribute_production"]
   tags:
     - osx-m4
@@ -188,6 +213,7 @@ upload_apple_store:
 
 cp_gcloud_development:
   image: blockstream/gcloud-docker-tf:1.1.7
+  extends: .default_pipeline_rules
   needs: ["distribute_development"]
   tags:
     - ga
@@ -200,6 +226,7 @@ cp_gcloud_development:
 
 cp_gcloud_production:
   image: blockstream/gcloud-docker-tf:1.1.7
+  extends: .default_pipeline_rules
   needs: ["distribute_production"]
   tags:
     - ga
@@ -209,3 +236,107 @@ cp_gcloud_production:
     URLPATH: "green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod"
   script:
     - *cp_gcloud
+
+# ============================================
+# E2E TEST TRIGGER WORKFLOWS
+# ============================================
+
+# E2E Build Template (Simulator .app for Maestro)
+.e2e_build_template:
+  stage: build
+  extends: .setup_env
+  tags:
+    - osx-m4
+  variables:
+    GDK_COMMIT: latest
+  script:
+    - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
+    - ./tools/fetch_gdk_binaries.sh $GDK_OPT
+    - fastlane build_unsigned_debug
+    - cd debug/Build/Products/Debug-iphonesimulator && zip -r ../../../../gaios.app.zip gaios.app
+  artifacts:
+    paths:
+      - gaios.app.zip
+    expire_in: 1 day
+  timeout: 45 minutes
+
+# E2E Upload Template
+.e2e_upload_template:
+  stage: e2e
+  image: blockstream/gcloud-docker-tf:1.1.7
+  tags:
+    - ga
+  script:
+    - TMPF=$(mktemp) || exit 1
+    - echo $GCLOUD_PUSH_KEY > $TMPF
+    - export GOOGLE_APPLICATION_CREDENTIALS=$TMPF
+    - gcloud auth activate-service-account --key-file=$TMPF
+    - gsutil cp gaios.app.zip "gs://${GCS_BUCKET}/${E2E_APP_NAME}"
+    - echo "https://storage.googleapis.com/${GCS_BUCKET}/${E2E_APP_NAME}"
+
+# --- Nightly E2E Jobs ---
+
+e2e:nightly:build:
+  extends: .e2e_build_template
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - when: manual  # For testing
+
+e2e:nightly:upload:
+  extends: .e2e_upload_template
+  needs: ["e2e:nightly:build"]
+  variables:
+    E2E_APP_NAME: "${CI_PROJECT_NAME}-${CI_COMMIT_SHA}-nightly.app.zip"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - when: manual  # For testing
+
+e2e:nightly:trigger:
+  stage: e2e
+  needs:
+    - e2e:nightly:upload
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - when: manual  # For testing
+  trigger:
+    project: blockstream/green/maestro-blockstream
+  variables:
+    UPSTREAM_IOS_APP_URL: "https://storage.googleapis.com/${GCS_BUCKET}/${CI_PROJECT_NAME}-${CI_COMMIT_SHA}-nightly.app.zip"
+    UPSTREAM_IOS_APP_ID: "io.blockstream.greendev"
+    UPSTREAM_MODE: "full"
+    UPSTREAM_COMMIT_SHA: $CI_COMMIT_SHA
+    UPSTREAM_TYPE: "nightly"
+
+# --- Release E2E Jobs ---
+
+e2e:release:build:
+  extends: .e2e_build_template
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
+    - when: manual  # For testing
+
+e2e:release:upload:
+  extends: .e2e_upload_template
+  needs: ["e2e:release:build"]
+  variables:
+    E2E_APP_NAME: "${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.app.zip"
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
+    - when: manual  # For testing
+
+e2e:release:trigger:
+  stage: e2e
+  needs:
+    - e2e:release:upload
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
+    - when: manual  # For testing
+  trigger:
+    project: blockstream/green/maestro-blockstream
+  variables:
+    UPSTREAM_IOS_APP_URL: "https://storage.googleapis.com/${GCS_BUCKET}/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.app.zip"
+    UPSTREAM_IOS_APP_ID: "io.blockstream.greendev"
+    UPSTREAM_MODE: "full"
+    UPSTREAM_COMMIT_SHA: $CI_COMMIT_SHA
+    UPSTREAM_COMMIT_TAG: $CI_COMMIT_TAG
+    UPSTREAM_TYPE: "release"
