@@ -280,7 +280,6 @@ e2e:nightly:build:
   extends: .e2e_build_template
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - when: manual  # For testing
 
 e2e:nightly:upload:
   extends: .e2e_upload_template
@@ -289,7 +288,6 @@ e2e:nightly:upload:
     E2E_APP_NAME: "${CI_PROJECT_NAME}-${CI_COMMIT_SHA}-nightly.app.zip"
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - when: manual  # For testing
 
 e2e:nightly:trigger:
   stage: e2e
@@ -297,7 +295,6 @@ e2e:nightly:trigger:
     - e2e:nightly:upload
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - when: manual  # For testing
   trigger:
     project: blockstream/green/maestro-blockstream
   variables:
