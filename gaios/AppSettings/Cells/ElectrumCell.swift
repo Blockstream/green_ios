@@ -91,12 +91,12 @@ class ElectrumCell: UITableViewCell {
         onChangeBTC?(fieldBTC.text ?? "")
     }
     @IBAction func didChangeLiquid(_ sender: Any) {
-        onChangeBTC?(fieldLiquid.text ?? "")
+        onChangeLiquid?(fieldLiquid.text ?? "")
     }
     @IBAction func didChangeTestnet(_ sender: Any) {
-        onChangeBTC?(fieldTestnet.text ?? "")
+        onChangeTestnet?(fieldTestnet.text ?? "")
     }
     @IBAction func didChangeLiquidTestnet(_ sender: Any) {
-        onChangeBTC?(fieldLiquidTestnet.text ?? "")
+        onChangeLiquidTestnet?(fieldLiquidTestnet.text ?? "")
     }
 }
