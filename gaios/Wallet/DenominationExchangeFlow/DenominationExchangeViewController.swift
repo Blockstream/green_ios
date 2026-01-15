@@ -124,23 +124,28 @@ class DenominationExchangeViewController: UIViewController {
     }
 
     @IBAction func btnOK(_ sender: Any) {
-        guard let settings = viewModel.session?.settings else { return }
+        Task { await updateSettings() }
+    }
 
+    func updateSettings() async {
+        guard let settings = viewModel.settings else { return }
         if let denomination = viewModel.editingDenomination {
             settings.denomination = denomination
         }
         if let pricing = viewModel.pricing() {
             settings.pricing = pricing
         }
-        Task {
-            do {
-                self.startAnimating()
-                try await self.viewModel.updateSettings()
-                self.dismiss(.ok)
-            } catch {
-                self.showError(error)
-            }
+        let task = Task { [weak viewModel] in
+            try await viewModel?.updateSettings(settings)
+            _ = Balance.fromSatoshi(0, assetId: AssetInfo.btcId)?.toFiat()
+        }
+        switch await task.result {
+        case .success:
             self.stopAnimating()
+            self.dismiss(.ok)
+        case .failure(let error):
+            self.stopAnimating()
+            self.showError(error)
         }
     }
 

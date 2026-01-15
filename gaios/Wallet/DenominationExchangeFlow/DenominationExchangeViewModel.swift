@@ -52,9 +52,7 @@ class DenominationExchangeViewModel {
                                            network: network)
     }
 
-    func updateSettings() async throws {
-        guard let session = wm.prominentSession,
-            let settings = settings else { return }
-        _ = try await session.changeSettings(settings: settings)
+    func updateSettings(_ settings: Settings) async throws {
+        _ = try await wm.prominentSession?.changeSettings(settings: settings)
     }
 }
