@@ -309,8 +309,7 @@ e2e:nightly:trigger:
 e2e:release:build:
   extends: .e2e_build_template
   rules:
-    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
-    - when: manual  # For testing
+    - if: $CI_COMMIT_TAG =~ /^release_\d+\.\d+\.\d+/
 
 e2e:release:upload:
   extends: .e2e_upload_template
@@ -318,16 +317,14 @@ e2e:release:upload:
   variables:
     E2E_APP_NAME: "${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.app.zip"
   rules:
-    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
-    - when: manual  # For testing
+    - if: $CI_COMMIT_TAG =~ /^release_\d+\.\d+\.\d+/
 
 e2e:release:trigger:
   stage: e2e
   needs:
     - e2e:release:upload
   rules:
-    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
-    - when: manual  # For testing
+    - if: $CI_COMMIT_TAG =~ /^release_\d+\.\d+\.\d+/
   trigger:
     project: blockstream/green/maestro-blockstream
   variables:
