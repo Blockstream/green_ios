@@ -14,6 +14,7 @@ struct AccountCellModel {
         let assetId = assetId ?? account.gdkNetwork.getFeeAsset()
         if let satoshi = satoshi, let converted = Balance.fromSatoshi(satoshi, assetId: assetId) {
             let (amount, denom) = converted.toValue()
+            if satoshi == 0 { return nil }
             return "\(amount) \(denom)"
         }
         return nil
@@ -22,9 +23,9 @@ struct AccountCellModel {
         let assetId = assetId ?? account.gdkNetwork.getFeeAsset()
         if let satoshi = satoshi, let converted = Balance.fromSatoshi(satoshi, assetId: assetId) {
             let (amount, denom) = converted.toFiat()
+            if satoshi == 0 { return nil }
             return "\(amount) \(denom)"
         }
         return nil
     }
 }
-

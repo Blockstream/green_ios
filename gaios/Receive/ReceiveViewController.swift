@@ -123,7 +123,7 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     var sections: [ReceiveSection] {
-        if viewModel.asset == AssetInfo.lbtcId {
+        if viewModel.anyOrAsset.assetId == AssetInfo.lbtcId {
             switch viewModel.type {
             case .lwkSwap:
                 if lightningAmountEditing {
@@ -133,7 +133,12 @@ class ReceiveViewController: KeyboardViewController {
                 }
             default:
                 if viewModel.wm.lwkSession?.logged ?? false {
-                    return [.asset, .account, .segmented, .address]
+                    switch viewModel.anyOrAsset {
+                    case .anyLiquid, .anyAmp:
+                        return [.asset, .account, .address]
+                    default:
+                        return [.asset, .account, .segmented, .address]
+                    }
                 } else {
                     return [.asset, .account, .address]
                 }
@@ -443,7 +448,7 @@ class ReceiveViewController: KeyboardViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            let options = MoreOptPrefs.getItems(account: viewModel.account, assetId: viewModel.asset)
+            let options = MoreOptPrefs.getItems(account: viewModel.account, assetId: viewModel.anyOrAsset.assetId)
             vc.viewModel = DialogListViewModel(
                 title: "id_more_options".localized,
                 type: .moreOptPrefs,
@@ -528,43 +533,42 @@ class ReceiveViewController: KeyboardViewController {
 }
 
 extension ReceiveViewController: AssetSelectViewControllerDelegate {
-
-    func didSelectAnyAsset(_ type: AnyAssetType) {
-        switch type {
-        case .liquid:
-            viewModel.asset = AssetInfo.lbtcId
-            viewModel.anyAsset = type
+    func didSelectAnyOrAsset(_ ref: AnyOrAsset) {
+        switch ref {
+        case .anyLiquid:
+            viewModel.anyOrAsset = ref
             if !viewModel.account.networkType.liquid {
                 if let account = viewModel.getAccounts().first {
                     viewModel.account = account
+                } else {
+                    DropAlert().warning(message: "Create an account".localized)
+                    return
                 }
             }
-        case .amp:
-            viewModel.anyAsset = type
+        case .anyAmp:
+            viewModel.anyOrAsset = ref
             if viewModel.account.type != .amp {
                 if let account = viewModel.getAccounts().first {
                     viewModel.account = account
+                } else {
+                    DropAlert().warning(message: "Create an Amp account to receive Amp asset".localized)
+                    return
                 }
             }
-        }
-        reload()
-        newAddress()
-    }
-
-    func didSelectAsset(_ assetId: String) {
-        let info = WalletManager.current?.info(for: assetId)
-        if info?.amp ?? false && !viewModel.hasSubaccountAmp() {
-            DropAlert().warning(message: "Create Amp account to receive Amp asset")
-            return
-        }
-        viewModel.asset = assetId
-        viewModel.anyAsset = nil
-        if assetId == AssetInfo.lightningId {
-            viewModel.type = .bolt11
-            lightningAmountEditing = true
-        } else {
-            selectedSegment = 0
-            viewModel.type = .address
+        case .asset(let assetId):
+            let info = WalletManager.current?.info(for: assetId)
+            if info?.amp ?? false && !viewModel.hasSubaccountAmp() {
+                DropAlert().warning(message: "Create an Amp account to receive Amp asset".localized)
+                return
+            }
+            viewModel.anyOrAsset = ref
+            if assetId == AssetInfo.lightningId {
+                viewModel.type = .bolt11
+                lightningAmountEditing = true
+            } else {
+                selectedSegment = 0
+                viewModel.type = .address
+            }
         }
         reload()
         newAddress()
@@ -617,7 +621,7 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
         switch type {
         case .moreOptPrefs:
 
-            if let item = MoreOptPrefs.getPrefs(account: viewModel.account, assetId: viewModel.asset)[safe: index] {
+            if let item = MoreOptPrefs.getPrefs(account: viewModel.account, assetId: viewModel.anyOrAsset.assetId)[safe: index] {
                 switch item {
                 case .requestAmount:
                     optRequestAmount()

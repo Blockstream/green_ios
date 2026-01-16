@@ -501,7 +501,7 @@ extension ManageAssetViewController {
     func receiveScreen() {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController, let account = viewModel.selectedSubaccount {
-            let waParam: (WalletItem, String) = (account, viewModel.assetId)
+            let waParam: (WalletItem, AnyOrAsset) = (account, .asset(viewModel.assetId))
             vc.viewModel = ReceiveViewModel(waParam)
             navigationController?.pushViewController(vc, animated: true)
         }

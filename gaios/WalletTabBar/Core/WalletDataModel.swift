@@ -375,7 +375,7 @@ actor WalletDataModel {
         if wallet.hasMultisig {
             accountItems += [.twoFactorAuthication, .pgpKey]
         }
-        accountItems += [.watchOnly, .archievedAccounts]
+        accountItems += [.watchOnly, .archievedAccounts, .createAccount]
         return [
             .init(section: .header, items: [.header]),
             .init(section: .wallet, items: walletItems),

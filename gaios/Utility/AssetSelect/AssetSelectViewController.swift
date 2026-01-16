@@ -1,9 +1,23 @@
 import UIKit
 import core
+import gdk
 
 protocol AssetSelectViewControllerDelegate: AnyObject {
-    func didSelectAsset(_ assetId: String)
-    func didSelectAnyAsset(_ type: AnyAssetType)
+    func didSelectAnyOrAsset(_ ref: AnyOrAsset)
+}
+
+enum AnyOrAsset {
+    case anyLiquid
+    case anyAmp
+    case asset(String)
+    var assetId: String {
+        switch self {
+        case .anyLiquid, .anyAmp:
+            return AssetInfo.lbtcId
+        case .asset(let assetId):
+            return assetId
+        }
+    }
 }
 
 class AssetSelectViewController: UIViewController {
@@ -39,22 +53,13 @@ class AssetSelectViewController: UIViewController {
         searchCard.setStyle(CardStyle.defaultStyle)
     }
 
-    func didSelectAsset(_ asset: String) {
+    func didSelectAnyOrAsset(_ ref: AnyOrAsset) {
         if dismissOnSelect {
             dismiss(animated: true) { [weak self] in
-                self?.delegate?.didSelectAsset(asset)
+                self?.delegate?.didSelectAnyOrAsset(ref)
             }
         } else {
-            delegate?.didSelectAsset(asset)
-        }
-    }
-    func didSelectAnyAsset(_ type: AnyAssetType) {
-        if dismissOnSelect {
-            dismiss(animated: true) { [weak self] in
-                self?.delegate?.didSelectAnyAsset(type)
-            }
-        } else {
-            delegate?.didSelectAnyAsset(type)
+            delegate?.didSelectAnyOrAsset(ref)
         }
     }
     @objc func triggerTextChange() {
@@ -86,7 +91,7 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cnt = viewModel?.assetSelectCellModelsFilter.count ?? 0
-        let anyAssetTypes: [AnyAssetType] = viewModel.anyAssetTypes()
+        let anyAssetTypes: [AnyOrAsset] = viewModel.anyAssetTypes()
         if indexPath.row < cnt {
             if let cell = tableView.dequeueReusableCell(withIdentifier: AssetSelectCell.identifier, for: indexPath) as? AssetSelectCell {
                 let model = viewModel.assetSelectCellModelsFilter[indexPath.row]
@@ -148,15 +153,15 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AnalyticsManager.shared.selectAsset(account: AccountsRepository.shared.current)
         let cnt = viewModel?.assetSelectCellModelsFilter.count ?? 0
-        let anyAssetTypes: [AnyAssetType] = viewModel.anyAssetTypes()
+
         if indexPath.row < cnt {
             let assetCellModel = viewModel?.assetSelectCellModelsFilter[indexPath.row] as? AssetSelectCellModel
             let asset = assetCellModel?.asset?.assetId
-            self.didSelectAsset(asset ?? "")
+            self.didSelectAnyOrAsset(.asset(asset ?? ""))
         } else if indexPath.row == cnt {
-            self.didSelectAnyAsset(anyAssetTypes[0])
+            self.didSelectAnyOrAsset(AnyOrAsset.anyLiquid)
         } else if indexPath.row == cnt+1 {
-            self.didSelectAnyAsset(anyAssetTypes[1])
+            self.didSelectAnyOrAsset(AnyOrAsset.anyAmp)
         }
     }
 }

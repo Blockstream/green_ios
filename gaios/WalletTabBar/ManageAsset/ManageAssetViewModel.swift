@@ -29,7 +29,7 @@ class ManageAssetViewModel {
         } else if assetId == AssetInfo.lbtcId || assetId == AssetInfo.ltestId {
             return state.subaccounts.filter { $0.networkType.liquid }
         } else {
-            return state.subaccounts.filter { $0.networkType.liquid && $0.hasAsset(assetId) }
+            return state.subaccounts.filter { $0.networkType.liquid /* && $0.hasAsset(assetId) */ }
         }
     }
     var hideBalance: Bool {

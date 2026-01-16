@@ -212,15 +212,17 @@ extension QRUnlockSelectAccountViewController {
 
 extension QRUnlockSelectAccountViewController: AssetSelectViewControllerDelegate {
 
-    func didSelectAsset(_ assetId: String) {
-        viewModel?.asset = assetId
-        reloadSections([.asset, .policy], animated: true)
-    }
-
-    func didSelectAnyAsset(_ type: AnyAssetType) {
-        // handle any asset case
-        print("didSelectAnyAsset")
-        viewModel?.asset = AssetInfo.lbtcId
-        reloadSections([.asset, .policy], animated: true)
+    func didSelectAnyOrAsset(_ ref: AnyOrAsset) {
+        switch ref {
+        case .anyLiquid:
+            viewModel?.asset = AssetInfo.lbtcId
+            reloadSections([.asset, .policy], animated: true)
+        case .anyAmp:
+            viewModel?.asset = AssetInfo.lbtcId
+            reloadSections([.asset, .policy], animated: true)
+        case .asset(let assetId):
+            viewModel?.asset = assetId
+            reloadSections([.asset, .policy], animated: true)
+        }
     }
 }

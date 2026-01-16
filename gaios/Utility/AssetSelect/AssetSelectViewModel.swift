@@ -34,10 +34,10 @@ class AssetSelectViewModel {
         return nil
     }
 
-    func anyAssetTypes() -> [AnyAssetType] {
-        var data: [AnyAssetType] = []
-        if enableAnyLiquidAsset == true { data.append(.liquid) }
-        if enableAnyAmpAsset == true { data.append(.amp) }
+    func anyAssetTypes() -> [AnyOrAsset] {
+        var data: [AnyOrAsset] = []
+        if enableAnyLiquidAsset == true { data.append(.anyLiquid) }
+        if enableAnyAmpAsset == true { data.append(.anyAmp) }
         return data
     }
 

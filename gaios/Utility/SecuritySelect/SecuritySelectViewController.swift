@@ -191,7 +191,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         case .asset:
             let storyboard = UIStoryboard(name: "Utility", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-                let allAssets = WalletManager.current?.registry.all
+                let allAssets = WalletManager.current?.registry.all.filter({$0.assetId != "lightning"})
                 let assetInfos = viewModel.onlyBtc ? [AssetInfo.btc] : allAssets
                 let assetIds = assetInfos?.map { ($0.assetId, Int64(0)) }
                 let dict = Dictionary(uniqueKeysWithValues: assetIds ?? [])
@@ -312,25 +312,19 @@ extension SecuritySelectViewController {
 }
 
 extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
-    func didSelectAsset(_ assetId: String) {
+    func didSelectAnyOrAsset(_ ref: AnyOrAsset) {
         viewModel?.resetSelection()
-        viewModel?.asset = assetId
-        reloadSections([.asset, .policy], animated: true)
-        // navigationController?.popViewController(animated: true)
-    }
-
-    func didSelectAnyAsset(_ type: AnyAssetType) {
-        // handle any asset case
-        viewModel?.resetSelection()
-        switch type {
-        case .liquid:
+        switch ref {
+        case .anyLiquid:
             viewModel?.anyLiquidAsset = true
             reloadSections([.asset, .policy], animated: true)
-        case .amp:
+        case .anyAmp:
             viewModel?.anyLiquidAmpAsset = true
             reloadSections([.asset, .policy], animated: true)
+        case .asset(let assetId):
+            viewModel?.asset = assetId
+            reloadSections([.asset, .policy], animated: true)
         }
-        // navigationController?.popViewController(animated: true)
     }
 
     @MainActor

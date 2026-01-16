@@ -1,10 +1,5 @@
 import UIKit
 
-enum AnyAssetType {
-    case liquid
-    case amp
-}
-
 class AnyAssetCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
@@ -12,7 +7,7 @@ class AnyAssetCell: UITableViewCell {
     @IBOutlet weak var imgView: UIImageView!
     @IBOutlet weak var lblAny: UILabel!
 
-    var anyAssetType: AnyAssetType?
+    var anyOrAsset: AnyOrAsset?
 
     class var identifier: String { return String(describing: self) }
 
@@ -22,16 +17,18 @@ class AnyAssetCell: UITableViewCell {
         assetSubview.cornerRadius = 5.0
     }
 
-    func configure(_ type: AnyAssetType) {
-        anyAssetType = type
+    func configure(_ ref: AnyOrAsset) {
+        anyOrAsset = ref
 
-        switch type {
-        case .liquid:
+        switch ref {
+        case .anyLiquid:
             self.lblAny.text = "id_receive_any_liquid_asset".localized
             imgView.image = UIImage(named: "default_asset_liquid_icon")!
-        case .amp:
+        case .anyAmp:
             self.lblAny.text = "id_receive_any_amp_asset".localized
             imgView.image = UIImage(named: "default_asset_amp_icon")!
+        default:
+            break
         }
     }
 }

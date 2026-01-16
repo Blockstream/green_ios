@@ -5,8 +5,9 @@ import core
 class TabTransactVC: TabViewController {
 
     @IBOutlet weak var tableView: UITableView?
-    var assetId: String?
-    var anyAsset: AnyAssetType?
+
+    var anyOrAsset: AnyOrAsset?
+
     let viewModel: TabTransactVM
 
     init?(coder: NSCoder, viewModel: TabTransactVM) {
@@ -355,49 +356,59 @@ extension TabTransactVC: UITableViewDataSourcePrefetching {
             return []
         }
     }
-    func getAccounts() -> [WalletItem] {
-        switch anyAsset {
-        case .liquid:
+    func getAccounts(_ ref: AnyOrAsset) -> [WalletItem] {
+        switch ref {
+        case .anyLiquid:
             return getLiquidSubaccounts()
-        case .amp:
+        case .anyAmp:
             return getLiquidAmpSubaccounts()
-        case nil:
-            break
-        }
-        if let asset = WalletManager.current?.info(for: self.assetId ?? "") {
-            if asset.isLightning {
-                return getLightningSubaccounts()
-            } else if asset.isBitcoin {
-                return getBitcoinSubaccounts()
-            } else if asset.amp ?? false {
-                return getLiquidAmpSubaccounts()
+        case .asset(let assetId):
+            if let asset = WalletManager.current?.info(for: assetId) {
+                if asset.isLightning {
+                    return getLightningSubaccounts()
+                } else if asset.isBitcoin {
+                    return getBitcoinSubaccounts()
+                } else if asset.amp ?? false {
+                    return getLiquidAmpSubaccounts()
+                }
             }
+            return getLiquidSubaccounts()
         }
-        return getLiquidSubaccounts()
     }
 }
 
 extension TabTransactVC: AssetSelectViewControllerDelegate {
 
-    func didSelectAnyAsset(_ type: AnyAssetType) {
-        self.assetId = nil
-        self.anyAsset = type
-        let accounts = getAccounts()
-        if accounts.count == 1 {
-            didSelectAccount(accounts.first)
-        } else {
-            pushDialogAccountsViewController(assetId: AssetInfo.lbtcId, subaccounts: accounts)
-        }
-    }
-
-    func didSelectAsset(_ assetId: String) {
-        self.assetId = assetId
-        self.anyAsset = nil
-        let accounts = getAccounts()
-        if accounts.count == 1 {
-            didSelectAccount(accounts.first)
-        } else {
-            pushDialogAccountsViewController(assetId: assetId, subaccounts: accounts)
+    func didSelectAnyOrAsset(_ ref: AnyOrAsset) {
+        self.anyOrAsset = ref
+        switch ref {
+        case .anyLiquid:
+            let accounts = getAccounts(ref)
+            if accounts.count == 0 {
+                DropAlert().warning(message: "Create an account".localized)
+            } else if accounts.count == 1 {
+                didSelectAccount(accounts.first)
+            } else {
+                pushDialogAccountsViewController(assetId: AssetInfo.lbtcId, subaccounts: accounts)
+            }
+        case .anyAmp:
+            let accounts = getAccounts(ref)
+            if accounts.count == 0 {
+                DropAlert().warning(message: "Create an account".localized)
+            } else if accounts.count == 1 {
+                didSelectAccount(accounts.first)
+            } else {
+                pushDialogAccountsViewController(assetId: AssetInfo.lbtcId, subaccounts: accounts)
+            }
+        case .asset(let assetId):
+            let accounts = getAccounts(ref)
+            if accounts.count == 0 {
+                DropAlert().warning(message: "Create an account".localized)
+            } else if accounts.count == 1 {
+                didSelectAccount(accounts.first)
+            } else {
+                pushDialogAccountsViewController(assetId: assetId, subaccounts: accounts)
+            }
         }
     }
 }
@@ -405,8 +416,8 @@ extension TabTransactVC: DialogAccountsViewControllerDelegate {
     func didSelectAccount(_ walletItem: gdk.WalletItem?) {
 
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        if let walletItem, let assetId, let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
-            let waParam: (WalletItem, String) = (walletItem, assetId)
+        if let walletItem, let anyOrAsset, let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
+            let waParam: (WalletItem, AnyOrAsset) = (walletItem, anyOrAsset)
             vc.viewModel = ReceiveViewModel(waParam)
             navigationController?.pushViewController(vc, animated: true)
         }

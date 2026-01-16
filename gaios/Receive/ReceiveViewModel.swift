@@ -19,9 +19,8 @@ class ReceiveViewModel {
 
     var account: WalletItem { didSet { ReceiveViewModel.defaultAccount = account }}
     var mainAccount: Account? { AccountsRepository.shared.current }
-    var asset: String
     var satoshi: Int64?
-    var anyAsset: AnyAssetType?
+    var anyOrAsset: AnyOrAsset
     var isFiat: Bool = false
     var type: ReceiveType
     var description: String?
@@ -54,16 +53,16 @@ class ReceiveViewModel {
     static func getLiquidAmpSubaccounts() -> [WalletItem] {
         WalletManager.current?.liquidAmpSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
-    init(_ waParam: (wallet: WalletItem, assetId: String)? = nil) {
+    init(_ waParam: (wallet: WalletItem, anyOrAsset: AnyOrAsset)? = nil) {
         if let waParam = waParam {
             self.account = waParam.wallet
-            self.asset = waParam.assetId
+            self.anyOrAsset = waParam.anyOrAsset
             self.allowChange = false
         } else {
             self.account = ReceiveViewModel.defaultAccount ?? ReceiveViewModel.getBitcoinSubaccounts().first ??  ReceiveViewModel.getLiquidSubaccounts().first!
-            self.asset = self.account.gdkNetwork.getFeeAsset()
+            self.anyOrAsset = .asset(self.account.gdkNetwork.getFeeAsset())
         }
-        self.type = self.asset == AssetInfo.lightningId ? .bolt11 : .address
+        self.type = self.anyOrAsset.assetId == AssetInfo.lightningId ? .bolt11 : .address
         self.inputDenomination = wm.prominentSession?.settings?.denomination ?? .Sats
     }
 
@@ -166,13 +165,6 @@ class ReceiveViewModel {
     }
 
     var infoReceivedAmountCellModel: LTInfoCellModel {
-        /*if let satoshi = invoice?.receiveAmountSatoshi(openingFeeParams: receivePaymentResponse?.openingFeeParams) {
-            if let balance = Balance.fromSatoshi(Int64(satoshi), assetId: "btc") {
-                let (value, denom) = balance.toDenom(inputDenomination)
-                let (fiat, currency) = balance.toFiat()
-                return LTInfoCellModel(title: "id_amount_to_receive".localized, hint1: "\(value) \(denom)", hint2: "\(fiat) \(currency)")
-            }
-        }*/
         return LTInfoCellModel(title: "id_amount_to_receive".localized, hint1: "", hint2: "")
     }
 
@@ -220,10 +212,10 @@ class ReceiveViewModel {
             return bolt11
         case .address:
             if let address = address?.address {
-                if !AssetInfo.baseIds.contains(where: { $0 == asset}) {
-                    return addressToUri(address: address, satoshi: satoshi ?? 0, assetId: asset)
+                if !AssetInfo.baseIds.contains(where: { $0 == anyOrAsset.assetId }) {
+                    return addressToUri(address: address, satoshi: satoshi ?? 0, assetId: anyOrAsset.assetId)
                 } else if satoshi != nil {
-                    return addressToUri(address: address, satoshi: satoshi ?? 0, assetId: asset)
+                    return addressToUri(address: address, satoshi: satoshi ?? 0, assetId: anyOrAsset.assetId)
                 } else {
                     return address
                 }
@@ -278,7 +270,7 @@ class ReceiveViewModel {
     }
 
     func getBalance() -> Balance? {
-        return Balance.fromSatoshi(satoshi ?? 0.0, assetId: asset)
+        return Balance.fromSatoshi(satoshi ?? 0.0, assetId: anyOrAsset.assetId ?? "")
     }
 
     func ltSuccessViewModel(details: InvoicePaidDetails) async throws -> LTSuccessViewModel? {
@@ -307,25 +299,24 @@ class ReceiveViewModel {
     }
 
     func getAccounts() -> [WalletItem] {
-        switch anyAsset {
-        case .liquid:
+        switch anyOrAsset {
+        case .anyLiquid:
             return ReceiveViewModel.getLiquidSubaccounts()
-        case .amp:
+        case .anyAmp:
             return ReceiveViewModel.getLiquidAmpSubaccounts()
-        case nil:
-            break
-        }
-        let asset = wm.info(for: asset)
-        if type == .lwkSwap {
-            return ReceiveViewModel.getLiquidSubaccounts()
-        } else if asset.isLightning {
-            return ReceiveViewModel.getLightningSubaccounts()
-        } else if asset.isBitcoin {
-            return ReceiveViewModel.getBitcoinSubaccounts()
-        } else if asset.amp ?? false {
-            return ReceiveViewModel.getLiquidAmpSubaccounts()
-        } else {
-            return ReceiveViewModel.getLiquidSubaccounts()
+        case .asset(let assetId):
+            let asset = wm.info(for: assetId)
+            if type == .lwkSwap {
+                return ReceiveViewModel.getLiquidSubaccounts()
+            } else if asset.isLightning {
+                return ReceiveViewModel.getLightningSubaccounts()
+            } else if asset.isBitcoin {
+                return ReceiveViewModel.getBitcoinSubaccounts()
+            } else if asset.amp ?? false {
+                return ReceiveViewModel.getLiquidAmpSubaccounts()
+            } else {
+                return ReceiveViewModel.getLiquidSubaccounts()
+            }
         }
     }
 
@@ -334,7 +325,7 @@ class ReceiveViewModel {
             title: "id_account_selector".localized,
             hint: "id_choose_which_account_you_want".localized,
             isSelectable: true,
-            assetId: asset,
+            assetId: anyOrAsset.assetId,
             accounts: getAccounts(),
             hideBalance: hideBalance)
     }
@@ -346,7 +337,7 @@ class ReceiveViewModel {
     }
 
     var receiveAssetCellModel: ReceiveAssetCellModel {
-        ReceiveAssetCellModel(assetId: asset, anyAsset: anyAsset)
+        ReceiveAssetCellModel(anyOrAsset)
     }
     static var defaultAccountLabel: String? {
         return "\(AccountsRepository.shared.current?.id ?? "")_receive_subaccount"

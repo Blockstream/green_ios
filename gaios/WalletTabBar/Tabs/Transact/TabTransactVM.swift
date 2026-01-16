@@ -62,8 +62,8 @@ class TabTransactVM: TabViewModel {
     }
 
     func assetSelectViewModel(subaccounts: [WalletItem]) -> AssetSelectViewModel {
-        let hasSubaccountAmp = subaccounts.filter({ $0.type == .amp }).isEmpty
-        let hasLiquid = subaccounts.filter({ $0.networkType.liquid }).isEmpty
+        let hasSubaccountAmp = !subaccounts.filter({ $0.type == .amp }).isEmpty
+        let hasLiquid = !subaccounts.filter({ $0.networkType.liquid }).isEmpty
         let assetIds = selectableAssets(subaccounts: subaccounts)
         let list = AssetAmountList.from(assetIds: assetIds ?? [])
         return AssetSelectViewModel(
