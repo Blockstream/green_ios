@@ -174,7 +174,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                     hideBtnExchange: true,
                     onHide: {[weak self] value in
                         Task {
-                            self?.viewModel.hideBalance = value
+                            await self?.viewModel.hideBalance(value)
                             await MainActor.run {
                                 self?.tableView?.reloadData()
                             }

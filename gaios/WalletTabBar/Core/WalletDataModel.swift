@@ -409,11 +409,11 @@ actor WalletDataModel {
             }
         }
         if !isWatchonly && !isHW {
-            security += [.init(section: .jade, items: [.recoveryPhrase, .fwUpdate])]
+            security += [.init(section: .recovery, items: [.recoveryPhrase])]
         }
         return security
     }
-    
+
     // Notify all subscribers with the updated state
     private func update(_ feature: RefreshFeature? = nil, _ mutate: (inout WalletState) -> Void) async {
         mutate(&state)
@@ -424,9 +424,12 @@ actor WalletDataModel {
 
     func rotateBalanceDisplayMode() async throws {
         let nextState = state.balanceDisplayMode.next()
-        await update { $0.balanceDisplayMode = nextState }
+        await update(.balance) { $0.balanceDisplayMode = nextState }
     }
-    
+    func hideBalance(_ value: Bool) async throws {
+        await update(.balance) { $0.hideBalance = value }
+    }
+
     // finish all active continuations
     func shutdown() {
         logger.info("WalletDataModel shutdown")

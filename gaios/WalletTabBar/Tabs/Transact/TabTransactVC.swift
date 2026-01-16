@@ -72,7 +72,6 @@ class TabTransactVC: TabViewController {
             }
         }
     }
-
     func pushAssetSelectViewController() {
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
@@ -85,19 +84,19 @@ class TabTransactVC: TabViewController {
     func pushDialogAccountsViewController(assetId: String, subaccounts: [WalletItem]) {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAccountsViewController") as? DialogAccountsViewController {
-            vc.viewModel = viewModel.dialogAccountsViewModel(assetId: assetId, subaccounts: subaccounts, hideBalance: viewModel.hideBalance ?? false)
+            vc.viewModel = viewModel.dialogAccountsViewModel(assetId: assetId, subaccounts: subaccounts, hideBalance: viewModel.hideBalance)
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
         }
     }
-    
+
     func receive() {
         pushAssetSelectViewController()
     }
     func buy() {
         Task {
-            await buyScreen(currency: viewModel.defaultCurrency ?? "USD", hideBalance: viewModel.hideBalance ?? false)
+            await buyScreen(currency: viewModel.defaultCurrency ?? "USD", hideBalance: viewModel.hideBalance)
         }
     }
     func send() {
@@ -182,7 +181,7 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
                     hideBtnExchange: true,
                     onHide: {[weak self] value in
                         Task { [weak self] in
-                            self?.viewModel.hideBalance = value
+                            try? await self?.viewModel.hideBalance(value)
                             self?.reloadSections([.balance], animated: false)
                         }
                     },
@@ -193,7 +192,6 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
                             self?.reloadSections([.balance], animated: false)
                         }
                     }, onExchange: {
-                        
                     })
                 cell.selectionStyle = .none
                 return cell
@@ -205,7 +203,7 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
                     let blockHeight = tx.isLiquid ? wm?.liquidBlockHeight() : wm?.bitcoinBlockHeight()
                     cell.configure(
                         model: TransactionCellModel(tx: tx, blockHeight: blockHeight ?? 0),
-                        hideBalance: viewModel.hideBalance ?? false,
+                        hideBalance: viewModel.hideBalance,
                         onTap: {[weak self] in
                             self?.onTxTap(indexPath)
                         })

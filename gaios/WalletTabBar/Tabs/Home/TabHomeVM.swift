@@ -10,6 +10,9 @@ class TabHomeVM: TabViewModel {
     var balances: [String: Int64]? {
         state.balances
     }
+    var hideBalance: Bool {
+        state.hideBalance
+    }
     var totals: (String, Int64)? {
         state.totals
     }
@@ -36,6 +39,9 @@ class TabHomeVM: TabViewModel {
     }
     func rotateBalanceDisplayMode() async {
         try? await walletDataModel.rotateBalanceDisplayMode()
+    }
+    func hideBalance(_ value: Bool) async {
+        try? await walletDataModel.hideBalance(value)
     }
     func relogin() async throws {
         let credentials = try? await wallet.prominentSession?.getCredentials(password: "")

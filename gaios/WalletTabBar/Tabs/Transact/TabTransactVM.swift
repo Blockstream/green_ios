@@ -7,6 +7,9 @@ class TabTransactVM: TabViewModel {
     var txs: [Transaction]? {
         state.txs
     }
+    var hideBalance: Bool {
+        state.hideBalance
+    }
     var subaccounts: [WalletItem]? {
         state.subaccounts
     }
@@ -19,13 +22,13 @@ class TabTransactVM: TabViewModel {
     var assetAmountList: AssetAmountList? {
         state.assetAmountList
     }
-    var alertCards: [AlertCardType]  {
+    var alertCards: [AlertCardType] {
         state.alertCards
     }
-    var backupCards: [AlertCardType]  {
+    var backupCards: [AlertCardType] {
         state.backupCards
     }
-    var balanceDisplayMode: BalanceDisplayMode  {
+    var balanceDisplayMode: BalanceDisplayMode {
         state.balanceDisplayMode
     }
     var defaultCurrency: String? {
@@ -34,11 +37,11 @@ class TabTransactVM: TabViewModel {
         }
         return nil
     }
-    var currentPage: Int  {
+    var currentPage: Int {
         get { state.currentPage }
         set { state.currentPage = newValue }
     }
-    var txsCanLoadMore: Bool  {
+    var txsCanLoadMore: Bool {
         state.txsCanLoadMore
     }
     func rotateBalanceDisplayMode() async {
@@ -59,8 +62,8 @@ class TabTransactVM: TabViewModel {
     }
 
     func assetSelectViewModel(subaccounts: [WalletItem]) -> AssetSelectViewModel {
-        let hasSubaccountAmp = subaccounts.filter({ $0.type == .amp }).isEmpty ?? false
-        let hasLiquid = subaccounts.filter({ $0.networkType.liquid }).isEmpty ?? false
+        let hasSubaccountAmp = subaccounts.filter({ $0.type == .amp }).isEmpty
+        let hasLiquid = subaccounts.filter({ $0.networkType.liquid }).isEmpty
         let assetIds = selectableAssets(subaccounts: subaccounts)
         let list = AssetAmountList.from(assetIds: assetIds ?? [])
         return AssetSelectViewModel(
@@ -77,5 +80,9 @@ class TabTransactVM: TabViewModel {
             assetId: assetId,
             accounts: subaccounts,
             hideBalance: hideBalance)
+    }
+
+    func hideBalance(_ value: Bool) async throws {
+        try await walletDataModel.hideBalance(value)
     }
 }

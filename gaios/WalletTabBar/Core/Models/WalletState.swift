@@ -22,4 +22,10 @@ struct WalletState: Sendable {
     var settings: [SettingSection] = []
     var security: [SecuritySection] = []
     var nestedTxs: [String: [String: [Transaction]]] = [:]
+
+    var hideBalance = UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue) {
+        didSet {
+            UserDefaults.standard.set(hideBalance, forKey: AppStorageConstants.hideBalance.rawValue)
+        }
+    }
 }

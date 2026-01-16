@@ -30,6 +30,9 @@ class ManageAssetViewModel {
             return state.subaccounts.filter { $0.networkType.liquid && $0.hasAsset(assetId) }
         }
     }
+    var hideBalance: Bool {
+        state.hideBalance
+    }
     var balances: [String: Int64]? {
         state.balances
     }
@@ -103,14 +106,6 @@ class ManageAssetViewModel {
             default:
                 break
             }
-        }
-    }
-    var hideBalance: Bool {
-        get {
-            return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: AppStorageConstants.hideBalance.rawValue)
         }
     }
     func renameSubaccount(name: String) async throws {

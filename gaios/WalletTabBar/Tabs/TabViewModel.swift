@@ -38,13 +38,4 @@ class TabViewModel {
     deinit {
         observationTask?.cancel()
     }
-
-    var hideBalance: Bool {
-        get {
-            return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: AppStorageConstants.hideBalance.rawValue)
-        }
-    }
 }
