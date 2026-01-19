@@ -84,7 +84,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
         UIApplication.shared.isIdleTimerDisabled = true
         progressView.isAnimating = true
     }
-    
+
     func applicationDidBecomeActive(_ notification: Notification) {
         progressView.isAnimating = true
     }

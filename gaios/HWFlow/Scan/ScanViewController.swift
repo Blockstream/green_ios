@@ -27,10 +27,20 @@ class ScanViewController: HWFlowBaseViewController {
         }
         setContent()
         setStyle()
+
+        if navigationController != nil {
+            addCustomBack()
+        }
     }
 
     deinit {
         print("Deinit")
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // disable interactive pop (swipe-to-go-back)
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -57,6 +67,8 @@ class ScanViewController: HWFlowBaseViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        // re-enable interactive pop (swipe-to-go-back)
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         stopScan()
         scanCancellable?.cancel()
         cancellables.forEach { $0.cancel() }
@@ -119,7 +131,26 @@ class ScanViewController: HWFlowBaseViewController {
         btnTroubleshoot.setStyle(.inline)
         btnConnectQr.setStyle(.inline)
     }
-
+    func addCustomBack() {
+        let backButton = UIButton(type: .system)
+        let titleColor = navigationController?.navigationBar.tintColor ?? UIColor.label
+        var config = UIButton.Configuration.plain()
+        config.title = "id_back".localized
+        config.baseForegroundColor = titleColor
+        config.image = UIImage(systemName: "chevron.backward")
+        config.imagePlacement = .leading
+        config.imagePadding = 6
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 12)
+        backButton.configuration = config
+        backButton.addTarget(self, action: #selector(backButtonPressed(_:)), for: .touchUpInside)
+        let size = backButton.bounds.size == .zero ? backButton.intrinsicContentSize : backButton.bounds.size
+        let width = max(64, size.width + 20)
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: width, height: 44))
+        backButton.frame = CGRect(x: 0, y: (container.bounds.height - size.height)/2, width: size.width, height: size.height)
+        backButton.autoresizingMask = [.flexibleRightMargin, .flexibleLeftMargin]
+        container.addSubview(backButton)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: container)
+    }
     func next() {
         AnalyticsManager.shared.hwwConnected(account: account)
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
@@ -148,6 +179,28 @@ class ScanViewController: HWFlowBaseViewController {
 
     @IBAction func btnTroubleshoot(_ sender: Any) {
         SafeNavigationManager.shared.navigate( ExternalUrls.jadeTroubleshoot )
+    }
+
+    @objc func backButtonPressed(_ sender: UIBarButtonItem) {
+        guard let nav = navigationController else { return }
+        nav.interactivePopGestureRecognizer?.isEnabled = true
+        let vcs = nav.viewControllers
+        guard let currentIndex = vcs.firstIndex(of: self) else {
+            nav.popViewController(animated: true)
+            return
+        }
+        let prevIndex = currentIndex - 1
+        if prevIndex >= 0, vcs[prevIndex] is JadeWaitViewController {
+            let targetIndex = currentIndex - 2
+            if targetIndex >= 0 {
+                let targetVC = vcs[targetIndex]
+                nav.popToViewController(targetVC, animated: true)
+            } else {
+                nav.popToRootViewController(animated: true)
+            }
+        } else {
+            nav.popViewController(animated: true)
+        }
     }
 }
 
