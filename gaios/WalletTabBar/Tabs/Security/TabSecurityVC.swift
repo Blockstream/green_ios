@@ -44,6 +44,10 @@ class TabSecurityVC: TabViewController {
         super.viewWillAppear(animated)
         tableView.reloadData()
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        viewModel.refresh(features: [.security])
+    }
     func setContent() {
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
