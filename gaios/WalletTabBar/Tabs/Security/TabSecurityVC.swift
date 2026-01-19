@@ -336,7 +336,13 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        viewModel.security[section].items.count > 0 ? sectionHeaderH : 0.1
+        let sectionModel = viewModel.security[section]
+        switch sectionModel.section {
+        case .jade, .unlock, .recovery:
+            return sectionModel.items.count > 0 ? sectionHeaderH : 0.1
+        default:
+            return 0.1
+        }
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
