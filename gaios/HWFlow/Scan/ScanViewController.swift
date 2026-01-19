@@ -181,7 +181,7 @@ class ScanViewController: HWFlowBaseViewController {
         SafeNavigationManager.shared.navigate( ExternalUrls.jadeTroubleshoot )
     }
 
-    @objc func backButtonPressed(_ sender: UIBarButtonItem) {
+    @objc func backButtonPressed(_ sender: Any?) {
         guard let nav = navigationController else { return }
         nav.interactivePopGestureRecognizer?.isEnabled = true
         let vcs = nav.viewControllers
@@ -190,7 +190,7 @@ class ScanViewController: HWFlowBaseViewController {
             return
         }
         let prevIndex = currentIndex - 1
-        if prevIndex >= 0, vcs[prevIndex] is JadeWaitViewController {
+        if prevIndex >= 0, (vcs[prevIndex] is JadeWaitViewController || vcs[prevIndex] is LedgerWaitViewController) {
             let targetIndex = currentIndex - 2
             if targetIndex >= 0 {
                 let targetVC = vcs[targetIndex]

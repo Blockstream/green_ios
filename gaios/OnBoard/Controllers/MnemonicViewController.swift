@@ -62,7 +62,10 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         let qrButton = UIButton(type: .system)
         qrButton.setImage(UIImage(named: "ic_any_asset"), for: .normal)
         qrButton.addTarget(self, action: #selector(qrButtonTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: helpButton), UIBarButtonItem(customView: qrButton)]
+        let pasteButton = UIButton(type: .system)
+        pasteButton.setImage(UIImage(named: "ic_paste"), for: .normal)
+        pasteButton.addTarget(self, action: #selector(btnPaste), for: .touchUpInside)
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: helpButton), UIBarButtonItem(customView: qrButton), UIBarButtonItem(customView: pasteButton)]
     }
 
     @objc func helpButtonTapped(_ sender: Any) {
@@ -83,7 +86,9 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             AnalyticsManager.shared.scanQr(account: nil, screen: .onBoardRecovery)
         }
     }
-
+    @objc func btnPaste(_ sender: Any) {
+        onPaste(UIPasteboard.general.string ?? "")
+    }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
