@@ -23,6 +23,7 @@ test_format:
   tags:
     - mini
   script:
+    - exit 1  # Intentional failure to test E2E independence
     - fastlane run swiftlint
 
 check_localization:
