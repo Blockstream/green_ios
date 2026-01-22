@@ -1,9 +1,9 @@
 stages:
-    - format
-    - build
-    - distribute_qa
-    - deploy
-    - e2e
+  - format
+  - build
+  - distribute_qa
+  - deploy
+  - e2e
 
 # Global Variables
 variables:
@@ -23,7 +23,6 @@ test_format:
   tags:
     - mini
   script:
-    - exit 1  # Intentional failure to test E2E independence
     - fastlane run swiftlint
 
 check_localization:
@@ -180,17 +179,16 @@ upload_apple_store:
     - fastlane upload_apple_store --verbose
   timeout: 2 hours
 
-
 # GCLOUD
 
 .cp_gcloud: &cp_gcloud
-    - echo gs://$URLPATH
-    - TMPF=$(mktemp) || exit 1
-    - echo $GCLOUD_PUSH_KEY > $TMPF
-    - export GOOGLE_APPLICATION_CREDENTIALS=$TMPF
-    - gcloud auth activate-service-account --key-file=$TMPF
-    - gsutil cp -r $CI_PROJECT_DIR/$FOLDER gs://$URLPATH
-    - echo "https://storage.googleapis.com/$URLPATH/index.html"
+  - echo gs://$URLPATH
+  - TMPF=$(mktemp) || exit 1
+  - echo $GCLOUD_PUSH_KEY > $TMPF
+  - export GOOGLE_APPLICATION_CREDENTIALS=$TMPF
+  - gcloud auth activate-service-account --key-file=$TMPF
+  - gsutil cp -r $CI_PROJECT_DIR/$FOLDER gs://$URLPATH
+  - echo "https://storage.googleapis.com/$URLPATH/index.html"
 
 cp_gcloud_development:
   image: blockstream/gcloud-docker-tf:1.1.7
