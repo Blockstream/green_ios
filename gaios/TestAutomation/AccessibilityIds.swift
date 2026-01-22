@@ -18,6 +18,8 @@ struct AccessibilityIds {
         static func cellWalletSelect(_ idx: Int) -> String {
             return "cell_wallet_select_index_\(idx)"
         }
+        static let ctaSwipeEditAction = "cta_swipe_edit_action"
+        static let ctaSwipeDeleteAction = "cta_swipe_delete_action"
     }
     struct GetStartedOnBoardScreen {
         static let view = "view_get_started_on_board"

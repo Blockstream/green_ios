@@ -34,3 +34,12 @@ extension UIImage {
         .withRenderingMode(.alwaysOriginal)
     }
 }
+extension UIImage {
+    static var swipeTagKey: UInt8 = 0
+    func setSwipeTag(_ tag: String) {
+        objc_setAssociatedObject(self, &UIImage.swipeTagKey, tag, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    }
+    func swipeTag() -> String? {
+        return objc_getAssociatedObject(self, &UIImage.swipeTagKey) as? String
+    }
+}

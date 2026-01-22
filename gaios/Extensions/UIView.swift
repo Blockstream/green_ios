@@ -214,3 +214,8 @@ public extension UIView {
         })
     }
 }
+public extension UIView {
+    func allSubviews() -> [UIView] {
+        return subviews + subviews.flatMap { $0.allSubviews() }
+    }
+}

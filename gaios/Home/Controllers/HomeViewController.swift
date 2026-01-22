@@ -1,6 +1,7 @@
 import UIKit
 import gdk
 import core
+import ObjectiveC
 
 enum HomeSection: Int, CaseIterable {
     case promo
@@ -218,24 +219,72 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         return true
     }
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let renameRowAction = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, completed) -> Void in
+        let renameTitle = "id_rename".localized
+        let deleteTitle = "id_delete".localized
+
+        let renameRowAction = UIContextualAction(style: .normal, title: renameTitle) { [weak self] (_, _, completed) -> Void in
             if let account = self?.getAccountFromTableView(indexPath) {
                 self?.walletRename(account.id)
             }
             completed(true)
         }
-        renameRowAction.image = UIImage(named: "ic_wallet_list_pencil")
+        let pencilImage = UIImage(named: "ic_wallet_list_pencil")?.withRenderingMode(.alwaysOriginal)
+        pencilImage?.setSwipeTag(AccessibilityIds.CommonElements.ctaSwipeEditAction)
+        renameRowAction.image = pencilImage
 
-        let deleteRowAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completed) -> Void in
+        let deleteRowAction = UIContextualAction(style: .destructive, title: deleteTitle) { [weak self] (_, _, completed) -> Void in
             if let account = self?.getAccountFromTableView(indexPath) {
                 self?.walletDelete(account.id)
             }
             completed(true)
         }
-        deleteRowAction.image = UIImage(named: "ic_wallet_list_bin")
+        let binImage = UIImage(named: "ic_wallet_list_bin")?.withRenderingMode(.alwaysOriginal)
+        binImage?.setSwipeTag(AccessibilityIds.CommonElements.ctaSwipeDeleteAction)
+        deleteRowAction.image = binImage
 
         let configuration = UISwipeActionsConfiguration(actions: [deleteRowAction, renameRowAction])
         configuration.performsFirstActionWithFullSwipe = false
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+            guard let self = self, let cell = tableView.cellForRow(at: indexPath) else { return }
+
+            let searchRoot: UIView = {
+                if let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first,
+                   let window = scene.windows.first(where: { $0.isKeyWindow }) {
+                    return window
+                }
+                return self.view
+            }()
+
+            // Candidate views are those overlapping the cell's vertical area and located to the right of the cell
+            let candidates = searchRoot.allSubviews().filter { cand in
+                let candFrameInTable = cand.convert(cand.bounds, to: tableView)
+                // overlapping vertically
+                let verticalOverlap = candFrameInTable.minY < cell.frame.maxY && candFrameInTable.maxY > cell.frame.minY
+                // positioned to the right of cell's content area (swipe actions appear beside the cell)
+                let toTheRight = candFrameInTable.minX >= cell.frame.maxX - 1
+                return verticalOverlap && toTheRight
+            }
+            var attached = 0
+            for view in candidates {
+                // try finding a tagged image view inside the candidate first
+                let imageViews = view.allSubviews().compactMap({ $0 as? UIImageView })
+                var foundTag: String?
+                for iv in imageViews {
+                    if let tag = iv.image?.swipeTag() {
+                        foundTag = tag
+                        break
+                    }
+                }
+                if let tag = foundTag {
+                    view.isAccessibilityElement = true
+                    view.accessibilityIdentifier = tag
+                    view.accessibilityLabel = tag
+                    print("Tagged: \(tag)")
+                    attached += 1
+                }
+            }
+        }
         return configuration
     }
     func numberOfSections(in tableView: UITableView) -> Int {
