@@ -256,6 +256,7 @@ cp_gcloud_production:
 
 e2e:nightly:build:
   extends: .e2e_build_template
+  needs: []
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
@@ -286,6 +287,7 @@ e2e:nightly:trigger:
 
 e2e:release:build:
   extends: .e2e_build_template
+  needs: []
   rules:
     - if: $CI_COMMIT_TAG =~ /^release_\d+\.\d+\.\d+/
 
