@@ -18,7 +18,9 @@ class ManageAssetViewModel {
     var onUpdate: ((RefreshFeature?) -> Void)?
     var observationTask: Task<Void, Never>?
     var notificationTask: Task<Void, Never>?
-
+    var isBTCAsset: Bool {
+        "BTC" == assetId.uppercased()
+    }
     var subaccounts: [WalletItem] {
         if assetId == AssetInfo.lightningId {
             return state.subaccounts.filter { $0.networkType.lightning }

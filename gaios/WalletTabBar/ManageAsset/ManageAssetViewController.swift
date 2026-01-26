@@ -283,7 +283,7 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
             }
         case .actions:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactActionsCell.identifier, for: indexPath) as? TransactActionsCell {
-                cell.configure(onBuy: self.buy, onSend: self.send, onReceive: self.receive)
+                cell.configure(onBuy: viewModel.isBTCAsset ? self.buy : nil, onSend: self.send, onReceive: self.receive)
                 cell.selectionStyle = .none
                 return cell
             }
