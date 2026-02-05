@@ -336,7 +336,7 @@ public class WalletManager {
                 let existDatadir = session.existDatadir(credentials: credentials, masterXpub: masterXpub)
                 loginUserResult = try await loginGdk(session: session, credentials: credentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
                 // discovery subaccounts
-                let subaccounts = try await subaccounts(!creation && (!existDatadir || fullRestore))
+                let subaccounts = try await session.subaccounts(!creation && (!existDatadir || fullRestore))
                 // hide default wrapped segwit subaccount if not used
                 if creation || !existDatadir || fullRestore {
                     let subaccount = subaccounts.filter({ $0.pointer == 0 && $0.type == .segwitWrapped && !$0.hidden && !($0.bip44Discovered ?? false) }).first
@@ -372,6 +372,11 @@ public class WalletManager {
         isWatchonly = false
         hwDevice = device
         let loginTask: ((_ session: SessionManager) async -> LoginUserResult?) = { [self] session in
+            // Avoid login on multisig by default on new wallet
+            if creation && session.networkType.multisig {
+                return nil
+            }
+            // Login for all other networks
             do {
                 return try await loginSession(
                     session: session,
