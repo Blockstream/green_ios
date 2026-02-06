@@ -17,7 +17,7 @@ variables:
     - export LANG=en_US.UTF-8
     - ruby --version && gem --version && fastlane --version
 
-test_format:
+check_format:
   stage: format
   extends: .setup_env
   tags:
