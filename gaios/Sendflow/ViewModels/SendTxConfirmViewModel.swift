@@ -160,10 +160,15 @@ class SendTxConfirmViewModel {
 
     func exportPsbt() async throws {
         guard let session = session,
-              let tx = transaction else {
+              var tx = transaction else {
             throw TransactionError.invalid(localizedDescription: "Invalid transaction")
         }
+
+        if isLiquid {
+            tx = try await session.blindTransaction(tx: tx)
+        }
         unsignedPsbt = try await session.getPsbt(tx: tx)
+
         let params = BcurEncodeParams(urType: "crypto-psbt", data: unsignedPsbt)
         guard let res = try await session.bcurEncode(params: params) else {
             throw TransactionError.invalid(localizedDescription: "Invalid bcur")
@@ -290,7 +295,8 @@ class SendTxConfirmViewModel {
     }
 
     func showSignTransactionViaQR() -> Bool {
-        wm?.isWatchonly ?? false && [.bitcoinSS, .testnetSS].contains(session?.networkType) && txType != .sweep && !importSignedPsbt
+        wm?.isWatchonly ?? false && [.bitcoinSS, .testnetSS, .liquidSS, .testnetLiquidSS]
+            .contains(session?.networkType) && txType != .sweep && !importSignedPsbt
     }
 
     func showSignTransaction() -> Bool {
