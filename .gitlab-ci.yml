@@ -1,13 +1,21 @@
 stages:
   - format
   - build
+  - test
+  - security
   - distribute_qa
   - deploy
   - e2e
 
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+
 # Global Variables
 variables:
   GCS_BUCKET: "green-ios-builds"
+  SAST_EXCLUDED_PATHS: "node_modules, .git"
+  GITLAB_ADVANCED_SAST_ENABLED: "true"
+  AST_ENABLE_MR_PIPELINES: "true"
 
 # FORMAT
 
@@ -110,6 +118,32 @@ production:
     - ./tools/fetch_gdk_binaries.sh $GDK_OPT
     - ruby --version && gem --version && fastlane --version
     - fastlane prod_release
+
+# SECURITY
+gitlab-advanced-sast:
+  stage: security
+  needs: []
+  before_script:
+    - rm -f gl-sast-report.json gitlab-advanced-sast.sarif || true
+  rules:
+    # 1. Disable MR event triggers explicitly
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    # 2. Force run on standard branch pushes
+    - if: $CI_COMMIT_BRANCH
+      when: on_success
+  allow_failure: true
+  after_script:
+    - test ! -f gl-sast-report.json || chmod 0644 gl-sast-report.json
+  artifacts:
+    expire_in: 30 days
+
+semgrep-sast:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      when: on_success
 
 # UPLOAD
 .distribute: &distribute
