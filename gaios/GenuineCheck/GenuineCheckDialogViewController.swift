@@ -84,7 +84,14 @@ class GenuineCheckDialogViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "id_new_jade_plus_connected".localized
+        switch viewModel.board {
+        case .v2:
+            lblTitle.text = "id_new_jade_plus_connected".localized
+        case .v2c:
+            lblTitle.text = "New Jade Core Connected".localized
+        default:
+            break
+        }
         lblHint.text = "id_a_new_device_has_been_detected".localized
         btnNext.setTitle("id_genuine_check".localized, for: .normal)
         lblInfo.text = "id_genuine_check_is_mandatory_for".localized

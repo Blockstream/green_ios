@@ -14,10 +14,12 @@ class GenuineCheckEndViewModel {
     let BleHwManager: BleHwManager
     var state: GenuineCheckEndState
     var error: Error? = nil
+    var board: JadeBoardType
 
-    init(BleHwManager: BleHwManager) {
+    init(BleHwManager: BleHwManager, board: JadeBoardType) {
         self.BleHwManager = BleHwManager
         self.state = .progress
+        self.board = board
     }
 
     var icon: UIImage {
@@ -53,7 +55,11 @@ class GenuineCheckEndViewModel {
         case .cancel:
             return "id_we_were_unable_to_complete_the".localized
         case .genuine:
-            return "id_your_jade_plus_has_been".localized
+            if board == .v2c {
+                return "Your Jade Core has been verified and was manufactured by Blockstream.".localized
+            } else {
+                return "id_your_jade_plus_has_been".localized
+            }
         case .notGenuine:
             return "id_this_device_was_not".localized
         case .progress:

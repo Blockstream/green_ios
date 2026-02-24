@@ -150,10 +150,14 @@ class TabSecurityVC: TabViewController {
 
     @MainActor
     func presentGenuineCheckEndViewController() {
+        guard let version = BleHwManager.shared.jade?.version else {
+            DropAlert().error(message: "Jade not connected")
+            return
+        }
         let storyboard = UIStoryboard(name: "GenuineCheckFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "GenuineCheckEndViewController") as? GenuineCheckEndViewController {
             vc.delegate = self
-            vc.model = GenuineCheckEndViewModel(BleHwManager: BleHwManager.shared)
+            vc.model = GenuineCheckEndViewModel(BleHwManager: BleHwManager.shared, board: version.boardType)
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: true)
         }

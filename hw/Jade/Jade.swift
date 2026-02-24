@@ -366,15 +366,15 @@ extension Jade {
         return await gdkRequestDelegate?.httpRequest(params: params)
     }
 
-    public func firmwarePath(_ verInfo: JadeVersionInfo) -> String? {
+    public func firmwarePath(_ verInfo: JadeVersionInfo) throws -> String {
         // Alas the first version of the jade fmw didn't have 'BoardType' - so we assume an early jade.
+        let fmwPath = try JadeFmwPath.from(verInfo.boardType)
         if verInfo.jadeFeatures.contains(Jade.FEATURE_SECURE_BOOT) {
             // Production Jade (Secure-Boot [and flash-encryption] enabled)
-
-            return "bin/\(JadeFmwPath.from(verInfo.boardType).rawValue)/"
+            return "bin/\(fmwPath.rawValue)/"
         } else {
             // Unsigned/development/testing Jade
-            return "bin/\(JadeFmwPath.from(verInfo.boardType).rawValue)dev/"
+            return "bin/\(fmwPath.rawValue)dev/"
         }
     }
 
@@ -384,9 +384,7 @@ extension Jade {
 
     public func firmwareData(_ verInfo: JadeVersionInfo) async throws -> Firmware {
         // Get relevant fmw path (or if hw not supported)
-        guard let fwPath = firmwarePath(verInfo) else {
-            throw HWError.Abort("Unsupported hardware")
-        }
+        let fwPath = try firmwarePath(verInfo)
         guard let res = await download("\(fwPath)index.json"),
               let body = res["body"] as? [String: Any],
               let json = try? JSONSerialization.data(withJSONObject: body, options: []),
@@ -406,9 +404,7 @@ extension Jade {
     }
 
     public func getBinary(_ verInfo: JadeVersionInfo, _ fmw: Firmware) async throws -> Data {
-        guard let fwPath = firmwarePath(verInfo) else {
-            throw HWError.Abort("Unsupported hardware")
-        }
+        let fwPath = try firmwarePath(verInfo)
         if let res = await download("\(fwPath)\(fmw.filename)", base64: true),
             let body = res["body"] as? String,
             let data = Data(base64Encoded: body) {

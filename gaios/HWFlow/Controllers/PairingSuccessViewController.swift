@@ -76,11 +76,10 @@ class PairingSuccessViewController: HWFlowBaseViewController {
                     try await bleHwManager.connect()
                 }
                 try await bleHwManager.ping()
-                
                 if bleHwManager.type == .Jade {
                     version = try await bleHwManager.jade?.version()
-                    if version?.boardType == .v2 {
-                        // Perform jade genuine check only for v2
+                    if version?.boardType == .v2 || version?.boardType == .v2c {
+                        // Perform jade genuine check only for v2 and v2 core
                         onGenuineCheck()
                     } else {
                         onJadeConnected(jadeHasPin: version?.jadeHasPin ?? true)
@@ -97,9 +96,11 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     
     @MainActor
     func onGenuineCheck() {
+        guard let version else { return }
         let storyboard = UIStoryboard(name: "GenuineCheckFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "GenuineCheckDialogViewController") as? GenuineCheckDialogViewController {
             vc.delegate = self
+            vc.viewModel = GenuineCheckDialogViewModel(BleHwManager: bleHwManager, board: version.boardType)
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -191,9 +192,10 @@ extension PairingSuccessViewController: GenuineCheckDialogViewControllerDelegate
 
     @MainActor
     func presentGenuineEndViewController() {
+        guard let version else { return }
         let storyboard = UIStoryboard(name: "GenuineCheckFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "GenuineCheckEndViewController") as? GenuineCheckEndViewController {
-            vc.model = GenuineCheckEndViewModel(BleHwManager: BleHwManager.shared)
+            vc.model = GenuineCheckEndViewModel(BleHwManager: BleHwManager.shared, board: version.boardType)
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)

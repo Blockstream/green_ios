@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Added subaccounts creation in settings
+- Extend support for HW
 
 ## [5.1.6] - 2025-12-22
 
