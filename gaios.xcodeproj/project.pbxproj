@@ -523,7 +523,6 @@
 		8114888B2B77F1B7004C7AB6 /* GoogleService-Dev-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8114888A2B77F1B7004C7AB6 /* GoogleService-Dev-Info.plist */; };
 		8114888E2B785A27004C7AB6 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 8114888D2B785A27004C7AB6 /* FirebaseMessaging */; };
 		811931F72EB9A08A00AD21D4 /* LwkSwapTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811931F62EB9A08A00AD21D4 /* LwkSwapTask.swift */; };
-		811931F92EBA58FD00AD21D4 /* LiquidWalletKit in Frameworks */ = {isa = PBXBuildFile; productRef = 811931F82EBA58FD00AD21D4 /* LiquidWalletKit */; };
 		81196E9D2B739F7900537A6E /* CBOR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81196E9C2B739F7900537A6E /* CBOR.swift */; };
 		811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */; };
 		811FB34A2DDEB634002FFFB7 /* LTExportJadeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811FB3492DDEB62A002FFFB7 /* LTExportJadeViewModel.swift */; };
@@ -700,7 +699,6 @@
 		81961B3D29E4F4A200E9B94D /* greenaddress.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 81961B2729E4F4A000E9B94D /* greenaddress.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		81961B4929E4F4F000E9B94D /* Wally.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF523E47E1E00569A5D /* Wally.swift */; };
 		819F1AEC2A0E6CAB00ECF999 /* PolicyCellType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819F1AEB2A0E6CAB00ECF999 /* PolicyCellType.swift */; };
-		819FDFC02EC1F38C00C8CE66 /* LiquidWalletKit in Frameworks */ = {isa = PBXBuildFile; productRef = 819FDFBF2EC1F38C00C8CE66 /* LiquidWalletKit */; };
 		819FDFC32EC2B5CF00C8CE66 /* BoltzDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 819FDFC12EC2B5CF00C8CE66 /* BoltzDataModel.xcdatamodeld */; };
 		819FDFC72EC2B91B00C8CE66 /* BoltzController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819FDFC62EC2B91B00C8CE66 /* BoltzController.swift */; };
 		819FDFC82EC3026200C8CE66 /* BoltzDataModel.xcdatamodeld in Resources */ = {isa = PBXBuildFile; fileRef = 819FDFC12EC2B5CF00C8CE66 /* BoltzDataModel.xcdatamodeld */; };
@@ -720,7 +718,6 @@
 		81A8F92329E515410052B214 /* LightningBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A8F92229E515410052B214 /* LightningBridge.swift */; };
 		81AC527B2D093D7E00299E91 /* GenuineCheckDialogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81AC527A2D093D7D00299E91 /* GenuineCheckDialogViewModel.swift */; };
 		81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81ACC4B0227337F3004B1E92 /* Wallet.storyboard */; };
-		81B0DC432E9478EC00CE6F5D /* LiquidWalletKit in Frameworks */ = {isa = PBXBuildFile; productRef = 81B0DC422E9478EC00CE6F5D /* LiquidWalletKit */; };
 		81B0DC452E94792400CE6F5D /* LwkSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B0DC442E94791D00CE6F5D /* LwkSessionManager.swift */; };
 		81B0DDBA2DA51B3500B036FB /* ConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B0DDB92DA51B3000B036FB /* ConnectViewModel.swift */; };
 		81B2350F2A6A8BCD00B8FF5D /* Countly in Frameworks */ = {isa = PBXBuildFile; productRef = 81B2350E2A6A8BCD00B8FF5D /* Countly */; };
@@ -1764,9 +1761,9 @@
 			files = (
 				8114888E2B785A27004C7AB6 /* FirebaseMessaging in Frameworks */,
 				81B2350F2A6A8BCD00B8FF5D /* Countly in Frameworks */,
+				81CB5A3C2F504BF300908553 /* LiquidWalletKit in Frameworks */,
 				34F0EC2B2D783E140017C276 /* DGCharts in Frameworks */,
 				81961B3C29E4F4A200E9B94D /* greenaddress.framework in Frameworks */,
-				819FDFC02EC1F38C00C8CE66 /* LiquidWalletKit in Frameworks */,
 				34A7F4FC2DE83CBE0003B9FE /* ScreenShield in Frameworks */,
 				81D6B3072EE8189400A637C4 /* AsyncAlgorithms in Frameworks */,
 				8173B8EC2AB19DB800C15C85 /* ZendeskSupportSDK in Frameworks */,
@@ -1798,7 +1795,7 @@
 			files = (
 				8177EDB32B6C74A900C2271C /* BreezSDK in Frameworks */,
 				81C2F1FF2B865ED8000845EA /* greenaddress.framework in Frameworks */,
-				811931F92EBA58FD00AD21D4 /* LiquidWalletKit in Frameworks */,
+				81CB5A402F504CCC00908553 /* LiquidWalletKit in Frameworks */,
 				8177EDA72B6C6DEE00C2271C /* core.framework in Frameworks */,
 				8177EDC82B6C760900C2271C /* gdk.framework in Frameworks */,
 			);
@@ -1812,7 +1809,7 @@
 				81BC54452BB1E085009F7631 /* lightning.framework in Frameworks */,
 				81BC54412BB1E083009F7631 /* greenaddress.framework in Frameworks */,
 				8177EDDB2B6C7B9C00C2271C /* Countly in Frameworks */,
-				81B0DC432E9478EC00CE6F5D /* LiquidWalletKit in Frameworks */,
+				81CB5A3E2F504C1700908553 /* LiquidWalletKit in Frameworks */,
 				81BC54432BB1E084009F7631 /* hw.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4372,8 +4369,8 @@
 				8114888D2B785A27004C7AB6 /* FirebaseMessaging */,
 				34F0EC2A2D783E140017C276 /* DGCharts */,
 				34A7F4FB2DE83CBE0003B9FE /* ScreenShield */,
-				819FDFBF2EC1F38C00C8CE66 /* LiquidWalletKit */,
 				81D6B3062EE8189400A637C4 /* AsyncAlgorithms */,
+				81CB5A3B2F504BF300908553 /* LiquidWalletKit */,
 			);
 			productName = gaios;
 			productReference = 676FCF1C1F9D0CF800354E93 /* gaios.app */;
@@ -4433,7 +4430,7 @@
 			name = NotificationService;
 			packageProductDependencies = (
 				8177EDB22B6C74A900C2271C /* BreezSDK */,
-				811931F82EBA58FD00AD21D4 /* LiquidWalletKit */,
+				81CB5A3F2F504CCC00908553 /* LiquidWalletKit */,
 			);
 			productName = NotificationService;
 			productReference = 8177ED5F2B6C59EE00C2271C /* NotificationService.appex */;
@@ -4459,7 +4456,7 @@
 			name = core;
 			packageProductDependencies = (
 				8177EDDA2B6C7B9C00C2271C /* Countly */,
-				81B0DC422E9478EC00CE6F5D /* LiquidWalletKit */,
+				81CB5A3D2F504C1700908553 /* LiquidWalletKit */,
 			);
 			productName = core;
 			productReference = 8177ED882B6C688C00C2271C /* core.framework */;
@@ -7258,20 +7255,20 @@
 				version = 3.1.10;
 			};
 		};
-		81B0DC412E9478EC00CE6F5D /* XCRemoteSwiftPackageReference "lwk-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/blockstream/lwk-swift";
-			requirement = {
-				kind = exactVersion;
-				version = 0.12.8;
-			};
-		};
 		81B2350D2A6A8BCD00B8FF5D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/angelix/countly-sdk-ios";
 			requirement = {
 				kind = revision;
 				revision = 1892410d13fceccd7cf91f803f06f110efc215b3;
+			};
+		};
+		81CB5A3A2F504BF300908553 /* XCRemoteSwiftPackageReference "lwk-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/blockstream/lwk-swift";
+			requirement = {
+				kind = exactVersion;
+				version = 0.15.0;
 			};
 		};
 		81D6B3052EE8189400A637C4 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
@@ -7299,11 +7296,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8114888C2B785A25004C7AB6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
-		};
-		811931F82EBA58FD00AD21D4 /* LiquidWalletKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81B0DC412E9478EC00CE6F5D /* XCRemoteSwiftPackageReference "lwk-swift" */;
-			productName = LiquidWalletKit;
 		};
 		81664BEC2A31219500A0131D /* BreezSDK */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -7345,20 +7337,25 @@
 			package = 81961A9529E4ABC100E9B94D /* XCRemoteSwiftPackageReference "SwiftCBOR" */;
 			productName = SwiftCBOR;
 		};
-		819FDFBF2EC1F38C00C8CE66 /* LiquidWalletKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81B0DC412E9478EC00CE6F5D /* XCRemoteSwiftPackageReference "lwk-swift" */;
-			productName = LiquidWalletKit;
-		};
-		81B0DC422E9478EC00CE6F5D /* LiquidWalletKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81B0DC412E9478EC00CE6F5D /* XCRemoteSwiftPackageReference "lwk-swift" */;
-			productName = LiquidWalletKit;
-		};
 		81B2350E2A6A8BCD00B8FF5D /* Countly */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 81B2350D2A6A8BCD00B8FF5D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */;
 			productName = Countly;
+		};
+		81CB5A3B2F504BF300908553 /* LiquidWalletKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81CB5A3A2F504BF300908553 /* XCRemoteSwiftPackageReference "lwk-swift" */;
+			productName = LiquidWalletKit;
+		};
+		81CB5A3D2F504C1700908553 /* LiquidWalletKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81CB5A3A2F504BF300908553 /* XCRemoteSwiftPackageReference "lwk-swift" */;
+			productName = LiquidWalletKit;
+		};
+		81CB5A3F2F504CCC00908553 /* LiquidWalletKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81CB5A3A2F504BF300908553 /* XCRemoteSwiftPackageReference "lwk-swift" */;
+			productName = LiquidWalletKit;
 		};
 		81D6B3062EE8189400A637C4 /* AsyncAlgorithms */ = {
 			isa = XCSwiftPackageProductDependency;
