@@ -27,10 +27,18 @@ platform :ios do
       export_team_id: "D9W37S9468",
       export_options: {
         provisioningProfiles: {
-          "io.blockstream.greendev" => "match AdHoc io.blockstream.greendev",
-          "io.blockstream.greendev.NotificationService" => "match AdHoc io.blockstream.greendev.NotificationService"
+          "io.blockstream.greendev" => "ed0e54ea-38db-4fe4-ac97-75e3341829d4",
+          "io.blockstream.greendev.NotificationService" => "eb72c335-06fe-436d-bfc7-beb27444af39"
         }
       }
+    )
+    resign(
+      ipa: "./dev/Green-dev.ipa",
+      signing_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)",
+      provisioning_profile: {
+        "io.blockstream.green" => "/opt/ios-certs/ed0e54ea-38db-4fe4-ac97-75e3341829d4.mobileprovision",
+        "io.blockstream.green.NotificationService" => "/opt/ios-certs/eb72c335-06fe-436d-bfc7-beb27444af39.mobileprovision"
+      } 
     )
   end
 
@@ -56,8 +64,8 @@ platform :ios do
       export_team_id: "D9W37S9468",
       export_options: {
         provisioningProfiles: {
-          "io.blockstream.green" => "match AppStore io.blockstream.green",
-          "io.blockstream.green.NotificationService" => "match AppStore io.blockstream.green.NotificationService"
+          "io.blockstream.green" => "0006f911-fc84-48d0-a43e-9d84d6475e42",
+          "io.blockstream.green.NotificationService" => "f933ea84-de3a-4a58-bb14-bec51ca38592"
         }
       }
     )
@@ -65,9 +73,9 @@ platform :ios do
       ipa: "./prod/Green.ipa",
       signing_identity: "Apple Distribution: Blockstream Corporation (D9W37S9468)",
       provisioning_profile: {
-        "io.blockstream.green" => "/opt/ios-certs/4d77aeda-c66b-4e3b-ae12-a63caf942b94.mobileprovision",
-        "io.blockstream.green.NotificationService" => "/opt/ios-certs/660c3b5b-778f-4d53-80ed-a48ca740ed34.mobileprovision"
-      }
+        "io.blockstream.green" => "/opt/ios-certs/0006f911-fc84-48d0-a43e-9d84d6475e42.mobileprovision",
+        "io.blockstream.green.NotificationService" => "/opt/ios-certs/f933ea84-de3a-4a58-bb14-bec51ca38592.mobileprovision"
+      } 
     )
   end
 
