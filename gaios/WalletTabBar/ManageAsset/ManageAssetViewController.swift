@@ -13,6 +13,7 @@ enum ManageAssetSection: Int, CaseIterable {
 class ManageAssetViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView?
+    private var activeSendCoordinator: SendCoordinator?
     let viewModel: ManageAssetViewModel
 
     init?(coder: NSCoder, viewModel: ManageAssetViewModel) {
@@ -123,6 +124,9 @@ class ManageAssetViewController: UIViewController {
     }
     func send() {
         sendScreen()
+    }
+    func swap() {
+        swapScreen()
     }
     func onTxTap(_ indexPath: IndexPath) {
         guard let tx = viewModel.txs?[indexPath.row] else { return }
@@ -241,6 +245,16 @@ class ManageAssetViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+    @MainActor
+    func pushJadeBoltzExportViewController() {
+        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+        let viewModel = JadeBoltzExportViewModel(wallet: viewModel.wallet, mainAccount: viewModel.mainAccount)
+        let vc = storyboard.instantiateViewController(identifier: "JadeBoltzExportViewController") { coder in
+            JadeBoltzExportViewController(coder: coder, viewModel: viewModel)
+        }
+        vc.delegate = self
+        navigationController?.pushViewController(vc, animated: false)
+    }
 }
 extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource {
 
@@ -283,7 +297,11 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
             }
         case .actions:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactActionsCell.identifier, for: indexPath) as? TransactActionsCell {
-                cell.configure(onBuy: viewModel.isBTCAsset ? self.buy : nil, onSend: self.send, onReceive: self.receive)
+                cell.configure(onBuy: viewModel.isBTCAsset ? self.buy : nil,
+                               onSend: self.send,
+                               onReceive: self.receive,
+                               onSwap: viewModel.mainAccount.isWatchonly ? nil : self.swap,
+                )
                 cell.selectionStyle = .none
                 return cell
             }
@@ -457,6 +475,26 @@ extension ManageAssetViewController {
 }
 
 extension ManageAssetViewController {
+    func swapScreen() {
+        AnalyticsManager.shared.swapEntry(account: AccountsRepository.shared.current)
+        if viewModel.mainAccount.isJade && !viewModel.existBoltzKey() {
+            let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+            let vc = storyboard.instantiateViewController(identifier: "DialogSwapJadeViewController") { coder in
+                DialogSwapJadeViewController(coder: coder)
+            }
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        } else {
+            if let nav = navigationController {
+                activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self] in
+                    nav.popToRootViewController(animated: true)
+                    self?.activeSendCoordinator = nil
+                }
+                activeSendCoordinator?.startSwap(subaccount: viewModel.selectedSubaccount, assetId: viewModel.assetId)
+            }
+        }
+    }
 
     func buyScreen() {
         AnalyticsManager.shared.buyInitiate(account: AccountsRepository.shared.current)
@@ -478,16 +516,12 @@ extension ManageAssetViewController {
         }
     }
     func sendScreen() {
-        let sendAddressInputViewModel = SendAddressInputViewModel(
-            input: nil,
-            preferredAccount: viewModel.selectedSubaccount,
-            txType: nil,
-            assetId: viewModel.assetId)
-
-        let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendAddressInputViewController") as? SendAddressInputViewController {
-            vc.viewModel = sendAddressInputViewModel
-            navigationController?.pushViewController(vc, animated: true)
+        if let nav = navigationController {
+            activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self] in
+                nav.popToRootViewController(animated: true)
+                self?.activeSendCoordinator = nil
+            }
+            activeSendCoordinator?.start(input: nil, subaccount: viewModel.selectedSubaccount, assetId: viewModel.assetId)
         }
     }
     func txScreen(_ tx: Transaction) {
@@ -508,11 +542,11 @@ extension ManageAssetViewController {
     }
     func accountsScreen(model: DialogAccountsViewModel) {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAccountsViewController") as? DialogAccountsViewController {
-            vc.viewModel = model
-            vc.modalPresentationStyle = .overFullScreen
-            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        let vc = storyboard.instantiateViewController(identifier: "DialogAccountsViewController") { coder in
+            DialogAccountsViewController(coder: coder, viewModel: model)
         }
+        vc.modalPresentationStyle = .overFullScreen
+        present(vc, animated: true)
     }
     func checkUKRegion() -> Bool {
         return Locale.current.regionCode == "GB"
@@ -580,4 +614,19 @@ extension ManageAssetViewController: AccountArchivedViewControllerDelegate {
 }
 extension ManageAssetViewController: DialogWatchOnlySetUpViewControllerDelegate {
     func watchOnlyDidUpdate(_ action: WatchOnlySetUpAction) {}
+}
+extension ManageAssetViewController: DialogSwapJadeViewControllerDelegate {
+    func didDismiss() {}
+    func didEnable() {
+        pushJadeBoltzExportViewController()
+    }
+    func didSelectNotNow() {}
+}
+extension ManageAssetViewController: JadeBoltzExportViewControllerDelegate {
+    func onExportSucceed() {
+        navigationController?.popToViewController(self, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) { [weak self] in
+            self?.swapScreen()
+        }
+    }
 }

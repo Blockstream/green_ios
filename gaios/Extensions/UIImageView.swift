@@ -4,20 +4,30 @@ import gdk
 
 extension UIImageView {
 
+    @MainActor
     func qrCode(text: String) {
         image = QRImageGenerator.imageForTextWhite(text: text, frame: self.frame)
     }
 
+    @MainActor
     func bcurQrCode(bcur: BcurEncodedData) {
-        Task {
+        Task.detached { [weak self] in
             var currentIndex = 0
-            while !isHidden {
+            while true {
+                let hidden = await MainActor.run { [weak self] in
+                    self?.isHidden ?? true
+                }
+                if hidden {
+                    return
+                }
                 if currentIndex >= bcur.parts.count {
                     currentIndex = 0
                 }
                 let part = bcur.parts[currentIndex]
-                await MainActor.run {
-                    image = QRImageGenerator.imageForTextWhite(text: part, frame: frame)
+                await MainActor.run { [weak self] in
+                    if let self {
+                        self.image = QRImageGenerator.imageForTextWhite(text: part, frame: self.frame)
+                    }
                 }
                 currentIndex += 1
                 try? await Task.sleep(nanoseconds: 1_000_000_000)

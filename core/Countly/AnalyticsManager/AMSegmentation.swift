@@ -27,13 +27,13 @@ public extension AnalyticsManager {
         var s = ntwSgmtUnified()
         if account?.isJade ?? false {
             s[AnalyticsManager.strBrand] = "Blockstream"
-            s[AnalyticsManager.strFirmware] = "" // BleHwManager.shared.jade?.version?.jadeVersion ?? ""
-            s[AnalyticsManager.strModel] = "" // BleHwManager.shared.jade?.version?.boardType ?? ""
+            s[AnalyticsManager.strFirmware] = hwData.fwVersion
+            s[AnalyticsManager.strModel] = hwData.model
             s[AnalyticsManager.strConnection] = AnalyticsManager.strBle
         }
         if account?.isLedger ?? false {
             s[AnalyticsManager.strBrand] = "Ledger"
-            s[AnalyticsManager.strFirmware] = "" // BleHwManager.shared.ledger?.version ?? ""
+            s[AnalyticsManager.strFirmware] = hwData.fwVersion
             s[AnalyticsManager.strModel] = "Ledger Nano X"
             s[AnalyticsManager.strConnection] = AnalyticsManager.strBle
         }
@@ -76,6 +76,13 @@ public extension AnalyticsManager {
         s[AnalyticsManager.strSelectedConfig] = firmware.config.lowercased()
         s[AnalyticsManager.strSelectedDelta] = firmware.isDelta == true ? "true" : "false"
         s[AnalyticsManager.strSelectedVersion] = firmware.version
+        return s
+    }
+
+    func swapSgmt(_ account: Account?, from: String, to: String) -> Sgmt {
+        var s = sessSgmt(account)
+        s[AnalyticsManager.strSwapFrom] = from
+        s[AnalyticsManager.strSwapTo] = to
         return s
     }
 

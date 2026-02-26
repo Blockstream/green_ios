@@ -30,6 +30,7 @@ extension String {
         numberFormatter.roundingMode = .down
         numberFormatter.maximumFractionDigits = digits
         numberFormatter.minimumFractionDigits = digits
+        numberFormatter.usesGroupingSeparator = false
         numberFormatter.locale = Locale(identifier: "en_EN")
         if let number = numberFormatter.number(from: self) {
             numberFormatter.locale = Locale.current
@@ -45,6 +46,7 @@ extension String {
         numberFormatter.roundingMode = .down
         numberFormatter.maximumFractionDigits = digits
         numberFormatter.minimumFractionDigits = digits
+        numberFormatter.usesGroupingSeparator = false
         numberFormatter.locale = Locale.current
         if let number = numberFormatter.number(from: self) {
             numberFormatter.groupingSeparator = ""

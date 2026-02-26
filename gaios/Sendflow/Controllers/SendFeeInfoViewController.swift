@@ -12,7 +12,7 @@ enum SendFeeInfoAction {
 
 enum SendFeeScope {
     case info
-    case lwkSwap(swap: String, chain: String, total: String, fiat: String)
+    case lwkSwap(networkFee: String, providerFee: String, total: String, fiat: String)
 }
 
 class SendFeeInfoViewController: UIViewController {
@@ -97,16 +97,16 @@ class SendFeeInfoViewController: UIViewController {
             lblTitle.text = "id_network_fee".localized
             lblHint.text = "id_fees_are_not_collected_by".localized
             lwkPanel.isHidden = true
-        case .lwkSwap(let swap, let chain, let total, let fiat):
-            lblTitle.text = "Total Fees".localized
-            lblHint.text = "Fees are not collected by Blockstream, but by Bitcoin miners, Liquid functionaries, and Lightning nodes that process your transaction.".localized
+        case .lwkSwap(let networkFee, let providerFee, let total, let fiat):
+            lblTitle.text = "Total".localized
+            lblHint.isHidden = true
             lwkPanel.isHidden = false
-            lblSwapFeeTitle.text = "Network fee and Swap fee".localized
-            lblSwapFeeValue.text = swap
-            lblSwapFeeHint.text = "Includes service and Lightning routing.".localized
-            lblChainFeeTitle.text = "Liquid on-chain".localized
-            lblChainFeeValue.text = chain
-            lblChainFeeHint.text = "Miner fee to send LBTC on Liquid.".localized
+            lblSwapFeeTitle.text = "Network Fee".localized
+            lblSwapFeeValue.text = networkFee
+            lblSwapFeeHint.text = "Paid for transaction confirmation".localized
+            lblChainFeeTitle.text = "Swap Fee".localized
+            lblChainFeeValue.text = providerFee
+            lblChainFeeHint.text = "Covers swap service".localized
             lblTotalTitle.text = "Total".localized
             lblTotalValue1.text = total
             lblTotalValue2.text = fiat
@@ -118,12 +118,12 @@ class SendFeeInfoViewController: UIViewController {
     func setStyle() {
         cardView.setStyle(.bottomsheet)
         handle.cornerRadius = 1.5
+        lblHint.setStyle(.txtCard)
         [lblSwapFeeTitle, lblChainFeeTitle].forEach { $0?.setStyle(.txt) }
         [lblSwapFeeHint, lblChainFeeHint, lblSwapFeeValue, lblChainFeeValue].forEach { $0?.setStyle(.txtCard) }
         lblTotalTitle.setStyle(.txtBigger)
         lblTotalValue1.setStyle(.txtBigger)
         lblTotalValue2.setStyle(.txtCard)
-        lblHint.setStyle(.txtCard)
     }
 
     func dismiss(_ action: SendFeeInfoAction) {

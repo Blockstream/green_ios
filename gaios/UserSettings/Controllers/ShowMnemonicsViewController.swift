@@ -18,7 +18,7 @@ class ShowMnemonicsViewController: UIViewController {
     private var isHW: Bool { AccountsRepository.shared.current?.isHW ?? false }
     private var items: [String] = []
     private var bip39Passphrase: String?
-
+    private let videoCaptureDump = VideoCaptureDump()
     override func viewDidLoad() {
         super.viewDidLoad()
         setContent()
@@ -37,12 +37,19 @@ class ShowMnemonicsViewController: UIViewController {
         }
         addObserverUserDidTakeScreenshot()
     }
-
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        videoCaptureDump.install(on: self)
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        videoCaptureDump.uninstall()
+    }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // Protect ScreenShot
         ScreenShield.shared.protect(view: self.collectionView)
-        ScreenShield.shared.protectFromScreenRecording()
+        // ScreenShield.shared.protectFromScreenRecording()
     }
     public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)

@@ -9,14 +9,26 @@ public actor BoltzController {
     private let context: NSManagedObjectContext
 
     public init() {
+        // Locate the Shared App Group Container
         guard let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(Self.appGroupIdentifier)") else {
-            // Failure here means the App Group is not configured correctly in Xcode.
             fatalError("Could not retrieve shared application group container URL. Check App Group configuration.")
         }
         let storeURL = groupURL.appendingPathComponent("\(self.modelName).sqlite")
+        // Ensure the directory exists and has the right permissions
+        let folderURL = storeURL.deletingLastPathComponent()
+        try? FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: true, attributes: [
+            .protectionKey: FileProtectionType.completeUntilFirstUserAuthentication
+        ])
+        // Set persistent store
         let storeDescription = NSPersistentStoreDescription(url: storeURL)
         storeDescription.shouldMigrateStoreAutomatically = true
         storeDescription.shouldInferMappingModelAutomatically = true
+        // Enable Persistent History Tracking
+        storeDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+        // Set File Protection
+        storeDescription.setOption(FileProtectionType.completeUntilFirstUserAuthentication as NSObject,
+                                       forKey: NSPersistentStoreFileProtectionKey)
+        // Create container
         container = NSPersistentContainer(name: self.modelName)
         container.persistentStoreDescriptions = [storeDescription]
         container.loadPersistentStores { (storeDescription, error) in
@@ -28,11 +40,13 @@ public actor BoltzController {
             logger.info("Successfully loaded persistent store: \(storeDescription.url?.lastPathComponent ?? "Unknown")")
         }
         self.context = container.newBackgroundContext()
+        // Handle Conflicts
+        self.context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         self.context.automaticallyMergesChangesFromParent = true
     }
 
     /// Creates and saves a new 'BoltzSwaps' object.
-    public func create(id: String, data: String, isPending: Bool, xpubHashId: String, invoice: String?) async throws -> BoltzSwap {
+    public func create(id: String, data: String, isPending: Bool, xpubHashId: String?, invoice: String?, swapType: SwapType) async throws -> BoltzSwap {
         let savedItem: BoltzSwap = try await context.perform {
             let item = BoltzSwap(context: self.context)
             item.id = id
@@ -40,6 +54,7 @@ public actor BoltzController {
             item.isPending = isPending
             item.invoice = invoice
             item.xpubHashId = xpubHashId
+            item.swapType = swapType.rawValue
             try self.context.save()
             return item
         }
@@ -83,11 +98,11 @@ public actor BoltzController {
         return item
     }
 
-    public func upsert(id: String, data: String, isPending: Bool, xpubHashId: String, invoice: String?) async throws {
+    public func upsert(id: String, data: String, isPending: Bool, xpubHashId: String, invoice: String? = nil, swapType: SwapType) async throws {
         if let swapID = try? await BoltzController.shared.fetchID(byId: id) {
             try? await update(with: swapID, newData: data)
         } else {
-            _ = try? await create(id: id, data: data, isPending: true, xpubHashId: xpubHashId, invoice: data)
+            _ = try? await create(id: id, data: data, isPending: true, xpubHashId: xpubHashId, invoice: data, swapType: swapType)
         }
     }
 
@@ -108,29 +123,24 @@ public actor BoltzController {
                 try self.context.existingObject(with: id) as? BoltzSwap
             }
         }
-        /*let savedItems: [BoltzSwap] = try await context.perform {
-            let fetchRequest: NSFetchRequest<BoltzSwap> = NSFetchRequest<BoltzSwap>(entityName: "BoltzSwap")
-            fetchRequest.predicate = NSPredicate(format: "self IN %@", ids)
-            fetchRequest.resultType = .managedObjectResultType
-            let items = try self.context.fetch(fetchRequest)
-            return items
-        }
-        return savedItems*/
     }
 
     /// Updates the 'data' attribute of an existing 'BoltzSwap' by its ID.
-    public func update(with id: NSManagedObjectID, newData: String? = nil, newIsPending: Bool? = nil) async throws {
+    public func update(with id: NSManagedObjectID, newData: String? = nil, newIsPending: Bool? = nil, newTxHash: String? = nil) async throws {
         try await context.perform {
             let object = self.context.object(with: id)
             guard let boltzSwap = object as? BoltzSwap else {
                 // It's good practice to check if the object exists and is the correct type.
                 throw NSError(domain: "BoltzControllerError", code: 404, userInfo: [NSLocalizedDescriptionKey: "Item not found or wrong type for given ID"])
             }
-            if let newData = newData {
+            if let newData {
                 boltzSwap.data = newData
             }
-            if let newIsPending = newIsPending {
+            if let newIsPending {
                 boltzSwap.isPending = newIsPending
+            }
+            if let newTxHash {
+                boltzSwap.txHash = newTxHash
             }
             if self.context.hasChanges {
                 try self.context.save()

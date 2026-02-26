@@ -36,6 +36,7 @@ class ReceiveViewModel {
     var backupCardCellModel = [AlertCardCellModel]()
     var allowChange = true
     var reverseSwapInfo: BoltzReverseSwapInfoLBTC?
+    var walletDataModel: WalletDataModel? = nil
 
     static func getLightningSubaccounts() -> [WalletItem] {
         if let subaccount = WalletManager.current?.lightningSubaccount {
@@ -64,6 +65,10 @@ class ReceiveViewModel {
         }
         self.type = self.anyOrAsset.assetId == AssetInfo.lightningId ? .bolt11 : .address
         self.inputDenomination = wm.prominentSession?.settings?.denomination ?? .Sats
+        if let mainAccount = AccountsRepository.shared.current,
+                let wm = WalletManager.current {
+            walletDataModel = WalletDataModel(wallet: wm, mainAccount: mainAccount)
+        }
     }
 
     func accountType() -> String {

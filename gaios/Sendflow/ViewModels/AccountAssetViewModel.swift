@@ -38,11 +38,11 @@ class AccountAssetViewModel {
                     if let assetId = createTx?.assetId, createTx?.bip21 ?? false && assetId != id {
                     } else if !showAssets && !isBaseAsset {
                     } else if satoshi > 0 || !funded {
-                        models.append(AccountAssetCellModel(account: subaccount,
-                                                            asset: asset!,
-                                                            balance: assetBalance,
-                                                            showBalance: showBalance)
-                                      )
+                        //models.append(AccountAssetCellModel(account: subaccount,
+                        //                                    asset: asset!,
+                        //                                    balance: assetBalance,
+                        //                                    showBalance: showBalance)
+                        //              )
                     }
                 }
             }

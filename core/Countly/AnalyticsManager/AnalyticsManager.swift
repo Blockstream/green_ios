@@ -68,7 +68,7 @@ public class AnalyticsManager {
             giveConsent()
         }
     }
-
+    public var hwData: (fwVersion: String?, model: String?) = (nil,nil)
     public var analyticsUUID: String {
         get {
             if let uuid = UserDefaults.standard.string(forKey: AppStorageConstants.analyticsUUID.rawValue) {
@@ -82,7 +82,8 @@ public class AnalyticsManager {
             }
         }
     }
-
+    
+    private var conf: URLSessionConfiguration?
     public let authorizedGroup = [CLYConsent.sessions,
                            CLYConsent.events,
                            CLYConsent.crashReporting,
@@ -249,12 +250,23 @@ public class AnalyticsManager {
         }
     }
 
+    func isEqual(confA: URLSessionConfiguration?, confB: URLSessionConfiguration?) -> Bool {
+        guard let left = confA?.connectionProxyDictionary,
+              let right = confB?.connectionProxyDictionary else {
+            return confA?.connectionProxyDictionary == nil && confB?.connectionProxyDictionary == nil
+        }
+        guard left.count == right.count else { return false }
+        return (left as NSDictionary).isEqual(to: right)
+    }
+
     public func setupSession(session: GDKSession?) {
         logger.info("AnalyticsManager setup session")
         let host = getHost()
         let conf = getSessionConfiguration(session: session)
-        Countly.sharedInstance().setNewHost(host)
-        Countly.sharedInstance().setNewURLSessionConfiguration(conf)
+        if !isEqual(confA: conf, confB: self.conf) {
+            Countly.sharedInstance().setNewHost(host)
+            Countly.sharedInstance().setNewURLSessionConfiguration(conf)
+        }
         /*URLSession(configuration: conf).dataTask(with: URL(string: host+"/i")!) {
                 data, response, error in
                 print (data)

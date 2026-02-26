@@ -1,0 +1,171 @@
+import Foundation
+import UIKit
+
+class SendHWViewController: UIViewController {
+
+    @IBOutlet weak var tappableBg: UIView!
+    @IBOutlet weak var handle: UIView!
+    @IBOutlet weak var anchorBottom: NSLayoutConstraint!
+    @IBOutlet weak var cardView: UIView!
+    @IBOutlet weak var scrollView: UIScrollView!
+
+    @IBOutlet weak var lblTitle: UILabel!
+    @IBOutlet weak var icWallet: UIImageView!
+
+    @IBOutlet weak var addressCard: UIView!
+    @IBOutlet weak var lblAddressTitle: UILabel!
+    @IBOutlet weak var addressTextView: UITextView!
+
+    @IBOutlet weak var lblSumFeeKey: UILabel!
+    @IBOutlet weak var lblSumFeeValue: UILabel!
+    @IBOutlet weak var lblSumAmountKey: UILabel!
+    @IBOutlet weak var lblSumAmountValue: UILabel!
+    @IBOutlet weak var lblSumTotalKey: UILabel!
+    @IBOutlet weak var lblSumTotalValue: UILabel!
+    @IBOutlet weak var lblConversion: UILabel!
+    @IBOutlet weak var recipientReceiveView: UIView!
+    @IBOutlet weak var multiAddrView: UIView!
+    @IBOutlet weak var lblMultiAddr: UILabel!
+
+    @IBOutlet weak var lblSwapInfoTitle: UILabel!
+    @IBOutlet weak var lblSwapInfoHint: UILabel!
+
+    let viewModel: SendHWViewModel
+
+    init?(coder: NSCoder, viewModel: SendHWViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+
+    lazy var blurredView: UIView = {
+        let containerView = UIView()
+        let blurEffect = UIBlurEffect(style: .dark)
+        let customBlurEffectView = CustomVisualEffectView(effect: blurEffect, intensity: 0.4)
+        customBlurEffectView.frame = self.view.bounds
+
+        let dimmedView = UIView()
+        dimmedView.backgroundColor = .black.withAlphaComponent(0.3)
+        dimmedView.frame = self.view.bounds
+        containerView.addSubview(customBlurEffectView)
+        containerView.addSubview(dimmedView)
+        return containerView
+    }()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        setContent()
+        setStyle()
+
+        view.addSubview(blurredView)
+        view.sendSubviewToBack(blurredView)
+
+        view.alpha = 0.0
+        anchorBottom.constant = -cardView.frame.size.height
+
+        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
+            swipeDown.direction = .down
+            self.view.addGestureRecognizer(swipeDown)
+        let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTapToClose))
+            tappableBg.addGestureRecognizer(tapToClose)
+        icWallet.image = viewModel.deviceImage
+
+        if viewModel.assetId != viewModel.session?.gdkNetwork.getFeeAsset() {
+            [lblConversion].forEach {
+                $0?.isHidden = true
+            }
+        }
+        handle.isHidden = true
+    }
+
+    deinit {
+        print("deinit")
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        anchorBottom.constant = 0
+        UIView.animate(withDuration: 0.3) {
+            self.view.alpha = 1.0
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+
+    }
+
+    @objc func didTapToClose(gesture: UIGestureRecognizer) {
+    }
+
+    func setContent() {
+        lblTitle.text = "id_confirm_transaction_details_on".localized
+        lblAddressTitle.text = viewModel.isSwap ? "Swap Address".localized : "id_address".localized
+        lblSumFeeKey.text = "id_network_fee".localized
+        lblSumFeeValue.text = viewModel.feeText
+        lblSumAmountKey.text = "id_amount".localized
+        lblSumAmountValue.text = viewModel.amountText
+        lblSumTotalKey.text = "id_total_spent".localized
+        lblSumTotalValue.text = viewModel.totalText
+        lblConversion.text = "≈ \(viewModel.totalFiatText ?? "")"
+        multiAddrView.isHidden = true
+        AddressDisplay.configure(address: viewModel.address ?? "",
+                                 textView: addressTextView)
+
+        if viewModel.isMultiAddressees {
+            lblAddressTitle.text = "id_your_redeposit_address".localized
+            recipientReceiveView.isHidden = true
+            lblSumTotalValue.text = viewModel.feeText
+            addressCard.isHidden = true
+            multiAddrView.isHidden = false
+            lblMultiAddr.text = "id_multiple_assets".localized
+        }
+        lblSwapInfoTitle.text = "This is not the recipient address.".localized
+        lblSwapInfoHint.text = "This is a temporary swap address. Funds will be sent to the destination address once the swap completes.".localized
+    }
+
+    func setStyle() {
+        cardView.setStyle(.bottomsheet)
+        handle.cornerRadius = 1.5
+        addressCard.cornerRadius = 4.0
+        [lblAddressTitle].forEach {
+            $0?.setStyle(.sectionTitle)
+        }
+        [lblSumFeeKey, lblSumFeeValue, lblSumAmountKey, lblSumAmountValue, lblConversion].forEach {
+            $0?.setStyle(.txtCard)
+        }
+        [lblSumTotalKey, lblSumTotalValue].forEach {
+            $0?.setStyle(.txtBigger)
+        }
+        lblSwapInfoTitle.setStyle(.txt)
+        lblSwapInfoHint.setStyle(.txtCard)
+        [lblSwapInfoTitle, lblSwapInfoHint].forEach {
+            $0?.isHidden = !viewModel.isSwap
+        }
+    }
+
+    func dismiss() {
+        anchorBottom.constant = -cardView.frame.size.height
+        UIView.animate(withDuration: 0.3, animations: {
+            self.view.alpha = 0.0
+            self.view.layoutIfNeeded()
+        }, completion: { _ in
+            self.dismiss(animated: false, completion: nil)
+        })
+    }
+
+    @objc func didSwipe(gesture: UIGestureRecognizer) {
+        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
+            switch swipeGesture.direction {
+            case .down:
+                dismiss()
+            default:
+                break
+            }
+        }
+    }
+}

@@ -80,17 +80,20 @@ class WalletTabBarModel {
             _ = lightningSession.lightBridge?.updateLspInformation()
         }
     }
-    func completePendingSwap(_ swap: BoltzSwap, accountName: String) async {
+    func completePendingSwap(_ swap: BoltzSwap, accountName: String) async throws {
         logger.info("completePendingSwap \(swap.id ?? "", privacy: .public): \(swap.data?[0..<64] ?? "")")
+        guard let lwkSession = wallet.lwkSession else {
+            throw GaError.GenericError("Invalid lwk session")
+        }
         switch swap.type {
         case .some(BoltzSwapTypes.Submarine):
-            if let pay = try? await wallet.lwkSession?.restorePreparePay(data: swap.data ?? "") {
-                let state = try? await wallet.lwkSession?.handlePay(pay: pay)
+            if let pay = try await lwkSession.restorePreparePay(data: swap.data ?? "") {
+                let state = try await lwkSession.handlePay(pay: pay)
             }
         case .some(BoltzSwapTypes.ReverseSubmarine):
-            if let invoice = try? await wallet.lwkSession?.restoreInvoice(data: swap.data ?? "") {
-                let state = try? await wallet.lwkSession?.handleInvoice(invoice: invoice)
-                logger.info("WalletModel \(swap.id ?? "", privacy: .public) \(state?.localized ?? "", privacy: .public)")
+            if let invoice = try await lwkSession.restoreInvoice(data: swap.data ?? "") {
+                let state = try await lwkSession.handleInvoice(invoice: invoice)
+                logger.info("WalletModel \(swap.id ?? "", privacy: .public) \(state.localized, privacy: .public)")
                 switch state {
                 case .success:
                     await DropAlert().success(message: "id_payment_received".localized)
@@ -100,13 +103,17 @@ class WalletTabBarModel {
             }
         case .none:
             break
+        case .some(.Chain):
+            if let lockup = try? await lwkSession.restoreLockup(data: swap.data ?? "") {
+                let state = try? await lwkSession.handleChainLockup(lockup: lockup)
+            }
         }
     }
     func completePendingSwaps() async {
         let pendingSwapsIds = try? await BoltzController.shared.fetchIDs(byIsPending: true, byXpubHashId: mainAccount.xpubHashId)
         let pendingSwaps = try? await BoltzController.shared.gets(with: pendingSwapsIds ?? [])
         let swapTask: ((_ swap: BoltzSwap) async -> Void?) = { [self] swap in
-            await self.completePendingSwap(swap, accountName: mainAccount.name)
+            try? await self.completePendingSwap(swap, accountName: mainAccount.name)
         }
         await withTaskGroup(of: Void.self) { group in
             for swap in pendingSwaps ?? [] {

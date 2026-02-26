@@ -38,7 +38,7 @@ class MagnifyQRViewController: UIViewController {
     var isMnemonic = false
     var showClose = false
     weak var delegate: MagnifyQRViewControllerDelegate?
-
+    private let videoCaptureDump = VideoCaptureDump()
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -84,14 +84,28 @@ class MagnifyQRViewController: UIViewController {
         }
         // Protect ScreenShot
         ScreenShield.shared.protect(view: self.qr)
-        ScreenShield.shared.protectFromScreenRecording()
+        // ScreenShield.shared.protectFromScreenRecording()
     }
 
     public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         removeObserverUserDidTakeScreenshot()
     }
-
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let bcur = qrBcur {
+            qr.bcurQrCode(bcur: bcur)
+        } else if let text = qrTxt {
+            qr.qrCode(text: text)
+        } else {
+            qr.image = UIImage()
+        }
+        videoCaptureDump.install(on: self)
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        videoCaptureDump.uninstall()
+    }
     func setContent() {
         btnClose.setTitle("id_close".localized, for: .normal)
         if isMnemonic {
@@ -122,17 +136,6 @@ class MagnifyQRViewController: UIViewController {
         [lblMnemonicHint, warnHint1, warnHint2].forEach {
             $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
             $0?.textColor = .black.withAlphaComponent(0.6)
-        }
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        if let bcur = qrBcur {
-            qr.bcurQrCode(bcur: bcur)
-        } else if let text = qrTxt {
-            qr.qrCode(text: text)
-        } else {
-            qr.image = UIImage()
         }
     }
 

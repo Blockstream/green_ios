@@ -421,13 +421,18 @@ class BuyBTCViewController: KeyboardViewController {
         }
     }
     @IBAction func btnAccount(_ sender: Any) {
+        let model = viewModel.dialogAccountsModel
+        accountsScreen(model: model)
+    }
+    @MainActor
+    func accountsScreen(model: DialogAccountsViewModel) {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAccountsViewController") as? DialogAccountsViewController {
-            vc.viewModel = viewModel.dialogAccountsModel
-            vc.delegate = self
-            vc.modalPresentationStyle = .overFullScreen
-            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        let vc = storyboard.instantiateViewController(identifier: "DialogAccountsViewController") { coder in
+            DialogAccountsViewController(coder: coder, viewModel: model)
         }
+        vc.delegate = self
+        vc.modalPresentationStyle = .overFullScreen
+        present(vc, animated: true)
     }
     @IBAction func btnNext(_ sender: Any) {
         if quotes.count != 0 {

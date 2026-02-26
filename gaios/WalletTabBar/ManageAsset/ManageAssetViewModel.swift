@@ -32,6 +32,12 @@ class ManageAssetViewModel {
             return state.subaccounts.filter { $0.networkType.liquid /* && $0.hasAsset(assetId) */ }
         }
     }
+    func getBoltzKey() throws -> Credentials {
+        try AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: mainAccount.keychain)
+    }
+    func existBoltzKey() -> Bool {
+        (try? getBoltzKey()) != nil
+    }
     var hideBalance: Bool {
         state.hideBalance
     }

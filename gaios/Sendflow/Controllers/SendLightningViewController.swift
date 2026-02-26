@@ -140,7 +140,7 @@ class SendLightningViewController: UIViewController {
     @MainActor
     func presentSendSuccessViewController(_ result: SendTransactionSuccess) {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendSuccessViewController") as? SendSuccessViewController {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendTxSuccessViewController") as? SendTxSuccessViewController {
             vc.amount = viewModel.totalText
             vc.sendTransactionSuccess = result
             vc.delegate = self
@@ -202,8 +202,8 @@ class SendLightningViewController: UIViewController {
 
     @IBAction func btnInfoFee(_ sender: Any) {
         let scope = SendFeeScope.lwkSwap(
-            swap: viewModel.swapFee?.toText() ?? "",
-            chain: viewModel.txFee?.toText() ?? "",
+            networkFee: viewModel.swapFee?.toText() ?? "",
+            providerFee: viewModel.txFee?.toText() ?? "",
             total: viewModel.totalFee?.toText() ?? "",
             fiat: viewModel.totalFeeFiatText ?? "")
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
@@ -230,7 +230,7 @@ extension SendLightningViewController: SquareSliderViewDelegate {
     }
 
 }
-extension SendLightningViewController: SendSuccessViewControllerDelegate {
+extension SendLightningViewController: SendTxSuccessViewControllerDelegate {
     func onDone() {
         StoreReviewHelper
             .shared

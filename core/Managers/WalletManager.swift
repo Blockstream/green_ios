@@ -174,7 +174,9 @@ public class WalletManager {
 
     public func loginWatchonly(
         credentials: Credentials,
-        lightningCredentials: Credentials? = nil
+        lightningCredentials: Credentials? = nil,
+        boltzCredentials: Credentials? = nil,
+        parentWalletId: WalletIdentifier? = nil
     ) async throws -> LoginUserResult? {
         var loginUserResult: LoginUserResult?
         // login singlesig bitcoin
@@ -196,6 +198,10 @@ public class WalletManager {
             let session = getSession(for: prominentNetwork)
             try? await session?.connect()
             loginUserResult = try await session?.loginUser(credentials)
+        }
+        // login boltz
+        if let boltzCredentials, let lwkSession {
+            loginUserResult = try await loginLWK(lwk: lwkSession, credentials: boltzCredentials, parentWalletId: parentWalletId)
         }
         if activeSessions.isEmpty {
             throw HWError.Disconnected("id_you_are_not_connected")
@@ -335,6 +341,9 @@ public class WalletManager {
                 // Connect and login Gdk
                 let existDatadir = session.existDatadir(credentials: credentials, masterXpub: masterXpub)
                 loginUserResult = try await loginGdk(session: session, credentials: credentials, device: device, masterXpub: masterXpub, fullRestore: fullRestore)
+                guard let loginUserResult else {
+                    return nil
+                }
                 // discovery subaccounts
                 let subaccounts = try await session.subaccounts(!creation && (!existDatadir || fullRestore))
                 // hide default wrapped segwit subaccount if not used

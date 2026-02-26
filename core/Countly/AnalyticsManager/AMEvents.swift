@@ -62,6 +62,15 @@ public enum AnalyticsEventName: String {
     case setupSww = "setup_sww"
     case swwCreated = "sww_created"
     case backupManual = "backup_manual"
+
+    case swapToggle = "swap_toggle"
+    case swapReceive = "swap_receive"
+    case swapSend = "swap_send"
+    case swapInternal = "swap_internal"
+    case swapEntry = "swap_entry"
+    case swapInitiate = "swap_initiate"
+    case swapSetup = "swap_setup"
+    case swapEnable = "swap_enable"
 }
 
 extension AnalyticsManager {
@@ -298,21 +307,16 @@ extension AnalyticsManager {
 
     public func hwwConnected(account: Account?) {
         let s = sessSgmt(account)
-
-        // s[AnalyticsManager.strFirmware] = BleHwManager.shared.jade?.version?.jadeVersion ?? ""
-        // s[AnalyticsManager.strModel] = BleHwManager.shared.jade?.version?.boardType ?? ""
         recordEvent(.connectedHWW, sgmt: s)
     }
 
     public func hwwConnected(account: Account?, fwVersion: String?, model: String?) {
         var s = sessSgmt(account)
-
+        hwData = (fwVersion, model)
         s.removeValue(forKey: "\(AnalyticsManager.strFirmware)")
         s.removeValue(forKey: "\(AnalyticsManager.strModel)")
-        if let fwVersion = fwVersion, let model = model {
-            s[AnalyticsManager.strFirmware] = fwVersion
-            s[AnalyticsManager.strModel] = model
-        }
+        s[AnalyticsManager.strFirmware] = hwData.fwVersion
+        s[AnalyticsManager.strModel] = hwData.model
         recordEvent(.connectedHWW, sgmt: s)
     }
 
@@ -417,11 +421,11 @@ extension AnalyticsManager {
     }
 
     public func buyInitiate(account: Account?) {
-        var s = sessSgmt(account)
+        let s = sessSgmt(account)
         recordEvent(.buyInitiate, sgmt: s)
     }
     public func buyRedirect(account: Account?) {
-        var s = sessSgmt(account)
+        let s = sessSgmt(account)
         recordEvent(.buyRedirect, sgmt: s)
     }
     public func getStarted() {
@@ -431,12 +435,44 @@ extension AnalyticsManager {
         recordEvent(.setupSww)
     }
     public func swwCreated(account: Account?) {
-        var s = sessSgmt(account)
+        let s = sessSgmt(account)
         recordEvent(.swwCreated, sgmt: s)
     }
     public func backupManual(account: Account?) {
-        var s = sessSgmt(account)
+        let s = sessSgmt(account)
         recordEvent(.backupManual, sgmt: s)
+    }
+    public func swapToggle(account: Account?, from: String, to: String) {
+        let s = swapSgmt(account, from: from, to: to)
+        recordEvent(.swapToggle, sgmt: s)
+    }
+    public func swapReceive(account: Account?, from: String, to: String) {
+        let s = swapSgmt(account, from: from, to: to)
+        recordEvent(.swapReceive, sgmt: s)
+    }
+    public func swapSend(account: Account?, from: String, to: String) {
+        let s = swapSgmt(account, from: from, to: to)
+        recordEvent(.swapSend, sgmt: s)
+    }
+    public func swapInternal(account: Account?, from: String, to: String) {
+        let s = swapSgmt(account, from: from, to: to)
+        recordEvent(.swapInternal, sgmt: s)
+    }
+    public func swapEntry(account: Account?) {
+        let s = sessSgmt(account)
+        recordEvent(.swapEntry, sgmt: s)
+    }
+    public func swapInitiate(account: Account?, from: String, to: String) {
+        let s = swapSgmt(account, from: from, to: to)
+        recordEvent(.swapInitiate, sgmt: s)
+    }
+    public func swapSetup(account: Account?) {
+        let s = sessSgmt(account)
+        recordEvent(.swapSetup, sgmt: s)
+    }
+    public func swapEnable(account: Account?) {
+        let s = sessSgmt(account)
+        recordEvent(.swapEnable, sgmt: s)
     }
 }
 

@@ -272,7 +272,9 @@ class TxDetailsViewController: UIViewController {
                 startAnimating()
                 var createTx = try await createTx(session: session)
                 let tx = try await self.createTransaction(createTx: createTx, session: session)
-                createTx.addressee = tx.addressees.first
+                if let addressee = tx.addressees.first {
+                    createTx.addressee = addressee
+                }
                 stopAnimating()
                 presentSendAmountViewController(createTx: createTx, tx: tx)
             } catch {

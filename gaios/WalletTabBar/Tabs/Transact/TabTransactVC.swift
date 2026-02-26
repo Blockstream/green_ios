@@ -8,7 +8,8 @@ class TabTransactVC: TabViewController {
 
     var anyOrAsset: AnyOrAsset?
 
-    let viewModel: TabTransactVM
+    private let viewModel: TabTransactVM
+    private var activeSendCoordinator: SendCoordinator?
 
     init?(coder: NSCoder, viewModel: TabTransactVM) {
         self.viewModel = viewModel
@@ -82,26 +83,56 @@ class TabTransactVC: TabViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    func pushDialogAccountsViewController(assetId: String, subaccounts: [WalletItem]) {
+    func accountsScreen(assetId: String, subaccounts: [WalletItem]) {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAccountsViewController") as? DialogAccountsViewController {
-            vc.viewModel = viewModel.dialogAccountsViewModel(assetId: assetId, subaccounts: subaccounts, hideBalance: viewModel.hideBalance)
-            vc.delegate = self
-            vc.modalPresentationStyle = .overFullScreen
-            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        let model = viewModel.dialogAccountsViewModel(assetId: assetId, subaccounts: subaccounts, hideBalance: viewModel.hideBalance)
+        let vc = storyboard.instantiateViewController(identifier: "DialogAccountsViewController") { coder in
+            DialogAccountsViewController(coder: coder, viewModel: model)
         }
+        vc.delegate = self
+        vc.modalPresentationStyle = .overFullScreen
+        present(vc, animated: false, completion: nil)
     }
 
     func receive() {
         pushAssetSelectViewController()
     }
     func buy() {
-        Task {
-            await buyScreen(currency: viewModel.defaultCurrency ?? "USD", hideBalance: viewModel.hideBalance)
+        buyScreen(currency: viewModel.defaultCurrency ?? "USD", hideBalance: viewModel.hideBalance)
+    }
+
+    func swapScreen() {
+        AnalyticsManager.shared.swapEntry(account: AccountsRepository.shared.current)
+        if viewModel.mainAccount.isJade && !viewModel.existBoltzKey() {
+            let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+            let vc = storyboard.instantiateViewController(identifier: "DialogSwapJadeViewController") { coder in
+                DialogSwapJadeViewController(coder: coder)
+            }
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        } else {
+            if let nav = navigationController {
+                activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self] in
+                    nav.popToRootViewController(animated: true)
+                    self?.activeSendCoordinator = nil
+                }
+                activeSendCoordinator?.startSwap(subaccount: nil, assetId: nil)
+            }
         }
     }
+    @MainActor
+    func pushJadeBoltzExportViewController() {
+        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+        let viewModel = JadeBoltzExportViewModel(wallet: viewModel.wallet, mainAccount: viewModel.mainAccount)
+        let vc = storyboard.instantiateViewController(identifier: "JadeBoltzExportViewController") { coder in
+            JadeBoltzExportViewController(coder: coder, viewModel: viewModel)
+        }
+        vc.delegate = self
+        navigationController?.pushViewController(vc, animated: false)
+    }
     func send() {
-        sendScreen(input: nil)
+        sendScreen(walletDataModel: viewModel.walletDataModel, input: nil)
     }
     func onTxTap(_ indexPath: IndexPath) {
         guard let tx = viewModel.txs?[indexPath.row] else { return }
@@ -153,13 +184,11 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
         switch TabTransactSection(rawValue: indexPath.section) {
         case .actions:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactActionsCell.identifier, for: indexPath) as? TransactActionsCell {
-                cell.configure(onBuy: { [weak self] in
-                    self?.buy()
-                }, onSend: {[weak self] in
-                    self?.send()
-                }, onReceive: {[weak self] in
-                    self?.receive()
-                })
+                cell.configure(
+                    onBuy: self.buy,
+                    onSend: self.send,
+                    onReceive: self.receive,
+                    onSwap: viewModel.mainAccount.isWatchonly ? nil : self.swapScreen)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -389,7 +418,7 @@ extension TabTransactVC: AssetSelectViewControllerDelegate {
             } else if accounts.count == 1 {
                 didSelectAccount(accounts.first)
             } else {
-                pushDialogAccountsViewController(assetId: AssetInfo.lbtcId, subaccounts: accounts)
+                accountsScreen(assetId: AssetInfo.lbtcId, subaccounts: accounts)
             }
         case .anyAmp:
             let accounts = getAccounts(ref)
@@ -398,7 +427,7 @@ extension TabTransactVC: AssetSelectViewControllerDelegate {
             } else if accounts.count == 1 {
                 didSelectAccount(accounts.first)
             } else {
-                pushDialogAccountsViewController(assetId: AssetInfo.lbtcId, subaccounts: accounts)
+                accountsScreen(assetId: AssetInfo.lbtcId, subaccounts: accounts)
             }
         case .asset(let assetId):
             let accounts = getAccounts(ref)
@@ -407,7 +436,7 @@ extension TabTransactVC: AssetSelectViewControllerDelegate {
             } else if accounts.count == 1 {
                 didSelectAccount(accounts.first)
             } else {
-                pushDialogAccountsViewController(assetId: assetId, subaccounts: accounts)
+                accountsScreen(assetId: assetId, subaccounts: accounts)
             }
         }
     }
@@ -427,5 +456,20 @@ extension TabTransactVC: DialogAccountsViewControllerDelegate {
 extension TabTransactVC: TxDetailsViewControllerDelegate {
     func onMemoEdit() {
         viewModel.refresh(features: [.txs(reset: true)])
+    }
+}
+extension TabTransactVC: DialogSwapJadeViewControllerDelegate {
+    func didDismiss() {}
+    func didEnable() {
+        pushJadeBoltzExportViewController()
+    }
+    func didSelectNotNow() {}
+}
+extension TabTransactVC: JadeBoltzExportViewControllerDelegate {
+    func onExportSucceed() {
+        navigationController?.popToRootViewController(animated: true)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) { [weak self] in
+            self?.swapScreen()
+        }
     }
 }

@@ -7,12 +7,14 @@ class AccountAssetCellModel: Comparable {
 
     var account: WalletItem
     var asset: AssetInfo
-    var balance: [String: Int64]
+    var assetIcon: UIImage?
+    var balance: Int64
     var showBalance: Bool
 
-    init(account: WalletItem, asset: AssetInfo, balance: [String: Int64], showBalance: Bool) {
+    init(account: WalletItem, asset: AssetInfo, assetIcon: UIImage?,  balance: Int64, showBalance: Bool) {
         self.account = account
         self.asset = asset
+        self.assetIcon = assetIcon
         self.balance = balance
         self.showBalance = showBalance
     }
@@ -40,6 +42,6 @@ class AccountAssetCellModel: Comparable {
         if lhs.account != rhs.account {
             return lhs.account < rhs.account
         }
-        return lhs.balance[lhs.asset.assetId] ?? 0 < rhs.balance[rhs.asset.assetId] ?? 0
+        return lhs.balance < rhs.balance
     }
 }

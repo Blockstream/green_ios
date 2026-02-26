@@ -149,7 +149,7 @@ public class AuthenticationTypeHandler {
                 UserDefaults.standard.removeObject(forKey: "AuthKeyBiometricPrivateKey\(network)")
                 logger.info("Migration BiometricPrivateKey successfull")
             } catch {
-                logger.error("Migration BiometricPrivateKey failed: \(error.description(), privacy: .public)")
+                logger.error("Migration BiometricPrivateKey failed: \(error.localizedDescription, privacy: .public)")
             }
             return privateKey
         }

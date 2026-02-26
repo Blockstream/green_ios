@@ -54,7 +54,7 @@ class LTExportJadeViewController: UIViewController {
     }
 
     func load() async {
-        if let bcurParts = await viewModel.request() {
+        if let bcurParts = try? await viewModel.request() {
             await MainActor.run {
                 bcur = bcurParts
                 qrCodeImageView.bcurQrCode(bcur: bcurParts)

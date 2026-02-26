@@ -72,6 +72,12 @@ extension UIColor {
     class func gRedWarn() -> UIColor {
         return UIColor(named: "gRedWarn")!
     }
+    class func gRedSwapErr1() -> UIColor {
+        return UIColor(named: "gRedSwapErr1")!
+    }
+    class func gRedSwapErr2() -> UIColor {
+        return UIColor(named: "gRedSwapErr2")!
+    }
     class func gGreenTx() -> UIColor {
         return UIColor(named: "gGreenTx")!
     }

@@ -447,8 +447,8 @@ class SendAmountViewController: KeyboardViewController {
 
         payRequestStack.isHidden = true
         if viewModel.createTx.isLightning {
-            if let minAmount = viewModel.createTx.addressee?.minAmount,
-               let maxAmount = viewModel.createTx.addressee?.maxAmount {
+            if let minAmount = viewModel.createTx.addressee.minAmount,
+               let maxAmount = viewModel.createTx.addressee.maxAmount {
                 payRequestStack.isHidden = false
                 lblMinMax.text = "\(minAmount) - \(maxAmount) sats"
             }

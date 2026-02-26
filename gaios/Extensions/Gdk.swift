@@ -2,11 +2,6 @@ import core
 import gdk
 
 extension TransactionPriority {
-    
-    public static func from(_ string: String) -> TransactionPriority {
-        let priority = TransactionPriority.strings.filter { $0.value.localized == string }.first
-        return priority?.key ?? .Medium
-    }
 
     public func time(isLiquid: Bool) -> String {
         let blocksPerHour = isLiquid ? 60 : 6

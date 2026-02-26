@@ -104,9 +104,13 @@ class OnboardViewModel {
         account.xpubHashId = res?.xpubHashId
         account.walletHashId = res?.walletHashId
         // restore previous swaps
-        if let liquidSubaccount = wallet.liquidSubaccounts.first, let xpubHashId = res?.xpubHashId {
-            if let liquidAddress = try await liquidSubaccount.session?.getReceiveAddress(subaccount: liquidSubaccount.pointer).address {
-                try await wallet.lwkSession?.restoreSwaps(address: liquidAddress, xpubHashId: xpubHashId)
+        if let xpubHashId = res?.xpubHashId {
+            let liquidSubaccount = wallet.liquidSubaccounts.first
+            let bitcoinSubaccount = wallet.bitcoinSubaccounts.first
+            let liquidAddress = try await liquidSubaccount?.session?.getReceiveAddress(subaccount: liquidSubaccount?.pointer ?? 0)
+            let bitcoinAddress = try await bitcoinSubaccount?.session?.getReceiveAddress(subaccount: bitcoinSubaccount?.pointer ?? 0)
+            if let liquidAddress = liquidAddress?.address, let bitcoinAddress = bitcoinAddress?.address {
+                try await wallet.lwkSession?.restoreSwaps(bitcoinAddress: bitcoinAddress, liquidAddress: liquidAddress, xpubHashId: xpubHashId)
             }
         }
         // cleanup previous restored account

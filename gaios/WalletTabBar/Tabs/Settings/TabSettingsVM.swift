@@ -102,9 +102,14 @@ class TabSettingsVM: TabViewModel {
                 title: SettingsItem.createAccount.string,
                 subtitle: "",
                 type: .createAccount)
+        case .swaps:
+            return gaios.TabSettingsCellModel(
+                title: SettingsItem.swaps.string,
+                subtitle: "",
+                type: .swaps)
         }
     }
-    
+
     func getDenominationExchangeInfo(settings: Settings, network: NetworkSecurityCase) -> NSMutableAttributedString {
         let den = settings.denomination.string(for: network.gdkNetwork)
         let pricing = settings.pricing["currency"] ?? ""

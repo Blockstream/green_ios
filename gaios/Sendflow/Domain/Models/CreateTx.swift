@@ -6,7 +6,7 @@ import BreezSDK
 import lightning
 
 struct CreateTx {
-    var addressee: Addressee?
+    var addressee = Addressee.from(address: "", satoshi: nil, assetId: nil, isGreedy: false, bip21: false, txType: .transaction)
     var feeRate: UInt64?
     var subaccount: WalletItem?
     var error: String?
@@ -16,24 +16,24 @@ struct CreateTx {
     var bolt11: String?
     var lightningType: InputType?
     var assetId: String? {
-        get { addressee?.assetId }
-        set { addressee?.assetId = newValue }
+        get { addressee.assetId }
+        set { addressee.assetId = newValue }
     }
     var address: String? {
-        get { addressee?.address }
-        set { if let value = newValue { addressee?.address = value } }
+        get { addressee.address }
+        set { if let value = newValue { addressee.address = value } }
     }
     var bip21: Bool {
-        get { addressee?.bip21 ?? false}
-        set { addressee?.bip21 = newValue }
+        get { addressee.bip21 ?? false}
+        set { addressee.bip21 = newValue }
     }
     var satoshi: Int64? {
-        get { if let satoshi = addressee?.satoshi { return abs(satoshi) }; return nil }
-        set { addressee?.satoshi = newValue }
+        get { if let satoshi = addressee.satoshi { return abs(satoshi) }; return nil }
+        set { addressee.satoshi = newValue }
     }
     var sendAll: Bool {
-        get { addressee?.isGreedy ?? false }
-        set { addressee?.isGreedy = newValue }
+        get { addressee.isGreedy ?? false }
+        set { addressee.isGreedy = newValue }
     }
     var isLightning: Bool { lightningType != nil || address?.starts(with: "lnbc") == true }
     var isLiquid: Bool { !isLightning && (assetId != nil && assetId != "btc") }

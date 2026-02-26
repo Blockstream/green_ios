@@ -44,38 +44,32 @@ public extension AnalyticsManager {
     static let strUserPropertyBitcoinWallets = "bitcoin_wallets"
     static let strUserPropertyBitcoinSinglesigWallets = "bitcoin_singlesig_wallets"
     static let strUserPropertyBitcoinMultisigWallets = "bitcoin_multisig_wallets"
-
     static let strUserPropertyLiquidWallets = "liquid_wallets"
     static let strUserPropertyLiquidSinglesigWallets = "liquid_singlesig_wallets"
     static let strUserPropertyLiquidMultisigWallets = "liquid_multisig_wallets"
-
     static let strTor = "tor"
     static let strProxy = "proxy"
     static let strTestnet = "testnet"
     static let strElectrumServer = "electrum_server"
     static let strSpv = "spv"
-
     static let strBle = "BLE"
-
     static let strShare = "share"
     static let strCopy = "copy"
-
     static let strSinglesig = "singlesig"
     static let strMultisig = "multisig"
-
     static let strAnalyticsGroup = "analytics"
     static let strCountlyGroup = "countly"
-
     static let strType = "type"
     static let strMedia = "media"
     static let strScreen = "screen"
-
     static let strSelectedConfig = "selected_config"
     static let strSelectedDelta = "selected_delta"
     static let strSelectedVersion = "selected_version"
-
     static let strPromoId = "promo_id"
     static let strPromoScreen = "screen"
+
+    static let strSwapFrom = "from"
+    static let strSwapTo = "to"
 
     enum OnBoardFlow: String {
         case strCreate = "create"

@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "ic_swap_liquid.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

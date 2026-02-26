@@ -581,15 +581,15 @@ public class SessionManager {
         return res["result"] as? BcurDecodedData
     }
 
-    public func jadeBip8539Request() async -> (Data?, BcurEncodedData?) {
+    public func jadeBip8539Request(index: UInt32) async throws -> (Data?, BcurEncodedData?) {
         let privateKey = createEcKey()
         let params = BcurEncodeParams(
             urType: "jade-bip8539-request",
             numWords: 12,
-            index: 0,
+            index: index,
             privateKey: privateKey?.hex
         )
-        let data = try? await bcurEncode(params: params)
+        let data = try await bcurEncode(params: params)
         return (privateKey, data)
     }
 
@@ -662,7 +662,7 @@ extension SessionManager {
                 let data = notification?[event.rawValue] as? [String: Any] else {
             return
         }
-        logger.info("newNotification \(notification.debugDescription.prefix(100))")
+        logger.info("newNotification \(notification?.stringify()?.prefix(100) ?? "", privacy: .public)")
         switch event {
         case .Block:
             guard let height = data["block_height"] as? UInt32 else { break }

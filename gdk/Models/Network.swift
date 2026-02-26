@@ -55,7 +55,7 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
     }
 
     public var multisig: Bool {
-        !electrum && !lightning
+        "green" == serverType
     }
 
     public var chain: String {
@@ -86,13 +86,16 @@ public struct GdkNetworks {
     public static var testnetLiquidSS = getGdkNetwork(NetworkSecurityCase.testnetLiquidSS.network)
     public static var testnetLiquidMS = getGdkNetwork(NetworkSecurityCase.testnetLiquidMS.network)
 
-    public static var lwkMainnet = GdkNetwork(name: NetworkSecurityCase.lwkMainnet.name(),
-                                           network: NetworkSecurityCase.liquidSS.network,
-                                           liquid: true,
-                                           mainnet: false,
-                                           development: false,
-                                     txExplorerUrl: GdkNetworks.liquidSS.txExplorerUrl,
-                                     policyAsset: GdkNetworks.liquidSS.getFeeAsset())
+    public static var lwkMainnet = GdkNetwork(
+        name: NetworkSecurityCase.lwkMainnet.name(),
+        network: NetworkSecurityCase.liquidSS.network,
+        liquid: true,
+        mainnet: false,
+        development: false,
+        txExplorerUrl: GdkNetworks.liquidSS.txExplorerUrl,
+        policyAsset: GdkNetworks.liquidSS.getFeeAsset(),
+        serverType: "electrum"
+    )
     public static var lightning = GdkNetwork(name: NetworkSecurityCase.lightning.name(),
                                            network: NetworkSecurityCase.lightning.network,
                                            liquid: false,

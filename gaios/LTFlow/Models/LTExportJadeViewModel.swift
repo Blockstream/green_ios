@@ -8,9 +8,9 @@ class LTExportJadeViewModel {
     private var mainAccount: Account? { AccountsRepository.shared.current }
     private var privateKey: Data?
 
-    func request() async -> BcurEncodedData? {
+    func request() async throws -> BcurEncodedData? {
         guard let session = wm?.prominentSession else { return nil }
-        let (privateKey, bcurParts) = await session.jadeBip8539Request()
+        let (privateKey, bcurParts) = try await session.jadeBip8539Request(index: 0)
         self.privateKey = privateKey
         return bcurParts
     }

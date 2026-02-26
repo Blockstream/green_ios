@@ -102,7 +102,7 @@ public class LightningSessionManager: SessionManager {
             try await connectToGreenlight(credentials: params, checkCredentials: true)
             isRestoredNode = true
         } catch {
-            logger.info("lightning loginUser failed \(error.description())")
+            logger.info("lightning loginUser failed \(error.localizedDescription)")
             throw error
         }
         if let greenlightCredentials = lightBridge?.appGreenlightCredentials {
@@ -163,7 +163,7 @@ public class LightningSessionManager: SessionManager {
         let invoiceOrLnUrl = addressee?.address
         let satoshi = tx.anyAmouts ? UInt64(addressee?.satoshi ?? 0) : nil
         let comment = tx.memo ?? ""
-        switch LightningBridge.parseBoltOrLNUrl(input: invoiceOrLnUrl) {
+        switch try LightningBridge.parseBoltOrLNUrl(input: invoiceOrLnUrl) {
         case .bolt11(let invoice):
             // Check for expiration
             print ("Expire in \(invoice.expiry)")
@@ -175,7 +175,7 @@ public class LightningSessionManager: SessionManager {
                     return SendTransactionSuccess.create(from: res.payment)
                 }
             } catch {
-                let msg = error.description() ?? "id_operation_failure"
+                let msg = error.localizedDescription ?? "id_operation_failure"
                 throw TransactionError.failure(localizedDescription: msg, paymentHash: invoice.paymentHash)
             }
         case .lnUrlPay(let data, let bip353Address):
@@ -224,7 +224,7 @@ public class LightningSessionManager: SessionManager {
     public override func createTransaction(tx: Transaction) async throws -> Transaction {
         let address = tx.addressees.first?.address ?? ""
         let userInputSatoshi = tx.addressees.first?.satoshi ?? 0
-        switch LightningBridge.parseBoltOrLNUrl(input: address) {
+        switch try LightningBridge.parseBoltOrLNUrl(input: address) {
         case .bolt11(let invoice):
             // Check for expiration
             print ("Expire in \(invoice.expiry)")
@@ -270,7 +270,7 @@ public class LightningSessionManager: SessionManager {
     }
 
     public override func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?, network: NetworkSecurityCase?) async throws -> ValidateAddresseesResult {
-        guard let inputType = LightningBridge.parseBoltOrLNUrl(input: input) else {
+        guard let inputType = try LightningBridge.parseBoltOrLNUrl(input: input) else {
             throw GaError.GenericError()
         }
         switch inputType {

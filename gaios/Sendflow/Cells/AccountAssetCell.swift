@@ -50,7 +50,7 @@ class AccountAssetCell: UITableViewCell {
         imgMS.isHidden = !model.account.gdkNetwork.multisig
         imgLigh.isHidden = !model.account.gdkNetwork.lightning
 
-        let satoshi = model.balance.first?.value ?? 0
+        let satoshi = model.balance
         [lblAmount, lblFiat].forEach { $0.isHidden = true }
         if let balance = Balance.fromSatoshi(satoshi, assetId: model.asset.assetId)?.toValue() {
             lblAmount.text = "\(balance.0) \(balance.1)"
@@ -79,7 +79,7 @@ class AccountAssetCell: UITableViewCell {
         case .none:
             break
         case .satoshi(let sats):
-            let satoshi = self.model?.balance.first?.value ?? 0
+            let satoshi = self.model?.balance ?? 0
             if satoshi < sats {
                 return
             }

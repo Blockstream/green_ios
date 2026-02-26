@@ -168,7 +168,7 @@ class SendAmountViewModel {
         let assetId = createTx.assetId ?? feeAsset ?? "btc"
         var amount = transaction?.amounts[assetId]
         if createTx.txType == .redepositExpiredUtxos {
-            amount = createTx.addressee?.satoshi ?? 0
+            amount = createTx.addressee.satoshi ?? 0
         }
         guard let amount = amount else { return nil }
         return Balance.fromSatoshi(abs(amount), assetId: assetId)
@@ -178,7 +178,7 @@ class SendAmountViewModel {
         let feeAsset = session?.gdkNetwork.getFeeAsset()
         var satoshi = totalWithoutFee?.satoshi ?? 0
         if createTx.txType == .redepositExpiredUtxos {
-            satoshi = createTx.addressee?.satoshi ?? 0
+            satoshi = createTx.addressee.satoshi ?? 0
         }
         if feeAsset == assetId {
             satoshi += Int64(transaction?.fee ?? 0)
@@ -286,12 +286,10 @@ class SendAmountViewModel {
             } else if !createTx.sendAll && (createTx.satoshi == nil || createTx.satoshi == 0) {
                 return tx
             }
-            if var addressee = createTx.addressee {
-                if let networkType = session?.networkType, networkType.bitcoin || networkType.testnet {
-                    addressee.assetId = nil
-                }
-                tx.addressees = [addressee]
+            if let networkType = session?.networkType, networkType.bitcoin || networkType.testnet {
+                createTx.addressee.assetId = nil
             }
+            tx.addressees = [createTx.addressee]
         case .sweep:
             tx.sessionSubaccount = subaccount?.pointer ?? 0
             tx.privateKey = createTx.privateKey
@@ -317,14 +315,10 @@ class SendAmountViewModel {
             tx.sessionSubaccount = subaccount?.pointer ?? 0
             tx.previousTransaction = createTx.previousTransaction
         case .bolt11:
-            if let addressee = createTx.addressee {
-                tx.addressees = [addressee]
-            }
+            tx.addressees = [createTx.addressee]
             tx.anyAmouts = createTx.anyAmounts ?? false
         case .lnurl:
-            if let addressee = createTx.addressee {
-                tx.addressees = [addressee]
-            }
+            tx.addressees = [createTx.addressee]
             tx.anyAmouts = createTx.anyAmounts ?? false
         case .redepositExpiredUtxos:
             let feeRate = createTx.feeRate ?? feeRate
@@ -333,7 +327,9 @@ class SendAmountViewModel {
             let crtParams = CreateRedepositTransactionParams(utxos: res?.unspentOutputs ?? [:], feeRate: feeRate, feeSubaccount: subaccount?.pointer ?? 0, expiredAt: nil, expiresIn: nil)
             var created = try await session?.createRedepositTransaction(params: crtParams)
             created?.subaccountId = subaccount?.id
-            createTx.addressee = created?.addressees.first
+            if let addr = created?.addressees.first {
+                createTx.addressee = addr
+            }
             if let error = tx.error {
                 throw TransactionError.invalid(localizedDescription: error)
             }

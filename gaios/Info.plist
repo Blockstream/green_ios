@@ -134,6 +134,8 @@
 	<string>$(ZENDESK_CLIENT_ID)</string>
 	<key>APPGROUP</key>
 	<string>$(APPGROUP)</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 	<key>GOOGLE_SERVICE_INFO</key>
 	<string>$(GOOGLE_SERVICE_INFO)</string>
 	<key>NOTIFICATION_SERVICE</key>

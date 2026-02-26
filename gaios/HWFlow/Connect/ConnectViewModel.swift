@@ -132,6 +132,7 @@ class ConnectViewModel: NSObject {
             updateState?(.connected)
         }
     }
+
     func loginJade() async throws {
         let version = try await bleHwManager.jade?.version()
         updateState?(.auth(version))
@@ -154,20 +155,17 @@ class ConnectViewModel: NSObject {
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)
         }
+    }
+
+    func createJadeWatchonly(wm: WalletManager) async throws {
         // export core descriptors for watchonly
-        if firstConnection && wm.activeMultisigSessions.isEmpty {
-            let subaccounts = try await wm.subaccounts()
-            let descriptors = subaccounts
-                .filter({ !$0.hidden })
-                .compactMap({ $0.coreDescriptors })
-                .reduce(into: [], { $0 += $1 })
-            let credentials = Credentials(coreDescriptors: descriptors)
-            do {
-                _ = try AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoCredentials, credentials: credentials, for: account.keychain)
-            } catch {
-                logger.error("\(error.description())")
-            }
-        }
+        let subaccounts = try await wm.subaccounts()
+        let descriptors = subaccounts
+            .filter({ !$0.hidden })
+            .compactMap({ $0.coreDescriptors })
+            .reduce(into: [], { $0 += $1 })
+        let credentials = Credentials(coreDescriptors: descriptors)
+        _ = try AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoCredentials, credentials: credentials, for: account.keychain)
     }
 
     func checkFirmware() async throws -> (JadeVersionInfo?, Firmware?) {
@@ -196,33 +194,34 @@ class ConnectViewModel: NSObject {
         }
     }
 
+    func getCredentials(method: AuthenticationTypeHandler.AuthType) async throws -> Credentials {
+        switch method {
+        case .AuthKeyWoCredentials:
+            return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
+        case .AuthKeyWoBioCredentials:
+            return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
+        case .AuthKeyBiometric, .AuthKeyPIN:
+            let wm = WalletManager(prominentNetwork: account.networkType)
+            let session = wm.prominentSession!
+            let data = try AuthenticationTypeHandler.getPinData(method: method, for: account.keychain)
+            try await session.connect()
+            let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
+            return try await session.decryptWithPin(decrypt)
+        default:
+            throw AuthenticationTypeHandler.AuthError.NotSupported
+        }
+    }
+
     func loginJadeWatchonly(method: AuthenticationTypeHandler.AuthType) async throws {
         updateState?(.watchonly)
         AnalyticsManager.shared.loginWalletStart()
         let wm = WalletManager(prominentNetwork: account.networkType)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = HwPopupResolver()
-        switch method {
-        case .AuthKeyWoCredentials:
-            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
-            updateState?(.login)
-            let res = try await wm.loginWatchonly(credentials: credentials)
-        case .AuthKeyWoBioCredentials:
-            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
-            updateState?(.login)
-            let res = try await wm.loginWatchonly(credentials: credentials)
-        case .AuthKeyBiometric, .AuthKeyPIN:
-            let session = wm.prominentSession!
-            AnalyticsManager.shared.loginWalletStart()
-            let data = try AuthenticationTypeHandler.getPinData(method: method, for: account.keychain)
-            try await session.connect()
-            let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
-            let credentials = try await session.decryptWithPin(decrypt)
-            updateState?(.login)
-            let res = try await wm.loginWatchonly(credentials: credentials)
-        default:
-            throw HWError.Declined("")
-        }
+        let credentials = try await getCredentials(method: method)
+        let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: account.keychain)
+        updateState?(.login)
+        let res = try await wm.loginWatchonly(credentials: credentials, boltzCredentials: boltzCredentials, parentWalletId: account.walletIdentifier)
         AccountsRepository.shared.current = account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)

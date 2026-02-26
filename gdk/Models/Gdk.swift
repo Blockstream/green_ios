@@ -182,7 +182,7 @@ public struct SendTransactionSuccess: Codable {
     public let url: String?
     public let psbt: String?
     public let transaction: String?
-    
+
     public init(txHash: String? = nil, sendAll: Bool? = nil, signedTransaction: String? = nil, paymentId: String? = nil, message: String? = nil, url: String? = nil, psbt: String? = nil, transaction: String? = nil) {
         self.txHash = txHash
         self.sendAll = sendAll
@@ -370,10 +370,10 @@ public struct BcurEncodeParams: Codable {
     public let urType: String
     public let data: String?
     public let numWords: Int?
-    public let index: Int?
+    public let index: UInt32?
     public let privateKey: String?
     public let maxFragmentLen: Int?
-    public init(urType: String, data: String? = nil, numWords: Int? = nil, index: Int? = nil, privateKey: String? = nil, maxFragmentLen: Int = 40) {
+    public init(urType: String, data: String? = nil, numWords: Int? = nil, index: UInt32? = nil, privateKey: String? = nil, maxFragmentLen: Int = 40) {
         self.urType = urType
         self.data = data
         self.numWords = numWords

@@ -29,19 +29,21 @@ enum ConnectionState: Equatable {
 }
 
 class ConnectViewController: HWFlowBaseViewController {
-
+   
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblSubtitle: UILabel!
     //@IBOutlet weak var image: UIImageView!
     @IBOutlet weak var retryButton: UIButton!
     @IBOutlet weak var retryWoButton: UIButton!
     @IBOutlet weak var progressView: ProgressView!
-    private var activeToken, resignToken: NSObjectProtocol?
+
+    private var activeToken: NSObjectProtocol?
+    var firmwareContinuation: CheckedContinuation<Firmware?, Never>?
+    var watchonlyContinuation: CheckedContinuation<EnableBiometricsDialogAction, Never>?
 
     var viewModel: ConnectViewModel!
 
     private var selectedItem: ScanListItem?
-    private var isJade: Bool { viewModel.isJade }
     private var hasCredentials: Bool { viewModel.account.hasWoCredentials || viewModel.account.hasWoBioCredentials || viewModel.account.hasBioPin }
     private var isQRmode: Bool { viewModel.account.uuid == nil }
 
@@ -90,14 +92,13 @@ class ConnectViewController: HWFlowBaseViewController {
             progressView.isHidden = false
             retryButton.isHidden = true
             retryWoButton.isHidden = true
-            if !isJade {
+            if !viewModel.isJade {
                 progress("id_connect_your_ledger_to_use_it".localized)
             } else if version?.jadeHasPin ?? false {
                 progress("id_unlock_jade_to_continue".localized)
             } else {
                 progress("id_enter_and_confirm_a_unique_pin".localized)
             }
-            updateImage(version)
         case .login:
             progressView.isHidden = false
             retryButton.isHidden = true
@@ -108,7 +109,6 @@ class ConnectViewController: HWFlowBaseViewController {
             retryButton.isHidden = true
             retryWoButton.isHidden = true
             progress("")
-            updateImage()
         case .logged:
             progressView.isHidden = false
             AccountsRepository.shared.upsert(viewModel.account)
@@ -193,7 +193,6 @@ class ConnectViewController: HWFlowBaseViewController {
 
     @MainActor
     func setContent() {
-        updateImage()
         retryButton.isHidden = true
         retryWoButton.isHidden = true
         retryButton.setTitle("id_connect_with_bluetooth".localized, for: .normal)
@@ -220,18 +219,6 @@ class ConnectViewController: HWFlowBaseViewController {
         retryWoButton.cornerRadius = retryWoButton.frame.size.width / 2
     }
 
-    func updateImage(_ version: JadeVersionInfo? = nil) {
-        if isJade {
-            if let version = version {
-                //image.image = JadeAsset.img(.select, version.boardType == .v2 ? .v2 : .v1)
-            } else {
-                //image.image = JadeAsset.img(.selectDual, nil)
-            }
-        } else {
-            //image.image = UIImage(named: "il_ledger")
-        }
-    }
-
     @objc func progressTor(_ notification: NSNotification) {
         if let info = notification.userInfo as? [String: Any],
            let tor = TorNotification.from(info) as? TorNotification {
@@ -239,59 +226,129 @@ class ConnectViewController: HWFlowBaseViewController {
         }
     }
 
-    func onScannedDevice(_ item: ScanListItem) async {
+    func onScannedDevice(_ item: ScanListItem) {
         AnalyticsManager.shared.hwwConnect(account: viewModel.account)
-        await viewModel.stopScan()
+
         viewModel?.type = item.type
         viewModel?.peripheralID = item.identifier
         viewModel.account.uuid = item.identifier
         if !viewModel.firstConnection {
             state = .connect
         }
-        let task = Task.detached { [weak self] in
-            try await self?.viewModel.connect()
-            if await self?.isJade ?? true {
-                try await self?.viewModel.loginJade()
-            } else {
-                try await self?.viewModel.loginLedger()
-            }
-        }
-        switch await task.result {
-        case .success:
-            if !isJade {
-                state = .logged
-                return
-            }
-            // check firmware
-            let task = Task.detached { [weak self] in
-                try? await self?.viewModel.checkFirmware()
-            }
+
+        Task {
+            let task = Task { try await handleLogin(isJade: viewModel.isJade, firstConnection: viewModel.firstConnection) }
             switch await task.result {
-            case .success(let res):
-                if let version = res?.0, let lastFirmware = res?.1 {
-                    onCheckFirmware(version: version, lastFirmware: lastFirmware)
-                } else {
-                    state = .logged
-                }
-            case .failure:
+            case .success:
                 state = .logged
+            case .failure(let error):
+                try? await viewModel.bleHwManager.disconnect()
+                switch error as? HWError {
+                case .Rebooted:
+                    state = .none
+                    Task { await startScan() }
+                default:
+                    state = .error(error)
+                }
             }
-        case .failure(let error):
-            try? await viewModel.bleHwManager.disconnect()
-            state = .error(error)
         }
     }
-
-    @MainActor
-    func onCheckFirmware(version: JadeVersionInfo, lastFirmware: Firmware) {
-        let storyboard = UIStoryboard(name: "HWFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "UpdateFirmwareViewController") as? UpdateFirmwareViewController {
-            vc.firmware = lastFirmware
-            vc.version = version.jadeVersion
-            vc.delegate = self
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: false, completion: nil)
+    nonisolated func handleLogin(isJade: Bool, firstConnection: Bool) async throws {
+        await viewModel.stopScan()
+        try await viewModel.connect()
+        if isJade {
+            try await viewModel.loginJade()
+        } else {
+            try await viewModel.loginLedger()
         }
+        if isJade {
+            if let (version, lastFirmware) = try? await viewModel.checkFirmware(), let version, let lastFirmware {
+                if let confirmedFirmware = await suspendFirmwareViewController(version: version, lastFirmware: lastFirmware) {
+                    try? await handleFirmwareUpdate(firmware: confirmedFirmware)
+                    try await viewModel.bleHwManager.disconnect()
+                    try await Task.sleep(nanoseconds: 5 * 1_000_000_000)
+                    throw HWError.Rebooted("Firmware upgraded")
+                }
+            }
+            if firstConnection && AuthenticationTypeHandler.supportsBiometricAuthentication() {
+                try await handleBiometricSetup()
+            }
+        }
+    }
+    func handleBiometricSetup() async throws {
+        let subaccounts = try? await viewModel.bleHwManager.walletManager?.subaccounts()
+        let hasNoMultisig = (subaccounts ?? []).filter({$0.isMultisig}).isEmpty
+        if hasNoMultisig {
+            let action = await suspendEnableBiometricsDialogViewController()
+            if action == .bio {
+                if let wm = viewModel.bleHwManager.walletManager {
+                    try? await viewModel.createJadeWatchonly(wm: wm)
+                }
+            }
+        }
+    }
+    func handleFirmwareUpdate(firmware: Firmware) async throws {
+        await MainActor.run {
+            self.state = .firmware(nil)
+        }
+        let binary = try await Task.detached(priority: .userInitiated) { [weak viewModel] in
+            try await viewModel?.bleHwManager.fetchFirmware(firmware: firmware)
+        }.value
+        guard let binary else {
+            throw HWError.NoNewFirmwareFound("No New Firmware Found".localized)
+        }
+        let hash = viewModel?.bleHwManager.jade?.jade.sha256(binary)
+        let hashHex = hash?.hex.separated(by: " ", every: 8)
+        await MainActor.run {
+            self.state = .firmware(hashHex)
+        }
+        let success = try await Task.detached(priority: .userInitiated) { [weak viewModel] in
+            try await viewModel?.bleHwManager.updateFirmware(firmware: firmware, binary: binary)
+        }.value
+        await MainActor.run {
+            if success ?? false {
+                DropAlert().success(message: "id_firmware_update_completed".localized)
+            } else {
+                DropAlert().error(message: "id_firmware_update_failed".localized)
+            }
+        }
+    }
+    func suspendEnableBiometricsDialogViewController() async -> EnableBiometricsDialogAction {
+        return await withCheckedContinuation { continuation in
+            self.watchonlyContinuation = continuation
+            DispatchQueue.main.async {
+                let vc = self.enableBiometricsDialogViewController()
+                self.present(vc, animated: true)
+            }
+        }
+    }
+    func enableBiometricsDialogViewController() -> EnableBiometricsDialogViewController {
+        let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: "EnableBiometricsDialogViewController") { coder in
+            EnableBiometricsDialogViewController(coder: coder, delegate: self)
+        }
+        vc.modalPresentationStyle = .fullScreen
+        return vc
+    }
+    func suspendFirmwareViewController(version: JadeVersionInfo, lastFirmware: Firmware) async -> Firmware? {
+        return await withCheckedContinuation { continuation in
+            self.firmwareContinuation = continuation
+            DispatchQueue.main.async {
+                let vc = self.updateFirmwareViewController(version: version, lastFirmware: lastFirmware)
+                vc.delegate = self
+                vc.modalPresentationStyle = .fullScreen
+                self.present(vc, animated: true)
+            }
+        }
+    }
+    func updateFirmwareViewController(version: JadeVersionInfo, lastFirmware: Firmware) -> UpdateFirmwareViewController {
+        let storyboard = UIStoryboard(name: "HWFlow", bundle: nil)
+        // swiftlint:disable force_cast
+        let vc = storyboard.instantiateViewController(withIdentifier: "UpdateFirmwareViewController") as! UpdateFirmwareViewController
+        vc.firmware = lastFirmware
+        vc.version = version.jadeVersion
+        vc.delegate = self
+        return vc
     }
 
     @IBAction func retryWoBtnTapped(_ sender: Any) {
@@ -337,7 +394,6 @@ class ConnectViewController: HWFlowBaseViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(progressTor), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
         progressView.isAnimating = true
         activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
-        resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -352,9 +408,6 @@ class ConnectViewController: HWFlowBaseViewController {
         progressView.isAnimating = true
     }
 
-    func applicationWillResignActive(_ notification: Notification) {
-    }
-
     deinit {
         print("deinit")
     }
@@ -364,7 +417,7 @@ class ConnectViewController: HWFlowBaseViewController {
         state = .scan
         selectedItem = nil
         do {
-            try await viewModel.startScan(deviceType: self.isJade ? .Jade : .Ledger)
+            try await viewModel.startScan(deviceType: self.viewModel.isJade ? .Jade : .Ledger)
         } catch {
             switch error {
             case BluetoothError.bluetoothUnavailable:
@@ -374,7 +427,7 @@ class ConnectViewController: HWFlowBaseViewController {
             }
         }
     }
-
+    @MainActor
     func showBleUnavailable() {
         var state: BleUnavailableState = .other
         switch CentralManager.shared.bluetoothState {
@@ -409,36 +462,22 @@ class ConnectViewController: HWFlowBaseViewController {
 
 extension ConnectViewController: UpdateFirmwareViewControllerDelegate {
     func didUpdate(version: String, firmware: Firmware) {
-        Task {
-            do {
-                state = .firmware(nil)
-                let binary = try await viewModel.bleHwManager.fetchFirmware(firmware: firmware)
-                let hash = viewModel.bleHwManager.jade?.jade.sha256(binary)
-                let hashHex = hash?.hex.separated(by: " ", every: 8)
-                state = .firmware(hashHex)
-                let res = try await viewModel.bleHwManager.updateFirmware(firmware: firmware, binary: binary)
-                try await viewModel.bleHwManager.disconnect()
-                try await Task.sleep(nanoseconds: 5 * 1_000_000_000)
-                await startScan()
-                await MainActor.run {
-                    if res {
-                        DropAlert().success(message: "id_firmware_update_completed".localized)
-                    } else {
-                        DropAlert().error(message: "id_operation_failure".localized)
-                    }
-                }
-            } catch {
-                state = .error(error)
-            }
-        }
+        firmwareContinuation?.resume(returning: firmware)
+        firmwareContinuation = nil
     }
 
     func didSkip() {
-        Task {
-            state = .logged
-        }
+        firmwareContinuation?.resume(returning: nil)
+        firmwareContinuation = nil
     }
 }
+extension ConnectViewController: EnableBiometricsDialogViewControllerDelegate {
+    func onEnableBioAction(_ action: EnableBiometricsDialogAction) {
+        watchonlyContinuation?.resume(returning: action)
+        watchonlyContinuation = nil
+    }
+}
+
 
 extension ConnectViewController: BleUnavailableViewControllerDelegate {
     func onAction(_ action: BleUnavailableAction) {
@@ -450,9 +489,7 @@ extension ConnectViewController: ConnectViewModelDelegate {
         if self.selectedItem != nil { return }
         if let item = peripherals.filter({ $0.identifier == self.viewModel.account.uuid || $0.name == self.viewModel.account.name }).first {
             self.selectedItem = item
-            Task { [weak self] in
-                await self?.onScannedDevice(item)
-            }
+            self.onScannedDevice(item)
         }
     }
     func onError(message: String) {

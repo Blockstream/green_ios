@@ -3,6 +3,7 @@ import UIKit
 import gdk
 
 protocol DialogAccountsViewControllerDelegate: AnyObject {
+    @MainActor
     func didSelectAccount(_ walletItem: WalletItem?)
 }
 
@@ -19,7 +20,16 @@ class DialogAccountsViewController: UIViewController {
     @IBOutlet weak var lblInfo: UILabel!
     weak var delegate: DialogAccountsViewControllerDelegate?
 
-    var viewModel: DialogAccountsViewModel?
+    var viewModel: DialogAccountsViewModel
+
+    init?(coder: NSCoder, viewModel: DialogAccountsViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 
     lazy var blurredView: UIView = {
         let containerView = UIView()
@@ -76,8 +86,8 @@ class DialogAccountsViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = viewModel?.title
-        lblInfo.text = viewModel?.hint
+        lblTitle.text = viewModel.title
+        lblInfo.text = viewModel.hint
     }
 
     func setStyle() {
@@ -120,16 +130,16 @@ class DialogAccountsViewController: UIViewController {
 extension DialogAccountsViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let vm = viewModel else { return 0 }
-        return vm.accountCellModels.count
+        return viewModel.accountCellModels.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: DialogAccountCell.identifier, for: indexPath) as? DialogAccountCell, let model = viewModel?.accountCellModels[indexPath.row] {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: DialogAccountCell.identifier, for: indexPath) as? DialogAccountCell {
+            let model = viewModel.accountCellModels[indexPath.row]
             cell.configure(
                 model: model,
-                isSelectable: viewModel?.isSelectable ?? false,
-                hideBalance: viewModel?.hideBalance ?? false,
+                isSelectable: viewModel.isSelectable,
+                hideBalance: viewModel.hideBalance,
                 onTap: {[weak self] in
                     self?.dismiss(model.account)
                 })

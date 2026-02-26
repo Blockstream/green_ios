@@ -5,10 +5,14 @@ import greenaddress
 import hw
 import lightning
 import LiquidWalletKit
+import core
 
 extension Error {
 
     public func description() -> String {
+        if let error = self as? SendFlowError {
+            return error.description().localized
+        }
         if let authError = self as? AuthenticationTypeHandler.AuthError {
             return authError.localizedDescription
         }
@@ -24,6 +28,8 @@ extension Error {
                 return "Invalid Response"
             case .NoNewFirmwareFound:
                 return "Firmware up to date"
+            case .Rebooted(_):
+                return "Device rebooted, waiting to reconnect"
             }
         }
         if let swError = self as? BleLedgerConnection.SWError {

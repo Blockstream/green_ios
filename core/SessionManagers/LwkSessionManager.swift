@@ -3,50 +3,9 @@ import LiquidWalletKit
 import gdk
 import greenaddress
 import hw
-
-
-public struct BoltzReverseSwapInfoLBTC: Codable {
-    public let hash: String
-    public let rate: Int
-    public let limits: BoltzSwapInfoLimits
-    public let fees: BoltzReverseSwapInfoFees
-}
-
-public struct BoltzSubmarineSwapInfoLBTC: Codable {
-    public let hash: String
-    public let rate: Int
-    public let limits: BoltzSwapInfoLimits
-    public let fees: BoltzSwapInfoFees
-}
-
-public struct BoltzSwapInfoLimits: Codable {
-    public let maximal: Int64
-    public let minimal: Int64
-}
-
-public struct BoltzReverseSwapInfoFees: Codable {
-    public let percentage: Double
-    public let minerFees: BoltzSwapInfominerFees
-}
-
-public struct BoltzSwapInfoFees: Codable {
-    public let percentage: Double
-    public let minerFees: Int64
-}
-
-public struct BoltzSwapInfominerFees: Codable {
-    public let claim: UInt64
-    public let lockup: UInt64
-}
-
-public enum BoltzSwapTypes: String {
-    case Submarine = "submarine"
-    case ReverseSubmarine = "reverse"
-}
-
 public class LwkSessionManager: SessionManager {
 
-    static let BOLTZ_BIP85_INDEX: UInt32 = 26589
+    static public let BOLTZ_BIP85_INDEX: UInt32 = 26589
     static let BASE_URL = "https://green-webhooks.blockstream.com/"
     static let DEV_BASE_URL = "https://green-webhooks.dev.blockstream.com/"
     var network = Network.mainnet()
@@ -81,70 +40,131 @@ public class LwkSessionManager: SessionManager {
         guard let secret = params.mnemonic else {
             throw LwkError.Generic(msg: "Invalid mnemonic")
         }
-        let client = try network.defaultElectrumClient()
-        let builder = BoltzSessionBuilder(
-            network: network,
-            client: AnyClient.fromElectrum(client: client),
-            timeout: 30_000,
-            mnemonic: try Mnemonic(s: secret),
-            logging: self,
-            polling: true,
-            timeoutAdvance: 10_000,
-            referralId: "blockstream",
-            randomPreimages: true
-        )
-        boltzSession = try BoltzSession.fromBuilder(builder: builder)
+        do {
+            let client = try network.defaultElectrumClient()
+            boltzSession = try createBoltzSession(
+                client: AnyClient.fromElectrum(client: client),
+                mnemonic: try Mnemonic(s: secret))
+        } catch {
+            let client = try network.defaultEsploraClient()
+            boltzSession = try createBoltzSession(
+                client: AnyClient.fromEsplora(client: client),
+                mnemonic: try Mnemonic(s: secret))
+        }
         logged = true
         guard let walletHash = try walletIdentifier(credentials: params) else {
             throw LwkError.Generic(msg: "Invalid wallet hash")
         }
         return LoginUserResult(xpubHashId: walletHash.xpubHashId, walletHashId: walletHash.walletHashId)
     }
+    
+    func createBoltzSession(client: AnyClient, mnemonic: Mnemonic) throws -> BoltzSession {
+        let bitcoinElectrumUrl = network.isMainnet()
+        ? "ssl://bitcoin-mainnet.blockstream.info:50002"
+        : "ssl://bitcoin-testnet.blockstream.info:60002"
+        let builder = BoltzSessionBuilder(
+            network: network,
+            client: client,
+            timeout: 30_000,
+            mnemonic: mnemonic,
+            logging: self,
+            polling: true,
+            timeoutAdvance: 10_000,
+            referralId: "blockstream",
+            bitcoinElectrumClientUrl: bitcoinElectrumUrl,
+            randomPreimages: true
+        )
+        return try BoltzSession.fromBuilder(builder: builder)
+    }
 
     func webhookBaseUrl() -> String {
         Bundle.main.dev ? LwkSessionManager.DEV_BASE_URL : LwkSessionManager.BASE_URL
     }
 
-    nonisolated public func invoice(amount: UInt64, description: String?, claimAddress: LiquidWalletKit.Address) async throws -> InvoiceResponse {
+    func webhook(status: [String]?) throws -> WebHook {
         guard let xpubHashId = xpubHashId else {
             throw LwkError.Generic(msg: "No xpub defined")
         }
+        return WebHook(url: "\(webhookBaseUrl())/webhook/boltz/\(xpubHashId)", status: status ?? [])
+    }
+
+    // Reverse Submarine Swaps (Lightning -> Chain)
+    nonisolated public func invoice(amount: UInt64, description: String?, claimAddress: LiquidWalletKit.Address) async throws -> InvoiceResponse {
         guard let boltzSession = boltzSession else {
             throw LwkError.Generic(msg: "No lwk session")
         }
         let invoiceStatuses = ["transaction.mempool", "transaction.confirmed", "invoice.settled"]
-        let webhook = WebHook(url: "\(webhookBaseUrl())/webhook/boltz/\(xpubHashId)", status: invoiceStatuses)
         let res = try boltzSession.invoice(
             amount: amount,
             description: description,
             claimAddress: claimAddress,
-            webhook: webhook)
-
-        let data = try res.serialize()
-        let swapId = try res.swapId()
+            webhook: try webhook(status: invoiceStatuses))
         let bolt11 = try res.bolt11Invoice().description
-        _ = try await BoltzController.shared.create(id: swapId, data: data, isPending: true, xpubHashId: xpubHashId, invoice: bolt11)
+        _ = try await BoltzController.shared.create(
+            id: try res.swapId(),
+            data: try res.serialize(),
+            isPending: true,
+            xpubHashId: xpubHashId,
+            invoice: bolt11,
+            swapType: .reverseSwap)
         return res
     }
 
     nonisolated public func preparePay(invoice: String, refundAddress: LiquidWalletKit.Address) async throws -> PreparePayResponse {
-        guard let xpubHashId = xpubHashId else {
-            throw LwkError.Generic(msg: "No xpub defined")
-        }
         guard let boltzSession = boltzSession else {
             throw LwkError.Generic(msg: "No lwk session")
         }
         let bolt11 = try Bolt11Invoice(s: invoice)
-        // We want to know if we need to create a refund. TODO: reassess once mainchain to liquid chain swaps are introduced
         let preparePayStatuses = ["invoice.paid", "swap.expired", "invoice.failedToPay", "transaction.lockupFailed"]
-        let webhook = WebHook(url: "\(webhookBaseUrl())/webhook/boltz/\(xpubHashId)", status: preparePayStatuses)
         let res = try boltzSession.preparePay(
             lightningPayment: LightningPayment.fromBolt11Invoice(invoice: bolt11),
             refundAddress: refundAddress,
-            webhook: webhook)
-        let data = try res.serialize()
-        let swapId = try res.swapId()
-        _ = try await BoltzController.shared.create(id: swapId, data: data, isPending: true, xpubHashId: xpubHashId, invoice: invoice)
+            webhook: try webhook(status: preparePayStatuses))
+        _ = try await BoltzController.shared.create(
+            id: try res.swapId(),
+            data: try res.serialize(),
+            isPending: true,
+            xpubHashId: xpubHashId,
+            invoice: invoice,
+            swapType: .submarineSwap)
+        return res
+    }
+    nonisolated public func lbtcToBtc(amount: UInt64, refundAddress: String, claimAddress: String, xpubHashId: String) async throws -> LockupResponse {
+        guard let boltzSession = boltzSession else {
+            throw LwkError.Generic(msg: "No lwk session")
+        }
+        //let chainSwapStatuses = ["transaction.confirmed", "transaction.server.confirmed", "transaction.claimed", "transaction.lockupFailed"]
+        let res = try boltzSession.lbtcToBtc(
+            amount: amount,
+            refundAddress: try Address(s: refundAddress),
+            claimAddress: try BitcoinAddress(s: claimAddress),
+            webhook: try webhook(status: []))
+        _ = try await BoltzController.shared.create(
+            id: try res.swapId(),
+            data: try res.serialize(),
+            isPending: true,
+            xpubHashId: xpubHashId,
+            invoice: nil,
+            swapType: .chainSwap)
+        return res
+    }
+    nonisolated public func btcToLbtc(amount: UInt64, refundAddress: String, claimAddress: String, xpubHashId: String) async throws -> LockupResponse {
+        guard let boltzSession = boltzSession else {
+            throw LwkError.Generic(msg: "No lwk session")
+        }
+        //let chainSwapStatuses = ["transaction.confirmed", "transaction.server.confirmed", "transaction.claimed", "transaction.lockupFailed"]
+        let res = try boltzSession.btcToLbtc(
+            amount: amount,
+            refundAddress: try BitcoinAddress(s: refundAddress),
+            claimAddress: try Address(s: claimAddress),
+            webhook: try webhook(status: []))
+        _ = try await BoltzController.shared.create(
+            id: try res.swapId(),
+            data: try res.serialize(),
+            isPending: true,
+            xpubHashId: xpubHashId,
+            invoice: nil,
+            swapType: .chainSwap)
         return res
     }
     /*
@@ -159,99 +179,71 @@ public class LwkSessionManager: SessionManager {
         try boltzSession?.restoreInvoice(data: data)
     }
 
+    nonisolated public func restoreLockup(data: String) async throws -> LockupResponse? {
+        try boltzSession?.restoreLockup(data: data)
+    }
+
     nonisolated public func restorePreparePay(data: String) async throws -> PreparePayResponse? {
         try boltzSession?.restorePreparePay(data: data)
     }
 
-    nonisolated public func handlePay(pay: PreparePayResponse) async throws -> PaymentState {
-        let swapId = try pay.swapId()
+    nonisolated public func handleSwap(swap: SwapResponse) async throws -> PaymentState {
+        let swapId = try swap.swapId()
         let persistentId = try? await BoltzController.shared.fetchID(byId: swapId)
-        guard let peristentId = persistentId else {
+        guard let persistentId else {
             logger.error("LWK \(swapId, privacy: .public) not found")
             throw LwkError.Generic(msg: "Swap not found")
         }
         var state = PaymentState.continue
         repeat {
             do {
-                state = try pay.advance()
+                state = try swap.advance()
                 switch state {
                 case .continue:
-                    let data = try pay.serialize()
-                    _ = try await BoltzController.shared.update(with: peristentId, newData: data, newIsPending: true)
-                    try await Task.sleep(nanoseconds: 1_000_000_000)
-                case .success:
-                    logger.info("LWK \(swapId, privacy: .public) completed successfully!")
-                    _ = try await BoltzController.shared.update(with: peristentId, newIsPending: false)
-                case .failed:
-                    logger.info("LWK \(swapId, privacy: .public) failed!")
-                    _ = try await BoltzController.shared.delete(with: peristentId)
-                }
-            } catch {
-                logger.error("LWK \(swapId, privacy: .public) error: \(error.localizedDescription, privacy: .public)")
-                switch error as? LwkError {
-                case .NoBoltzUpdate:
-                    let swap = try? await BoltzController.shared.get(with: peristentId)
-                    if let swap = swap {
-                        if swap.isPending {
-                            try await Task.sleep(nanoseconds: 1_000_000_000)
-                        } else {
-                            state = PaymentState.success
-                        }
-                    } else {
-                        state = PaymentState.failed
-                    }
-                default:
-                    throw error
-                }
-            }
-        } while state == PaymentState.continue
-        return state
-    }
-
-    nonisolated public func handleInvoice(invoice: InvoiceResponse) async throws -> PaymentState {
-        let swapId = try invoice.swapId()
-        let persistentId = try? await BoltzController.shared.fetchID(byId: swapId)
-        guard let persistentId = persistentId else {
-            logger.error("LWK \(swapId, privacy: .public) not found")
-            throw LwkError.Generic(msg: "Swap not found")
-        }
-        var state = PaymentState.continue
-        repeat {
-            do {
-                state = try invoice.advance()
-                switch state {
-                case .continue:
-                    let data = try invoice.serialize()
-                    logger.info("LWK \(swapId, privacy: .public) updated with \(data[0..<64])")
+                    let data = try swap.serialize()
+                    logger.info("LWK \(swapId, privacy: .public) updated with \(data.prefix(64), privacy: .public)")
                     _ = try await BoltzController.shared.update(with: persistentId, newData: data, newIsPending: true)
-                    try await Task.sleep(nanoseconds: 1_000_000_000)
+                    try await Task.sleep(nanoseconds: 100_000_000)
                 case .success:
                     logger.info("LWK \(swapId, privacy: .public) completed successfully!")
                     _ = try await BoltzController.shared.update(with: persistentId, newIsPending: false)
                 case .failed:
                     logger.info("LWK \(swapId, privacy: .public) failed!")
-                    _ = try await BoltzController.shared.delete(with: persistentId)
+                    _ = try await BoltzController.shared.update(with: persistentId, newIsPending: false)
+                    //_ = try await BoltzController.shared.delete(with: persistentId)
                 }
+            } catch LwkError.NoBoltzUpdate {
+                try await Task.sleep(nanoseconds: 1_000_000_000)
+                if let swap = try? await BoltzController.shared.get(with: persistentId)  {
+                    state = swap.isPending ? PaymentState.continue : PaymentState.success
+                } else {
+                    state = .failed
+                }
+            } catch LwkError.ObjectConsumed {
+                logger.error("LWK \(swapId, privacy: .public) object consumed")
+                //_ = try? await BoltzController.shared.delete(with: persistentId)
+                _ = try await BoltzController.shared.update(with: persistentId, newIsPending: false)
+                state = .failed
             } catch {
-                logger.error("LWK \(swapId, privacy: .public) error: \(error.localizedDescription, privacy: .public)")
-                switch error as? LwkError {
-                case .NoBoltzUpdate:
-                    let swap = try? await BoltzController.shared.get(with: persistentId)
-                    if let swap = swap {
-                        if swap.isPending {
-                            try await Task.sleep(nanoseconds: 1_000_000_000)
-                        } else {
-                            state = PaymentState.success
-                        }
-                    } else {
-                        state = PaymentState.failed
-                    }
-                default:
-                    throw error
-                }
+                logger.error("LWK \(swapId, privacy: .public) unrecoverable error: \(error.localizedDescription, privacy: .public)")
+                //_ = try? await BoltzController.shared.delete(with: persistentId)
+                _ = try await BoltzController.shared.update(with: persistentId, newIsPending: false)
+                state = .failed
             }
         } while state == PaymentState.continue
         return state
+    }
+
+    nonisolated public func handleChainLockup(lockup: LockupResponse) async throws -> PaymentState {
+        try await handleSwap(swap: SwapResponse.chain(lockup))
+    }
+
+    nonisolated public func handleInvoice(invoice: InvoiceResponse) async throws -> PaymentState {
+        try await handleSwap(swap: SwapResponse.reverseSubmarine(invoice))
+    }
+
+    nonisolated public func handlePay(pay: PreparePayResponse) async throws -> PaymentState {
+        try await handleSwap(swap: SwapResponse.submarine(pay))
     }
 
     nonisolated public func fetchReverseSwapsInfo() async throws -> BoltzReverseSwapInfoLBTC? {
@@ -282,27 +274,52 @@ public class LwkSessionManager: SessionManager {
         return BoltzSubmarineSwapInfoLBTC.from(btc ?? [:]) as? BoltzSubmarineSwapInfoLBTC
     }
 
-    nonisolated public func restoreSwaps(address: String, xpubHashId: String) async throws {
-        logger.info("Restoring swaps, recover address \(address)")
+    nonisolated public func restoreSwaps(bitcoinAddress: String, liquidAddress: String, xpubHashId: String) async throws {
         guard let boltzSession = boltzSession else {
-            return
+            throw LwkError.Generic(msg: "Invalid session")
         }
-        let address = try Address(s: address)
+        logger.info("Restoring reverse swaps using address \(liquidAddress)")
+        let liquidAddress = try Address(s: liquidAddress)
         let list = try boltzSession.swapRestore()
-        let reverseSwaps = try boltzSession.restorableReverseSwaps(swapList: list, claimAddress: address)
+        let reverseSwaps = try boltzSession.restorableReverseSwaps(swapList: list, claimAddress: liquidAddress)
         for reverseSwap in reverseSwaps {
             let invoice = try boltzSession.restoreInvoice(data: reverseSwap)
             let swapId = try invoice.swapId()
             let data = try invoice.serialize()
-            try? await BoltzController.shared.upsert(id: swapId, data: data, isPending: true, xpubHashId: xpubHashId, invoice: data)
+            try? await BoltzController.shared.upsert(
+                id: swapId,
+                data: data,
+                isPending: true,
+                xpubHashId: xpubHashId,
+                swapType: SwapType.reverseSwap)
         }
-        
-        let submarineSwaps = try boltzSession.restorableSubmarineSwaps(swapList: list, refundAddress: address)
+        logger.info("Restoring submarine swaps using address \(liquidAddress)")
+        let submarineSwaps = try boltzSession.restorableSubmarineSwaps(swapList: list, refundAddress: liquidAddress)
         for submarineSwap in submarineSwaps {
             let pay = try boltzSession.restorePreparePay(data: submarineSwap)
             let swapId = try pay.swapId()
             let data = try pay.serialize()
-            try? await BoltzController.shared.upsert(id: swapId, data: data, isPending: true, xpubHashId: xpubHashId, invoice: data)
+            try? await BoltzController.shared.upsert(
+                id: swapId,
+                data: data,
+                isPending: true,
+                xpubHashId: xpubHashId,
+                swapType: SwapType.submarineSwap)
+        }
+        logger.info("Restoring swaps using address \(bitcoinAddress)")
+        let bitcoinAddress = try BitcoinAddress(s: bitcoinAddress)
+        let btcToLbtcSwaps = try boltzSession.restorableBtcToLbtcSwaps(swapList: list, claimAddress: liquidAddress, refundAddress: bitcoinAddress)
+        let lbtcToBtcSwaps = try boltzSession.restorableLbtcToBtcSwaps(swapList: list, claimAddress: bitcoinAddress, refundAddress: liquidAddress)
+        for swap in btcToLbtcSwaps + lbtcToBtcSwaps {
+            let lockup = try boltzSession.restoreLockup(data: swap)
+            let swapId = try lockup.swapId()
+            let data = try lockup.serialize()
+            try? await BoltzController.shared.upsert(
+                id: swapId,
+                data: data,
+                isPending: true,
+                xpubHashId: xpubHashId,
+                swapType: SwapType.chainSwap)
         }
     }
 }

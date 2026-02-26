@@ -137,11 +137,11 @@ class SendDialogFeeViewController: KeyboardViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCustomFeeViewController") as? DialogCustomFeeViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
-            vc.account = viewModel.subaccount
+            vc.minFeeRate = viewModel.feeEstimator?.defaultMinFee
             if viewModel.transaction.txType == .bumpFee {
                 vc.feeRate = (viewModel.transaction.previousTransaction?["fee_rate"] as? UInt64 ?? 0) + (viewModel.feeEstimator?.defaultMinFee ?? 1)
             } else {
-                vc.feeRate = viewModel.feeEstimator?.minFeeEstimate ?? viewModel.feeEstimator?.defaultMinFee ?? 1
+                vc.feeRate = viewModel.feeEstimator?.defaultMinFee ?? 1
             }
             present(vc, animated: false, completion: nil)
         }

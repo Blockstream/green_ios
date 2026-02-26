@@ -47,6 +47,12 @@ class TabTransactVM: TabViewModel {
     func rotateBalanceDisplayMode() async {
         try? await walletDataModel.rotateBalanceDisplayMode()
     }
+    func getBoltzKey() throws -> Credentials {
+        try AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: mainAccount.keychain)
+    }
+    func existBoltzKey() -> Bool {
+        (try? getBoltzKey()) != nil
+    }
     public func selectableAssets(subaccounts: [WalletItem]) -> [String]? {
         let hasSubaccountAmp = !subaccounts.filter({ $0.type == .amp }).isEmpty
         let hasLightning = !subaccounts.filter({ $0.networkType.lightning }).isEmpty

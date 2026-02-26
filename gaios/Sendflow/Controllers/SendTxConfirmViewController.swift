@@ -349,7 +349,7 @@ class SendTxConfirmViewController: UIViewController {
     @MainActor
     func presentSendSuccessViewController(_ result: SendTransactionSuccess) {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendSuccessViewController") as? SendSuccessViewController {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendTxSuccessViewController") as? SendTxSuccessViewController {
             vc.amount = viewModel.totalText
             vc.sendTransactionSuccess = result
             vc.delegate = self
@@ -495,7 +495,7 @@ class SendTxConfirmViewController: UIViewController {
     @IBAction func btnInfoFee(_ sender: Any) {
         var scope = SendFeeScope.info
         if viewModel.txType == .lwkSwap {
-            scope = .lwkSwap(swap: "NA sats", chain: "NA sats", total: "NA sats", fiat: "NA fiat")
+            scope = .lwkSwap(networkFee: "NA sats", providerFee: "NA sats", total: "NA sats", fiat: "NA fiat")
         }
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendFeeInfoViewController") as? SendFeeInfoViewController {
@@ -576,7 +576,7 @@ extension SendTxConfirmViewController: HWDialogConnectViewControllerDelegate {
     }
 }
 
-extension SendTxConfirmViewController: SendSuccessViewControllerDelegate, ReEnable2faSuccessViewControllerDelegate {
+extension SendTxConfirmViewController: SendTxSuccessViewControllerDelegate, ReEnable2faSuccessViewControllerDelegate {
     func onDone() {
         StoreReviewHelper
             .shared

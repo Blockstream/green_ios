@@ -42,6 +42,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // register notifications
+        UNUserNotificationCenter.current().delegate = AppNotifications.shared
+        AppNotifications.shared.registerForFcmPushNotifications()
+
         // Override point for customization after application launch.
         setupAppearance()
 
@@ -68,10 +72,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // start analytics
         AnalyticsManager.shared.countlyStart()
         AnalyticsManager.shared.setupSession(session: nil)
-
-        // register notifications
-        UNUserNotificationCenter.current().delegate = AppNotifications.shared
-        AppNotifications.shared.registerForFcmPushNotifications()
 
         // run account migration
         MigratorManager.shared.migrate()

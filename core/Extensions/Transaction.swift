@@ -12,7 +12,12 @@ extension Transaction {
     public var feeAsset: String {
         subaccount?.gdkNetwork.getFeeAsset() ?? "btc"
     }
-
+    
+    public var amountsWithFee: [String: Int64] {
+        var amounts = amounts
+        amounts[feeAsset] = (amounts[feeAsset] ?? 0) - Int64(fee ?? 0)
+        return amounts
+    }
     public func amountsWithFees() -> [String: Int64] {
         if type == .redeposit {
             return [feeAsset: -1 * Int64(fee ?? 0)]
@@ -62,6 +67,18 @@ extension Transaction {
             return true
         } else {
             return false
+        }
+    }
+
+    public func confirmations(block: UInt32) -> UInt32 {
+        if isLightning || blockHeight == 0 {
+            return 0
+        } else if blockHeight == UInt32.max {
+            return blockHeight
+        } else if blockHeight <= block {
+            return (block - blockHeight) + 1
+        } else {
+            return 0
         }
     }
 

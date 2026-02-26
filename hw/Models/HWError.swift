@@ -7,6 +7,7 @@ public enum HWError: Error {
     case Disconnected(_ localizedDescription: String)
     case InvalidResponse(_ localizedDescription: String)
     case NoNewFirmwareFound(_ localizedDescription: String)
+    case Rebooted(_ localizedDescription: String)
 
     static let CBOR_RPC_USER_CANCELLED = -32000
 

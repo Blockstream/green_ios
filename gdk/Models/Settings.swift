@@ -39,10 +39,17 @@ public enum TransactionPriority: Int, CaseIterable {
     case High = 3
     case Custom = 0
 
-    public static let strings = [TransactionPriority.Low: "id_slow", TransactionPriority.Medium: "id_medium", TransactionPriority.High: "id_fast", TransactionPriority.Custom: "id_custom"]
-
     public var text: String {
-        return TransactionPriority.strings[self] ?? ""
+        switch self {
+        case .Custom:
+            return "id_custom"
+        case .High:
+            return "id_fast"
+         case .Medium:
+            return "id_medium"
+        case .Low:
+            return "id_slow"
+        }
     }
 }
 

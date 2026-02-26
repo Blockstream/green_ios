@@ -27,15 +27,7 @@ class DialogCustomFeeViewController: KeyboardViewController {
 
     weak var delegate: DialogCustomFeeViewControllerDelegate?
     var feeRate: UInt64?
-    var account: WalletItem!
-
-    func minFeeRate() async -> UInt64 {
-        guard let estimates = try? await account.session?.getFeeEstimates() else {
-            let defaultMinFee = account.gdkNetwork.liquid ? 100 : 1000
-            return UInt64(defaultMinFee)
-        }
-        return estimates[0]
-    }
+    var minFeeRate: UInt64?
 
     lazy var blurredView: UIView = {
         let containerView = UIView()
@@ -137,15 +129,14 @@ class DialogCustomFeeViewController: KeyboardViewController {
 
     func validate() {
         Task {
-            let minFeeRate = await self.minFeeRate()
             guard var amountText = feeTextField.text else { return }
             amountText = amountText.isEmpty ? "0" : amountText
             amountText = amountText.unlocaleFormattedString(8)
             guard let number = Double(amountText), number > 0 else { return }
             if 1000 * number >= Double(UInt64.max) { return }
             let feeRate = UInt64(1000 * number)
-            if feeRate < minFeeRate {
-                let value = Double(minFeeRate) / 1000
+            if feeRate < minFeeRate ?? 0 {
+                let value = Double(minFeeRate ?? 0) / 1000
                 DropAlert().warning(message: String(format: "id_fee_rate_must_be_at_least_s".localized, String(format: "%.2f", value)))
                 return
             }

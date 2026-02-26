@@ -5,6 +5,8 @@
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="invoice" optional="YES" attributeType="String"/>
         <attribute name="isPending" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="swapType" optional="YES" attributeType="Integer 16" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="txHash" optional="YES" attributeType="String"/>
         <attribute name="xpubHashId" optional="YES" attributeType="String"/>
     </entity>
 </model>

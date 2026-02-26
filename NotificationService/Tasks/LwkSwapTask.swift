@@ -54,6 +54,7 @@ public class LwkSwapTask {
         guard let eventData = LwkEventData.from(string: eventData) as? LwkEventData else {
             throw NotificationError.InvalidNotification
         }
+        logger.info("LwkSwapTask: eventData \(eventData.toDict()?.stringify() ?? "", privacy: .public)")
         guard let persistentId = try await BoltzController.shared.fetchID(byId: eventData.id) else {
             logger.error("LwkSwapTask: Swap \(eventData.id, privacy: .public) not present")
             throw NotificationError.InvalidSwap
@@ -74,6 +75,7 @@ public class LwkSwapTask {
         let data = swapData.data(using: .utf8, allowLossyConversion: false)
         let dict = try? JSONSerialization.jsonObject(with: data ?? Data(), options: []) as? [String: Any]
         let dictSwapType = dict?["swap_type"] as? String
+        logger.info("LwkSwapTask: swapData \(dict?.stringify() ?? "", privacy: .public)")
         let swapType = BoltzSwapTypes(rawValue: dictSwapType ?? "")
         switch swapType {
         case .Submarine:
@@ -86,23 +88,31 @@ public class LwkSwapTask {
             }
         case nil:
             throw NotificationError.InvalidNotification
-        }
-        switch eventData.status {
-        case "invoice.settled":
-            if let bestAttemptContent = bestAttemptContent {
-                bestAttemptContent.title = account.name
-                bestAttemptContent.body = "Payment received"
-                contentHandler?(bestAttemptContent)
+        case .Chain:
+            if let lockup = try? await lwk.restoreLockup(data: swapData) {
+                _ = try? await lwk.handleChainLockup(lockup: lockup)
             }
-        case "invoice.paid":
-            if let bestAttemptContent = bestAttemptContent {
-                bestAttemptContent.title = account.name
-                bestAttemptContent.body = "Payment sent"
-                contentHandler?(bestAttemptContent)
+        }
+        // Setup notification content
+        bestAttemptContent?.title = account.name
+        switch eventData.status {
+        case "transaction.mempool":
+            switch swapType {
+            case .Submarine, .ReverseSubmarine:
+                bestAttemptContent?.body = "Processing lightning payment.."
+            case .Chain:
+                bestAttemptContent?.body = "Processing chain swap.."
+            case .none:
+                break
             }
         default:
-            let silentContent = UNMutableNotificationContent()
-            contentHandler?(silentContent)
+            // Eventually don't show any message
+            //let silentContent = UNMutableNotificationContent()
+            //contentHandler?(silentContent)
+            break
+        }
+        if let bestAttemptContent {
+            contentHandler?(bestAttemptContent)
         }
         dismiss?()
     }

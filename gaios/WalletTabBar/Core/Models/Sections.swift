@@ -16,6 +16,7 @@ enum SettingsItem: String, Codable, CaseIterable {
     case lightning = "id_lightning"
     case ampID = "id_amp_id"
     case createAccount = "id_create_account"
+    case swaps = "Swaps"
 
     var string: String { self.rawValue.localized }
 }

@@ -36,7 +36,7 @@ enum TabSettingsSection: Int, CaseIterable {
 class TabViewController: UIViewController {
     var sectionHeaderH: CGFloat = 54.0
     var footerH: CGFloat = 54.0
-    
+
     var walletTab: WalletTabBarViewController {
         // swiftlint:disable force_cast
         parent as! WalletTabBarViewController
@@ -69,16 +69,14 @@ class TabViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    func sendScreen(input: String?) {
-        let sendAddressInputViewModel = SendAddressInputViewModel(
-            input: input,
-            preferredAccount: nil,
-            txType: .transaction)
-
-        let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendAddressInputViewController") as? SendAddressInputViewController {
-            vc.viewModel = sendAddressInputViewModel
-            navigationController?.pushViewController(vc, animated: true)
+    private var activeSendCoordinator: SendCoordinator?
+    func sendScreen(walletDataModel: WalletDataModel, input: String?) {
+        if let nav = navigationController {
+            activeSendCoordinator = SendCoordinator(nav: nav, wallet: walletDataModel, mainAccount: walletTab.mainAccount) { [weak self] in
+                nav.popToRootViewController(animated: true)
+                self?.activeSendCoordinator = nil
+            }
+            activeSendCoordinator?.start(input: input, subaccount: nil, assetId: nil)
         }
     }
     func receiveScreen() {
@@ -90,11 +88,11 @@ class TabViewController: UIViewController {
     }
     func accountsScreen(model: DialogAccountsViewModel) {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAccountsViewController") as? DialogAccountsViewController {
-            vc.viewModel = model
-            vc.modalPresentationStyle = .overFullScreen
-            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+        let vc = storyboard.instantiateViewController(identifier: "DialogAccountsViewController") { coder in
+            DialogAccountsViewController(coder: coder, viewModel: model)
         }
+        vc.modalPresentationStyle = .overFullScreen
+        present(vc, animated: true)
     }
     func securityCompareScreen() {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)

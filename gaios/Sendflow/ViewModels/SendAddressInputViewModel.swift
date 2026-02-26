@@ -77,11 +77,14 @@ class SendAddressInputViewModel {
             if anyAmounts == true {
                 addressee?.satoshi = nil
             }
-            let lightningType = LightningBridge.parseBoltOrLNUrl(input: input)
+            let lightningType = try LightningBridge.parseBoltOrLNUrl(input: input)
             let txType: TxType = { switch lightningType {
                 case .bolt11(_): return .bolt11
                 default: return .lnurl
             }}()
+            guard let addressee else {
+                throw TransactionError.invalid(localizedDescription: "id_invalid_address")
+            }
             return CreateTx(addressee: addressee, subaccount: wm?.lightningSubaccount, error: nil, anyAmounts: anyAmounts, lightningType: lightningType, txType: txType)
         } else {
             if isBip21Lightning || preferredAccount?.networkType.lightning ?? false {
@@ -119,7 +122,10 @@ class SendAddressInputViewModel {
             } else {
                 addressee?.assetId = session.gdkNetwork.getFeeAssetOrNull()
             }
-            return CreateTx(addressee: addressee, txType: .transaction)
+            if let addressee {
+                return CreateTx(addressee: addressee, txType: .transaction)
+            }
+            return nil
         } else {
             if session.networkType.liquid && isBip21Liquid {
                 throw TransactionError.invalid(localizedDescription: "id_invalid_address")

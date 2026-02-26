@@ -63,7 +63,9 @@ actor WalletDataModel {
             case .newBlock:
                 logger.info("WalletDataModel newBlock")
                 // Update content if exist an unconfirmed tx
-                let pendings = state.txs?.filter { $0.blockHeight == 0 }
+                let btcBlockHeight = wallet.bitcoinBlockHeight()
+                let liquidBlockHeight = wallet.liquidBlockHeight()
+                let pendings = state.txs?.filter { $0.confirmations(block: ($0.isLiquid ? liquidBlockHeight ?? 0: btcBlockHeight ?? 0)) <= ($0.isLiquid ? 2 : 6) }
                 if pendings?.count ?? 0 > 0 {
                     await performFetchBalance()
                     await performFetchTransactions(reset: true)
@@ -87,7 +89,6 @@ actor WalletDataModel {
                 await performSettings()
             case .disconnected:
                 logger.info("WalletDataModel disconnected")
-                break
             case .reconnected:
                 logger.info("WalletDataModel reconnect")
                 await performFetchBalance()
@@ -111,7 +112,7 @@ actor WalletDataModel {
     private func performFetchBalance() async {
         do {
             let subaccounts = state.subaccounts
-            let balances = try await wallet.balances(subaccounts: state.subaccounts)
+            let balances = try await wallet.balances(subaccounts: subaccounts)
             let totals = balances.filter { AssetInfo.baseIds.contains($0.0) }.map { $0.1 }.reduce(0, { (res, partial) in res + partial })
             let assetAmountList = AssetAmountList(balances)
             await update(.balance) {
@@ -376,6 +377,9 @@ actor WalletDataModel {
             accountItems += [.twoFactorAuthication, .pgpKey]
         }
         accountItems += [.watchOnly, .archievedAccounts, .createAccount]
+        if !wallet.isEphemeral && mainAccount.isHW && !mainAccount.isWatchonly {
+            accountItems += [.swaps]
+        }
         return [
             .init(section: .header, items: [.header]),
             .init(section: .wallet, items: walletItems),

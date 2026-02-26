@@ -43,6 +43,7 @@ class ReceiveViewController: KeyboardViewController {
     private var headerH: CGFloat = 36.0
     private var loading = true
     private var keyboardVisible = false
+    private var activeSendCoordinator: SendCoordinator?
     var viewModel: ReceiveViewModel!
     weak var verifyOnDeviceViewController: HWDialogVerifyOnDeviceViewController?
     var selectedSegment: Int = 0
@@ -290,16 +291,16 @@ class ReceiveViewController: KeyboardViewController {
     }
     
     @MainActor
-    func presentDialogAccountsViewController() {
+    func accountsScreen() {
+        let model = viewModel.dialogAccountsModel()
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAccountsViewController") as? DialogAccountsViewController {
-            vc.viewModel = viewModel.dialogAccountsModel()
-            vc.delegate = self
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
+        let vc = storyboard.instantiateViewController(identifier: "DialogAccountsViewController") { coder in
+            DialogAccountsViewController(coder: coder, viewModel: model)
         }
+        vc.delegate = self
+        vc.modalPresentationStyle = .overFullScreen
+        present(vc, animated: true)
     }
-
     @MainActor
     func presentConnectViewController() {
         let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
@@ -360,14 +361,16 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func optSweep() {
-        presentSendAddressInputViewController()
+        sendScreen()
     }
 
-    func presentSendAddressInputViewController() {
-        let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendAddressInputViewController") as? SendAddressInputViewController {
-            vc.viewModel = SendAddressInputViewModel(preferredAccount: viewModel.account, txType: .sweep)
-            navigationController?.pushViewController(vc, animated: true)
+    func sendScreen() {
+        if let nav = navigationController, let walletDataModel = viewModel.walletDataModel, let mainAccount = viewModel.mainAccount {
+            activeSendCoordinator = SendCoordinator(nav: nav, wallet: walletDataModel, mainAccount: mainAccount) { [weak self] in
+                nav.popToRootViewController(animated: true)
+                self?.activeSendCoordinator = nil
+            }
+            activeSendCoordinator?.start(input: nil, subaccount: viewModel.account, assetId: viewModel.anyOrAsset.assetId)
         }
     }
 
@@ -522,12 +525,15 @@ class ReceiveViewController: KeyboardViewController {
         }
     }
     func onAccountChange() {
-        presentDialogAccountsViewController()
+        accountsScreen()
     }
     @IBAction func btnConfirm(_ sender: Any) {
         if viewModel.satoshi != nil {
             lightningAmountEditing = false
             newAddress()
+            AnalyticsManager.shared.swapReceive(account: AccountsRepository.shared.current,
+                                                from: SwapChainName.lightning.rawValue,
+                                                to: SwapChainName.liquid.rawValue,)
         }
     }
 }
@@ -792,6 +798,9 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
                         self?.reload() },
                     onRightTap: { [weak self] in
                         self?.prepareReverseSwap()
+                        AnalyticsManager.shared.swapToggle(account: AccountsRepository.shared.current,
+                                                           from: SwapChainName.lightning.rawValue,
+                                                           to: SwapChainName.liquid.rawValue)
                     })
                 cell.selectionStyle = .none
                 return cell

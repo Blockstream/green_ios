@@ -157,7 +157,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
             } else if viewModel.getSubaccountsAmp().count == 1, let subaccount = viewModel.getSubaccountsAmp().first {
                 presentDialogAmpId(subaccount)
             } else {
-                presentDialogAccountsViewController()
+                accountsScreen()
             }
         case .autoLogout:
             showAutoLogout()
@@ -185,6 +185,8 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .createAccount:
             createAccount()
+        case .swaps:
+            pushJadeBoltzSwapViewController()
         }
     }
 
@@ -207,14 +209,24 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     @MainActor
-    func presentDialogAccountsViewController() {
-        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAccountsViewController") as? DialogAccountsViewController {
-            vc.viewModel = viewModel.dialogAccountsModel()
-            vc.delegate = self
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
+    func pushJadeBoltzSwapViewController() {
+        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+        let viewModel = JadeBoltzSwapViewModel(wallet: viewModel.wallet, mainAccount: viewModel.mainAccount)
+        let vc = storyboard.instantiateViewController(identifier: "JadeBoltzSwapViewController") { coder in
+            JadeBoltzSwapViewController(coder: coder, viewModel: viewModel)
         }
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    @MainActor
+    func accountsScreen() {
+        let model = viewModel.dialogAccountsModel()
+        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: "DialogAccountsViewController") { coder in
+            DialogAccountsViewController(coder: coder, viewModel: model)
+        }
+        vc.delegate = self
+        vc.modalPresentationStyle = .overFullScreen
+        present(vc, animated: true)
     }
 
     @MainActor

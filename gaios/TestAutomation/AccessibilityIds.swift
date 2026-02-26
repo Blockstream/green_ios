@@ -9,6 +9,7 @@ struct AccessibilityIds {
         static let ctaViewBuy = "cta_view_buy"
         static let ctaViewSend = "cta_view_send"
         static let ctaViewReceive = "cta_view_receive"
+        static let ctaViewSwap = "cta_view_receive"
         static func cellAssetSelect(_ idx: Int) -> String {
             return "cell_asset_select_index_\(idx)"
         }

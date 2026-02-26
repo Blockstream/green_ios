@@ -2,10 +2,6 @@ import Foundation
 import gdk
 import UIKit
 
-protocol SendSuccessViewControllerDelegate: AnyObject {
-    func onDone()
-    func onShare()
-}
 
 class SendSuccessViewController: UIViewController {
 
@@ -19,10 +15,15 @@ class SendSuccessViewController: UIViewController {
     @IBOutlet weak var btnDone: UIButton!
     @IBOutlet weak var btnShare: UIButton!
 
-    weak var delegate: SendSuccessViewControllerDelegate!
-    var sendTransactionSuccess: SendTransactionSuccess!
-    var amount: String?
-    var isLightning: Bool?
+    let viewModel: SendSuccessViewModel
+
+    init?(coder: NSCoder, viewModel: SendSuccessViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,9 +45,9 @@ class SendSuccessViewController: UIViewController {
         btnDone.setTitle("id_done".localized, for: .normal)
         btnShare.setTitle("id_share_link".localized, for: .normal)
 
-        if isLightning ?? false {
+        if viewModel.tx.isLightning {
             btnTxId.isHidden = true
-            if let message = sendTransactionSuccess.message {
+            if let message = viewModel.sendTransactionSuccess.message {
                 lblAddress.text = message
             } else {
                 lblAddress.isHidden = true
@@ -55,7 +56,7 @@ class SendSuccessViewController: UIViewController {
             btnShare.isHidden = true // never show
         } else {
             btnTxId.setTitle("\("id_transaction_id".localized):", for: .normal)
-            lblAddress.text = sendTransactionSuccess.txHash
+            lblAddress.text = viewModel.sendTransactionSuccess.txHash
             btnShare.setTitle("id_share_link".localized, for: .normal)
         }
     }
@@ -68,7 +69,7 @@ class SendSuccessViewController: UIViewController {
         btnDone.setStyle(.primary)
         btnShare.setStyle(.outlined)
         lblHint.setStyle(.txt)
-        let hint = NSMutableAttributedString(string: "You have just transferred \(amount ?? "")")
+        let hint = NSMutableAttributedString(string: "You have just transferred \(viewModel.total ?? "")")
         hint.setColor(color: UIColor.gGrayTxt(), forText: "You have just transferred")
         lblHint.attributedText = hint
     }
@@ -77,35 +78,23 @@ class SendSuccessViewController: UIViewController {
         super.viewWillAppear(animated)
     }
 
-    func dismiss(completion: @escaping () -> Void) {
-        UIView.animate(withDuration: 0.3, animations: {
-            self.view.alpha = 0.0
-        }, completion: { _ in
-            self.dismiss(animated: false, completion: completion)
-        })
-    }
-
     @IBAction func btnTxId(_ sender: Any) {
-        if isLightning ?? false {
-            if let message = sendTransactionSuccess.message {
+        if viewModel.tx.isLightning {
+            if let message = viewModel.sendTransactionSuccess.message {
                 UIPasteboard.general.string = message
             }
         } else {
-            UIPasteboard.general.string = sendTransactionSuccess.txHash
+            UIPasteboard.general.string = viewModel.sendTransactionSuccess.txHash
         }
         DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 
     @IBAction func btnDone(_ sender: Any) {
-        dismiss() {
-            self.delegate?.onDone()
-        }
+        viewModel.onClose()
     }
 
     @IBAction func btnShare(_ sender: Any) {
-        dismiss() {
-            self.delegate?.onShare()
-        }
+        viewModel.onShare()
     }
 }

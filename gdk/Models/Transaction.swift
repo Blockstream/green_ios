@@ -502,6 +502,7 @@ public struct Transaction: Comparable {
         }
         return lhs.createdAtTs < rhs.createdAtTs
     }
+    
 }
 
 public struct TxoBlindingData: Codable {

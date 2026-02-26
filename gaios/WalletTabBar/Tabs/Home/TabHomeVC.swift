@@ -48,8 +48,9 @@ class TabHomeVC: TabViewController {
         super.viewWillAppear(animated)
         if let url = URLSchemeManager.shared.url {
             URLSchemeManager.shared.url = nil
-            sendScreen(input: url.absoluteString)
+            sendScreen(walletDataModel: viewModel.walletDataModel, input: url.absoluteString)
         }
+        viewModel.refresh(features: [.alertCards])
     }
 
     func setContent() {

@@ -51,10 +51,11 @@ class NotificationService: UNNotificationServiceExtension {
         _ request: UNNotificationRequest,
         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void)
     {
-        logger.info("\(self.TAG, privacy: .public): Notification received: \(self.bestAttemptContent?.userInfo.debugDescription ?? "", privacy: .public)")
         self.contentHandler = contentHandler
         self.bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         let userInfo = bestAttemptContent?.userInfo
+        logger.info("\(self.TAG, privacy: .public): Notification received: \(userInfo?.stringify() ?? "", privacy: .public)")
+        
         if let notification = Notification.from(userInfo ?? [:]) as? Notification {
             Task.detached(priority: .high) { @MainActor [weak self] in
                 await self?.didReceiveLightning(notification)
@@ -102,7 +103,7 @@ class NotificationService: UNNotificationServiceExtension {
         case .success:
             logger.info("\(self.TAG, privacy: .public): LwkSwapTask starts successfully")
         case .failure(let err):
-            logger.error("\(self.TAG, privacy: .public): LwkSwapTask fails with \(err.description(), privacy: .public)")
+            logger.error("\(self.TAG, privacy: .public): LwkSwapTask fails with \(err.localizedDescription, privacy: .public)")
             let silentContent = UNMutableNotificationContent()
             contentHandler?(silentContent)
         }
@@ -133,7 +134,7 @@ class NotificationService: UNNotificationServiceExtension {
         case .success:
             logger.info("\(self.TAG, privacy: .public): MeldTransactionTask starts successfully")
         case .failure(let err):
-            logger.error("\(self.TAG, privacy: .public): MeldTransactionTask fails with \(err.description(), privacy: .public)")
+            logger.error("\(self.TAG, privacy: .public): MeldTransactionTask fails with \(err.localizedDescription, privacy: .public)")
             currentTask.onShutdown()
             shutdown()
         }
@@ -170,7 +171,7 @@ class NotificationService: UNNotificationServiceExtension {
         case .success:
             logger.info("\(self.TAG, privacy: .public): MeldTransactionTask starts successfully")
         case .failure(let err):
-            logger.error("\(self.TAG, privacy: .public): Breez SDK connection failed \(err.description(), privacy: .public)")
+            logger.error("\(self.TAG, privacy: .public): Breez SDK connection failed \(err.localizedDescription, privacy: .public)")
             currentTask.onShutdown()
             shutdown()
         }
