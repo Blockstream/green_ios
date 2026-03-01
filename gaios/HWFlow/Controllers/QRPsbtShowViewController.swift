@@ -10,7 +10,7 @@ class QRPsbtShowViewController: UIViewController {
 
     @IBOutlet weak var bgLayer: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var qr: UIImageView!
+    @IBOutlet weak var qrCodeView: QRCodeView!
     @IBOutlet weak var lblStep: UILabel!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
@@ -63,11 +63,9 @@ class QRPsbtShowViewController: UIViewController {
         super.viewWillAppear(animated)
         presentQRUnlockSignDialogViewController()
         if let bcur = qrBcur {
-            qr.bcurQrCode(bcur: bcur)
+            qrCodeView.configure(frames: bcur.parts)
         } else if let text = qrTxt {
-            qr.qrCode(text: text)
-        } else {
-            qr.image = UIImage()
+            qrCodeView.configure(frames: [text])
         }
     }
 

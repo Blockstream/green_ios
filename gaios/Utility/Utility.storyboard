@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -290,12 +291,13 @@
                                                                     </label>
                                                                 </subviews>
                                                             </stackView>
-                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_qr" translatesAutoresizingMaskIntoConstraints="NO" id="P5j-xj-HLY">
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="liP-PE-li4" customClass="QRCodeView" customModule="gaios" customModuleProvider="target">
                                                                 <rect key="frame" x="0.0" y="64" width="353" height="353"/>
+                                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                                 <constraints>
-                                                                    <constraint firstAttribute="width" secondItem="P5j-xj-HLY" secondAttribute="height" multiplier="1:1" id="kkM-gK-5LQ"/>
+                                                                    <constraint firstAttribute="width" secondItem="liP-PE-li4" secondAttribute="height" multiplier="1:1" id="L0s-iU-U2N"/>
                                                                 </constraints>
-                                                            </imageView>
+                                                            </view>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_address" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gmO-if-miW">
                                                                 <rect key="frame" x="0.0" y="437" width="353" height="16.333333333333314"/>
                                                                 <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="14"/>
@@ -474,7 +476,7 @@
                         <outlet property="mnemonicWarnView" destination="pC9-Fc-QRa" id="cx1-kg-P41"/>
                         <outlet property="navView" destination="vdM-Qg-PNi" id="Y7Y-R6-VGr"/>
                         <outlet property="plainTxt" destination="gmO-if-miW" id="lJk-3p-jqx"/>
-                        <outlet property="qr" destination="P5j-xj-HLY" id="ovT-ef-i58"/>
+                        <outlet property="qrCodeView" destination="liP-PE-li4" id="MX4-qL-gAR"/>
                         <outlet property="scrollView" destination="idE-ry-gUR" id="d5c-HS-NMl"/>
                         <outlet property="warnHint1" destination="NHI-D8-uM9" id="JrL-nV-NKU"/>
                         <outlet property="warnHint2" destination="HwP-eE-pcA" id="9ny-dG-Of4"/>
@@ -1136,7 +1138,6 @@
         <image name="cancel" width="14" height="14"/>
         <image name="ic_hww_arrow" width="60" height="60"/>
         <image name="ic_info_home" width="24" height="24"/>
-        <image name="ic_qr" width="60" height="60"/>
         <image name="ic_search" width="16.666666030883789" height="16.666666030883789"/>
         <image name="il_jade_load_v1" width="197" height="111"/>
         <namedColor name="customMatrixGreen">
@@ -1151,5 +1152,8 @@
         <namedColor name="gGreenMatrix">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

@@ -11,7 +11,7 @@ class DialogQRViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-    @IBOutlet weak var qrImgView: UIImageView!
+    @IBOutlet weak var qrCodeView: QRCodeView!
 
     var qrDialogInfo: QRDialogInfo?
 
@@ -35,9 +35,9 @@ class DialogQRViewController: UIViewController {
         setContent()
         setStyle()
 
-        qrImgView.isUserInteractionEnabled = true
+        qrCodeView.isUserInteractionEnabled = true
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
-        qrImgView.addGestureRecognizer(longPressRecognizer)
+        qrCodeView.addGestureRecognizer(longPressRecognizer)
 
         view.addSubview(blurredView)
         view.sendSubviewToBack(blurredView)
@@ -59,7 +59,7 @@ class DialogQRViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        qrImgView.image = QRImageGenerator.imageForTextWhite(text: qrDialogInfo?.item ?? "", frame: qrImgView.frame)
+        qrCodeView.configure(frames: [qrDialogInfo?.item ?? ""])
         anchorBottom.constant = 0
         UIView.animate(withDuration: 0.3) {
             self.view.alpha = 1.0

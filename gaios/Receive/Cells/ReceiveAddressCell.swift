@@ -7,7 +7,7 @@ class ReceiveAddressCell: UITableViewCell {
     @IBOutlet weak var envelopeView: UIView!
     @IBOutlet weak var envelopeBorderView: UIView!
     @IBOutlet weak var btnQRCode: UIButton!
-    @IBOutlet weak var qrFrame: UIView!
+    @IBOutlet weak var qrFrame: QRCodeView!
     @IBOutlet weak var loader: UIActivityIndicatorView!
     @IBOutlet weak var lnBannerBox: UIView!
     @IBOutlet weak var lnBanner: UIView!
@@ -53,6 +53,14 @@ class ReceiveAddressCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
+    func reset() {
+        qrFrame.reset()
+        qrFrame.isHidden = true
+        plainTxt.isHidden = true
+        groupedTxt.isHidden = true
+        lnBannerBox.isHidden = true
+    }
+
     func configure(model: ReceiveAddressCellModel,
                    isAnimating: Bool,
                    onCopyToClipboard: (() -> Void)?,
@@ -76,26 +84,14 @@ class ReceiveAddressCell: UITableViewCell {
         }
         self.onCopyToClipboard = onCopyToClipboard
         self.onRefreshClick = onRefreshClick
-        if let uri = model.text, !uri.isEmpty && isAnimating == false {
-            let dim = min(qrFrame.frame.size.width, qrFrame.frame.size.height)
-            let frame = CGRect(x: 0.0, y: 0.0, width: dim, height: dim)
-            btnQRCode.setImage(QRImageGenerator.imageForTextWhite(text: uri, frame: frame), for: .normal)
-            btnQRCode.imageView?.contentMode = .scaleAspectFit
-            qrFrame.backgroundColor = .white
-            qrFrame.cornerRadius = 10.0
-            if model.type == .bolt11 {
-                qrFrame.backgroundColor = .white
-            }
+        qrFrame.backgroundColor = .clear
+        qrFrame.cornerRadius = 10.0
+        if let uri = model.text, !uri.isEmpty {
+            qrFrame.isHidden = false
+            qrFrame.configure(frames: [uri])
         } else {
-            btnQRCode.setImage(UIImage(), for: .normal)
-            qrFrame.backgroundColor = .clear
-        }
-        if isAnimating {
-            loader.startAnimating()
-            loader.isHidden = false
-        } else {
-            loader.stopAnimating()
-            loader.isHidden = true
+            qrFrame.stopAnimation()
+            qrFrame.isHidden = true
         }
         lnBannerBox.isHidden = true
         if let onChaininfo = model.onChaininfo, model.type == .breezSwap {

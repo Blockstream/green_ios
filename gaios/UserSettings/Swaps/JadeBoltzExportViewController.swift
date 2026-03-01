@@ -11,10 +11,8 @@ class JadeBoltzExportViewController: UIViewController {
 
     @IBOutlet weak var subtitleLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
-    @IBOutlet weak var qrcodeView: UIView!
-    @IBOutlet weak var indicator: UIActivityIndicatorView!
+    @IBOutlet weak var qrcodeView: QRCodeView!
     @IBOutlet weak var nextButton: UIButton!
-    @IBOutlet weak var qrCodeImageView: UIImageView!
     @IBOutlet weak var btnQREnlarge: UIButton!
     weak var delegate: JadeBoltzExportViewControllerDelegate?
     let viewModel: JadeBoltzExportViewModel
@@ -35,6 +33,7 @@ class JadeBoltzExportViewController: UIViewController {
         viewModel.onError = { self.showError($0.description().localized) }
         Task.detached { [weak viewModel] in await viewModel?.performRequest() }
     }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // Connect jade if there is no active connection
@@ -52,9 +51,8 @@ class JadeBoltzExportViewController: UIViewController {
         descriptionLabel.text = "Unlock Jade and scan this QR code to enable swaps. Jade keeps your private keys secure.".localized
         nextButton.setTitle("id_next".localized, for: .normal)
         let tapQRcodeSmall = UITapGestureRecognizer(target: self, action: #selector(showQRFullScreen))
-        qrCodeImageView.addGestureRecognizer(tapQRcodeSmall)
-        qrCodeImageView.isUserInteractionEnabled = true
-        qrCodeImageView.contentMode = .scaleAspectFit
+        qrcodeView.addGestureRecognizer(tapQRcodeSmall)
+        qrcodeView.isUserInteractionEnabled = true
         btnQREnlarge.setTitle("id_increase_qr_size".localized, for: .normal)
     }
 
@@ -77,11 +75,7 @@ class JadeBoltzExportViewController: UIViewController {
     @MainActor
     func reload() async {
         if let bcur = viewModel.bcurParts {
-            qrCodeImageView.bcurQrCode(bcur: bcur)
-            indicator.stopAnimating()
-            indicator.isHidden = true
-        } else {
-            indicator.startAnimating()
+            qrcodeView.configure(frames: bcur.parts)
         }
     }
 

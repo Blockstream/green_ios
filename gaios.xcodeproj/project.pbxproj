@@ -17,7 +17,7 @@
 		09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */; };
 		09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B322165EB3A009BABFE /* SetGauthViewController.swift */; };
 		09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */; };
-		098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */; };
+		098E247D20EDC97D00D7BC38 /* QRGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247C20EDC97D00D7BC38 /* QRGenerator.swift */; };
 		201BF8922DCFA4AD003A9383 /* MeldTransactionTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 201BF8912DCFA4AD003A9383 /* MeldTransactionTask.swift */; };
 		209632632D8420C700FC716D /* QuoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 209632612D8420C700FC716D /* QuoteCell.swift */; };
 		209632642D8420C700FC716D /* QuoteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 209632622D8420C700FC716D /* QuoteCell.xib */; };
@@ -597,7 +597,6 @@
 		8161845D2A3B6467007D6569 /* AnyPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8161845C2A3B6467007D6569 /* AnyPublisher.swift */; };
 		816184602A3B7596007D6569 /* JadeCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8161845F2A3B7596007D6569 /* JadeCommands.swift */; };
 		816184622A3B788C007D6569 /* Jade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816184612A3B788C007D6569 /* Jade.swift */; };
-		8162A1C92B500CF70065D9EB /* UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8162A1C82B500CF70065D9EB /* UIImageView.swift */; };
 		81664BED2A31219500A0131D /* BreezSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 81664BEC2A31219500A0131D /* BreezSDK */; };
 		816685D02BEBBE7600B03B02 /* CreateTx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816685CF2BEBBE7600B03B02 /* CreateTx.swift */; };
 		816685D22BEBBEB400B03B02 /* SendAddressInputViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816685D12BEBBEB400B03B02 /* SendAddressInputViewModel.swift */; };
@@ -779,6 +778,7 @@
 		81C3BC342F26F2ED00CD4F2D /* SendSuccessViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C3BC332F26F2ED00CD4F2D /* SendSuccessViewModel.swift */; };
 		81C3BC362F26F31B00CD4F2D /* SendTxSuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C3BC352F26F31B00CD4F2D /* SendTxSuccessViewController.swift */; };
 		81C4DC212F25306F003E9CC9 /* PaymentTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C4DC202F25306F003E9CC9 /* PaymentTarget.swift */; };
+		81C674C42F906411003D12B3 /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C674C32F906402003D12B3 /* QRCodeView.swift */; };
 		81CB5A3C2F504BF300908553 /* LiquidWalletKit in Frameworks */ = {isa = PBXBuildFile; productRef = 81CB5A3B2F504BF300908553 /* LiquidWalletKit */; };
 		81CB5A3E2F504C1700908553 /* LiquidWalletKit in Frameworks */ = {isa = PBXBuildFile; productRef = 81CB5A3D2F504C1700908553 /* LiquidWalletKit */; };
 		81CB5A402F504CCC00908553 /* LiquidWalletKit in Frameworks */ = {isa = PBXBuildFile; productRef = 81CB5A3F2F504CCC00908553 /* LiquidWalletKit */; };
@@ -1014,7 +1014,7 @@
 		09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorLimitViewController.swift; sourceTree = "<group>"; };
 		09546B322165EB3A009BABFE /* SetGauthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGauthViewController.swift; sourceTree = "<group>"; };
 		09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPhoneViewController.swift; sourceTree = "<group>"; };
-		098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageGenerator.swift; sourceTree = "<group>"; };
+		098E247C20EDC97D00D7BC38 /* QRGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRGenerator.swift; sourceTree = "<group>"; };
 		0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationTypeHandler.swift; sourceTree = "<group>"; };
 		09DA612520E73A2300C3EA03 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		201BF8912DCFA4AD003A9383 /* MeldTransactionTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeldTransactionTask.swift; sourceTree = "<group>"; };
@@ -1639,7 +1639,6 @@
 		8161845F2A3B7596007D6569 /* JadeCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeCommands.swift; sourceTree = "<group>"; };
 		816184612A3B788C007D6569 /* Jade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Jade.swift; sourceTree = "<group>"; };
 		816184642A3B8AC1007D6569 /* BleJadeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleJadeManager.swift; sourceTree = "<group>"; };
-		8162A1C82B500CF70065D9EB /* UIImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageView.swift; sourceTree = "<group>"; };
 		816685CF2BEBBE7600B03B02 /* CreateTx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTx.swift; sourceTree = "<group>"; };
 		816685D12BEBBEB400B03B02 /* SendAddressInputViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendAddressInputViewModel.swift; sourceTree = "<group>"; };
 		816685D32BEBC12E00B03B02 /* SendAmountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendAmountViewModel.swift; sourceTree = "<group>"; };
@@ -1785,6 +1784,7 @@
 		81C3BC352F26F31B00CD4F2D /* SendTxSuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendTxSuccessViewController.swift; sourceTree = "<group>"; };
 		81C4DC202F25306F003E9CC9 /* PaymentTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentTarget.swift; sourceTree = "<group>"; };
 		81C602A422A553D3004E26E1 /* Assets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
+		81C674C32F906402003D12B3 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
 		81CBFF702F6B72A9004AB3D8 /* ConverterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConverterManager.swift; sourceTree = "<group>"; };
 		81CCDF072B9F3E3800C8490C /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		81CDF3442BF2D50500AA4C19 /* SendHWConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendHWConfirmViewModel.swift; sourceTree = "<group>"; };
@@ -1972,7 +1972,7 @@
 				6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */,
 				811006E02199C5BF00D14414 /* UIErrorLabel.swift */,
 				09309F19212F8D8700DE093B /* SearchTextField.swift */,
-				098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */,
+				098E247C20EDC97D00D7BC38 /* QRGenerator.swift */,
 				811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */,
 				3484118B265E6113002D2202 /* Constants.swift */,
 				6D0983F223FF033900289ACA /* DropAlert.swift */,
@@ -3072,6 +3072,7 @@
 		34AB8BAF260367A9009C930A /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				81C674C32F906402003D12B3 /* QRCodeView.swift */,
 				346EB2892BE8BC0E0043139F /* SquareSliderView */,
 				3418BAE42743F99600F9B2D0 /* TransactionBarItem */,
 				3418BAE12743BD9500F9B2D0 /* ArcView */,
@@ -4635,7 +4636,6 @@
 				3456AF11299A78BE00C1BCA6 /* UITextView.swift */,
 				3448B5CE29D59ADF008D5746 /* UITapGestureRecognizer.swift */,
 				8152772629F9B52F00853EA1 /* UIApplication.swift */,
-				8162A1C82B500CF70065D9EB /* UIImageView.swift */,
 				81DFA9952CB3EEE500EE0277 /* String.swift */,
 				34BC63642D097A09001CC38F /* UIImage.swift */,
 				3420F8B12F2226610065CEFF /* UIContextualAction.swift */,
@@ -5395,6 +5395,7 @@
 				8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */,
 				344471C42C478DD00051957E /* DialogGroupListCell.swift in Sources */,
 				34F6152E2E42656F007D38F9 /* TFATimeCell.swift in Sources */,
+				81C674C42F906411003D12B3 /* QRCodeView.swift in Sources */,
 				812872C92EFF8FDC00DE995D /* TabSecurityVM.swift in Sources */,
 				81C3BC322F26F2DD00CD4F2D /* SendSuccessViewModelDelegate.swift in Sources */,
 				34FB695D27FDC6EC00A13197 /* AccountArchiveViewController.swift in Sources */,
@@ -5569,7 +5570,7 @@
 				81EC465B293503A8000AA0E8 /* AlerCardCellModel.swift in Sources */,
 				34DA78A82D8089730022FBB1 /* DialogAccountsViewModel.swift in Sources */,
 				34D7613A2A3892ED00DE57F5 /* DialogExchangeViewController.swift in Sources */,
-				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
+				098E247D20EDC97D00D7BC38 /* QRGenerator.swift in Sources */,
 				340EF8D828B3718D001AE87B /* WalletListCell.swift in Sources */,
 				34675B0A29409D9900771D50 /* Common.swift in Sources */,
 				8138A5232ED0E7DF00C901E4 /* JadeManager.swift in Sources */,
@@ -5579,7 +5580,6 @@
 				34F36F712E43300500791659 /* TFAActionsCell.swift in Sources */,
 				6D97046E2344146300839598 /* ModalAnimator.swift in Sources */,
 				344D57D52D71B6F1009725A3 /* TabSettingsVC.swift in Sources */,
-				8162A1C92B500CF70065D9EB /* UIImageView.swift in Sources */,
 				342875132D551F94003FB5AE /* LangCellModel.swift in Sources */,
 				81D932132A77968500356D06 /* DialogSignViewModel.swift in Sources */,
 				81FBCB4E2B012DA8006BFE97 /* LTExportJadeViewController.swift in Sources */,

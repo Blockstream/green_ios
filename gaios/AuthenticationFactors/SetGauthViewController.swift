@@ -7,7 +7,7 @@ class SetGauthViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var subtitleLabel: UILabel!
-    @IBOutlet weak var qrCodeImageView: UIImageView!
+    @IBOutlet weak var qrCodeView: QRCodeView!
     @IBOutlet weak var warningLabel: UILabel!
     @IBOutlet weak var secretLabel: UILabel!
     @IBOutlet weak var nextButton: UIButton!
@@ -31,7 +31,7 @@ class SetGauthViewController: UIViewController {
             return
         }
         secretLabel.text = secret
-        qrCodeImageView.image = QRImageGenerator.imageForTextWhite(text: gauthData!, frame: qrCodeImageView.frame)
+        qrCodeView.configure(frames: [gauthData ?? ""])
         nextButton.setTitle("id_get_code".localized, for: .normal)
         subtitleLabel.text = "id_scan_the_qr_code_with_an".localized
         warningLabel.text = "id_the_recovery_key_below_will_not".localized
@@ -43,9 +43,9 @@ class SetGauthViewController: UIViewController {
         btnCopy.setTitle("id_copy".localized, for: .normal)
         btnCopy.cornerRadius = 3.0
 
-        qrCodeImageView.isUserInteractionEnabled = true
+        qrCodeView.isUserInteractionEnabled = true
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
-        qrCodeImageView.addGestureRecognizer(longPressRecognizer)
+        qrCodeView.addGestureRecognizer(longPressRecognizer)
     }
 
     override func viewWillAppear(_ animated: Bool) {

@@ -19,8 +19,7 @@ class QRUnlockJadeViewController: UIViewController {
     @IBOutlet weak var lblStep: UILabel!
     @IBOutlet weak var imgStep: UIImageView!
     @IBOutlet weak var progress: UIProgressView!
-    @IBOutlet weak var qrcodeImageView: UIImageView!
-    @IBOutlet weak var qrcodeBgView: UIView!
+    @IBOutlet weak var qrCodeView: QRCodeView!
     @IBOutlet weak var qrScanView: QRCodeReaderView!
     @IBOutlet weak var btnNext: UIButton!
     @IBOutlet weak var btnBack: UIButton!
@@ -82,8 +81,7 @@ class QRUnlockJadeViewController: UIViewController {
         lblHint.text = vm.hint()
         lblStep.text = vm.stepTitle()
         btnNext.setTitle("id_next".localized, for: .normal)
-        qrcodeImageView.isHidden = !vm.showQRCode()
-        qrcodeBgView.isHidden = !vm.showQRCode()
+        qrCodeView.isHidden = !vm.showQRCode()
         btnNext.isHidden = !vm.showQRCode()
         progress.isHidden = true
         lblStep.isHidden = false
@@ -151,7 +149,7 @@ class QRUnlockJadeViewController: UIViewController {
         case .handshakeInitReply:
             theme(.light)
             if let qrBcur = qrBcur {
-                qrcodeImageView.bcurQrCode(bcur: qrBcur)
+                qrCodeView.configure(frames: qrBcur.parts)
             }
         case .xpub:
             lblNavTitle.isHidden = true

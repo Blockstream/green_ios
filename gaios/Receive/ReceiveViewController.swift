@@ -329,10 +329,11 @@ class ReceiveViewController: KeyboardViewController {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 
-    func imgToShare() -> UIImage {
+    func imgToShare() async -> UIImage {
         guard let text = viewModel.text else { return UIImage() }
         let frame = CGRect(x: 0.0, y: 0.0, width: 256, height: 256)
-        return QRImageGenerator.imageForTextWhite(text: text, frame: frame) ?? UIImage()
+        return await QRGenerator()
+            .generateStatic(text: text, size: frame.size, padding: 16) ?? UIImage()
     }
 
     @objc func helpBtnTap() {
@@ -384,6 +385,9 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func onRefreshClick() {
+        if self.viewModel.type == .bolt11 || self.viewModel.type == .lwkSwap {
+            self.viewModel.bolt11 = nil
+        }
         newAddress()
     }
 
@@ -591,25 +595,6 @@ extension ReceiveViewController: DialogAmountViewControllerDelegate {
     func didCancel() { }
 }
 
-extension ReceiveViewController: UIActivityItemSource {
-    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
-        return ""
-    }
-
-    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
-        return nil
-    }
-
-    @available(iOS 13.0, *)
-    func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
-        let image = imgToShare()
-        let imageProvider = NSItemProvider(object: image)
-        let metadata = LPLinkMetadata()
-        metadata.imageProvider = imageProvider
-        return metadata
-    }
-}
-
 extension ReceiveViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
 
@@ -637,30 +622,44 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
                 let activityViewController = UIActivityViewController(activityItems: [uri ?? ""], applicationActivities: nil)
                 activityViewController.popoverPresentationController?.sourceView = self.view
                 self.present(activityViewController, animated: true, completion: nil)
-                let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(uri ?? "") ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
-                                                               media: AnalyticsManager.ReceiveAddressMedia.text,
-                                                               method: AnalyticsManager.ReceiveAddressMethod.share)
-                AnalyticsManager.shared.receiveAddress(account: AccountsRepository.shared.current,
-                                                       walletItem: viewModel.account,
-                                                       data: data)
+                let data = AnalyticsManager.ReceiveAddressData(
+                    type: self.isBipAddress(uri ?? "") ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
+                    media: AnalyticsManager.ReceiveAddressMedia.text,
+                    method: AnalyticsManager.ReceiveAddressMethod.share)
+                AnalyticsManager.shared.receiveAddress(
+                    account: AccountsRepository.shared.current,
+                    walletItem: viewModel.account,
+                    data: data)
             case .qr:
                 let uri = viewModel.text
-                let image = imgToShare()
-                let share = UIActivityViewController(activityItems: [image, self], applicationActivities: nil)
-                self.present(share, animated: true, completion: nil)
-                let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(uri ?? "") ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
-                                                               media: AnalyticsManager.ReceiveAddressMedia.image,
-                                                               method: AnalyticsManager.ReceiveAddressMethod.share)
-                AnalyticsManager.shared.receiveAddress(account: AccountsRepository.shared.current,
-                                                       walletItem: viewModel.account,
-                                                       data: data)
+                let data = AnalyticsManager.ReceiveAddressData(
+                    type: self.isBipAddress(uri ?? "") ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
+                    media: AnalyticsManager.ReceiveAddressMedia.image,
+                    method: AnalyticsManager.ReceiveAddressMethod.share)
+                AnalyticsManager.shared.receiveAddress(
+                    account: AccountsRepository.shared.current,
+                    walletItem: viewModel.account,
+                    data: data)
+                Task {
+                    let image = await imgToShare()
+                    await MainActor.run { [weak self] in
+                        guard let self = self else { return }
+                        let share = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+                        if let popover = share.popoverPresentationController {
+                            popover.sourceView = self.view
+                            popover.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+                            popover.permittedArrowDirections = .any
+                        }
+                        self.present(share, animated: true, completion: nil)
+                    }
+
+                }
             }
         default:
             break
         }
     }
 }
-
 extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -743,6 +742,7 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
         case ReceiveSection.address:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "ReceiveAddressCell") as? ReceiveAddressCell {
                 let model = viewModel.addressCellModel
+                cell.reset()
                 cell.configure(model: model, isAnimating: loading) { [weak self] in self?.copyToClipboard()
                 } onRefreshClick: { [weak self] in
                     self?.onRefreshClick()
@@ -915,7 +915,10 @@ extension ReceiveViewController: AmountCellDelegate {
     }
 
     func textFieldEnabled() {
-        lightningAmountEditing = true
+        if self.viewModel.type == .bolt11 || self.viewModel.type == .lwkSwap {
+            viewModel.bolt11 = nil
+            lightningAmountEditing = true
+        }
         reload()
     }
 

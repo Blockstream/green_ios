@@ -108,8 +108,10 @@ class DialogScanViewController: UIViewController {
 
 extension DialogScanViewController: QRCodeReaderDelegate {
     func onBcurProgress(_ info: gdk.ResolveCodeAuthData) {
-        progress.progress = Float((info.estimatedProgress ?? 0)) / 100
-        progress.isHidden = false
+        Task { @MainActor in
+            progress.progress = Float((info.estimatedProgress ?? 0)) / 100
+            progress.isHidden = false
+        }
     }
 
     func userDidGrant(_: Bool) { }

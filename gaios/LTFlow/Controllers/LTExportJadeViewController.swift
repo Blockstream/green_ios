@@ -12,10 +12,8 @@ class LTExportJadeViewController: UIViewController {
 
     @IBOutlet weak var subtitleLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
-    @IBOutlet weak var qrcodeView: UIView!
-    @IBOutlet weak var indicator: UIActivityIndicatorView!
     @IBOutlet weak var nextButton: UIButton!
-    @IBOutlet weak var qrCodeImageView: UIImageView!
+    @IBOutlet weak var qrCodeView: QRCodeView!
 
     @IBOutlet weak var btnLearnMore: UIButton!
     @IBOutlet weak var btnQREnlarge: UIButton!
@@ -28,7 +26,6 @@ class LTExportJadeViewController: UIViewController {
         super.viewDidLoad()
         setStyle()
         setContent()
-        indicator.startAnimating()
         Task { await load() }
     }
 
@@ -38,9 +35,8 @@ class LTExportJadeViewController: UIViewController {
         descriptionLabel.text = "id_securely_import_from_your_jade".localized
         nextButton.setTitle("id_next".localized, for: .normal)
         let tapQRcodeSmall = UITapGestureRecognizer(target: self, action: #selector(showQRFullScreen))
-        qrCodeImageView.addGestureRecognizer(tapQRcodeSmall)
-        qrCodeImageView.isUserInteractionEnabled = true
-        qrCodeImageView.contentMode = .scaleAspectFit
+        qrCodeView.addGestureRecognizer(tapQRcodeSmall)
+        qrCodeView.isUserInteractionEnabled = true
         btnLearnMore.setTitle("id_learn_more".localized, for: .normal)
         btnQREnlarge.setTitle("id_increase_qr_size".localized, for: .normal)
     }
@@ -55,12 +51,7 @@ class LTExportJadeViewController: UIViewController {
 
     func load() async {
         if let bcurParts = try? await viewModel.request() {
-            await MainActor.run {
-                bcur = bcurParts
-                qrCodeImageView.bcurQrCode(bcur: bcurParts)
-                indicator.stopAnimating()
-                indicator.isHidden = true
-            }
+            qrCodeView.configure(frames: bcurParts.parts)
         }
     }
 

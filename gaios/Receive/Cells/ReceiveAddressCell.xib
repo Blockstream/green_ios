@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -40,13 +40,9 @@
                                         <rect key="frame" x="58.666666666666664" y="0.0" width="116.66666666666669" height="233.66666666666666"/>
                                         <color key="backgroundColor" name="gGrayCard"/>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iu6-UP-0Cg">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iu6-UP-0Cg" customClass="QRCodeView" customModule="gaios" customModuleProvider="target">
                                         <rect key="frame" x="10" y="10" width="214" height="213.66666666666666"/>
                                         <subviews>
-                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="Yb3-to-mhG">
-                                                <rect key="frame" x="97" y="97" width="20" height="20"/>
-                                                <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            </activityIndicatorView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YlM-8W-9Ai">
                                                 <rect key="frame" x="5" y="5" width="204" height="203.66666666666666"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -59,9 +55,7 @@
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="iu6-UP-0Cg" secondAttribute="height" id="42i-Pf-A4J"/>
                                             <constraint firstItem="YlM-8W-9Ai" firstAttribute="leading" secondItem="iu6-UP-0Cg" secondAttribute="leading" constant="5" id="D5u-cW-ghq"/>
-                                            <constraint firstItem="Yb3-to-mhG" firstAttribute="centerY" secondItem="iu6-UP-0Cg" secondAttribute="centerY" id="UWP-ff-Sgq"/>
                                             <constraint firstAttribute="trailing" secondItem="YlM-8W-9Ai" secondAttribute="trailing" constant="5" id="Ufw-Dx-3rF"/>
-                                            <constraint firstItem="Yb3-to-mhG" firstAttribute="centerX" secondItem="iu6-UP-0Cg" secondAttribute="centerX" id="Xdp-0X-6Qb"/>
                                             <constraint firstAttribute="bottom" secondItem="YlM-8W-9Ai" secondAttribute="bottom" constant="5" id="n2b-Pt-u3b"/>
                                             <constraint firstItem="YlM-8W-9Ai" firstAttribute="top" secondItem="iu6-UP-0Cg" secondAttribute="top" constant="5" id="nRv-DC-sKi"/>
                                         </constraints>
@@ -242,7 +236,6 @@
                 <outlet property="lblInfo" destination="EBf-S9-sse" id="u9c-uM-M1m"/>
                 <outlet property="lnBanner" destination="ie5-aY-hXV" id="jEj-af-775"/>
                 <outlet property="lnBannerBox" destination="JW1-c2-6je" id="Rcf-11-RRB"/>
-                <outlet property="loader" destination="Yb3-to-mhG" id="xV0-1a-xcI"/>
                 <outlet property="plainTxt" destination="8Z6-5U-pNc" id="g2G-0A-2Vj"/>
                 <outlet property="qrFrame" destination="iu6-UP-0Cg" id="j61-7k-alz"/>
             </connections>

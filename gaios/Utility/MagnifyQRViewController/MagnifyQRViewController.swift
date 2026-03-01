@@ -10,8 +10,8 @@ protocol MagnifyQRViewControllerDelegate: AnyObject {
 class MagnifyQRViewController: UIViewController {
 
     @IBOutlet weak var bgLayer: UIView!
+    @IBOutlet weak var qrCodeView: QRCodeView!
     @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var qr: UIImageView!
     @IBOutlet weak var btnClose: UIButton!
     @IBOutlet weak var btnNavClose: UIButton!
     @IBOutlet weak var navView: UIView!
@@ -39,6 +39,7 @@ class MagnifyQRViewController: UIViewController {
     var showClose = false
     weak var delegate: MagnifyQRViewControllerDelegate?
     private let videoCaptureDump = VideoCaptureDump()
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -83,7 +84,7 @@ class MagnifyQRViewController: UIViewController {
             self.view.alpha = 1.0
         }
         // Protect ScreenShot
-        ScreenShield.shared.protect(view: self.qr)
+        ScreenShield.shared.protect(view: self.qrCodeView)
         // ScreenShield.shared.protectFromScreenRecording()
     }
 
@@ -91,16 +92,16 @@ class MagnifyQRViewController: UIViewController {
         super.viewDidDisappear(animated)
         removeObserverUserDidTakeScreenshot()
     }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if let bcur = qrBcur {
-            qr.bcurQrCode(bcur: bcur)
+            qrCodeView.configure(frames: bcur.parts)
         } else if let text = qrTxt {
-            qr.qrCode(text: text)
-        } else {
-            qr.image = UIImage()
+            qrCodeView.configure(frames: [text])
         }
         videoCaptureDump.install(on: self)
+        
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
