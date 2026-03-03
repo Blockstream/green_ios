@@ -541,9 +541,6 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             guard let subaccount = transaction.subaccount, var session = subaccount.session else {
                 throw TransactionError.invalid(localizedDescription: "No subaccount selected")
             }
-            guard let swapId = vm.swapId else {
-                throw TransactionError.invalid(localizedDescription: "No swap created")
-            }
             if isJade {
                 if let wm = BleHwManager.shared.walletManager, BleHwManager.shared.isConnected() && BleHwManager.shared.isLogged() {
                     session = wm.getSession(for: subaccount) ?? session
@@ -552,7 +549,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             let sendTransactionSuccess = try await TransactionBuilder.sendGdkTransaction(
                 tx: transaction,
                 session: session)
-            if let persistentId = try? await BoltzController.shared.fetchID(byId: swapId) {
+            if let swapId = vm.swapId, let persistentId = try? await BoltzController.shared.fetchID(byId: swapId) {
                 try? await BoltzController.shared.update(with: persistentId, newTxHash: sendTransactionSuccess.txHash)
             }
             return sendTransactionSuccess

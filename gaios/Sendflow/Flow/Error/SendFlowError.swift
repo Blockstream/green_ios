@@ -1,6 +1,6 @@
 import LiquidWalletKit
 
-enum SendFlowError: Error, Sendable {
+enum SendFlowError: Error, Sendable, Equatable {
     case noAvailableSubaccounts
     case invalidPaymentTarget
     case failedToBuildTransaction

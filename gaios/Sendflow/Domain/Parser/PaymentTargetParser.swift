@@ -6,10 +6,10 @@ import greenaddress
 
 struct PaymentTargetParser: Sendable {
 
-    func parse(_ text: String) async throws -> PaymentTarget {
+    nonisolated func parse(_ text: String) async throws -> PaymentTarget {
         do {
             return try await parseLwk(text)
-        } catch {
+        } catch SendFlowError.invalidPaymentTarget {
             if await isPsbt(text) {
                 return .psbt(text)
             } else if await isPset(text) {
@@ -17,20 +17,21 @@ struct PaymentTargetParser: Sendable {
             } else if isPrivateKey(text) {
                 return .privateKey(text)
             }
-            if let error = error as? LwkError {
-                throw SendFlowError.invalidPaymentTarget
-            }
-            throw error
+            throw SendFlowError.invalidPaymentTarget
+        } catch let error as LwkError {
+            throw SendFlowError.lwkError(error)
+        } catch {
+            throw SendFlowError.generic(error.description())
         }
     }
-    func isPsbt(_ text: String) async -> Bool {
+    nonisolated func isPsbt(_ text: String) async -> Bool {
         let wm = WalletManager.current
         let session = wm?.bitcoinSinglesigSession ?? wm?.bitcoinMultisigSession
         let params = PsbtGetDetailParams(psbt: text, utxos: [:])
         let tx = try? await session?.psbtGetDetails(params: params)
         return tx != nil
     }
-    func isPset(_ text: String) async -> Bool {
+    nonisolated func isPset(_ text: String) async -> Bool {
         let wm = WalletManager.current
         let session = wm?.liquidSinglesigSession ?? wm?.liquidMultisigSession
         let params = PsbtGetDetailParams(psbt: text, utxos: [:])
@@ -41,7 +42,7 @@ struct PaymentTargetParser: Sendable {
         ["xpub", "zpub", "upub", "ypub", "vpub"].contains { text.starts(with: $0) }
     }
 
-    func parseLwk(_ text: String) async throws -> PaymentTarget {
+    nonisolated func parseLwk(_ text: String) async throws -> PaymentTarget {
         let payment = try Payment(s: text)
         switch payment.kind() {
         case .bitcoinAddress:
@@ -65,7 +66,7 @@ struct PaymentTargetParser: Sendable {
                 return .lightningInvoice(lightningInvoice)
             }
         case .lightningOffer:
-            throw SendFlowError.generic("Invoice without amount not supported. Paste an invoice with an amount")
+            throw SendFlowError.generic("Lightning offer not supported. Paste an invoice with an amount")
         case .lnUrl:
             throw SendFlowError.generic("LNURL not supported. Paste an invoice with an amount")
         case .bip353:
