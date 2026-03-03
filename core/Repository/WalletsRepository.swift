@@ -47,9 +47,4 @@ public class WalletsRepository {
             wallets.remove(at: index)
         }
     }
-
-    public func change(wm: WalletManager, for account: Account) {
-        delete(for: wm)
-        add(for: account, wm: wm)
-    }
 }

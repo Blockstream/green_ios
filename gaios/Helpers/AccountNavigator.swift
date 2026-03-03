@@ -61,15 +61,17 @@ class AccountNavigator {
     static func logged(accountId: String, isFirstLoad: Bool = false) -> WalletTabBarViewController {
         return walletTabBarViewController(accountId: accountId, isFirstLoad: isFirstLoad)
     }
-    
+
     @MainActor
     static func walletTabBarViewController(accountId: String, isFirstLoad: Bool) -> WalletTabBarViewController {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
         let account = AccountsRepository.shared.get(for: accountId)!
+        let wallet = WalletsRepository.shared.getOrAdd(for: account)
         let walletTabBarModel = WalletTabBarModel(
-            wallet: WalletsRepository.shared.getOrAdd(for: account),
+            wallet: wallet,
             mainAccount: account,
             isFirstLoad: isFirstLoad)
+        AccountsRepository.shared.current = account
         return storyboard.instantiateViewController(identifier: "WalletTabBarViewController") { coder in
             WalletTabBarViewController(coder: coder, walletTabBarModel: walletTabBarModel)
         }

@@ -223,6 +223,7 @@ actor WalletDataModel {
         switch feature {
         case .subaccounts:
             await performFetchSubaccounts(refresh: false)
+            await performFetchBalance()
         case .balance:
             await performFetchBalance()
         case .txs(reset: let reset):

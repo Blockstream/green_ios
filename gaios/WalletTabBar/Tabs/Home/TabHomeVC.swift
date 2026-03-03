@@ -29,7 +29,7 @@ class TabHomeVC: TabViewController {
                 self?.onUpdate(feature: feature)
             }
         }
-        viewModel.refresh(features: [.alertCards, .promos, .balance, .subaccounts, .priceChart])
+        viewModel.refresh(features: [.alertCards, .promos, .subaccounts, .priceChart])
     }
 
     func onUpdate(feature: RefreshFeature?) {
