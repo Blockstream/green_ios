@@ -296,10 +296,8 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
                             }
                         },
                         onRight: nil,
-                        onDismiss: {
-                            BackupHelper.shared.addToDismissed(walletId: self.viewModel.mainAccount.id, position: .securityTab)
-                            tableView.reloadData()
-                        })
+                        onDismiss: nil
+                    )
                     cell.selectionStyle = .none
                     return cell
                 }

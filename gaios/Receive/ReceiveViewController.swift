@@ -61,9 +61,8 @@ class ReceiveViewController: KeyboardViewController {
 
         didSelectAccount(viewModel.account)
         // always nag even after dismiss
-        //BackupHelper.shared.cleanDismissedCache(walletId: viewModel.wm.account.id, position: .receive)
-        
-        //AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
+        // BackupHelper.shared.cleanDismissedCache(walletId: viewModel.wm.account.id, position: .receive)
+        // AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -128,29 +127,29 @@ class ReceiveViewController: KeyboardViewController {
             switch viewModel.type {
             case .lwkSwap:
                 if lightningAmountEditing {
-                    return [.asset, .account, .segmented, .amount]
+                    return [.backup, .asset, .account, .segmented, .amount]
                 } else {
-                    return [.asset, .account, .segmented, .amount, .address, .infoLwkSwap]
+                    return [.backup, .asset, .account, .segmented, .amount, .address, .infoLwkSwap]
                 }
             default:
                 if viewModel.wm.lwkSession?.logged ?? false {
                     switch viewModel.anyOrAsset {
                     case .anyLiquid, .anyAmp:
-                        return [.asset, .account, .address]
+                        return [.backup, .asset, .account, .address]
                     default:
-                        return [.asset, .account, .segmented, .address]
+                        return [.backup, .asset, .account, .segmented, .address]
                     }
                 } else {
-                    return [.asset, .account, .address]
+                    return [.backup, .asset, .account, .address]
                 }
             }
         }
         switch viewModel.type {
         case .bolt11:
             if lightningAmountEditing {
-                return [.asset, .account, .amount]
+                return [.backup, .asset, .account, .amount]
             } else {
-                return [.asset, .account, .amount, .address, .infoReceiveAmount, .infoExpiredIn, .note]
+                return [.backup, .asset, .account, .amount, .address, .infoReceiveAmount, .infoExpiredIn, .note]
             }
         case .breezSwap:
             return [.backup, .asset, .account, .address]
@@ -289,7 +288,7 @@ class ReceiveViewController: KeyboardViewController {
             screenName: "Receive")
         presentContactUsViewController(request: request)
     }
-    
+
     @MainActor
     func accountsScreen() {
         let model = viewModel.dialogAccountsModel()
@@ -533,7 +532,7 @@ class ReceiveViewController: KeyboardViewController {
             newAddress()
             AnalyticsManager.shared.swapReceive(account: AccountsRepository.shared.current,
                                                 from: SwapChainName.lightning.rawValue,
-                                                to: SwapChainName.liquid.rawValue,)
+                                                to: SwapChainName.liquid.rawValue)
         }
     }
 }
