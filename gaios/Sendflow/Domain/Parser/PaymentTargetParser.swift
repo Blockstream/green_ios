@@ -1,10 +1,11 @@
 import LiquidWalletKit
 import Foundation
-import core
+@preconcurrency import core
 import gdk
 import greenaddress
 
 struct PaymentTargetParser: Sendable {
+    public let mainAccount: Account
 
     nonisolated func parse(_ text: String) async throws -> PaymentTarget {
         do {
@@ -62,6 +63,11 @@ struct PaymentTargetParser: Sendable {
                 let isExpired = lightningInvoice.expiryTime() + lightningInvoice.timestamp() <= currentTimestamp
                 if isExpired {
                     throw SendFlowError.generic("Invoice expired")
+                }
+                let swapIdsByInvoice = try await BoltzController.shared.fetchSwaps(xpubHashId: mainAccount.xpubHashId ?? "", invoice: lightningInvoice.description, swapType: .Submarine)
+                let swapsByInvoice = try await BoltzController.shared.gets(with: swapIdsByInvoice)
+                if !swapsByInvoice.filter({ $0.txHash != nil }).isEmpty {
+                    throw SendFlowError.generic("Invoice already paid")
                 }
                 return .lightningInvoice(lightningInvoice)
             }

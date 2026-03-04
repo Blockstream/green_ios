@@ -219,20 +219,6 @@ class ReceiveViewController: KeyboardViewController {
         }
     }
 
-    func waitingSwapCompletion() async {
-        guard let invoice = viewModel.lwkInvoice else { return }
-        let res = Task.detached(priority: .background) { [weak self] in
-            try await self?.viewModel.wm.lwkSession?.handleInvoice(invoice: invoice)
-        }
-        scrollToBottom()
-        switch await res.result {
-        case .success(let res):
-            logger.info("BOLTZ waiting: \(res == PaymentState.success ? "Success" : "Failed" )")
-            DropAlert().success(message: "id_payment_received".localized)
-        case .failure(let err):
-            logger.error("BOLTZ waiting error: \(err.description().localized, privacy: .public)")
-        }
-    }
     @MainActor
     func scrollToBottom() {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {[weak self] in
@@ -253,7 +239,12 @@ class ReceiveViewController: KeyboardViewController {
             // waiting for paid invoice
             switch viewModel.type {
             case .lwkSwap:
-                await waitingSwapCompletion()
+                Task {
+                    guard let invoice = viewModel.lwkInvoice else { return }
+                    if let persistentId = try? await BoltzController.shared.fetchID(byId: invoice.swapId()) {
+                        await self.viewModel.wm.swapMonitor?.monitorSwap(id: persistentId)
+                    }
+                }
             default:
                 break
             }

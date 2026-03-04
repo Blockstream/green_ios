@@ -28,7 +28,7 @@ struct JadeBoltzSwapViewModel {
         }
     }
     func existPendingSwap() async -> Bool {
-        let swaps = try? await BoltzController.shared.fetchIDs(byIsPending: true, byXpubHashId: mainAccount.xpubHashId, byInvoice: nil)
+        let swaps = try? await BoltzController.shared.fetchPendingSwaps(xpubHashId: mainAccount.xpubHashId ?? "")
         return swaps?.count ?? 0 > 0
     }
     func disconnectBoltz() async throws {

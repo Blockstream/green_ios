@@ -39,10 +39,10 @@ class WalletTabBarViewController: UITabBarController {
             await self?.setupRemoteNotifications()
         }
         Task.detached { [weak self] in
-            await self?.walletTabBarModel.completePendingSwaps()
+            await self?.walletTabBarModel.callAnalytics()
         }
         Task.detached { [weak self] in
-            await self?.walletTabBarModel.callAnalytics()
+            try await self?.wallet.swapMonitor?.bootstrap()
         }
     }
 

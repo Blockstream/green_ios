@@ -41,7 +41,7 @@ final class SendCoordinator {
     }
 
     func start(input: String?, subaccount: WalletItem?, assetId: String?) {
-        let model = SendAddressViewModel(wallet: wallet, text: input, subaccount: subaccount, assetId: assetId, delegate: self)
+        let model = SendAddressViewModel(mainAccount: mainAccount, wallet: wallet, text: input, subaccount: subaccount, assetId: assetId, delegate: self)
         let vc = sendAddressViewController(model: model)
         nav.pushViewController(vc, animated: true)
     }
@@ -538,6 +538,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             await nav.presentAsync(vc, animated: true)
         }
         let isJade = mainAccount.isJade
+        let xpubHashId = mainAccount.xpubHashId
         let task = Task.detached {
             guard let subaccount = transaction.subaccount, var session = subaccount.session else {
                 throw TransactionError.invalid(localizedDescription: "No subaccount selected")
@@ -552,6 +553,9 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
                 session: session)
             if let swapId = vm.swapId, let persistentId = try? await BoltzController.shared.fetchID(byId: swapId) {
                 try? await BoltzController.shared.update(with: persistentId, newTxHash: sendTransactionSuccess.txHash)
+            } else if let invoice = try? vm.bolt11.description {
+                // used magic routing to pay the invoice
+                _ = try? await BoltzController.shared.create(id: nil, data: nil, isPending: false, xpubHashId: xpubHashId, invoice: invoice, swapType: .submarineSwap, txHash: sendTransactionSuccess.txHash)
             }
             return sendTransactionSuccess
         }
@@ -564,8 +568,13 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
                 tx: transaction,
                 total: vm.convertToDenom(satoshi: vm.satoshiWithFee ?? 0),
                 delegate: self)
-            /// Bakcground task
-            Task.detached { [weak vm] in await vm?.waitingSwapCompletion() }
+            if let swapId = vm.swapId {
+                Task { [weak wallet] in
+                    if let persistentId = try? await BoltzController.shared.fetchID(byId: swapId) {
+                        await wallet?.wallet.swapMonitor?.monitorSwap(id: persistentId)
+                    }
+                }
+            }
             return .success(model)
         case .failure(let error):
             nav.topViewController?.stopLoader()
@@ -591,7 +600,7 @@ extension SendCoordinator: SendSwapViewModelDelegate {
             forwardError(SendFlowError.failedToBuildTransaction)
             return
         }
-        let model = SendLwkSignViewModel(transactionDraft: draft, denominationType: .Sats, isFiat: false, subaccount: subaccount, delegate: self, tx: gdkTransaction)
+        let model = SendLwkSignViewModel(transactionDraft: draft, denominationType: vm.currentState().denomination, isFiat: false, subaccount: subaccount, delegate: self, tx: gdkTransaction)
         Task { await navigate(to: .signAtomicSwap(model)) }
     }
     func sendSwapViewModelDidFail(_ vm: SendSwapViewModel, error: any Error) {

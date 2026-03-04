@@ -152,23 +152,6 @@ class SendLwkSignViewModel {
     func send() async {
         await delegate?.didSendLwkSignViewModelWillSend(self, transaction: tx)
     }
-    func waitingSwapCompletion() async {
-        let res = Task.detached(priority: .background) { [weak self] in
-            if let swapPay = self?.draft.swapPayResponse {
-                return try await WalletManager.current?.lwkSession?.handlePay(pay: swapPay)
-            } else if let lockup = self?.draft.lockupResponse {
-                return try await WalletManager.current?.lwkSession?.handleChainLockup(lockup: lockup)
-            } else {
-                return PaymentState.failed
-            }
-        }
-        switch await res.result {
-        case .success(let paymentState):
-            logger.info("BOLTZ payment done with state: \(paymentState?.localized ?? "")")
-        case .failure(let err):
-            logger.error("BOLTZ payment error: \(err.description().localized, privacy: .public)")
-        }
-    }
     func convertToDenom(satoshi: UInt64) -> String? {
         return Balance.fromSatoshi(satoshi, assetId: assetIdFrom)?.toText(denominationType)
     }

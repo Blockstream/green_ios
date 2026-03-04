@@ -231,6 +231,7 @@ class SendSwapViewController: UIViewController {
     @IBAction func btnSwap(_ sender: Any) {
         viewModel.swapPositions(for: fieldFrom.isFirstResponder ? .from : .to)
     }
+    @MainActor
     @IBAction func btnNext(_ sender: Any) {
         AnalyticsManager.shared.swapInitiate(account: AccountsRepository.shared.current,
                                              from: viewModel.currentState().from.chain,
@@ -274,17 +275,29 @@ extension SendSwapViewController: SendFlowErrorDisplayable {
 }
 extension SendSwapViewController: DialogInputDenominationViewControllerDelegate {
     func didSelectFiat() {
+        guard let position = viewModel.selectedPosition else { return }
+        switch position {
+        case .from:
+            fieldFrom.text = viewModel.newFiatText(position: position)
+        case .to:
+            fieldTo.text = viewModel.newFiatText(position: position)
+        }
         viewModel.updateIsFiat(true)
-        let position = viewModel.selectedPosition
         let number = position == .from ? fieldFrom : fieldTo
-        viewModel.updateAmountFromText(number?.text ?? "", for: position ?? .from)
+        viewModel.updateAmountFromText(number?.text ?? "", for: position)
     }
     func didSelectInput(denomination: DenominationType) {
+        guard let position = viewModel.selectedPosition else { return }
+        switch position {
+        case .from:
+            fieldFrom.text = viewModel.newText(position: position, newDenom: denomination)
+        case .to:
+            fieldTo.text = viewModel.newText(position: position, newDenom: denomination)
+        }
         viewModel.updateIsFiat(false)
         viewModel.updateDenomination(denomination)
-        let position =  viewModel.selectedPosition
         let number = position == .from ? fieldFrom : fieldTo
-        viewModel.updateAmountFromText(number?.text ?? "", for: position ?? .from)
+        viewModel.updateAmountFromText(number?.text ?? "", for: position)
     }
 }
 

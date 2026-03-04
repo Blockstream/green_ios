@@ -8,13 +8,14 @@ import greenaddress
 final class SendAddressViewModel: Sendable {
 
     let wallet: WalletDataModel
+    let mainAccount: Account
     let text: String?
     let sweepPrivateKey: Bool
     let subaccount: WalletItem?
     let assetId: String?
     let delegate: SendAddressViewModelDelegate?
 
-    private let parser = PaymentTargetParser()
+    private let parser: PaymentTargetParser
     private var wm: WalletManager { wallet.wallet }
     
     // UI state
@@ -26,18 +27,22 @@ final class SendAddressViewModel: Sendable {
     var onStateChanged: (() -> Void)?
 
     init(
+        mainAccount: Account,
         wallet: WalletDataModel,
         text: String?,
         subaccount: WalletItem?,
         assetId: String?,
         sweepPrivateKey: Bool = false,
-        delegate: SendAddressViewModelDelegate) {
+        delegate: SendAddressViewModelDelegate
+    ) {
         self.wallet = wallet
         self.text = text
         self.subaccount = subaccount
         self.assetId = assetId
         self.sweepPrivateKey = sweepPrivateKey
         self.delegate = delegate
+        self.mainAccount = mainAccount
+        self.parser = PaymentTargetParser(mainAccount: mainAccount)
     }
 
     func validate(text: String) async {

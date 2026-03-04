@@ -46,7 +46,7 @@ public actor BoltzController {
     }
 
     /// Creates and saves a new 'BoltzSwaps' object.
-    public func create(id: String, data: String, isPending: Bool, xpubHashId: String?, invoice: String?, swapType: SwapType) async throws -> BoltzSwap {
+    public func create(id: String?, data: String?, isPending: Bool, xpubHashId: String?, invoice: String?, swapType: SwapType, txHash: String?) async throws -> BoltzSwap {
         let savedItem: BoltzSwap = try await context.perform {
             let item = BoltzSwap(context: self.context)
             item.id = id
@@ -55,26 +55,16 @@ public actor BoltzController {
             item.invoice = invoice
             item.xpubHashId = xpubHashId
             item.swapType = swapType.rawValue
+            item.txHash = txHash
             try self.context.save()
             return item
         }
         return savedItem
     }
-
-    /// Fetch IDs of 'BoltzSwap' objects by filtering.
-    public func fetchIDs(byIsPending: Bool? = nil, byXpubHashId: String? = nil, byInvoice: String? = nil) async throws -> [NSManagedObjectID] {
+    
+    public func fetchIDs(_ predicates: [NSPredicate]) async throws -> [NSManagedObjectID] {
         let ids: [NSManagedObjectID] = try await context.perform {
             let fetchRequest = NSFetchRequest<NSManagedObjectID>(entityName: "BoltzSwap")
-            var predicates = [NSPredicate]()
-            if let isPending = byIsPending {
-                predicates.append(NSPredicate(format: "isPending == %@", isPending as NSNumber))
-            }
-            if let xpubHashId = byXpubHashId {
-                predicates.append(NSPredicate(format: "xpubHashId == %@", xpubHashId))
-            }
-            if let invoice = byInvoice {
-                predicates.append(NSPredicate(format: "invoice == %@", invoice))
-            }
             if !predicates.isEmpty {
                 fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
             }
@@ -84,7 +74,21 @@ public actor BoltzController {
         }
         return ids
     }
-
+    public func fetchPendingSwaps(xpubHashId: String) async throws -> [NSManagedObjectID] {
+        try await fetchIDs([
+            NSPredicate(format: "xpubHashId == %@", xpubHashId),
+            NSPredicate(format: "isPending == true"),
+            NSPredicate(format: "txHash == nil")
+        ])
+    }
+    public func fetchSwaps(xpubHashId: String, invoice: String, swapType: BoltzSwapTypes) async throws -> [NSManagedObjectID] {
+        try await fetchIDs([
+            NSPredicate(format: "xpubHashId == %@", xpubHashId),
+            NSPredicate(format: "invoice == %@", invoice),
+            NSPredicate(format: "swapType == %@", swapType.rawValue)
+        ])
+    }
+    
     /// Fetch ID of 'BoltzSwap' objects by his id.
     public func fetchID(byId id: String) async throws -> NSManagedObjectID? {
         let item = try await context.perform {
@@ -98,11 +102,11 @@ public actor BoltzController {
         return item
     }
 
-    public func upsert(id: String, data: String, isPending: Bool, xpubHashId: String, invoice: String? = nil, swapType: SwapType) async throws {
-        if let swapID = try? await BoltzController.shared.fetchID(byId: id) {
-            try? await update(with: swapID, newData: data)
+    public func upsert(id: String, data: String, isPending: Bool, xpubHashId: String, invoice: String? = nil, swapType: SwapType, txHash: String?) async throws {
+        if let persistentID = try? await BoltzController.shared.fetchID(byId: id) {
+            try? await update(with: persistentID, newData: data, newIsPending: isPending, newTxHash: txHash)
         } else {
-            _ = try? await create(id: id, data: data, isPending: true, xpubHashId: xpubHashId, invoice: data, swapType: swapType)
+            _ = try? await create(id: id, data: data, isPending: true, xpubHashId: xpubHashId, invoice: invoice, swapType: swapType, txHash: txHash)
         }
     }
 

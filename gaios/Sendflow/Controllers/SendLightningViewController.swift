@@ -150,21 +150,6 @@ class SendLightningViewController: UIViewController {
         }
     }
 
-    func waitingSwapCompletion() async {
-        guard let pay = viewModel.swapPayResponse else { return }
-        let res = Task.detached(priority: .background) { [weak self] in
-            try await self?.viewModel.lwk.handlePay(pay: pay)
-        }
-        switch await res.result {
-        case .success:
-            logger.info("BOLTZ payment done")
-            //LocalNotification().show(title: "Payment success", subtitle: "")
-        case .failure(let err):
-            logger.error("BOLTZ payment error: \(err.description().localized, privacy: .public)")
-            //LocalNotification().show(title: "Payment Failure", subtitle: err.description().localized)
-        }
-    }
-
     @MainActor
     func presentSendFailViewController(_ error: Error) {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
@@ -185,7 +170,6 @@ class SendLightningViewController: UIViewController {
         switch await task.result {
         case .success:
             stopLoader()
-            Task.detached { [weak self] in await self?.waitingSwapCompletion() }
             dismiss(animated: true, completion: {
                 if let sendSuccess = self.viewModel.sendTransaction {
                     self.presentSendSuccessViewController(sendSuccess)

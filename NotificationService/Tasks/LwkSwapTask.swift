@@ -69,37 +69,33 @@ public class LwkSwapTask {
             logger.info("LwkSwapTask: Swap not pending")
         }
         GdkInit.defaults().run()
-        let lwk = LwkSessionManager(newNotificationDelegate: nil)
-        try await lwk.connect()
-        _ = try await lwk.loginUser(Credentials(mnemonic: secret))
-        let data = swapData.data(using: .utf8, allowLossyConversion: false)
-        let dict = try? JSONSerialization.jsonObject(with: data ?? Data(), options: []) as? [String: Any]
-        let dictSwapType = dict?["swap_type"] as? String
-        logger.info("LwkSwapTask: swapData \(dict?.stringify() ?? "", privacy: .public)")
-        let swapType = BoltzSwapTypes(rawValue: dictSwapType ?? "")
-        switch swapType {
+        let lwkSession = LwkSessionManager(newNotificationDelegate: nil)
+        try await lwkSession.connect()
+        _ = try await lwkSession.loginUser(Credentials(mnemonic: secret))
+        let monitor = SwapMonitor(mainAccount: account, lwkSession: lwkSession)
+        switch swap.type {
         case .Submarine:
-            if let pay = try? await lwk.restorePreparePay(data: swapData) {
-                _ = try? await lwk.handlePay(pay: pay)
+            if let pay = try? await lwkSession.restorePreparePay(data: swapData) {
+                _ = try? await monitor.loopSwap(swap: SwapResponse.submarine(pay))
             }
         case .ReverseSubmarine:
-            if let invoice = try? await lwk.restoreInvoice(data: swapData) {
-                _ = try? await lwk.handleInvoice(invoice: invoice)
+            if let invoice = try? await lwkSession.restoreInvoice(data: swapData) {
+                _ = try? await monitor.loopSwap(swap: SwapResponse.reverseSubmarine(invoice))
+            }
+        case .Chain:
+            if let lockup = try? await lwkSession.restoreLockup(data: swapData) {
+                _ = try? await monitor.loopSwap(swap: SwapResponse.chain(lockup))
             }
         case nil:
             throw NotificationError.InvalidNotification
-        case .Chain:
-            if let lockup = try? await lwk.restoreLockup(data: swapData) {
-                _ = try? await lwk.handleChainLockup(lockup: lockup)
-            }
         }
         // Setup notification content
         bestAttemptContent?.title = account.name
         switch eventData.status {
         case "transaction.mempool":
-            switch swapType {
+            switch swap.type {
             case .Submarine, .ReverseSubmarine:
-                bestAttemptContent?.body = "Processing lightning payment.."
+                bestAttemptContent?.body = "Processing Lightning payment.."
             case .Chain:
                 bestAttemptContent?.body = "Processing chain swap.."
             case .none:

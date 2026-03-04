@@ -324,4 +324,36 @@ final class SendSwapViewModel {
             swapPosition: state)
         return (draft, tx)
     }
+    func newText(position: SwapPositionEnum, newDenom: DenominationType) -> String {
+        var amountStr = ""
+        switch position {
+        case .from:
+            let satoshi = state.from.amount
+            if let (amount, _) = Balance.fromSatoshi(satoshi ?? 0, assetId: state.from.assetId)?.toValue(newDenom) {
+                amountStr = amount
+            }
+        case .to:
+            let satoshi = state.to.amount
+            if let (amount, _) = Balance.fromSatoshi(satoshi ?? 0, assetId: state.to.assetId)?.toValue(newDenom) {
+                amountStr = amount
+            }
+        }
+        return amountStr
+    }
+    func newFiatText(position: SwapPositionEnum) -> String {
+        var amountStr = ""
+        switch position {
+        case .from:
+            let satoshi = state.from.amount
+            if let (amount, _) = Balance.fromSatoshi(satoshi ?? 0, assetId: state.from.assetId)?.toFiat() {
+                amountStr = amount
+            }
+        case .to:
+            let satoshi = state.to.amount
+            if let (amount, _) = Balance.fromSatoshi(satoshi ?? 0, assetId: state.to.assetId)?.toFiat() {
+                amountStr = amount
+            }
+        }
+        return amountStr
+    }
 }

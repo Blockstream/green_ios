@@ -32,7 +32,7 @@ class SendLightningViewModel {
             return lwk
         }
     }
-    
+
     var liquidSession: SessionManager {
         get throws {
             guard let session = liquidAccount.session else {
@@ -44,7 +44,7 @@ class SendLightningViewModel {
 
     func createSwap(invoice: String) async throws -> PreparePayResponse {
         let xpub = AccountsRepository.shared.current?.xpubHashId
-        let existingSwapIds = try await BoltzController.shared.fetchIDs(byXpubHashId: xpub, byInvoice: invoice)
+        let existingSwapIds = try await BoltzController.shared.fetchSwaps(xpubHashId: xpub ?? "", invoice: invoice, swapType: .Submarine)
         if let swapId = existingSwapIds.first {
             if let swap = try await BoltzController.shared.get(with: swapId), swap.type == .Submarine, let data = swap.data {
                 guard let pay = try await lwk.restorePreparePay(data: data) else {

@@ -127,12 +127,13 @@ actor TransactionBuilder {
     }
     static func buildSwap(invoice: String, lwk: LwkSessionManager, subaccount: WalletItem, xpub: String) async throws -> PreparePayResponse {
         return try await Task.detached(priority: .userInitiated) {
-            let existingSwapIds = try await BoltzController.shared.fetchIDs(byXpubHashId: xpub, byInvoice: invoice)
-            if let swapId = existingSwapIds.first {
-                if let swap = try await BoltzController.shared.get(with: swapId), swap.type == .Submarine, let data = swap.data {
-                    guard let pay = try await lwk.restorePreparePay(data: data) else {
-                        throw TransactionError.invalid(localizedDescription: "Invalid restored swap")
-                    }
+            let swapIdsByInvoice = try await BoltzController.shared.fetchSwaps(xpubHashId: xpub, invoice: invoice, swapType: .Submarine)
+            let swapsByInvoice = try await BoltzController.shared.gets(with: swapIdsByInvoice)
+            if !swapsByInvoice.filter({ $0.txHash != nil }).isEmpty {
+                throw TransactionError.invalid(localizedDescription: "Invoice already paid")
+            }
+            if let swap = swapsByInvoice.filter({ $0.txHash == nil }).first, let data = swap.data {
+                if let pay = try await lwk.restorePreparePay(data: data) {
                     return pay
                 }
             }

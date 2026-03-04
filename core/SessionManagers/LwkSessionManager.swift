@@ -106,7 +106,8 @@ public class LwkSessionManager: SessionManager {
             isPending: true,
             xpubHashId: xpubHashId,
             invoice: bolt11,
-            swapType: .reverseSwap)
+            swapType: .reverseSwap,
+            txHash: nil)
         return res
     }
 
@@ -126,7 +127,8 @@ public class LwkSessionManager: SessionManager {
             isPending: true,
             xpubHashId: xpubHashId,
             invoice: invoice,
-            swapType: .submarineSwap)
+            swapType: .submarineSwap,
+            txHash: nil)
         return res
     }
     nonisolated public func lbtcToBtc(amount: UInt64, refundAddress: String, claimAddress: String, xpubHashId: String) async throws -> LockupResponse {
@@ -145,7 +147,8 @@ public class LwkSessionManager: SessionManager {
             isPending: true,
             xpubHashId: xpubHashId,
             invoice: nil,
-            swapType: .chainSwap)
+            swapType: .chainSwap,
+            txHash: nil)
         return res
     }
     nonisolated public func btcToLbtc(amount: UInt64, refundAddress: String, claimAddress: String, xpubHashId: String) async throws -> LockupResponse {
@@ -164,7 +167,8 @@ public class LwkSessionManager: SessionManager {
             isPending: true,
             xpubHashId: xpubHashId,
             invoice: nil,
-            swapType: .chainSwap)
+            swapType: .chainSwap,
+            txHash: nil)
         return res
     }
     /*
@@ -185,65 +189,6 @@ public class LwkSessionManager: SessionManager {
 
     nonisolated public func restorePreparePay(data: String) async throws -> PreparePayResponse? {
         try boltzSession?.restorePreparePay(data: data)
-    }
-
-    nonisolated public func handleSwap(swap: SwapResponse) async throws -> PaymentState {
-        let swapId = try swap.swapId()
-        let persistentId = try? await BoltzController.shared.fetchID(byId: swapId)
-        guard let persistentId else {
-            logger.error("LWK \(swapId, privacy: .public) not found")
-            throw LwkError.Generic(msg: "Swap not found")
-        }
-        var state = PaymentState.continue
-        repeat {
-            do {
-                state = try swap.advance()
-                switch state {
-                case .continue:
-                    let data = try swap.serialize()
-                    logger.info("LWK \(swapId, privacy: .public) updated with \(data.prefix(64), privacy: .public)")
-                    _ = try await BoltzController.shared.update(with: persistentId, newData: data, newIsPending: true)
-                    try await Task.sleep(nanoseconds: 100_000_000)
-                case .success:
-                    logger.info("LWK \(swapId, privacy: .public) completed successfully!")
-                    _ = try await BoltzController.shared.update(with: persistentId, newIsPending: false)
-                case .failed:
-                    logger.info("LWK \(swapId, privacy: .public) failed!")
-                    _ = try await BoltzController.shared.update(with: persistentId, newIsPending: false)
-                    //_ = try await BoltzController.shared.delete(with: persistentId)
-                }
-            } catch LwkError.NoBoltzUpdate {
-                try await Task.sleep(nanoseconds: 1_000_000_000)
-                if let swap = try? await BoltzController.shared.get(with: persistentId)  {
-                    state = swap.isPending ? PaymentState.continue : PaymentState.success
-                } else {
-                    state = .failed
-                }
-            } catch LwkError.ObjectConsumed {
-                logger.error("LWK \(swapId, privacy: .public) object consumed")
-                //_ = try? await BoltzController.shared.delete(with: persistentId)
-                _ = try await BoltzController.shared.update(with: persistentId, newIsPending: false)
-                state = .failed
-            } catch {
-                logger.error("LWK \(swapId, privacy: .public) unrecoverable error: \(error.localizedDescription, privacy: .public)")
-                //_ = try? await BoltzController.shared.delete(with: persistentId)
-                _ = try await BoltzController.shared.update(with: persistentId, newIsPending: false)
-                state = .failed
-            }
-        } while state == PaymentState.continue
-        return state
-    }
-
-    nonisolated public func handleChainLockup(lockup: LockupResponse) async throws -> PaymentState {
-        try await handleSwap(swap: SwapResponse.chain(lockup))
-    }
-
-    nonisolated public func handleInvoice(invoice: InvoiceResponse) async throws -> PaymentState {
-        try await handleSwap(swap: SwapResponse.reverseSubmarine(invoice))
-    }
-
-    nonisolated public func handlePay(pay: PreparePayResponse) async throws -> PaymentState {
-        try await handleSwap(swap: SwapResponse.submarine(pay))
     }
 
     nonisolated public func fetchReverseSwapsInfo() async throws -> BoltzReverseSwapInfoLBTC? {
@@ -291,7 +236,8 @@ public class LwkSessionManager: SessionManager {
                 data: data,
                 isPending: true,
                 xpubHashId: xpubHashId,
-                swapType: SwapType.reverseSwap)
+                swapType: SwapType.reverseSwap,
+                txHash: nil)
         }
         logger.info("Restoring submarine swaps using address \(liquidAddress)")
         let submarineSwaps = try boltzSession.restorableSubmarineSwaps(swapList: list, refundAddress: liquidAddress)
@@ -304,7 +250,8 @@ public class LwkSessionManager: SessionManager {
                 data: data,
                 isPending: true,
                 xpubHashId: xpubHashId,
-                swapType: SwapType.submarineSwap)
+                swapType: SwapType.submarineSwap,
+                txHash: nil)
         }
         logger.info("Restoring swaps using address \(bitcoinAddress)")
         let bitcoinAddress = try BitcoinAddress(s: bitcoinAddress)
@@ -319,7 +266,8 @@ public class LwkSessionManager: SessionManager {
                 data: data,
                 isPending: true,
                 xpubHashId: xpubHashId,
-                swapType: SwapType.chainSwap)
+                swapType: SwapType.chainSwap,
+                txHash: nil)
         }
     }
 }

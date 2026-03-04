@@ -1,4 +1,5 @@
 import core
+import CoreData
 @preconcurrency import LiquidWalletKit
 @preconcurrency import gdk
 
@@ -12,6 +13,7 @@ struct TransactionDraft: Sendable {
     var lockupResponse: LockupResponse?
     var swapPosition: SwapPositionState?
     var swapPayResponse: PreparePayResponse?
+    var persistentId: NSManagedObjectID?
 
     var network: NetworkSecurityCase? { subaccount?.networkType }
 
@@ -25,6 +27,7 @@ struct TransactionDraft: Sendable {
             paymentTarget: new.paymentTarget ?? self.paymentTarget,
             lockupResponse: new.lockupResponse ?? self.lockupResponse,
             swapPosition: new.swapPosition ?? self.swapPosition,
-            swapPayResponse: new.swapPayResponse ?? self.swapPayResponse)
+            swapPayResponse: new.swapPayResponse ?? self.swapPayResponse,
+            persistentId: new.persistentId ?? self.persistentId)
     }
 }

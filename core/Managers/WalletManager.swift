@@ -36,6 +36,9 @@ public class WalletManager {
         return nil
     }
     
+    // Swap Monitor
+    public var swapMonitor: SwapMonitor?
+    
     // Hashmap of available networks with open session
     public var sessions = [String: SessionManager]()
     
