@@ -356,7 +356,8 @@ extension SendCoordinator: SendAddressViewModelDelegate {
         }
         if let paymentAssetId = paymentTarget.assetId() {
             if assetId != nil && assetId != paymentAssetId && paymentTarget.chain() != .lightning {
-                vm.delegate?.sendAddressViewModel(vm, didFailWith: SendFlowError.wrongAssetId)
+                let asset = wallet.wallet.info(for: paymentAssetId).ticker ?? paymentAssetId
+                vm.delegate?.sendAddressViewModel(vm, didFailWith: SendFlowError.wrongAssetId(asset))
                 return
             }
             assetIdToUse = paymentAssetId

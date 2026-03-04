@@ -7,7 +7,7 @@ enum SendFlowError: Error, Sendable, Equatable {
     case invalidSession
     case wrongSubaccount
     case insufficientFunds
-    case wrongAssetId
+    case wrongAssetId(String)
     case invalidAmount(String)
     case generic(String)
     case gdkError(String)
@@ -24,8 +24,8 @@ enum SendFlowError: Error, Sendable, Equatable {
             return "Failed to build transaction"
         case .wrongSubaccount:
             return "id_invalid_address"
-        case .wrongAssetId:
-            return "Select a different asset"
+        case .wrongAssetId(let ticker):
+            return "Payment URI is for \(ticker)."
         case .insufficientFunds:
             return "id_insufficient_funds"
         case .invalidSession:
