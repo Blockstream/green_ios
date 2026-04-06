@@ -35,6 +35,9 @@ class ManageAssetViewController: UIViewController {
             return [.assetBalance, .actions, .cta, .transactions]
         }
     }
+    deinit {
+        viewModel.observationTask?.cancel()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.gBlackBg()
@@ -301,10 +304,11 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
             }
         case .actions:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactActionsCell.identifier, for: indexPath) as? TransactActionsCell {
-                cell.configure(onBuy: viewModel.isBTCAsset ? self.buy : nil,
-                               onSend: self.send,
-                               onReceive: self.receive,
-                               onSwap: viewModel.canSwap() ? self.swap : nil,
+                cell.configure(
+                    onBuy: viewModel.isBTCAsset ? { [weak self] in self?.buy() } : nil,
+                    onSend: { [weak self] in self?.send() },
+                    onReceive: { [weak self] in self?.receive() },
+                    onSwap: viewModel.canSwap() ? { [weak self] in self?.swap() } : nil
                 )
                 cell.selectionStyle = .none
                 return cell
@@ -521,8 +525,8 @@ extension ManageAssetViewController {
     }
     func sendScreen() {
         if let nav = navigationController {
-            activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self] in
-                nav.popToRootViewController(animated: true)
+            activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self, weak nav] in
+                nav?.popToRootViewController(animated: true)
                 self?.activeSendCoordinator = nil
             }
             activeSendCoordinator?.start(input: nil, subaccount: viewModel.selectedSubaccount, assetId: viewModel.assetId)

@@ -159,7 +159,7 @@ class ReceiveViewModel {
     }
 
     var amountCellModel: AmountCellModel {
-        let lightningSession = walletDataModel?.wallet.lightningSession
+        let lightningSession = walletDataModel.wallet.lightningSession
         let maxLimit = lightningSession?
             .nodeState()?.totalInboundLiquidityMsat.satoshi
         let hasActiveChannel = lightningSession?

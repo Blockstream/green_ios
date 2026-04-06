@@ -17,6 +17,6 @@ public enum EventNotificationTypes {
     case paymentFailed
 }
 
-public protocol NewNotificationDelegate {
+public protocol NewNotificationDelegate: AnyObject {
     func didReceive(event: EventNotificationTypes, networkType: NetworkSecurityCase)
 }

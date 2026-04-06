@@ -18,40 +18,27 @@ actor WalletDataModel {
 
     // Channels
     private var subscribers: [UUID: AsyncStream<SubscriberUpdate>.Continuation] = [:]
-    private var notificationTask: Task<Void, Error>?
 
     init(wallet: WalletManager, mainAccount: Account) {
         self.wallet = wallet
         self.mainAccount = mainAccount
-        notificationTask = Task { await self.subscribeNotifications() }
+        wallet.newNotificationDelegate = self
     }
 
-    // Async Multi-Subscriber Stream
+    // Async Multi-Subscriber Stream in actor-isolated
     func states() -> AsyncStream<SubscriberUpdate> {
         let id = UUID()
-        return AsyncStream { continuation in
-            Task {
-                await self.addSubscriber(id: id, continuation: continuation)
-            }
-            continuation.onTermination = { @Sendable _ in
-                Task { [weak self] in
-                    await self?.removeSubscriber(id: id)
-                }
-            }
-        }
-    }
-
-    // Helper to register a subscriber from actor context
-    private func addSubscriber(id: UUID, continuation: AsyncStream<SubscriberUpdate>.Continuation) async {
-        continuation.onTermination = { [weak self] _ in
+        let (stream, continuation) = AsyncStream<SubscriberUpdate>.makeStream()
+        subscribers[id] = continuation
+        continuation.onTermination = { @Sendable [weak self] _ in
             Task { await self?.removeSubscriber(id: id) }
         }
-        subscribers[id] = continuation
-        // send the current state immediately with no event
         continuation.yield(SubscriberUpdate(state: state, feature: nil))
+        return stream
     }
 
     private func removeSubscriber(id: UUID) {
+        subscribers[id]?.finish()
         subscribers.removeValue(forKey: id)
     }
 
@@ -60,60 +47,6 @@ actor WalletDataModel {
         await withTaskGroup(of: Void.self) { [weak self] group in
             for feature in features {
                 group.addTask { await self?.performFetch(feature: feature) }
-            }
-        }
-    }
-
-    private func subscribeNotifications() async {
-        logger.info("WalletDataModel subscribeNotifications")
-        let stream = wallet.addNotificationSubscriber()
-        for await notification in stream {
-            switch notification {
-            case .newBlock:
-                logger.info("WalletDataModel newBlock")
-                // Update content if exist an unconfirmed tx
-                let btcBlockHeight = wallet.bitcoinBlockHeight()
-                let liquidBlockHeight = wallet.liquidBlockHeight()
-                let pendings = state.txs?.filter { $0.confirmations(block: ($0.isLiquid ? liquidBlockHeight ?? 0: btcBlockHeight ?? 0)) <= ($0.isLiquid ? 2 : 6) }
-                if pendings?.count ?? 0 > 0 {
-                    await performFetchBalance()
-                    await performFetchTransactions(reset: true)
-                }
-            case .newSubaccount:
-                logger.info("WalletDataModel newSubaccount")
-                //await performFetchSubaccounts(refresh: false)
-                //await performFetchBalance()
-                //await performFetchTransactions(reset: true)
-            case .newTransaction:
-                logger.info("WalletDataModel newTransaction")
-                await performFetchBalance()
-                await performFetchTransactions(reset: true)
-            case .twoFactorReset:
-                logger.info("WalletDataModel twoFactorReset")
-                await performFetchSubaccounts(refresh: false)
-                await performSettings()
-            case .updateSettings:
-                logger.info("WalletDataModel updateSettings")
-                await performFetchSubaccounts(refresh: false)
-                await performSettings()
-            case .disconnected:
-                logger.info("WalletDataModel disconnected")
-            case .reconnected:
-                logger.info("WalletDataModel reconnect")
-                await performFetchBalance()
-                await performFetchTransactions(reset: true)
-            case .tor:
-                break
-            case .refreshAssets:
-                await performFetchBalance()
-            case .invoicePaid:
-                await performFetchBalance()
-                await performFetchTransactions(reset: true)
-            case .paymentSucceed:
-                await performFetchBalance()
-                await performFetchTransactions(reset: true)
-            case .paymentFailed:
-                break
             }
         }
     }
@@ -457,7 +390,69 @@ actor WalletDataModel {
         for cont in subscribers.values {
             cont.finish()
         }
-        notificationTask?.cancel()
         subscribers.removeAll()
+    }
+}
+
+extension WalletDataModel: NewNotificationDelegate {
+    nonisolated func didReceive(
+        event: core.EventNotificationTypes,
+        networkType: gdk.NetworkSecurityCase
+    ) {
+        Task { await handleEvent(event) }
+    }
+
+    func handleEvent(_ event: core.EventNotificationTypes) async {
+        switch event {
+        case .newBlock:
+            logger.info("WalletDataModel newBlock")
+            // Update content if exist an unconfirmed tx
+            let btcBlockHeight = wallet.bitcoinBlockHeight()
+            let liquidBlockHeight = wallet.liquidBlockHeight()
+            let pendings = state.txs?.filter {
+                $0.confirmations(block: ($0.isLiquid ? liquidBlockHeight ?? 0: btcBlockHeight ?? 0)) <= (
+                        $0.isLiquid ? 2 : 6
+                    )
+            }
+            if pendings?.count ?? 0 > 0 {
+                await performFetchBalance()
+                await performFetchTransactions(reset: true)
+            }
+        case .newSubaccount:
+            logger.info("WalletDataModel newSubaccount")
+            //await performFetchSubaccounts(refresh: false)
+            //await performFetchBalance()
+            //await performFetchTransactions(reset: true)
+        case .newTransaction:
+            logger.info("WalletDataModel newTransaction")
+            await performFetchBalance()
+            await performFetchTransactions(reset: true)
+        case .twoFactorReset:
+            logger.info("WalletDataModel twoFactorReset")
+            await performFetchSubaccounts(refresh: false)
+            await performSettings()
+        case .updateSettings:
+            logger.info("WalletDataModel updateSettings")
+            await performFetchSubaccounts(refresh: false)
+            await performSettings()
+        case .disconnected:
+            logger.info("WalletDataModel disconnected")
+        case .reconnected:
+            logger.info("WalletDataModel reconnect")
+            await performFetchBalance()
+            await performFetchTransactions(reset: true)
+        case .tor:
+            break
+        case .refreshAssets:
+            await performFetchBalance()
+        case .invoicePaid:
+            await performFetchBalance()
+            await performFetchTransactions(reset: true)
+        case .paymentSucceed:
+            await performFetchBalance()
+            await performFetchTransactions(reset: true)
+        case .paymentFailed:
+            break
+        }
     }
 }

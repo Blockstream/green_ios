@@ -54,7 +54,6 @@ class WalletTabBarViewController: UITabBarController {
         guard let windowView = view.window else {
             return
         }
-        wView.frame = view.frame
         wView.frame = windowView.bounds
         windowView.addSubview(wView)
         wView.configure(with: WelcomeViewModel(), onTap: {[weak self] in
