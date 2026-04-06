@@ -354,8 +354,8 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func sendScreen() {
-        if let nav = navigationController, let walletDataModel = viewModel.walletDataModel, let mainAccount = viewModel.mainAccount {
-            activeSendCoordinator = SendCoordinator(nav: nav, wallet: walletDataModel, mainAccount: mainAccount) { [weak self] in
+        if let nav = navigationController {
+            activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self] in
                 nav.popToRootViewController(animated: true)
                 self?.activeSendCoordinator = nil
             }
@@ -464,7 +464,7 @@ class ReceiveViewController: KeyboardViewController {
         }
     }
     func backupAlertDismiss() {
-        BackupHelper.shared.addToDismissed(walletId: viewModel.mainAccount?.id, position: .receive)
+        BackupHelper.shared.addToDismissed(walletId: viewModel.mainAccount.id, position: .receive)
         viewModel.reloadBackupCards()
         reloadSections([.backup], animated: true)
     }

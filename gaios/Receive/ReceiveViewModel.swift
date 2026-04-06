@@ -16,7 +16,7 @@ enum ReceiveType: Int, CaseIterable {
 class ReceiveViewModel {
 
     var account: WalletItem { didSet { ReceiveViewModel.defaultAccount = account }}
-    var mainAccount: Account? { AccountsRepository.shared.current }
+    let mainAccount: Account
     var satoshi: Int64?
     var anyOrAsset: AnyOrAsset
     var isFiat: Bool = false
@@ -39,7 +39,7 @@ class ReceiveViewModel {
     var wm: WalletManager { WalletManager.current! }
     var backupCardCellModel = [AlertCardCellModel]()
     var allowChange = true
-    var walletDataModel: WalletDataModel? = nil
+    let walletDataModel: WalletDataModel
 
     static func getLightningSubaccounts() -> [WalletItem] {
         if let subaccount = WalletManager.current?.lightningSubaccount {
@@ -57,21 +57,22 @@ class ReceiveViewModel {
     static func getLiquidAmpSubaccounts() -> [WalletItem] {
         WalletManager.current?.liquidAmpSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
-    init(_ waParam: (wallet: WalletItem, anyOrAsset: AnyOrAsset)? = nil) {
-        if let waParam = waParam {
-            self.account = waParam.wallet
-            self.anyOrAsset = waParam.anyOrAsset
-            self.allowChange = false
+    init(mainAccount: Account, walletDataModel: WalletDataModel, wallet: WalletItem?, anyOrAsset: AnyOrAsset?) {
+        if let wallet {
+            self.account = wallet
         } else {
             self.account = ReceiveViewModel.defaultAccount ?? ReceiveViewModel.getBitcoinSubaccounts().first ??  ReceiveViewModel.getLiquidSubaccounts().first!
+        }
+        if let anyOrAsset {
+            self.anyOrAsset = anyOrAsset
+        } else {
             self.anyOrAsset = .asset(self.account.gdkNetwork.getFeeAsset())
         }
+        self.allowChange = wallet == nil && anyOrAsset == nil
         self.type = self.anyOrAsset.assetId == AssetInfo.lightningId ? .bolt11 : .address
-        self.inputDenomination = wm.prominentSession?.settings?.denomination ?? .Sats
-        if let mainAccount = AccountsRepository.shared.current,
-                let wm = WalletManager.current {
-            walletDataModel = WalletDataModel(wallet: wm, mainAccount: mainAccount)
-        }
+        self.mainAccount = mainAccount
+        self.walletDataModel = walletDataModel
+        self.inputDenomination = walletDataModel.wallet.prominentSession?.settings?.denomination ?? .Sats
     }
 
     func accountType() -> String {
@@ -300,7 +301,7 @@ class ReceiveViewModel {
     }
     func reloadBackupCards() {
         var cards: [AlertCardType] = []
-        if BackupHelper.shared.needsBackup(walletId: mainAccount?.id) && BackupHelper.shared.isDismissed(walletId: mainAccount?.id, position: .receive) == false {
+        if BackupHelper.shared.needsBackup(walletId: mainAccount.id) && BackupHelper.shared.isDismissed(walletId: mainAccount.id, position: .receive) == false {
             cards.append(.backup)
         }
         self.backupCardCellModel = cards.map { AlertCardCellModel(type: $0) }

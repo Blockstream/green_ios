@@ -79,13 +79,6 @@ class TabViewController: UIViewController {
             activeSendCoordinator?.start(input: input, subaccount: nil, assetId: nil)
         }
     }
-    func receiveScreen() {
-        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
-            vc.viewModel = ReceiveViewModel()
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
     func accountsScreen(model: DialogAccountsViewModel) {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
         let vc = storyboard.instantiateViewController(identifier: "DialogAccountsViewController") { coder in
