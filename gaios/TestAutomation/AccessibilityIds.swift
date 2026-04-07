@@ -36,6 +36,10 @@ struct AccessibilityIds {
         static let view = "view_app_settings"
         static let switchEnableTestnet = "switch_app_settings_enable_testnet"
         static let switchEnableExperimental = "switch_app_settings_enable_experimental"
+        static let btnPasteBTC = "btn_paste_btc"
+        static let btnPasteLiquid = "btn_paste_liquid"
+        static let btnPasteTestnet = "btn_paste_testnet"
+        static let btnPasteLiquidTestnet = "btn_paste_liquid_testnet"
     }
     struct SetupNewScreen {
         static let view = "view_setup_new"
@@ -74,5 +78,14 @@ struct AccessibilityIds {
     struct SelectCountryScreen {
         static let view = "view_select_country"
         static let viewSelectCountryHandle = "view_select_country_handle"
+    }
+    struct ReceiveScreen {
+        static let view = "view_receive"
+        static let btnQRCode = "btn_receive_qr_code"
+        static let textFieldAmount = "textfield_receive_amount"
+    }
+    struct ManageAssetScreen {
+        static let view = "view_manage_asset"
+        static let viewAssetIcon = "view_manage_asset_asset_icon"
     }
 }

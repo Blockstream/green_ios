@@ -30,6 +30,7 @@ class AssetBalanceCell: UITableViewCell {
         self.hideBalance = hideBalance
         let img = WalletManager.current?.image(for: assetId)
         icon.image = img
+        icon.accessibilityIdentifier = AccessibilityIds.ManageAssetScreen.viewAssetIcon
         if let balance = Balance.fromSatoshi(satoshi, assetId: assetId)?.toValue() {
             lblBalanceValue.text = "\(balance.0) \(balance.1)"
         }

@@ -31,6 +31,7 @@ class ReceiveAddressCell: UITableViewCell {
         bgCard.setStyle(CardStyle.defaultStyle)
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
         qrFrame.addGestureRecognizer(longPressRecognizer)
+        btnQRCode.accessibilityIdentifier = AccessibilityIds.ReceiveScreen.btnQRCode
         lnBanner.backgroundColor = UIColor.gAccent()
         lnBanner.cornerRadius = 5.0
         lblInfo.setStyle(.txtCard)

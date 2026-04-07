@@ -23,6 +23,11 @@ class ElectrumCell: UITableViewCell {
     @IBOutlet weak var fieldTestnet: UITextField!
     @IBOutlet weak var fieldLiquidTestnet: UITextField!
 
+    @IBOutlet weak var btnPasteBTC: UIButton!
+    @IBOutlet weak var btnPasteLiquid: UIButton!
+    @IBOutlet weak var btnPasteTestnet: UIButton!
+    @IBOutlet weak var btnPasteLiquidTestnet: UIButton!
+
     var model: ElectrumCellModel?
     var onSwitchTls: (() -> Void)?
     var onChangeBTC: ((String) -> Void)?
@@ -55,6 +60,10 @@ class ElectrumCell: UITableViewCell {
         [bgTls, bgBTC, bgLiquid, bgTestnet, bgLiquidTestnet].forEach {
             $0.setStyle(CardStyle.defaultStyle)
         }
+        btnPasteBTC.accessibilityIdentifier = AccessibilityIds.AppSettingsScreen.btnPasteBTC
+        btnPasteLiquid.accessibilityIdentifier = AccessibilityIds.AppSettingsScreen.btnPasteLiquid
+        btnPasteTestnet.accessibilityIdentifier = AccessibilityIds.AppSettingsScreen.btnPasteTestnet
+        btnPasteLiquidTestnet.accessibilityIdentifier = AccessibilityIds.AppSettingsScreen.btnPasteLiquidTestnet
     }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
@@ -96,5 +105,30 @@ class ElectrumCell: UITableViewCell {
     }
     @IBAction func didChangeLiquidTestnet(_ sender: Any) {
         onChangeLiquidTestnet?(fieldLiquidTestnet.text ?? "")
+    }
+
+    @IBAction func btnPasteBTC(_ sender: Any) {
+        if let str = UIPasteboard.general.string {
+            fieldBTC.text = str
+            onChangeBTC?(str)
+        }
+    }
+    @IBAction func btnPasteLiquid(_ sender: Any) {
+        if let str = UIPasteboard.general.string {
+            fieldLiquid.text = str
+            onChangeLiquid?(str)
+        }
+    }
+    @IBAction func btnPasteTestnet(_ sender: Any) {
+        if let str = UIPasteboard.general.string {
+            fieldTestnet.text = str
+            onChangeTestnet?(str)
+        }
+    }
+    @IBAction func btnPasteLiquidTestnet(_ sender: Any) {
+        if let str = UIPasteboard.general.string {
+            fieldLiquidTestnet.text = str
+            onChangeLiquidTestnet?(str)
+        }
     }
 }

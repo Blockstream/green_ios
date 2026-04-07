@@ -63,7 +63,7 @@ extension Balance {
     }
 
     static func fromSatoshi(_ satoshi: UInt64, assetId: String) -> Balance? {
-        fromSatoshi(Int64(satoshi), assetId: assetId)
+        return fromSatoshi(Int64(satoshi), assetId: assetId)
     }
     static func fromSatoshi(_ satoshi: Int64, assetId: String) -> Balance? {
         if assetId == AssetInfo.btcId {

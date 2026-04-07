@@ -81,6 +81,7 @@ class AmountCell: UITableViewCell {
         self.model = model
         self.enabled = enabled
         textField.text = model.amountText
+        textField.accessibilityIdentifier = AccessibilityIds.ReceiveScreen.textFieldAmount
         lblAsset.attributedText = model.denomUnderlineText
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         if !enabled {
