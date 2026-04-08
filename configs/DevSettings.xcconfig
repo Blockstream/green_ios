@@ -6,7 +6,6 @@ COUNTLY_APP_HOST_ONION = http:\/\/greciphd2z3eo6bpnvd6mctxgfs4sslx4hyvgoiew4suox
 COUNTLY_APP_KEY = cb8e449057253add71d2f9b65e5f66f73c073e63
 COUNTLY_APP_MAX_OFFSET = 1800
 COUNTLY_APP_EVENT_SEND_THRESHOLD = 1
-BREEZ_API_KEY = 1Z0wUHUPZQgu49XUnX+YoVYfcDhGjfv2BGosl1mXn34=
 ZENDESK_CLIENT_ID = mobile_sdk_client_c4a1061d1cbd813b98e3
 APPGROUP = group.io.blockstream.greendev.notification
 GOOGLE_SERVICE_INFO = GoogleService-Dev-Info

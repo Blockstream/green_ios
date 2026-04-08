@@ -356,18 +356,6 @@ actor WalletDataModel {
                 cards.append(AlertCardType.systemMessage(msg))
             }
         }
-        // Load lightning errors
-        if let lightningSession = wallet.lightningSession {
-            let res = lightningSession.lightBridge?.serviceHealthCheck()
-            switch res?.status {
-            case .maintenance:
-                cards += [.lightningMaintenance]
-            case .serviceDisruption:
-                cards += [.lightningServiceDisruption]
-            default:
-                break
-            }
-        }
         // Load expired 2fa utxos
         let expired = try? await wallet.getExpiredSubaccounts()
         if let expired = expired, !expired.isEmpty && !mainAccount.isWatchonly {

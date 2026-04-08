@@ -3,7 +3,6 @@ import UIKit
 import gdk
 import greenaddress
 import hw
-import BreezSDK
 import lightning
 import core
 
@@ -33,7 +32,6 @@ class BuyBTCViewModel {
     var state: AmountCellState = .invalidBuy
     var meld: Meld
     var wm: WalletManager { WalletManager.current! }
-    var swapInfo: SwapInfo?
     var backupCardCellModel = [AlertCardCellModel]()
     var currency: String?
     var tiers: Tiers?

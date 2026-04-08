@@ -89,13 +89,12 @@ public class AccountsRepository {
     }
 
     public func remove(_ account: Account) async {
-        let wm = WalletsRepository.shared.getOrAdd(for: account)
-        try? await wm.lightningSession?.unregister(account: account)
-        await wm.lightningSession?.remove(account: account)
         account.removeAuthentication(.AuthKeyPIN)
         account.removeAuthentication(.AuthKeyBiometric)
         account.removeAuthentication(.AuthKeyWoBioCredentials)
         account.removeAuthentication(.AuthKeyWoCredentials)
+        account.removeAuthentication(.AuthKeyBoltz)
+        account.removeAuthentication(.AuthKeyLightning)
         accounts.removeAll(where: { $0.id == account.id})
     }
 

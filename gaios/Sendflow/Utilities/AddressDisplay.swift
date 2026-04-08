@@ -3,6 +3,7 @@ import UIKit
 
 enum AddressDisplayStyle {
     case `default`
+    case yellow
     case txDetails
 }
 
@@ -98,13 +99,21 @@ class AddressDisplay {
         }
         attrS.setFont(font: .monospacedSystemFont(ofSize: fontSize, weight: .regular), stringValue: visibleAddress)
 
+        var color = {
+            switch style {
+            case .yellow:
+                return UIColor.warningYellow()
+            default:
+                return UIColor.gAccent()
+            }
+        }()
         if visibleAddress.count > 10 {
 
             attrS.addAttribute(NSAttributedString.Key.foregroundColor,
-                               value: UIColor.gAccent(),
+                               value: color,
                                range: rangeH)
             attrS.addAttribute(NSAttributedString.Key.foregroundColor,
-                               value: UIColor.gAccent(),
+                               value: color,
                                range: rangeT)
             attrS.addAttribute(NSAttributedString.Key.foregroundColor,
                                value: UIColor.clear,

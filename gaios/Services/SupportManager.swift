@@ -17,7 +17,7 @@ class SupportManager {
         if let item = try? await msLiquidSession?.subaccount(0) {
             strings.append("liquidnetwork:\(item.receivingId)")
         }
-        if let nodeId = WalletManager.current?.lightningSession?.nodeId {
+        if let nodeId = WalletManager.current?.lightningSession?.nodeState()?.id {
             strings.append("lightning:\(nodeId)")
         }
         return strings.joined(separator: ",")

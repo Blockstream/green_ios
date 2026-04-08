@@ -8,7 +8,6 @@ enum TxDetailsAction {
     case explorer
     case shareTx
     case more
-    case refund
 }
 
 class TxDetailsViewModel {
@@ -233,15 +232,6 @@ class TxDetailsViewModel {
                                          action: .more)
             )
         }
-
-        if transaction.isLightning && transaction.isRefundableSwap ?? false {
-            models.append(
-                TxDetailsActionCellModel(icon: UIImage(named: "ic_tx_action_revert")!.maskWithColor(color: UIColor.gAccent()),
-                                         title: "id_initiate_refund".localized,
-                                         action: .refund)
-            )
-        }
-
         return models
     }
 

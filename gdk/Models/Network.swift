@@ -47,7 +47,7 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
     }
 
     public var lightning: Bool {
-        "breez" == serverType
+        "greenlight" == serverType
     }
 
     public var singlesig: Bool {
@@ -103,7 +103,7 @@ public struct GdkNetworks {
                                            development: false,
                                            txExplorerUrl: GdkNetworks.bitcoinSS.txExplorerUrl,
                                            policyAsset: AssetInfo.lightningId,
-                                           serverType: "breez")
+                                           serverType: "greenlight")
     public static var testnetLightning = GdkNetwork(name: NetworkSecurityCase.testnetLightning.name(),
                                                   network: NetworkSecurityCase.testnetLightning.network,
                                                   liquid: false,
@@ -111,7 +111,7 @@ public struct GdkNetworks {
                                                   development: false,
                                              txExplorerUrl: GdkNetworks.testnetSS.txExplorerUrl,
                                                   policyAsset: AssetInfo.lightningId,
-                                                  serverType: "breez")
+                                                  serverType: "greenlight")
 
     public static func get(networkType: NetworkSecurityCase) -> GdkNetwork {
         switch networkType {

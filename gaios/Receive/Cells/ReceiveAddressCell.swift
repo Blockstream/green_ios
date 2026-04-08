@@ -94,12 +94,6 @@ class ReceiveAddressCell: UITableViewCell {
             qrFrame.isHidden = true
         }
         lnBannerBox.isHidden = true
-        if let onChaininfo = model.onChaininfo, model.type == .breezSwap {
-            lnBannerBox.isHidden = false
-            lblInfo.text = onChaininfo
-            btnRefresh.isHidden = true
-            bgCard.borderColor = UIColor.gAccent()        }
-
         self.onLongpress = onLongpress
     }
 

@@ -1,5 +1,5 @@
 import Foundation
-import BreezSDK
+import GreenlightSDK
 
 public struct AppGreenlightCredentials: Codable {
 
@@ -10,14 +10,7 @@ public struct AppGreenlightCredentials: Codable {
         self.deviceKey = deviceKey
         self.deviceCert = deviceCert
     }
-
-    init(gc: GreenlightCredentials) {
-        self.deviceKey = Data(gc.developerKey)
-        self.deviceCert = Data(gc.developerCert)
-    }
-
-    var greenlightCredentials: GreenlightCredentials {
-        GreenlightCredentials(developerKey: [UInt8](deviceKey),
-                              developerCert: [UInt8](deviceCert))
+    var cert: DeveloperCert {
+        DeveloperCert(cert: deviceCert, key: deviceKey)
     }
 }

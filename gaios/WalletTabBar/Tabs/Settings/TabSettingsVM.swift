@@ -5,11 +5,11 @@ import gdk
 import greenaddress
 
 class TabSettingsVM: TabViewModel {
-    
+
     var settings: [SettingSection] {
         state.settings
     }
-    
+
     // load wallet manager for current logged session
     var session: SessionManager? { wallet.prominentSession }
     var isWatchonly: Bool { wallet.isWatchonly }
@@ -18,7 +18,7 @@ class TabSettingsVM: TabViewModel {
     var isSinglesig: Bool { session?.gdkNetwork.electrum ?? true }
     var isHW: Bool { AccountsRepository.shared.current?.isHW ?? false }
     var multiSigSession: SessionManager? { wallet.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }
-    
+
     func getSettingsItemCellModel(for setting: SettingsItem) -> TabSettingsCellModel? {
         switch setting {
         case .header:
@@ -203,5 +203,19 @@ class TabSettingsVM: TabViewModel {
         let session = wallet.getSession(for: subaccount)
         let address = try? await session?.getReceiveAddress(subaccount: subaccount.pointer)
         return address?.address
+    }
+
+    func lTSettingsViewModel() -> LTSettingsViewModel? {
+        guard let lightningSession = wallet.lightningSession else { return nil }
+        return LTSettingsViewModel(
+            mainAccount: mainAccount,
+            wallet: walletDataModel,
+            lightningSession: lightningSession)
+    }
+
+    func lTCreateViewModel() -> LTCreateViewModel? {
+        return LTCreateViewModel(
+            mainAccount: mainAccount,
+            wallet: walletDataModel)
     }
 }

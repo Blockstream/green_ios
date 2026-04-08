@@ -1,5 +1,4 @@
 import Foundation
-import BreezSDK
 import gdk
 import greenaddress
 import hw
@@ -88,30 +87,6 @@ extension Error {
             case .failure(let txt, let paymentHash):
                 return "\(txt) \(paymentHash)"
             }
-        }
-        if let breezError = self as? BreezSDK.SdkError {
-            return breezError.description() ?? "Sdk error"
-        }
-        if let breezError = self as? BreezSDK.SendOnchainError {
-            return breezError.description() ?? "Send onchain error"
-        }
-        if let breezError = self as? BreezSDK.SendPaymentError {
-            return breezError.description() ?? "Send payment error"
-        }
-        if let breezError = self as? BreezSDK.ReceiveOnchainError {
-            return breezError.description() ?? "Receive onchain error"
-        }
-        if let breezError = self as? BreezSDK.ReceivePaymentError {
-            return breezError.description() ?? "Receive payment error"
-        }
-        if let breezError = self as? BreezSDK.LnUrlPayError {
-            return breezError.description() ?? "id_operation_failure"
-        }
-        if let breezError = self as? BreezSDK.LnUrlAuthError {
-            return breezError.description() ?? "LN url auth error"
-        }
-        if let breezError = self as? BreezSDK.ConnectError {
-            return breezError.description() ?? "Connection error"
         }
         if let error = self as? LwkError {
             return error.description()

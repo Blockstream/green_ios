@@ -3,7 +3,6 @@ import UIKit
 import core
 import gdk
 import greenaddress
-import BreezSDK
 import hw
 
 enum UIAlertOption: String {

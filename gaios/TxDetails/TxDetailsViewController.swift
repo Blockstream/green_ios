@@ -295,8 +295,11 @@ class TxDetailsViewController: UIViewController {
     @MainActor
     func presentSendAmountViewController(createTx: CreateTx, tx: Transaction) {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendAmountViewController") as? SendAmountViewController {
-            vc.viewModel = SendAmountViewModel(createTx: createTx, transaction: tx)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendAmountViewControllerLegacy") as? SendAmountViewControllerLegacy {
+            vc.viewModel = SendAmountViewModelLegacy(
+                createTx: createTx,
+                transaction: tx
+            )
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -328,25 +331,6 @@ class TxDetailsViewController: UIViewController {
                 vc.modalPresentationStyle = .overFullScreen
                 present(vc, animated: false, completion: nil)
             }
-        }
-    }
-
-    func initiateRefund() {
-        pushLTRecoverFundsViewController(vm.transaction)
-    }
-
-    func pushLTRecoverFundsViewController(_ tx: Transaction) {
-        let amount = tx.amounts["btc"].map {UInt64(abs($0))}
-        let address = tx.inputs?.first?.address as? String
-        let model = LTRecoverFundsViewModel(wallet: tx.subaccount,
-                                            onChainAddress: address,
-                                            amount: amount,
-                                            type: .refund)
-        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTRecoverFundsViewController") as? LTRecoverFundsViewController {
-            vc.viewModel = model
-            vc.modalPresentationStyle = .overFullScreen
-            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }
@@ -482,8 +466,6 @@ extension TxDetailsViewController: UITableViewDelegate, UITableViewDataSource {
                     explorerAction()
                 case .more:
                     moreDetails()
-                case .refund:
-                    initiateRefund()
                 }
             default:
                 break

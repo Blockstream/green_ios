@@ -6,9 +6,9 @@ import CoreData
 struct TransactionDraft: Sendable {
     var subaccount: WalletItem?
     let address: String?
-    let satoshi: UInt64?
+    var satoshi: UInt64?
     let assetId: String?
-    let sendAll: Bool?
+    var sendAll: Bool?
     var paymentTarget: PaymentTarget?
     var lockupResponse: LockupResponse?
     var swapPosition: SwapPositionState?
@@ -16,6 +16,9 @@ struct TransactionDraft: Sendable {
     var persistentId: NSManagedObjectID?
 
     var network: NetworkSecurityCase? { subaccount?.networkType }
+
+    var isSubmarineSwap: Bool { lockupResponse != nil }
+    var isCrossChainSwap: Bool { swapPosition != nil && swapPayResponse != nil }
 
     func update(with new: TransactionDraft) -> TransactionDraft {
         return TransactionDraft(

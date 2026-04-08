@@ -9,7 +9,7 @@ enum Redeposit2faType {
     case multi
 }
 
-class SendAmountViewModel {
+class SendAmountViewModelLegacy {
 
     var createTx: CreateTx
     var subaccount: WalletItem? { createTx.subaccount }

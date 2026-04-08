@@ -3,7 +3,6 @@ import UIKit
 import core
 import gdk
 import greenaddress
-import BreezSDK
 import lightning
 
 class SendTxConfirmViewController: UIViewController {
@@ -74,11 +73,7 @@ class SendTxConfirmViewController: UIViewController {
     }
 
     func setContent() {
-        if viewModel.isWithdraw {
-            title = "id_withdraw".localized
-        } else {
-            title = "id_confirm_transaction".localized
-        }
+        title = "id_confirm_transaction".localized
 
         lblAssetTitle.text = "id_account__asset".localized
         lblAddressTitle.text = viewModel.addressTitle.localized
@@ -136,11 +131,6 @@ class SendTxConfirmViewController: UIViewController {
         lblPayRequestByHint.setStyle(.txt)
         lblAmountSubtitle.setStyle(.txt)
         btnInfoFee.setImage(UIImage(named: "ic_lightning_info_err")!.maskWithColor(color: UIColor.gW40()), for: .normal)
-        if viewModel.isWithdraw {
-            [addressCard, lblAddressTitle].forEach {
-                $0.isHidden = true
-            }
-        }
         lblMultiAddrHint.setStyle(.txtCard)
         btnSignViaQr.setStyle(.primary)
     }
@@ -418,25 +408,6 @@ class SendTxConfirmViewController: UIViewController {
             //present(vc, animated: true)
         }
     }
-    func widthdraw() {
-        var desc = String(format: "id_you_are_redeeming_funds_from_s".localized, "\n\(viewModel.withdrawData?.domain ?? "")")
-        if let description = viewModel.withdrawData?.defaultDescription {
-            desc += description
-        }
-        startLoader(message: desc)
-        Task {
-            do {
-                _ = try await viewModel.withdrawLnurl(desc: desc)
-                stopLoader()
-                presentAlertSuccess()
-            } catch {
-                stopLoader()
-                squareSliderView.reset()
-                DropAlert().error(message: error.description().localized)
-            }
-        }
-    }
-
     func exportPsbt() {
         Task {
             do {
@@ -486,19 +457,6 @@ class SendTxConfirmViewController: UIViewController {
         }
     }
 
-    @MainActor
-    func presentAlertSuccess() {
-        let viewModel = AlertViewModel(title: "id_success".localized,
-                                       hint: String(format: "id_s_will_send_you_the_funds_it".localized, viewModel.withdrawData?.domain ?? ""))
-        let storyboard = UIStoryboard(name: "Alert", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AlertViewController") as? AlertViewController {
-            vc.viewModel = viewModel
-            vc.delegate = self
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: false, completion: nil)
-        }
-    }
-
     @IBAction func btnInfoFee(_ sender: Any) {
         var scope = SendFeeScope.info
         if viewModel.txType == .lwkSwap {
@@ -536,16 +494,12 @@ extension SendTxConfirmViewController: SquareSliderViewDelegate {
 
     func sliderThumbDidStopMoving(_ position: Int) {
         if position == 1 {
-            if viewModel.isWithdraw {
-                widthdraw()
+            if viewModel.needConnectHw() {
+                presentConnectViewController()
+            } else if viewModel.needExportPsbt() {
+                exportPsbt()
             } else {
-                if viewModel.needConnectHw() {
-                    presentConnectViewController()
-                } else if viewModel.needExportPsbt() {
-                    exportPsbt()
-                } else {
-                    send()
-                }
+                send()
             }
         } else {
             if viewModel.enableExportPsbt() {

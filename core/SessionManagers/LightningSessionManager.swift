@@ -1,147 +1,121 @@
+
 import Foundation
-import BreezSDK
-import OSLog
+import GreenlightSDK
 import gdk
 import greenaddress
 import lightning
+import LiquidWalletKit
 import hw
 
 public class LightningSessionManager: SessionManager {
 
-    public var lightBridge: LightningBridge?
-    public var isRestoredNode: Bool?
+    var sdk: LightningSdk?
+    var xpubHashId: String?
+    var streamTask: Task<Void, Never>?
 
-    public var chainNetwork: NetworkSecurityCase { gdkNetwork.mainnet ? .bitcoinSS : .testnetSS }
-    public var workingDir: URL? { lightBridge?.workingDir }
-    public var nodeState: NodeState? { lightBridge?.nodeInfo }
-    public var lspInfo: LspInformation? { lightBridge?.lspInformation }
-    
-    public var nodeId: String? {
-        get {
-            return UserDefaults.standard.string(forKey: "\(AppStorageConstants.lightningNodeId.rawValue)_\(loginData?.xpubHashId ?? "")")
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: "\(AppStorageConstants.lightningNodeId.rawValue)_\(loginData?.xpubHashId ?? "")")
-        }
+    init(newNotificationDelegate: NewNotificationDelegate?) {
+        super.init(.lightning, newNotificationDelegate: newNotificationDelegate)
     }
 
-    public var logger = Logger(
-        subsystem: Bundle.main.bundleIdentifier!,
-        category: "Lightning"
-    )
-
-    public override func connect() async throws {
-        paused = false
+    func workingDir(xpubHashId: String) throws -> URL {
+        let path = "/gl-sdk/\(xpubHashId)/0"
+        if let appGroupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Bundle.main.appGroup) {
+            return appGroupURL.appending(path: path)
+        }
+        let appSupport = try FileManager.default.url(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask,
+            appropriateFor: nil,
+            create: true
+        )
+        return appSupport.appending(path: path)
     }
 
-    public override func disconnect() async throws {
-        logged = false
-        connected = false
-        paused = false
+    public override func loginUser(_ params: gdk.Credentials) async throws -> LoginUserResult {
+        guard let greenlightKeys = LightningSdk.CREDENTIALS else {
+            throw GreenlightSDK.Error.Other("No greenlight keys found")
+        }
+        guard let walletId = try walletIdentifier(credentials: params) else {
+            throw GreenlightSDK.Error.Other("Failed to get walletId")
+        }
+        let workingDir = try workingDir(xpubHashId: walletId.xpubHashId)
+        let sdk = LightningSdk(
+            workingDir: workingDir.path,
+            greenlightKeys: greenlightKeys,
+            logListener: self,
+            nodeEventListener: self
+        )
+        guard let mnemonic = params.mnemonic else {
+            throw GreenlightSDK.Error.Other("Invalid mnemonic")
+        }
+        // get node credentials if available
+        let creds = LightningRepository.shared.get(for: walletId.xpubHashId)
+        let greenlightCredentials = GreenlightMnemonicAndCredentials(
+            mnemonic: mnemonic,
+            credentials: creds?.credentials
+        )
         do {
-            try lightBridge?.stop()
+            // connect to greenlight and restore if available
+            try await sdk
+                .connect(
+                    mnemonicAndCredentials: greenlightCredentials,
+                    isRestore: creds == nil)
         } catch {
-            logger.error("lightning disconnect error \(error.localizedDescription)")
-            throw error
+            // fallback to normal connect
+            try await sdk
+                .connect(
+                    mnemonicAndCredentials: greenlightCredentials,
+                    isRestore: false)
         }
-        lightBridge = nil
-    }
-
-    public override func networkConnect() async {
-        paused = false
-    }
-
-    public override func networkDisconnect() async {
-        paused = true
-    }
-
-    func workingDir(walletHashId: String) -> URL {
-        let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Bundle.main.appGroup)
-        let path = "/breezSdk/\(walletHashId)/0"
-        if #available(iOS 16.0, *) {
-            return containerURL!.appending(path: path)
-        } else {
-            return containerURL!.appendingPathComponent(path)
-        }
-    }
-
-    private func initLightningBridge(_ params: Credentials, eventListener: EventListener) -> LightningBridge {
-        guard let walletIdentifier = try? walletIdentifier(credentials: params) else {
-            fatalError("Invalid wallet identifier")
-        }
-        return LightningBridge(testnet: !gdkNetwork.mainnet,
-                               workingDir: workingDir(walletHashId: walletIdentifier.walletHashId),
-                               eventListener: eventListener,
-                               logStreamListener: self)
-    }
-
-    private func connectToGreenlight(credentials: Credentials, checkCredentials: Bool = false) async throws {
-        guard let mnemonic = credentials.mnemonic else {
-            fatalError("Invalid mnemonic")
-        }
-        AnalyticsManager.shared.loginLightningStart()
-        try await lightBridge?.connectToGreenlight(mnemonic: mnemonic, checkCredentials: checkCredentials)
-        AnalyticsManager.shared.loginLightningStop()
+        self.sdk = sdk
+        logged = true
         connected = true
-    }
-
-    public func smartLogin(credentials: Credentials, listener: EventListener) async throws {
-        lightBridge = initLightningBridge(credentials, eventListener: listener)
-        try await connectToGreenlight(credentials: credentials, checkCredentials: true)
-        logged = true
-    }
-
-    public override func loginUser(_ params: Credentials) async throws -> LoginUserResult {
-        let walletId = try walletIdentifier(credentials: params)
-        let walletHashId = walletId!.walletHashId
-        let res = LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? "")
-        loginData = res
-        lightBridge = initLightningBridge(params, eventListener: self)
-        do {
-            logger.info("lightning loginUser \(params.toDict()?.description ?? "")")
-            try await connectToGreenlight(credentials: params, checkCredentials: true)
-            isRestoredNode = true
-        } catch {
-            logger.info("lightning loginUser failed \(error.localizedDescription)")
-            throw error
-        }
-        if let greenlightCredentials = lightBridge?.appGreenlightCredentials {
-            LightningRepository.shared.upsert(for: walletHashId, credentials: greenlightCredentials)
-        }
-        nodeId = lightBridge?.nodeInfo?.id
-        logged = true
+        // store node credentials
+        let nodeCredentials = try await sdk.getNodeCredentials(mnemonic: mnemonic)
+        LightningRepository.shared
+            .upsert(
+                for: walletId.xpubHashId,
+                credentials: LightningCredentials(credentials: nodeCredentials)
+            )
+        // return login data
+        let res = LoginUserResult(xpubHashId: walletId.xpubHashId, walletHashId: walletId.walletHashId)
+        self.loginData = res
         return res
     }
 
-    public func registerNotification(token: String, xpubHashId: String) async throws {
-        if let notificationService = Bundle.main.notificationService {
-            logger.info("register notification token \(token, privacy: .public) with xpubHashId \(xpubHashId, privacy: .public) at \(notificationService, privacy: .public)")
-            try lightBridge?.breezSdk?.registerWebhook(webhookUrl: "\(notificationService)/api/v1/notify?platform=\("ios")&token=\(token)&app_data=\(xpubHashId)")
+    public func createInvoice(satoshi: UInt64, description: String) async throws -> LightningReceivePayment {
+        guard let sdk else {
+            throw GreenlightSDK.Error.Other("Not connected")
         }
+        return try await sdk.createInvoice(satoshi: satoshi, description: description)
     }
 
-    public func unregisterNotification(token: String, xpubHashId: String) {
-        if let notificationService = Bundle.main.notificationService {
-            logger.info("unregister notification token \(token, privacy: .public) with xpubHashId \(xpubHashId, privacy: .public) at \(notificationService, privacy: .public)")
-            try? lightBridge?.breezSdk?.unregisterWebhook(webhookUrl: "\(notificationService)/api/v1/notify?platform=\("ios")&token=\(token)&app_data=\(xpubHashId)")
+    public func isPaidInvoice(paymentHash: Data) async throws -> Bool {
+        guard let sdk else {
+            throw GreenlightSDK.Error.Other("Not connected")
         }
+        return try await sdk.isPaidInvoice(paymentHash: paymentHash)
     }
 
-    public override func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
+    public override func connect() async {
     }
-
-    public override func existDatadir(walletHashId: String) -> Bool {
-        LightningRepository.shared.get(for: walletHashId) != nil
+    public override func disconnect() async {
+        sdk?.stop()
+        sdk = nil
+        connected = false
+        logged = false
+        streamTask?.cancel()
     }
-
-    public override func removeDatadir(walletHashId: String) async {
-        try? FileManager.default.removeItem(at: workingDir(walletHashId: walletHashId))
-        LightningRepository.shared.remove(for: walletHashId)
+    public override func reconnect() async { }
+    public override func networkConnect() async { }
+    public override func networkDisconnect() async { }
+    public override func changeSettings(settings: Settings) async throws -> Settings? {
+        return nil
     }
 
     public override func getBalance(subaccount: UInt32, numConfs: Int) async throws -> [String: Int64] {
-        let sats = lightBridge?.balance()
-        let balance = [AssetInfo.lightningId: Int64(sats ?? 0)]
+        let msats = try await sdk?.balance()
+        let balance = [AssetInfo.lightningId: Int64(msats?.satoshi ?? 0)]
         return balance
     }
 
@@ -154,255 +128,129 @@ public class LightningSessionManager: SessionManager {
         return [subaccount]
     }
 
-    public override func signTransaction(tx: Transaction) async throws -> Transaction {
+    public override func transactions(subaccount: UInt32, first: Int = 0, count: Int = 30) async throws -> Transactions {
+        guard let sdk else {
+            throw GreenlightSDK.Error.Other("Not connected")
+        }
+        if first > 0 {
+            return Transactions(list: [])
+        }
+        let subaccount = try await self.subaccount(subaccount)
+        let list = try await sdk.getPayments()
+            .map { Transaction.from(payment: $0, subaccountId: subaccount.id) }
+        return Transactions(list: list)
+    }
+
+    public override func loginUser(_ params: HWDevice) async throws -> LoginUserResult {
+        throw GreenlightSDK.Error.Other("Not supported")
+    }
+
+    public func updateNodeInfoState() async throws -> NodeState? {
+        try await sdk?.updateNodeInfoState()
+        return sdk?.nodeState
+    }
+
+    public func nodeState() -> NodeState? {
+        return sdk?.nodeState
+    }
+
+    public override func createTransaction(tx: gdk.Transaction) async throws -> gdk.Transaction {
+        guard let addressee = tx.addressees.first else {
+            throw GreenlightSDK.Error.Other("Invalid invoice")
+        }
+        let bolt11 = addressee.address
+        let payment = try LiquidWalletKit.Payment(s: bolt11)
+        let lightningInvoice = payment.lightningInvoice()
+        let currentTimestamp = Int(Date().timeIntervalSince1970)
+        let isExpired = (lightningInvoice?.expiryTime() ?? 0) + (lightningInvoice?.timestamp() ?? 0) <= currentTimestamp
+        if isExpired {
+            throw TransactionError.invalid(localizedDescription: "id_invoice_expired")
+        }
+        let amount = lightningInvoice?.amountMilliSatoshis()?.satoshi ?? UInt64(addressee.satoshi ?? 0)
+        if amount > tx.subaccount?.btc ?? 0 {
+            throw TransactionError.invalid(localizedDescription: "id_insufficient_funds")
+        }
         return tx
     }
 
-    public override func sendTransaction(tx: Transaction) async throws -> SendTransactionSuccess {
-        let addressee = tx.addressees.first
-        let invoiceOrLnUrl = addressee?.address
-        let satoshi = tx.anyAmouts ? UInt64(addressee?.satoshi ?? 0) : nil
-        let comment = tx.memo ?? ""
-        switch try LightningBridge.parseBoltOrLNUrl(input: invoiceOrLnUrl) {
-        case .bolt11(let invoice):
-            // Check for expiration
-            print ("Expire in \(invoice.expiry)")
-            if invoice.isExpired {
-                throw TransactionError.invalid(localizedDescription: "id_invoice_expired")
-            }
-            do {
-                if let res = try lightBridge?.sendPayment(bolt11: invoice.bolt11, satoshi: satoshi, useTrampoline: true) {
-                    return SendTransactionSuccess.create(from: res.payment)
-                }
-            } catch {
-                let msg = error.localizedDescription ?? "id_operation_failure"
-                throw TransactionError.failure(localizedDescription: msg, paymentHash: invoice.paymentHash)
-            }
-        case .lnUrlPay(let data, let bip353Address):
-            let res = try lightBridge?.payLnUrl(requestData: data, amount: satoshi ?? 0, comment: comment, useTrampoline: true)
-            switch res {
-            case .endpointSuccess(let data):
-                print("payLnUrl success: \(data)")
-                return SendTransactionSuccess.create(from: data)
-            case .endpointError(let data):
-                print("payLnUrl endpointError: \(data.reason)")
-                throw TransactionError.invalid(localizedDescription: data.reason.errorMessage ?? data.reason)
-            case .payError(let data):
-                print("payLnUrl payError: \(data.reason)")
-                throw TransactionError.failure(localizedDescription: data.reason.errorMessage ?? data.reason, paymentHash: data.paymentHash)
-            case .none:
-                break
-            }
-        default:
-            break
+    public override func signTransaction(tx: gdk.Transaction) async throws -> gdk.Transaction {
+        return tx
+    }
+    public override func sendTransaction(tx: gdk.Transaction) async throws -> SendTransactionSuccess {
+        guard let sdk else {
+            throw GreenlightSDK.Error.Other("Not connected")
         }
-        throw TransactionError.invalid(localizedDescription: "id_error")
+        guard let addressee = tx.addressees.first else {
+            throw GreenlightSDK.Error.Other("Invalid invoice")
+        }
+        let bolt11 = addressee.address
+        let satoshi = addressee.satoshi
+        let res = try await sdk.sendPayment(bolt11: bolt11, satoshi: satoshi)
+        return SendTransactionSuccess(paymentId: res.preimage)
     }
 
-    public func generateLightningError(
-        account: WalletItem,
-        satoshi: UInt64?,
-        min: UInt64? = nil,
-        max: UInt64? = nil
-    ) -> String? {
-        let balance = account.btc ?? 0
-        guard let satoshi = satoshi, satoshi > 0 else {
-            return "id_invalid_amount"
+    public func redeemAllOnchainFunds(destination: String) async throws -> String {
+        guard let sdk else {
+            throw GreenlightSDK.Error.Other("Not connected")
         }
-        if let min = min, satoshi < min {
-            return "Amount must be at least \(min)"
-        }
-        if satoshi > balance {
-            return "id_insufficient_funds"
-        }
-        if let max = max, satoshi > max {
-            return "Amount must be at most \(max)"
-        }
-        return nil
+        let res = try await sdk.redeemAllOnchainFunds(destination: destination)
+        return res.txid
     }
-
-    public override func createTransaction(tx: Transaction) async throws -> Transaction {
-        let address = tx.addressees.first?.address ?? ""
-        let userInputSatoshi = tx.addressees.first?.satoshi ?? 0
-        switch try LightningBridge.parseBoltOrLNUrl(input: address) {
-        case .bolt11(let invoice):
-            // Check for expiration
-            print ("Expire in \(invoice.expiry)")
-            let sendableSatoshi = invoice.sendableSatoshi(userSatoshi: UInt64(abs(userInputSatoshi))) ?? 0
-            var tx = tx
-            var addressee = Addressee.fromLnInvoice(invoice, fallbackAmount: sendableSatoshi)
-            addressee.satoshi = abs(addressee.satoshi ?? 0)
-            tx.error = ""
-            tx.addressees = [addressee]
-            tx.amounts = ["btc": Int64(sendableSatoshi)]
-            tx.transactionOutputs = [TransactionInputOutput.fromLnInvoice(invoice, fallbackAmount: Int64(sendableSatoshi))]
-            if let description = invoice.description {
-                tx.memo = description
-            }
-            if invoice.isExpired {
-                tx.error = "id_invoice_expired"
-            } else if let subaccount = tx.subaccount,
-               let error = generateLightningError(account: subaccount, satoshi: sendableSatoshi) {
-                //tx.error = error
-            }
-            return tx
-        case .lnUrlPay(let requestData, let bip353Address):
-            let sendableSatoshi = requestData.sendableSatoshi(userSatoshi: UInt64(userInputSatoshi)) ?? 0
-            var tx = tx
-            var addressee = Addressee.fromRequestData(requestData, input: address, satoshi: sendableSatoshi)
-            addressee.satoshi = abs(addressee.satoshi ?? 0)
-            tx.error = ""
-            tx.addressees = [addressee]
-            tx.amounts = ["btc": Int64(sendableSatoshi)]
-            tx.transactionOutputs = [TransactionInputOutput.fromLnUrlPay(requestData, input: address, satoshi: Int64(sendableSatoshi))]
-            if let subaccount = tx.subaccount,
-               let error = generateLightningError(account: subaccount, satoshi: sendableSatoshi, min: requestData.minSendableSatoshi, max: requestData.maxSendableSatoshi) {
-                tx.error = error
-            }
-            return tx
-        default:
-            return tx
+    public override func getReceiveAddress(subaccount: UInt32) async throws -> gdk.Address {
+        guard let sdk else {
+            throw GreenlightSDK.Error.Other("Not connected")
         }
+        let res = try await sdk.onchainReceive()
+        return gdk.Address(address: res.bech32)
     }
-
-    public func createInvoice(satoshi: UInt64, description: String) async throws -> ReceivePaymentResponse? {
-        try lightBridge?.createInvoice(satoshi: satoshi, description: description)
-    }
-
-    public override func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?, network: NetworkSecurityCase?) async throws -> ValidateAddresseesResult {
-        guard let inputType = try LightningBridge.parseBoltOrLNUrl(input: input) else {
-            throw GaError.GenericError()
-        }
-        switch inputType {
-        case .bitcoinAddress:
-            // let addr = Addressee.from(address: address.address, satoshi: Int64(address.amountSat ?? 0), assetId: nil)
-            // return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
-            return ValidateAddresseesResult(isValid: false, errors: ["id_invalid_address"], addressees: [])
-        case .bolt11(let invoice):
-            if invoice.isExpired {
-                return ValidateAddresseesResult(isValid: true, errors: ["id_invoice_expired"], addressees: [])
-            }
-            if let satoshi = invoice.amountSatoshi {
-                let subaccount = try await subaccount(0)
-                subaccount.satoshi = try await getBalance(subaccount: 0, numConfs: 0)
-            }
-            let addr = Addressee.fromLnInvoice(invoice, fallbackAmount: 0)
-            return ValidateAddresseesResult(isValid: true, errors: [], addressees: [addr])
-        case .lnUrlPay:
-            return ValidateAddresseesResult(isValid: false, errors: ["LNURL not supported"], addressees: [])
-        case .lnUrlAuth:
-            return ValidateAddresseesResult(isValid: false, errors: ["LNURL Auth not supported"], addressees: [])
-        case .lnUrlWithdraw:
-            return ValidateAddresseesResult(isValid: false, errors: ["LNURL Withdraw not supported"], addressees: [])
-        case .nodeId, .url, .lnUrlError:
-            return ValidateAddresseesResult(isValid: false, errors: ["Not supported"], addressees: [])
-        }
-    }
-
-    public override func getReceiveAddress(subaccount: UInt32) async throws -> Address {
-        guard let addr = try lightBridge?.receiveOnchain() else {
-            throw GaError.GenericError()
-        }
-        return Address.from(swapInfo: addr)
-    }
-
-    public override func transactions(subaccount: UInt32, first: Int = 0, count: Int = 30) async throws -> Transactions {
-        // check valid breez api
-        guard let lb = self.lightBridge else {
-            return Transactions(list: [])
-        }
-        let subaccountId = try await subaccounts().first?.id
-        // get list payments
-        var txs = try lb.getListPayments().compactMap { Transaction.fromPayment($0, subaccountId: subaccountId) }
-        // get list refundables
-        txs += try lb.listRefundables().compactMap { Transaction.fromSwapInfo($0, subaccountId: subaccountId, isRefundableSwap: true) }
-        // get list reverse swap
-        txs += try lb.listReverseSwapProgress().compactMap { Transaction.fromReverseSwapInfo($0, subaccountId: subaccountId, isRefundableSwap: false) }
-        // get swap in progress
-        if let sp = try lb.swapProgress() {
-            txs += [sp].compactMap {
-                Transaction.fromSwapInfo($0, subaccountId: subaccountId, isRefundableSwap: false)
-            }
-        }
-        txs = txs.sorted().reversed()
-        txs = Array(txs.suffix(from: min(first, txs.count)).prefix(count))
-        return Transactions(list: txs)
-    }
-
-    public func closeChannels() throws {
-        try lightBridge?.closeLspChannels()
-    }
-
-    public func diagnosticData() async -> String? {
-        return try? self.lightBridge?.breezSdk?.generateDiagnosticData()
-    }
-    
-    public func remove(account: Account) async {
-        try? await disconnect()
-        if let derivedCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning) {
-            if let walletId = try? walletIdentifier(credentials: derivedCredentials) {
-                await removeDatadir(walletHashId: walletId.walletHashId)
-                LightningRepository.shared.remove(for: walletId.walletHashId)
-            }
-        }
-        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyLightning, for: account.keychainLightning)
-    }
-
-    public func unregister(account: Account)  async throws {
-        // unregister lightning webhook
-        let derivedCredentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
-        if !logged {
-            try await smartLogin(
-                credentials: derivedCredentials,
-                listener: self)
-        }
-        let defaults = UserDefaults(suiteName: Bundle.main.appGroup)
-        if let token = defaults?.string(forKey: "token"),
-           let xpubHashId = account.xpubHashId {
-           unregisterNotification(token: token, xpubHashId: xpubHashId)
-        }
-        try? await disconnect()
-    }
-    func hasOnchainFunds() -> Bool {
-        return (nodeState?.onchainBalanceSatoshi ?? 0) > 0
+}
+extension gdk.Transaction {
+    static public func from(payment: GreenlightSDK.Payment, subaccountId: String) -> gdk.Transaction {
+        var tx = Transaction([:])
+        tx.subaccountId = subaccountId
+        let amount = Int64(payment.amountMsat) * (payment.paymentType == .received ? 1 : -1)
+        tx.type = payment.paymentType == .received ? .incoming : .outgoing
+        tx.memo = payment.description
+        tx.fee = payment.feeMsat.satoshi
+        tx.createdAtTs = Int64(payment.paymentTime * 1_000_000)
+        tx.amounts = [AssetInfo.lightningId: amount.satoshi]
+        tx.blockHeight = 0
+        tx.paymentPreimage = payment.preimage
+        tx.invoice = payment.bolt11
+        tx.memo = payment.description
+        tx.destinationPubkey = payment.destination
+        return tx
     }
 }
 
-extension LightningSessionManager: EventListener {
-    public func onEvent(e: BreezEvent) {
-        logger.info("Breez event \(e.description, privacy: .public)")
-        switch e {
-        case .synced:
-            break
-        case .newBlock(let block):
-            blockHeight = block
-            DispatchQueue.main.async {
-                self.newNotificationDelegate?.didReceive(event: .newBlock(blockheight: block), networkType: self.networkType)
+extension LightningSessionManager: GreenlightSDK.NodeEventListener {
+    public func onEvent(event: GreenlightSDK.NodeEvent) {
+        switch event {
+        case .invoicePaid(let details):
+            lightningLogger
+                .info(
+                    "Invoice paid \(details.paymentHash, privacy: .public) of \(details.amountMsat.satoshi, privacy: .public), updating node info"
+                )
+            Task {
+                _ = try? await updateNodeInfoState()
+                newNotificationDelegate?.didReceive(event: .invoicePaid, networkType: networkType)
             }
-        case .invoicePaid(let data):
-            DispatchQueue.main.async {
-                self.newNotificationDelegate?.didReceive(event: .invoicePaid, networkType: self.networkType)
-            }
-        case .paymentSucceed:
-            DispatchQueue.main.async {
-                self.newNotificationDelegate?.didReceive(event: .paymentSucceed, networkType: self.networkType)
-            }
-        case .paymentFailed:
-            DispatchQueue.main.async {
-                self.newNotificationDelegate?.didReceive(event: .paymentFailed, networkType: self.networkType)
-            }
-        default:
-            break
         }
     }
 }
-
-extension LightningSessionManager: LogStream {
-    public func log(l: LogEntry) {
-        switch l.level.lowercased() {
-        case "error", "warning":
-            logger.error("\(l.line, privacy: .public)")
-        default: break
+extension LightningSessionManager: GreenlightSDK.LogListener {
+    public func onLog(entry: GreenlightSDK.LogEntry) {
+        switch entry.level {
+        case .debug:
+            lightningLogger.debug("\(entry.message, privacy: .public)")
+        case .info:
+            lightningLogger.info("\(entry.message, privacy: .public)")
+        case .warn:
+            lightningLogger.warning("\(entry.message, privacy: .public)")
+        case .error:
+            lightningLogger.error("\(entry.message, privacy: .public)")
+        case .trace:
+            lightningLogger.trace("\(entry.message, privacy: .public)")
         }
     }
 }

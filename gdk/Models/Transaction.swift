@@ -1,5 +1,4 @@
 import Foundation
-import BreezSDK
 import lightning
 
 public enum TransactionError: Error {
@@ -83,7 +82,7 @@ public struct Addressee: Codable {
                          userPath: nil
         )
     }
-
+/*
     public static func fromLnInvoice(_ invoice: LnInvoice, fallbackAmount: UInt64) -> Addressee {
         return Addressee(address: invoice.bolt11,
                          satoshi: -Int64(invoice.amountSatoshi ?? fallbackAmount),
@@ -115,7 +114,7 @@ public struct Addressee: Codable {
             bip21Params: nil,
             subtype: nil,
             userPath: nil)
-    }
+    }*/
 }
 
 public struct TransactionInputOutput: Codable {
@@ -152,7 +151,7 @@ public struct TransactionInputOutput: Codable {
         self.ptIdx = ptIdx
         self.isRelevant = isRelevant
     }
-
+/*
     public static func fromLnInvoice(_ invoice: LnInvoice, fallbackAmount: Int64?) -> TransactionInputOutput {
         return TransactionInputOutput(
             address: invoice.bolt11,
@@ -179,7 +178,7 @@ public struct TransactionInputOutput: Codable {
             isRelevant: nil
         )
     }
-
+*/
     public func hasBlindingData() -> Bool {
         return assetId != "" && satoshi != 0 && amountBlinder != "" && assetBlinder != ""
     }
@@ -454,7 +453,7 @@ public struct Transaction: Comparable {
     }
 
     public func date(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(Double(createdAtTs / 1000000)))
+        let date = Date(timeIntervalSince1970: TimeInterval(Double(createdAtTs / 1_000_000)))
         return DateFormatter.localizedString(from: date, dateStyle: dateStyle, timeStyle: timeStyle)
     }
 

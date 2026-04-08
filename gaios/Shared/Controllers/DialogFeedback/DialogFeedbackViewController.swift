@@ -38,7 +38,7 @@ class DialogFeedbackViewController: KeyboardViewController {
     let limit = 1000
     var isLightningScope = false
     var nodeId: String?
-    var breezErrStr: String?
+    var errStr: String?
 
     lazy var blurredView: UIView = {
         let containerView = UIView()
@@ -213,8 +213,8 @@ class DialogFeedbackViewController: KeyboardViewController {
     }
 
     @IBAction func btnCopy(_ sender: Any) {
-        if let nodeId =  nodeId, let breezErrStr = breezErrStr {
-            let msg = breezErrStr + ", {\"nodeId\": \(nodeId)}"
+        if let nodeId, let errStr {
+            let msg = errStr + ", {\"nodeId\": \(nodeId)}"
             UIPasteboard.general.string = msg
             DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 2.0)
         }

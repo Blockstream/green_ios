@@ -1,20 +1,16 @@
 import Foundation
 import UIKit
 import gdk
-import BreezSDK
 import lightning
 
 struct ReceiveAddressCellModel {
     var text: String?
     var isBip21: Bool
     var type: ReceiveType
-    var swapInfo: SwapInfo?
 
     var satoshi: Int64?
     var maxLimit: UInt64?
     var inputDenomination: DenominationType
-    var nodeState: NodeState?
-    var breezSdk: LightningBridge?
     let isLightning: Bool
 
     var btc: String? {
@@ -33,27 +29,5 @@ struct ReceiveAddressCellModel {
             }
         }
         return nil
-    }
-
-    var onChainMin: String? {
-        if let minAllowedDeposit = swapInfo?.minAllowedDeposit {
-            return Balance.fromSatoshi(minAllowedDeposit, assetId: AssetInfo.btcId)?.toText(inputDenomination)
-        }
-        return nil
-    }
-    var onChainMax: String? {
-        if let maxAllowedDeposit = swapInfo?.maxAllowedDeposit {
-            return Balance.fromSatoshi(maxAllowedDeposit, assetId: AssetInfo.btcId)?.toText(inputDenomination)
-        }
-        return nil
-    }
-
-   var channelOpeningFeesText: String? {
-       guard let channelOpeningFees = swapInfo?.channelOpeningFees?.minMsat.satoshi else { return nil }
-       return "\(channelOpeningFees) sats"
-    }
-
-    var onChaininfo: String? {
-        return String(format: "Send more than %@ and up to %@ to this address. A minimum setup fee of %@ will be applied on the received amount.\n\nThis address can be used only once.".localized, onChainMin ?? "", onChainMax ?? "", channelOpeningFeesText ?? "")
     }
 }

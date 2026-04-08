@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-import BreezSDK
 import gdk
 import lightning
 import core
@@ -11,17 +10,15 @@ enum AmountCellScope {
 }
 struct AmountCellModel {
     var satoshi: Int64?
-    var openChannelFee: Int64?
+    var openChannelFee: UInt64?
     var maxLimit: UInt64?
     var isFiat: Bool
     var inputDenomination: gdk.DenominationType
     var gdkNetwork: gdk.GdkNetwork?
-    var breezSdk: LightningBridge?
     var scope: AmountCellScope
     var reverseSwapInfo: BoltzReverseSwapInfoLBTC?
 
     var network: NetworkSecurityCase?
-    var swapInfo: SwapInfo?
     var amount: String? { isFiat ? fiat : btc }
     var subamountText: String? { isFiat ? "≈ \(btc ?? "") \(denominationHint ?? "")" : "≈ \(fiat ?? "") \(currency ?? "")" }
     var ticker: String? {
@@ -30,20 +27,6 @@ struct AmountCellModel {
         } else {
             return denomText
         }
-    }
-    var minAllowedDepositText: String? {
-        guard let minAllowedDeposit = swapInfo?.minAllowedDeposit else { return nil }
-        let balance = Balance.fromSatoshi(minAllowedDeposit, assetId: AssetInfo.btcId)
-        return isFiat ? balance?.toFiatText() : balance?.toText(inputDenomination)
-    }
-    var maxAllowedDepositText: String? {
-        guard let maxAllowedDeposit = swapInfo?.maxAllowedDeposit else { return nil }
-        let balance = Balance.fromSatoshi(maxAllowedDeposit, assetId: AssetInfo.btcId)
-        return isFiat ? balance?.toFiatText() : balance?.toText(inputDenomination)
-    }
-    var channelOpeningFeesText: String? {
-        guard let channelOpeningFees = swapInfo?.channelOpeningFees?.minMsat.satoshi else { return nil }
-        return "\(channelOpeningFees) sats"
     }
     var minReverseSwapText: String? {
         guard let min = reverseSwapInfo?.limits.minimal else { return nil }
@@ -61,18 +44,14 @@ struct AmountCellModel {
                 return "Type an amount between \(minReverseSwapText) and \(maxReverseSwapText)."
             }
             return "Invalid amount"
-        }
-        if network == .lightning {
-            if state == .invalidBuy {
-                return "Type an amount between \(minAllowedDepositText ?? "-") and \(maxAllowedDepositText ?? "-"). A minimum setup fee of \(channelOpeningFeesText ?? "-") will be applied to the received amount."
-            }
-            let amount = Int64(swapInfo?.channelOpeningFees?.minMsat.satoshi ?? 0)
+        } else if state == .tooLow {
+            let amount = Int64(openChannelFee ?? 0)
             return String(format: "id_a_set_up_funding_fee_of_s_s".localized, toBtcText(amount) ?? "", toFiatText(amount) ?? "")
         }
         return nil
     }
     var showMessage: Bool {
-        return network == .lightning && swapInfo != nil && satoshi != nil
+        return network == .lightning && satoshi != nil
     }
     var hideSubamount: Bool {
         return satoshi == nil
@@ -105,7 +84,7 @@ struct AmountCellModel {
         }
     }
     var toReceiveAmountStr: String {
-        if let satoshi = satoshi, let openChannelFee = openChannelFee, let balance = Balance.fromSatoshi(satoshi - openChannelFee, assetId: "btc") {
+        if let satoshi = satoshi, let openChannelFee = openChannelFee, let balance = Balance.fromSatoshi(satoshi - Int64(openChannelFee), assetId: "btc") {
             let (value, denom) = balance.toDenom(inputDenomination)
             let (fiat, currency) = balance.toFiat()
             return "\(value) \(denom) ~(\(fiat) \(currency))"
@@ -148,10 +127,7 @@ struct AmountCellModel {
         guard let satoshi = satoshi else { return .disabled }
         switch scope {
         case .ltReceive:
-            guard let _ = breezSdk?.lspInformation, let nodeState = breezSdk?.nodeInfo else {
-                return .disconnected
-            }
-            if satoshi >= nodeState.maxReceivableSatoshi {
+            /*if satoshi >= nodeState.maxReceivableSatoshi {
                 return .tooHigh
             } else if satoshi <= nodeState.inboundLiquiditySatoshi || satoshi >= openChannelFee ?? 0 {
                 if nodeState.inboundLiquiditySatoshi == 0 || satoshi > nodeState.inboundLiquiditySatoshi {
@@ -159,10 +135,12 @@ struct AmountCellModel {
                 } else {
                     return .valid
                 }
-            } else if satoshi <= openChannelFee ?? 0 {
+            } else
+            */
+            if satoshi <= openChannelFee ?? 0 {
                 return .tooLow
             } else {
-                return .disabled
+                return .valid
             }
         case .reverseSwap:
             if satoshi < reverseSwapLimits?.0 ?? 0 || satoshi > reverseSwapLimits?.1 ?? 0 {
@@ -178,17 +156,6 @@ struct AmountCellModel {
     var defaultDenomination: String? = {
         return Balance.fromSatoshi(Int64(0), assetId: AssetInfo.btcId)?.toDenom().1
     }()
-
-    mutating func setOpenChannelFee(_ fee: Int64) {
-        openChannelFee = fee
-    }
-    func buildOpenChannelFee(_ satoshi: Int64) async -> Int64? {
-        let channelFee = try? breezSdk?.openChannelFee(satoshi: Long(satoshi))?.feeMsat?.satoshi
-        if let channelFee = channelFee {
-            return Int64(channelFee)
-        }
-        return nil
-    }
 
     func toFiatText(_ amount: Int64?) -> String? {
         if let amount = amount {

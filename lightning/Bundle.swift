@@ -2,14 +2,6 @@ import Foundation
 
 extension Bundle {
 
-    public var breezApiKey: String? {
-        guard let content = Bundle.main.infoDictionary?["BREEZ_API_KEY"] as? String,
-              !content.isEmpty else {
-            fatalError("breez Api Key: not found")
-        }
-        return content
-    }
-
     public var greenlightDeviceCert: Data? {
         if let filePath = Bundle.main.path(forResource: "greenlight_device_cert", ofType: "txt"),
             var content = FileManager.default.contents(atPath: filePath),

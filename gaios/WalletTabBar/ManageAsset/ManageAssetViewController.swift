@@ -99,7 +99,7 @@ class ManageAssetViewController: UIViewController {
     @objc func settingsBtnTapped() {
         guard let subaccount = viewModel.selectedSubaccount else { return }
         if subaccount.isLightning {
-            openLTSettingsViewController()
+            pushLTSettingsViewController()
             return
         }
         var actions: [AccountSettingsType] = []
@@ -215,15 +215,15 @@ class ManageAssetViewController: UIViewController {
         }
     }
     func lightningTransfer() {
-        let viewModel = LTRecoverFundsViewModel(
+        let viewModel = LTRedeemViewModel(
             wallet: viewModel.selectedSubaccount,
-            amount: viewModel.selectedSubaccount?.lightningSession?.nodeState?.onchainBalanceSatoshi ?? 0,
-            type: .sweep)
-        pushLTRecoverFundsViewController(viewModel)
+            amount: viewModel.wallet.lightningSession?
+                .nodeState()?.onchainBalanceMsat.satoshi ?? 0)
+        pushLTReedemViewController(viewModel)
     }
-    func pushLTRecoverFundsViewController(_ model: LTRecoverFundsViewModel) {
+    func pushLTReedemViewController(_ model: LTRedeemViewModel) {
         let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTRecoverFundsViewController") as? LTRecoverFundsViewController {
+        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTRedeemViewController") as? LTRedeemViewController {
             vc.viewModel = model
             vc.modalPresentationStyle = .overFullScreen
             navigationController?.pushViewController(vc, animated: true)
@@ -238,14 +238,14 @@ class ManageAssetViewController: UIViewController {
             self.present(vc, animated: false, completion: nil)
         }
     }
-    func openLTSettingsViewController() {
-        guard let lightningSession = viewModel.selectedSubaccount?.lightningSession else {
+    func pushLTSettingsViewController() {
+        if viewModel.wallet.lightningSubaccount == nil {
             DropAlert().warning(message: "Create a lightning account")
             return
         }
         let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTSettingsViewController") as? LTSettingsViewController {
-            vc.viewModel = LTSettingsViewModel(lightningSession: lightningSession, hideActions: true)
+            vc.viewModel = viewModel.lTSettingsViewModel()
             navigationController?.pushViewController(vc, animated: true)
         }
     }

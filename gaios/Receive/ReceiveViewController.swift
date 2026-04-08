@@ -1,5 +1,4 @@
 import Foundation
-import BreezSDK
 import UIKit
 import LinkPresentation
 import gdk
@@ -151,8 +150,6 @@ class ReceiveViewController: KeyboardViewController {
             } else {
                 return [.backup, .asset, .account, .amount, .address, .infoReceiveAmount, .infoExpiredIn, .note]
             }
-        case .breezSwap:
-            return [.backup, .asset, .account, .address]
         case .address:
             return [.backup, .asset, .account, .address]
         default:
@@ -205,11 +202,12 @@ class ReceiveViewController: KeyboardViewController {
     }
     func invoicePaid(_ notification: Notification? = nil) {
         Task {
-            if let invoice = notification?.object as? InvoicePaidDetails {
-                if let vm = try await viewModel.ltSuccessViewModel(details: invoice) {
-                    presentLTSuccessViewController(model: vm)
-                }
-            }
+            // TODO:
+            //if let invoice = notification?.object as? InvoicePaidDetails {
+            //    if let vm = try await viewModel.ltSuccessViewModel(amount: invoice) {
+            //        presentLTSuccessViewController(model: vm)
+            //    }
+            //}
         }
     }
 
@@ -841,8 +839,6 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
                 return headerView("id_address".localized)
             case .bolt11:
                 return headerView("id_lightning_invoice".localized)
-            case .breezSwap:
-                return headerView("id_onchain_address".localized)
             case .lwkSwap:
                 return headerView("id_invoice".localized)
             }

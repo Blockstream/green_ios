@@ -147,9 +147,9 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
             presentDialogRenameViewController()
         case .lightning:
             if viewModel.hasLightning() {
-                openLTSettingsViewController()
+                pushLTSettingsViewController()
             } else {
-                openLTCreateViewController()
+                pushLTCreateViewController()
             }
         case .ampID:
             if !viewModel.hasSubaccountAmp() {
@@ -368,22 +368,18 @@ extension TabSettingsVC {
         }
     }
 
-    func openLTSettingsViewController() {
-        guard let lightningSession = viewModel.wallet.lightningSession else {
-            DropAlert().warning(message: "Create a lightning account")
-            return
-        }
+    func pushLTSettingsViewController() {
         let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTSettingsViewController") as? LTSettingsViewController {
-            vc.viewModel = LTSettingsViewModel(lightningSession: lightningSession, hideActions: false)
+            vc.viewModel = viewModel.lTSettingsViewModel()
             navigationController?.pushViewController(vc, animated: true)
         }
     }
 
-    func openLTCreateViewController() {
+    func pushLTCreateViewController() {
         let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTCreateViewController") as? LTCreateViewController {
-            vc.viewModel = LTCreateViewModel()
+            vc.viewModel = viewModel.lTCreateViewModel()
             navigationController?.pushViewController(vc, animated: true)
         }
     }

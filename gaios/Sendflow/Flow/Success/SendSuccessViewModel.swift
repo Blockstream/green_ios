@@ -17,7 +17,7 @@ final class SendSuccessViewModel: Sendable {
         self.total = total
         self.delegate = delegate
     }
-    
+
     func urlForTx() -> URL? {
         guard let txExplorerUrl = tx.subaccount?.gdkNetwork.txExplorerUrl, let
                 txHash = sendTransactionSuccess.txHash else {
@@ -34,7 +34,7 @@ final class SendSuccessViewModel: Sendable {
         let blindingUrl = tx.blindingUrlString(address: txHash)
         return URL(string: "\(txExplorerUrl)\(txHash)\(blindingUrl)")
     }
-    
+
     func url() -> URL? {
         if tx.isLightning {
             if let url = sendTransactionSuccess.url {

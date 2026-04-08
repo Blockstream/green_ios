@@ -21,6 +21,7 @@ class SendSuccessViewController: UIViewController {
         self.viewModel = viewModel
         super.init(coder: coder)
     }
+
     required init?(coder: NSCoder) {
         fatalError()
     }
@@ -44,20 +45,18 @@ class SendSuccessViewController: UIViewController {
         lblTitle.text = "id_transaction_successful".localized
         btnDone.setTitle("id_done".localized, for: .normal)
         btnShare.setTitle("id_share_link".localized, for: .normal)
-
-        if viewModel.tx.isLightning {
+        btnShare.isHidden = viewModel.tx.isLightning
+        if let message = viewModel.sendTransactionSuccess.message {
+            lblAddress.text = message
             btnTxId.isHidden = true
-            if let message = viewModel.sendTransactionSuccess.message {
-                lblAddress.text = message
-            } else {
-                lblAddress.isHidden = true
-            }
-            // btnShare.isHidden = sendTransactionSuccess?.url?.isEmpty ?? true
-            btnShare.isHidden = true // never show
+        } else if let paymentId = viewModel.sendTransactionSuccess.paymentId {
+            btnTxId.isHidden = false
+            btnTxId.setTitle("\("id_payment_hash".localized):", for: .normal)
+            lblAddress.text = paymentId
         } else {
+            btnTxId.isHidden = false
             btnTxId.setTitle("\("id_transaction_id".localized):", for: .normal)
             lblAddress.text = viewModel.sendTransactionSuccess.txHash
-            btnShare.setTitle("id_share_link".localized, for: .normal)
         }
     }
 
@@ -74,17 +73,13 @@ class SendSuccessViewController: UIViewController {
         lblHint.attributedText = hint
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
     @IBAction func btnTxId(_ sender: Any) {
-        if viewModel.tx.isLightning {
-            if let message = viewModel.sendTransactionSuccess.message {
-                UIPasteboard.general.string = message
-            }
-        } else {
-            UIPasteboard.general.string = viewModel.sendTransactionSuccess.txHash
+        if let message = viewModel.sendTransactionSuccess.message {
+            UIPasteboard.general.string = message
+        } else if let paymentId = viewModel.sendTransactionSuccess.paymentId {
+            UIPasteboard.general.string = paymentId
+        } else if let txHash = viewModel.sendTransactionSuccess.txHash {
+            UIPasteboard.general.string = txHash
         }
         DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)

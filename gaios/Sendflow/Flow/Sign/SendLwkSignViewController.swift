@@ -3,7 +3,6 @@ import UIKit
 import core
 import gdk
 import greenaddress
-import BreezSDK
 import lightning
 
 class SendLwkSignViewController: UIViewController {
@@ -86,7 +85,7 @@ class SendLwkSignViewController: UIViewController {
         lblNoteTitle.text = "id_my_notes".localized
         lblNoteTxt.text = ""
         squareSliderView.isHidden = false
-        lblAmountSubtitle.isHidden = viewModel.isCrossChainSwap
+        lblAmountSubtitle.isHidden = viewModel.isCrossChainSwap && !viewModel.isLightningPayment
         lblAmountSubtitle.text = "You are paying this Lightning invoice with Liquid bitcoin".localized
     }
 
@@ -94,6 +93,7 @@ class SendLwkSignViewController: UIViewController {
         lblAmountValue.setStyle(.title)
         [cardAssetFrom, cardAssetTo, addressCard, amountCard, notesCard].forEach {
             $0?.cornerRadius = 4.0
+            $0?.setStyle(CardStyle.defaultStyle)
         }
         [lblToAssetTitleFrom, lblToAssetTitleTo, lblAddressTitle, lblAmountTitle, lblNoteTitle].forEach {
             $0?.setStyle(.sectionTitle)
@@ -107,7 +107,35 @@ class SendLwkSignViewController: UIViewController {
         lblAmountSubtitle.setStyle(.txt)
         btnInfoFee.setImage(UIImage(named: "ic_lightning_info_err")!.maskWithColor(color: UIColor.gW40()), for: .normal)
     }
-
+    func reloadLightningPayment() {
+        lblToAssetTitleTo.isHidden = true
+        cardAssetFrom.isHidden = false
+        cardAssetTo.isHidden = true
+        addressCard.isHidden = false
+        lblAddressTitle.isHidden = false
+        lblAssetNameFrom.text = viewModel.assetFrom?.name ?? viewModel.assetIdFrom
+        lblAccount1From.text = viewModel.subaccountFrom.localizedName.uppercased()
+        iconAssetFrom.image = viewModel.assetImageFrom
+        lblSumFeeValue.isHidden = true
+        lblSumAmountValue.isHidden = true
+        lblSumTotalValue.isHidden = true
+        lblConversion.isHidden = true
+        lblSumAmountView.isHidden = true
+        lblAmountSubtitle.isHidden = true
+        totalsView.isHidden = true
+        noteView.isHidden = true
+        lblAmountValue.text = convertToDenom(viewModel.invoiceSatoshi ?? 0)
+        lblAmountFiat.text = "≈ \(convertToFiat(viewModel.invoiceSatoshi ?? 0) ?? "")"
+        if let bolt11 = try? viewModel.bolt11 {
+            lblNoteTxt.text = bolt11.invoiceDescription()
+            noteView.isHidden = bolt11.invoiceDescription().isEmpty
+            AddressDisplay.configure(
+                address: bolt11.description,
+                textView: addressTextView,
+                style: .yellow,
+                truncate: true)
+        }
+    }
     func reloadCrossChainSwap() {
         lblAmountValue.text = convertToDenom(viewModel.recipientSatoshi ?? 0)
         lblAmountFiat.text = "≈ \(convertToFiat(viewModel.recipientSatoshi ?? 0) ?? "")"
@@ -165,12 +193,14 @@ class SendLwkSignViewController: UIViewController {
             AddressDisplay.configure(
                 address: bolt11.description,
                 textView: addressTextView,
-                style: .default,
+                style: .yellow,
                 truncate: true)
         }
     }
     func reload() {
-        if viewModel.isCrossChainSwap {
+        if viewModel.isLightningPayment {
+            reloadLightningPayment()
+        } else if viewModel.isCrossChainSwap {
             reloadCrossChainSwap()
         } else {
             reloadSubmarineSwap()

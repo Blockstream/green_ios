@@ -35,7 +35,7 @@ public class LwkSessionManager: SessionManager {
     public override func networkDisconnect() async { }
     public override func changeSettings(settings: Settings) async throws -> Settings? {
         return nil
-    } 
+    }
     public override func subaccount(_ pointer: UInt32) async throws -> WalletItem? {
         return nil
     }

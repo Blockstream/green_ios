@@ -3,6 +3,7 @@ import Foundation
 @preconcurrency import core
 import gdk
 import greenaddress
+import GreenlightSDK
 
 struct PaymentTargetParser: Sendable {
     public let mainAccount: Account
@@ -56,13 +57,18 @@ struct PaymentTargetParser: Sendable {
             }
         case .lightningInvoice:
             if let lightningInvoice = payment.lightningInvoice() {
-                if lightningInvoice.amountMilliSatoshis() == nil {
-                    throw SendFlowError.generic("Invoice without amount not supported. Paste an invoice with an amount")
-                }
                 let currentTimestamp = Int(Date().timeIntervalSince1970)
                 let isExpired = lightningInvoice.expiryTime() + lightningInvoice.timestamp() <= currentTimestamp
                 if isExpired {
-                    throw SendFlowError.generic("Invoice expired")
+                    throw SendFlowError.generic("id_invoice_expired")
+                }
+                let paymentHash = lightningInvoice.paymentHash().fromHex()
+                let lightningSession = WalletManager.current?.lightningSession
+                if let lightningSession, let paymentHash {
+                    let isPaidInvoice = try? await lightningSession.isPaidInvoice(paymentHash: paymentHash)
+                    if isPaidInvoice ?? false {
+                        throw SendFlowError.generic("Invoice already paid")
+                    }
                 }
                 let swapIdsByInvoice = try await BoltzController.shared.fetchSwaps(xpubHashId: mainAccount.xpubHashId ?? "", invoice: lightningInvoice.description, swapType: .Submarine)
                 let swapsByInvoice = try await BoltzController.shared.gets(with: swapIdsByInvoice)

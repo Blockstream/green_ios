@@ -3,7 +3,6 @@ import UIKit
 import gdk
 import greenaddress
 import core
-import BreezSDK
 import lightning
 
 class SendAddressViewController: KeyboardViewController {

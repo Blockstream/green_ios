@@ -4,7 +4,6 @@ import gdk
 import greenaddress
 import hw
 import lightning
-import BreezSDK
 import LiquidWalletKit
 
 public actor Failures {
@@ -111,7 +110,6 @@ public class WalletManager {
             addSession(for: .testnetLiquidSS)
             addSession(for: .testnetMS)
             addSession(for: .testnetLiquidMS)
-            // breez not enabled on testnet
         }
     }
 
@@ -127,7 +125,9 @@ public class WalletManager {
     public func addSession(for network: NetworkSecurityCase) {
         switch network {
         case .lightning:
-            sessions[network.rawValue] = LightningSessionManager(network, newNotificationDelegate: self)
+            sessions[network.rawValue] = LightningSessionManager(
+                newNotificationDelegate: self
+            )
         case .lwkMainnet:
             sessions[network.rawValue] = LwkSessionManager(network: Network.mainnet(), newNotificationDelegate: self)
         default:
@@ -286,7 +286,8 @@ public class WalletManager {
     public func loginLightning(
         session: LightningSessionManager,
         credentials: Credentials,
-        restore: Bool = false
+        restore: Bool = false,
+        parentWalletId: WalletIdentifier?
     ) async throws -> LoginUserResult? {
         // verify session
         if !AppSettings.shared.experimental || testnet {
@@ -296,26 +297,15 @@ public class WalletManager {
             logger.error("WM login no credentials found for lightning")
             return nil
         }
-        let walletId = try session.walletIdentifier(credentials: credentials)
-        let walletHashId = walletId!.walletHashId
-        if !restore && LightningRepository.shared.get(for: walletHashId) == nil {
-            logger.error("WM login lightning is disabled")
-            return nil
-        }
+        //let walletId = try session.walletIdentifier(credentials: credentials)
+        //if let xpubHashId = walletId?.xpubHashId, !restore && LightningRepository.shared.get(for: xpubHashId) == nil {
+        //    logger.error("WM login lightning is disabled")
+        //    return nil
+        //}
         // login
-        do {
-            try await session.connect()
-            let res = try await session.loginUser(credentials)
-            return res
-        } catch {
-            // remove multisig session if login is failure
-            switch error {
-            case BreezSDK.ConnectError.RestoreOnly:
-                return nil
-            default:
-                throw error
-            }
-        }
+        try await session.connect()
+        let res = try await session.loginUser(credentials)
+        return res
     }
 
     public func loginLWK(
@@ -345,9 +335,9 @@ public class WalletManager {
             var loginUserResult: LoginUserResult?
             switch session.networkType {
             case .lightning:
-                // Connect and login Breez
+                // Connect and login greenlight
                 if let session = lightningSession, let credentials = lightningCredentials {
-                    loginUserResult = try await loginLightning(session: session, credentials: credentials, restore: fullRestore)
+                    loginUserResult = try await loginLightning(session: session, credentials: credentials, restore: fullRestore, parentWalletId: parentWalletId)
                 }
             case .lwkMainnet:
                 // Connect and login Lwk
@@ -723,14 +713,6 @@ public class WalletManager {
         return Credentials(
             mnemonic: bip85Key,
             bip39Passphrase: credentials.bip39Passphrase)
-    }
-
-    public func setCloseToAddress() async throws {
-        let singlesig = subaccounts.filter { $0.type == .segWit }.first ?? subaccounts.filter { $0.type == .segwitWrapped }.first
-        let address = try await singlesig?.session?.getReceiveAddress(subaccount: singlesig?.pointer ?? 0)
-        if let address = address?.address {
-            try await lightningSession?.lightBridge?.setCloseToAddress(closeToAddress: address)
-        }
     }
 
     public func getExpiredSubaccounts() async throws -> [WalletItem] {

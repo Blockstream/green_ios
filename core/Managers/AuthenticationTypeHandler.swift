@@ -50,6 +50,7 @@ public class AuthenticationTypeHandler {
         case AuthKeyWoCredentials = "com.blockstream.green.auth_key_wo_credentials" // for wathonly credentials
         case AuthKeyWoBioCredentials = "com.blockstream.green.auth_key_wo_bio_credentials" // for wathonly credentials with bio auth
         case AuthKeyBoltz = "com.blockstream.green.auth_key_boltz" // for lwk boltz
+        case AuthCertGreenlight = "com.blockstream.green.auth_key_greenlight" // for greenlight certs
     }
 
     static let PrivateKeyPathSize = 32
@@ -260,7 +261,7 @@ public class AuthenticationTypeHandler {
             switch method {
             case .AuthKeyBiometric, .AuthKeyPrivate:
                 q[kSecAttrAccessible] = kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
-            case .AuthKeyLightning, .AuthCertLightning, .AuthKeyBoltz:
+            case .AuthKeyLightning, .AuthCertLightning, .AuthKeyBoltz, .AuthCertGreenlight:
                 q[kSecAttrAccessible] = kSecAttrAccessibleAfterFirstUnlock
             case .AuthKeyPIN, .AuthKeyWoCredentials:
                 q[kSecAttrAccessible] = kSecAttrAccessibleWhenUnlocked
@@ -449,6 +450,9 @@ public class AuthenticationTypeHandler {
     public static func setCertLightning(credentials: AppGreenlightCredentials, for label: String) throws {
         try setAuth(method: .AuthCertLightning, data: credentials, for: label)
     }
+    public static func setGreenlightCredentials(certificate: LightningCredentials, for label: String) throws {
+        try setAuth(method: .AuthCertGreenlight, data: certificate, for: label)
+    }
 
     // Get methods
     public static func getPinData(method: AuthType, for label: String) throws -> PinData {
@@ -465,5 +469,8 @@ public class AuthenticationTypeHandler {
     }
     public static func getCertLightning(for label: String) throws -> AppGreenlightCredentials {
         try getAuth(method: AuthType.AuthCertLightning, for: label)
+    }
+    public static func getGreenlightCredentials(for label: String) throws -> LightningCredentials {
+        try getAuth(method: AuthType.AuthCertGreenlight, for: label)
     }
 }

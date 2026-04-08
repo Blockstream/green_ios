@@ -2,15 +2,13 @@ import Foundation
 import UIKit
 import core
 import gdk
-import BreezSDK
 
 class LTCreateViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
-    @IBOutlet weak var lblSubtitle: UILabel!
     @IBOutlet weak var lblDescription: UILabel!
     @IBOutlet weak var btnNext: UIButton!
-
+    @IBOutlet weak var btnLearnMore: UIButton!
     var viewModel: LTCreateViewModel!
 
     override func viewDidLoad() {
@@ -28,17 +26,16 @@ class LTCreateViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "id_lightning_network".localized
-        lblSubtitle.text = "id_lightning_network_not_enabled".localized
-        lblDescription.text = "Experimental Lightning support is currently unavailable to new users.".localized
+        lblTitle.text = "Lightning is in Beta".localized
+        lblDescription.text = "While your underlying funds remain secure, you may experience occasional payment failures or temporary delays when accessing your balance during network updates.\n\nWe recommend only using funds that you don't need immediate, urgent access to.".localized
         btnNext.setTitle("Enable Lightning".localized, for: .normal)
     }
 
     func setStyle() {
         lblTitle.setStyle(.title)
-        lblSubtitle.setStyle(.txtBigger)
         lblDescription.setStyle(.txtSectionHeader)
         btnNext.setStyle(.primary)
+        btnLearnMore.setStyle(.underline(txt: "id_learn_more".localized, color: UIColor.gAccent()))
     }
 
     @IBAction func tapNext(_ sender: Any) {
@@ -53,8 +50,12 @@ class LTCreateViewController: UIViewController {
         }
     }
 
+    @IBAction func tapLearnMore(_ sender: Any) {
+        SafeNavigationManager.shared.navigate(ExternalUrls.understandingLightningSupport)
+    }
+
     func enableLightning() async {
-        startLoader(message: "Restoring...")
+        startLoader(message: "Enabling...")
         let task = Task.detached { [weak self] in
             try await self?.viewModel.enableLightning()
         }
@@ -66,12 +67,7 @@ class LTCreateViewController: UIViewController {
             navigationController?.popViewController(animated: true)
         case .failure(let error):
             stopLoader()
-            switch error as? BreezSDK.ConnectError {
-            case .RestoreOnly(let message):
-                showError("Experimental Lightning support is currently unavailable to new users.".localized)
-            default:
-                showError(error)
-            }
+            showError(error)
         }
     }
 

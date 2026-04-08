@@ -2,7 +2,6 @@ import UIKit
 import RiveRuntime
 import gdk
 import hw
-import BreezSDK
 import core
 
 enum AddressAuthSection: Int, CaseIterable {

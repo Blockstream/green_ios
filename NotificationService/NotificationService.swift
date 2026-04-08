@@ -1,6 +1,5 @@
 import Foundation
 import UserNotifications
-import BreezSDK
 import core
 
 struct LnurlInfoMessage: Codable {
@@ -62,11 +61,9 @@ class NotificationService: UNNotificationServiceExtension {
 
     private var contentHandler: ((UNNotificationContent) -> Void)?
     private var bestAttemptContent: UNMutableNotificationContent?
-    
-    private var currentTask: TaskProtocol?
+
     private var activeTask: Task<Void, Never>?
     private var notificationEvent: NotificationEvent?
-    private var breezSDKConnector = BreezSDKConnector()
     private var isFinished = false
 
     override func didReceive(
@@ -182,38 +179,26 @@ class NotificationService: UNNotificationServiceExtension {
     }
 
     func didReceiveLightning(_ notification: LightningEvent) async {
-        let currentTask = self.getTaskFromNotification(notification: notification)
-        guard let currentTask = currentTask else { return }
-        self.currentTask = currentTask
         guard let xpub = notification.appData else {
             logger.error("NotificationService: Invalid xpub: \(self.bestAttemptContent?.userInfo.description ?? "", privacy: .public)")
-            currentTask.onShutdown()
             shutdown()
             return
         }
         logger.info("NotificationService: xpub: \(xpub, privacy: .public)")
         guard let account = getAccount(xpub: xpub) else {
             logger.error("NotificationService: Wallet not lightning found")
-            currentTask.onShutdown()
             shutdown()
             return
         }
         logger.info("NotificationService: Using lightning wallet \(account.name, privacy: .public)")
         let task = Task { [weak self] in
-            logger.info("NotificationService: Breez SDK is not connected, connecting....")
-            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
-            let breezSdk = try await self?.breezSDKConnector.register(credentials: credentials, listener: currentTask)
-            logger.info("NotificationService: Breez SDK connected successfully")
-            if let breezSdk = breezSdk {
-                try await currentTask.start(breezSDK: breezSdk)
-            }
+            logger.info("NotificationService: todo: start task....")
         }
         switch await task.result {
         case .success:
             logger.info("NotificationService: MeldTransactionTask starts successfully")
         case .failure(let err):
-            logger.error("NotificationService: Breez SDK connection failed \(err.localizedDescription, privacy: .public)")
-            currentTask.onShutdown()
+            logger.error("NotificationService: failed \(err.localizedDescription, privacy: .public)")
             shutdown()
         }
     }
@@ -223,22 +208,6 @@ class NotificationService: UNNotificationServiceExtension {
         return accounts
             .filter { $0.xpubHashId == xpub }
             .first
-    }
-
-    func getTaskFromNotification(notification: LightningEvent) -> TaskProtocol? {
-        switch notification.notificationType {
-        case .addressTxsConfirmed:
-            logger.info("NotificationService: creating task for tx received")
-            return ConfirmTransactionTask(payload: notification.notificationPayload ?? "", logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, dismiss: self.shutdown )
-        case .paymentReceived:
-            logger.info("NotificationService: creating task for payment received")
-            return PaymentReceiverTask(payload: notification.notificationPayload ?? "", logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, dismiss: self.shutdown )
-        case .swapUpdated:
-            logger.info("NotificationService: creating task for swap update")
-            return SwapUpdateTask(payload: notification.notificationPayload ?? "", logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, dismiss: self.shutdown )
-        default:
-            return nil
-        }
     }
 
     override func serviceExtensionTimeWillExpire() {
@@ -257,7 +226,6 @@ class NotificationService: UNNotificationServiceExtension {
                 break
             }
             showNotification()
-            self.currentTask?.onShutdown()
             self.shutdown()
         }
     }
@@ -265,7 +233,6 @@ class NotificationService: UNNotificationServiceExtension {
     private func shutdown() -> Void {
         Task.detached(priority: .high) { @MainActor [weak self] in
             logger.info("NotificationService: shutting down...")
-            await self?.breezSDKConnector.unregister()
             logger.info("NotificationService: task unregistered")
         }
     }

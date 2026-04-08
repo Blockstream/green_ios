@@ -79,10 +79,11 @@ class WalletTabBarModel {
         if !Bundle.main.dev || !Meld.isSandboxEnvironment {
             try? await Meld().registerToken(fcmToken: token, externalCustomerId: xpubHashId, notificationUrl: Meld.MELD_NOTIFICATIONS_URL_PRODUCTION)
         }
-        /// Register notification token for breez lightning
+        /// Register notification token for lightning
         if let lightningSession = wallet.lightningSession, lightningSession.logged {
-            try? await lightningSession.registerNotification(token: token, xpubHashId: xpubHashId)
-            _ = lightningSession.lightBridge?.updateLspInformation()
+            /// TODO: reigster lightning notifications
+            ///try? await lightningSession.registerNotification(token: token, xpubHashId: xpubHashId)
+            // _ = lightningSession.lightBridge?.updateLspInformation()
         }
     }
     func startSwapMonitor() async throws {

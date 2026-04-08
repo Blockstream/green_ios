@@ -1,23 +1,42 @@
 import Foundation
 import gdk
 import core
+import lightning
+import GreenlightSDK
 
 enum LTSettingsCellType: CaseIterable {
     case id
+    case totalBalance
     case channelsBalance
     case inboundLiquidity
     case onchainBalanceSatoshi
     case blockHeight
 }
 
-struct LTSettingsViewModel {
+class LTSettingsViewModel {
 
+    var mainAccount: Account
+    var wallet: WalletDataModel
     var lightningSession: LightningSessionManager
-    var hideActions: Bool
+    var nodeInfo: NodeState?
+
+    init(mainAccount: Account,
+         wallet: WalletDataModel,
+         lightningSession: LightningSessionManager) {
+        self.mainAccount = mainAccount
+        self.wallet = wallet
+        self.lightningSession = lightningSession
+        self.nodeInfo = lightningSession.nodeState()
+    }
+
+    func updateNodeInfo() async {
+        nodeInfo = try? await lightningSession.updateNodeInfoState()
+    }
 
     var cellTypes: [LTSettingsCellType] {
         return LTSettingsCellType.allCases
     }
+
     func cellModelByType(_ cellType: LTSettingsCellType) -> LTSettingCellModel {
         switch cellType {
         case .id:
@@ -26,9 +45,15 @@ struct LTSettingsViewModel {
                 subtitle: nil,
                 value: "\(id.prefix(8))...\(id.suffix(8))",
                 hiddenIcon: false)
-        case .channelsBalance:
+        case .totalBalance:
             return LTSettingCellModel(
                 title: "id_account_balance".localized,
+                subtitle: nil,
+                value: totalBalanceSatoshiText,
+                hiddenIcon: true)
+        case .channelsBalance:
+            return LTSettingCellModel(
+                title: "Channel Balance".localized,
                 subtitle: nil,
                 value: channelsBalanceText,
                 hiddenIcon: true)
@@ -53,23 +78,28 @@ struct LTSettingsViewModel {
         }
     }
 
-    var onchainBalanceSatoshi: UInt64? {
-        return lightningSession.nodeState?.onchainBalanceSatoshi
+    var totalBalanceSatoshiText: String {
+        return asStr(satoshi: nodeInfo?.totalBalanceMsat.satoshi ?? 0)
     }
+
+    var onchainBalanceSatoshi: UInt64? {
+        return nodeInfo?.onchainBalanceMsat.satoshi
+    }
+
     var onchainBalanceSatoshiText: String {
         return asStr(satoshi: onchainBalanceSatoshi ?? 0)
     }
 
     var hideBtnSendAll: Bool {
-        return (lightningSession.nodeState?.channelsBalanceSatoshi ?? 0 == 0)
+        return nodeInfo?.channelsBalanceMsat.satoshi ?? 0 == 0
     }
 
     var id: String {
-        return lightningSession.nodeState?.id ?? ""
+        return nodeInfo?.id ?? ""
     }
 
     var channelsBalance: UInt64? {
-        return lightningSession.nodeState?.channelsBalanceSatoshi
+        return nodeInfo?.channelsBalanceMsat.satoshi
     }
 
     var channelsBalanceText: String {
@@ -77,33 +107,29 @@ struct LTSettingsViewModel {
     }
 
     var inboundLiquidity: String {
-        return asStr(satoshi: lightningSession.nodeState?.inboundLiquiditySatoshi)
+        return asStr(satoshi: nodeInfo?.totalInboundLiquidityMsat.satoshi)
     }
 
     var maxPayble: String {
-        return asStr(satoshi: lightningSession.nodeState?.maxPaybleSatoshi)
+        return asStr(satoshi: nodeInfo?.maxPayableMsat.satoshi)
     }
 
     var maxSinglePaymentAmount: String {
-        return asStr(satoshi: lightningSession.nodeState?.maxSinglePaymentAmountSatoshi)
+        return asStr(satoshi: nodeInfo?.maxPayableMsat.satoshi)
     }
 
     var maxReceivable: String {
-        return asStr(satoshi: lightningSession.nodeState?.maxReceivableSatoshi)
+        return asStr(satoshi: nodeInfo?.maxReceivableSinglePaymentMsat.satoshi)
     }
 
     var connectedPeers: String {
-        return lightningSession.nodeState?.connectedPeers.joined(separator: ", ") ?? ""
+        return nodeInfo?.connectedChannelPeers.joined(separator: ", ") ?? ""
     }
     var blockHeight: UInt32? {
-        return lightningSession.nodeState?.blockHeight
+        return nodeInfo?.blockHeight
     }
     func diagnosticData() async -> String? {
-        await lightningSession.diagnosticData()
-    }
-    init(lightningSession: LightningSessionManager, hideActions: Bool) {
-        self.lightningSession = lightningSession
-        self.hideActions = hideActions
+        "" //await lightningSession.diagnosticData()
     }
 
     func asStr(satoshi: UInt64?) -> String {
@@ -117,32 +143,26 @@ struct LTSettingsViewModel {
     }
 
     func disableLightning() async {
-        if let account = AccountsRepository.shared.current {
-            try? await WalletManager.current?.lightningSession?.unregister(account: account)
-            await WalletManager.current?.lightningSession?.remove(account: account)
-        }
+        await lightningSession.disconnect()
+        mainAccount.removeAuthentication(.AuthKeyLightning)
+        // Update subaccounts and UI
+        _ = try? await wallet.wallet.subaccounts()
+        await wallet
+            .triggerRefresh(
+                features: [.subaccounts, .balance, .txs(reset: true)]
+            )
     }
-
-    func rescanSwaps() async throws {
-        try await WalletManager.current?.lightningSubaccount?.lightningSession?.lightBridge?.rescanSwaps()
-    }
-
-    func ltRecoverFundsViewModelSendAll() -> LTRecoverFundsViewModel? {
+    func ltRedeemViewModel() -> LTRedeemViewModel? {
         guard let subaccount = WalletManager.current?.lightningSubaccount else {
             return nil
         }
-        return LTRecoverFundsViewModel(
+        return LTRedeemViewModel(
             wallet: subaccount,
-            amount: nil,
-            type: .sendAll)
+            amount: subaccount.lightningSession?
+                .nodeState()?.onchainBalanceMsat.satoshi ?? 0)
     }
-    func ltRecoverFundsViewModelSweep() -> LTRecoverFundsViewModel? {
-        guard let subaccount = WalletManager.current?.lightningSubaccount else {
-            return nil
-        }
-        return LTRecoverFundsViewModel(
-            wallet: subaccount,
-            amount: nil,
-            type: .sweep)
+
+    func newAddress() async -> String? {
+        return try? await lightningSession.getReceiveAddress(subaccount: 0).address
     }
 }

@@ -3,7 +3,6 @@ import core
 import gdk
 import greenaddress
 import UIKit
-import BreezSDK
 import LiquidWalletKit
 
 class SendLwkSignViewModel {
@@ -21,7 +20,11 @@ class SendLwkSignViewModel {
     var addressee: Addressee? { tx.addressees.first }
     var address: String? { addressee?.address }
     var sendAll: Bool { addressee?.isGreedy ?? false}
+    var isLightningPayment: Bool { subaccount.networkType == .lightning }
     var satoshiWithFee: UInt64? {
+        if isLightningPayment {
+            return try? bolt11.amountMilliSatoshis()?.satoshi
+        }
         let feeAsset = subaccount.gdkNetwork.getFeeAsset()
         if let amount = tx.amountsWithFee[feeAsset] {
             return UInt64(abs(amount))
@@ -97,6 +100,9 @@ class SendLwkSignViewModel {
                 throw TransactionError.invalid(localizedDescription: "Invalid invoice")
             }
         }
+    }
+    var invoiceSatoshi: UInt64? {
+        draft.satoshi ?? (try? bolt11.amountMilliSatoshis()?.satoshi)
     }
     var isCrossChainSwap: Bool {
         draft.lockupResponse != nil

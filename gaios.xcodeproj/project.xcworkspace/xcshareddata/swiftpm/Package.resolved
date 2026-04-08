@@ -1,5 +1,5 @@
 {
-  "originHash" : "0cce8d641617bb91c95e12b0dfee74521e17ef37099c6578a36c1dec9e2e0fe9",
+  "originHash" : "32e398cca632f526135e3d948ab903375076ddec06d3340e980232e502350f0f",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -26,15 +26,6 @@
       "state" : {
         "revision" : "9ed2461064d158297b7450722e0883332f623751",
         "version" : "1.9.0"
-      }
-    },
-    {
-      "identity" : "breez-sdk-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/breez/breez-sdk-swift",
-      "state" : {
-        "revision" : "c1e2fd2e74a0a50e47138d916a75ad93b8be7da1",
-        "version" : "0.8.0"
       }
     },
     {
@@ -79,6 +70,15 @@
       "state" : {
         "revision" : "2e4a4daac9da51f79c131e76cb47e785dd7708c4",
         "version" : "11.10.0"
+      }
+    },
+    {
+      "identity" : "gl-sdk-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Blockstream/gl-sdk-swift",
+      "state" : {
+        "branch" : "2026w17-gl-sdk-0.2.1",
+        "revision" : "caf8a6fd158b2a09ff2f5c151da81dcd48094be8"
       }
     },
     {

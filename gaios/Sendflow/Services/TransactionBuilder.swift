@@ -4,7 +4,6 @@ import core
 import gdk
 import greenaddress
 import lightning
-import BreezSDK
 
 actor TransactionBuilder {
 
@@ -112,19 +111,7 @@ actor TransactionBuilder {
             return try await session.sendTransaction(tx: tx)
         }.value
     }
-    
-    static func buildGdkTransactionFomBreez(lightningSubaccount: WalletItem, createTx: CreateTx) async throws -> gdk.Transaction {
-        return try await Task.detached(priority: .userInitiated) {
-            guard let lightningSession = lightningSubaccount.session else {
-                throw GaError.GenericError("No lightning session")
-            }
-            var tx = Transaction([:], subaccountId: lightningSubaccount.id)
-            tx.addressees = [createTx.addressee]
-            var created = try await lightningSession.createTransaction(tx: tx)
-            created.subaccountId = lightningSubaccount.id
-            return created
-        }.value
-    }
+
     static func buildSwap(invoice: String, lwk: LwkSessionManager, subaccount: WalletItem, xpub: String) async throws -> PreparePayResponse {
         return try await Task.detached(priority: .userInitiated) {
             let swapIdsByInvoice = try await BoltzController.shared.fetchSwaps(xpubHashId: xpub, invoice: invoice, swapType: .Submarine)
@@ -278,14 +265,14 @@ actor TransactionBuilder {
                 subaccount: tx.subaccount,
                 txType: .transaction)
         case .lightningInvoice(let bolt11):
-            return try buildBreezCreateTx(input: bolt11.description, subaccount: tx.subaccount)
+            return CreateTx(txType: .bolt11)
         case .lightningOffer(let offer):
             return CreateTx(
                 subaccount: tx.subaccount,
                 bolt11: offer.description,
                 txType: .bolt11)
         case .lnUrl(let url):
-            return try buildBreezCreateTx(input: url, subaccount: tx.subaccount)
+            return CreateTx(txType: .lnurl)
         case .bip353(_):
             throw TransactionError.invalid(localizedDescription: "bip353 not supported")
         case .bip21(let bip21):
@@ -323,22 +310,28 @@ actor TransactionBuilder {
         }
     }
 
-    static func buildBreezCreateTx(input: String, subaccount: WalletItem?) throws -> CreateTx {
-        let inputType = try LightningBridge.parseBoltOrLNUrl(input: input)
-        switch inputType {
-        case .bolt11(let invoice):
-            var addr = Addressee.fromLnInvoice(invoice, fallbackAmount: 0)
-            let anyAmounts = addr.satoshi ?? 0 == 0
-            if anyAmounts == true {
-                addr.satoshi = nil
+    static func build(from lightningSubaccount: WalletItem, invoice: Bolt11Invoice, satoshi: UInt64?) async throws -> gdk.Transaction {
+        return try await Task.detached(priority: .userInitiated) {
+            guard let lightningSession = lightningSubaccount.session else {
+                throw GaError.GenericError("No lightning session")
             }
-            return CreateTx(addressee: addr, subaccount: subaccount, error: nil, anyAmounts: anyAmounts, lightningType: inputType, txType: .bolt11)
-        case .lnUrlPay(let data, let bip353Address):
-            var addr = Addressee.fromRequestData(data, input: input, satoshi: nil)
-            return CreateTx(addressee: addr, subaccount: subaccount, error: nil, anyAmounts: nil, lightningType: inputType, txType: .lnurl)
-        default:
-            throw SendFlowError.invalidPaymentTarget
-        }
+            let satoshi = invoice.amountMilliSatoshis()?.satoshi ?? satoshi
+            let addressee = Addressee.from(
+                address: invoice.description,
+                satoshi: satoshi != nil ? Int64(satoshi ?? 0) : nil,
+                assetId: nil,
+                isGreedy: false
+            )
+            var tx = Transaction([:], subaccountId: lightningSubaccount.id)
+            tx.addressees = [addressee]
+            tx.paymentHash = invoice.paymentHash()
+            tx.invoice = invoice.description
+            tx.memo = invoice.invoiceDescription().localized
+            tx.anyAmouts = satoshi == nil
+            tx.fee = 0
+            var created = try await lightningSession.createTransaction(tx: tx)
+            created.subaccountId = lightningSubaccount.id
+            return created
+        }.value
     }
 }
-

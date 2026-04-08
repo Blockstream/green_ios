@@ -1,6 +1,4 @@
 import Foundation
-
-import BreezSDK
 import hw
 
 public struct Address: Codable {
@@ -44,13 +42,5 @@ public struct Address: Codable {
         self.txCount = txCount
         self.satoshi = satoshi
         self.isGreedy = isGreedy
-    }
-
-    public static func from(invoice: LnInvoice) -> Address {
-        return Address(address: invoice.bolt11)
-    }
-
-    public static func from(swapInfo: SwapInfo) -> Address {
-        return Address(address: swapInfo.bitcoinAddress)
     }
 }

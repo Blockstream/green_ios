@@ -2,6 +2,18 @@ import UIKit
 import gdk
 import core
 
+enum AccountAssetSection: Int, CaseIterable {
+    case accountAsset
+    case footer
+}
+enum UseValidate {
+    case none
+    case satoshi(Int64)
+}
+protocol AccountAssetViewControllerDelegate: AnyObject {
+    func didSelectAccountAsset(account: WalletItem, asset: AssetInfo)
+}
+
 class SendAccountAssetViewController: UIViewController {
 
     enum FooterType {

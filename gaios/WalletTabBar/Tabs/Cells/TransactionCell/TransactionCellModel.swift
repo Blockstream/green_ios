@@ -67,16 +67,16 @@ class TransactionCellModel {
                                       label: "id_failed".localized,
                                       progress: nil)
             }
-        } else if tx.isUnconfirmed(block: blockHeight) {
-            return PendingStateUI(style: .unconfirmed,
-                                  label: "id_unconfirmed".localized,
-                                  progress: nil)
         } else if tx.isLightning {
             if tx.isPending(block: blockHeight) {
                 return PendingStateUI(style: .unconfirmed,
                                       label: "",
                                       progress: nil)
             }
+        } else if tx.isUnconfirmed(block: blockHeight) {
+            return PendingStateUI(style: .unconfirmed,
+                                  label: "id_unconfirmed".localized,
+                                  progress: nil)
         } else if tx.isLiquid {
             if tx.isPending(block: blockHeight) {
                 return PendingStateUI(style: .pending,

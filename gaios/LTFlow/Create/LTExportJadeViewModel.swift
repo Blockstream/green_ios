@@ -43,11 +43,6 @@ class LTExportJadeViewModel {
         // connect lightning session
         try await session.connect()
         let _ = try await session.loginUser(credentials)
-        if let token = UserDefaults(suiteName: Bundle.main.appGroup)?.string(forKey: "token"),
-           let xpubHashId = account.xpubHashId {
-            try? await session.registerNotification(token: token, xpubHashId: xpubHashId)
-        }
-        _ = session.lightBridge?.updateLspInformation()
         _ = try await wm?.subaccounts()
         // Add auth into keychain
         try AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: credentials, for: account.keychainLightning)

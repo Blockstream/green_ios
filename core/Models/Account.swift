@@ -122,7 +122,10 @@ public struct Account: Codable, Equatable {
 
     public func removeAuthentication(_ method: AuthenticationTypeHandler.AuthType) {
         _ = AuthenticationTypeHandler.removeAuth(method: method, for: keychain)
-        if method == .AuthKeyBiometric {
+        if method == .AuthKeyLightning {
+            _ = AuthenticationTypeHandler
+                .removeAuth(method: method, for: keychainLightning)
+        } else if method == .AuthKeyBiometric {
             AuthenticationTypeHandler.removePrivateKey(forNetwork: keychain)
             UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + keychain)
         }

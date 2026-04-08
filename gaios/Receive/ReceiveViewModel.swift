@@ -3,14 +3,12 @@ import UIKit
 import gdk
 import greenaddress
 import hw
-import BreezSDK
 import lightning
 import core
 import LiquidWalletKit
 
 enum ReceiveType: Int, CaseIterable {
     case address
-    case breezSwap
     case bolt11
     case lwkSwap
 }
@@ -24,18 +22,23 @@ class ReceiveViewModel {
     var isFiat: Bool = false
     var type: ReceiveType
     var description: String?
+    
+    // liquid / bitcoin address
     var address: gdk.Address?
-    var receivePaymentResponse: ReceivePaymentResponse?
-    var breezInvoice: LnInvoice? { receivePaymentResponse?.lnInvoice }
+    // lwk lightning invoice response
     var lwkInvoice: InvoiceResponse?
+    // greenlight lightning invoice response
+    var lightningReceivePayment: LightningReceivePayment?
+    // boltz swap limits
+    var reverseSwapInfo: BoltzReverseSwapInfoLBTC?
+    // bolt11 result
     var bolt11: String?
-    var breezSwap: SwapInfo?
+
     var inputDenomination: gdk.DenominationType = .Sats
     var state: AmountCellState = .disabled
     var wm: WalletManager { WalletManager.current! }
     var backupCardCellModel = [AlertCardCellModel]()
     var allowChange = true
-    var reverseSwapInfo: BoltzReverseSwapInfoLBTC?
     var walletDataModel: WalletDataModel? = nil
 
     static func getLightningSubaccounts() -> [WalletItem] {
@@ -85,8 +88,10 @@ class ReceiveViewModel {
             if satoshi == nil {
                 return
             }
-            receivePaymentResponse = try await wm.lightningSession?.createInvoice(satoshi: UInt64(satoshi ?? 0), description: description ?? "")
-            bolt11 = receivePaymentResponse?.lnInvoice.bolt11
+            lightningReceivePayment = try await wm.lightningSession?.createInvoice(satoshi: UInt64(satoshi ?? 0), description: description ?? "")
+            bolt11 = lightningReceivePayment?.invoice.bolt11
+            //receivePaymentResponse = try await wm.lightningSession?.createInvoice(satoshi: UInt64(satoshi ?? 0), description: description ?? "")
+            //bolt11 = receivePaymentResponse?.lnInvoice.bolt11
         case .lwkSwap:
             let liquidAccount: WalletItem? = {
                 if self.account.networkType.liquid {
@@ -108,8 +113,6 @@ class ReceiveViewModel {
             self.lwkInvoice = invoice
             self.bolt11 = try invoice?.bolt11Invoice().description
             logger.info("BOLTZ invoiced")
-        case .breezSwap:
-            breezSwap = try await wm.lightningSession?.lightBridge?.receiveOnchain()
         }
     }
 
@@ -156,27 +159,42 @@ class ReceiveViewModel {
     }
 
     var amountCellModel: AmountCellModel {
-        let nodeState = account.lightningSession?.nodeState
-
-        return AmountCellModel(satoshi: satoshi,
-                               maxLimit: nodeState?.maxReceivableSatoshi,
-                               isFiat: isFiat,
-                               inputDenomination: inputDenomination,
-                               gdkNetwork: account.session?.gdkNetwork,
-                               breezSdk: account.lightningSession?.lightBridge,
-                               scope: self.type == .lwkSwap ? .reverseSwap : .ltReceive,
-                               reverseSwapInfo: reverseSwapInfo
+        let lightningSession = walletDataModel?.wallet.lightningSession
+        let maxLimit = lightningSession?
+            .nodeState()?.totalInboundLiquidityMsat.satoshi
+        let hasActiveChannel = lightningSession?
+            .nodeState()?.numActiveChannels ?? 0 > 0
+        let estimateOpeningFeeSatoshi: UInt64 = 5000
+        return AmountCellModel(
+            satoshi: satoshi,
+            openChannelFee: hasActiveChannel ? nil : estimateOpeningFeeSatoshi,
+            maxLimit: maxLimit,
+            isFiat: isFiat,
+            inputDenomination: inputDenomination,
+            gdkNetwork: account.session?.gdkNetwork,
+            scope: self.type == .lwkSwap ? .reverseSwap : .ltReceive,
+            reverseSwapInfo: reverseSwapInfo
         )
     }
 
     var infoReceivedAmountCellModel: LTInfoCellModel {
+        if let lightningReceivePayment {
+            let amount = (lightningReceivePayment.invoice.amountSatoshi ?? 0) - lightningReceivePayment.openingFeeSatoshi
+            let text = Balance.fromSatoshi(amount, assetId: AssetInfo.btcId)?.toText(inputDenomination)
+            return LTInfoCellModel(title: "id_amount_to_receive".localized, hint1: text ?? "", hint2: "")
+        }
         return LTInfoCellModel(title: "id_amount_to_receive".localized, hint1: "", hint2: "")
     }
 
     var infoExpiredInCellModel: LTInfoCellModel {
-        LTInfoCellModel(
+        let payment = try? LiquidWalletKit.Payment(s: bolt11 ?? "")
+        let invoice = payment?.lightningInvoice()
+        let expired = (invoice?.expiryTime() ?? 0) + (invoice?.timestamp() ?? 0)
+        let date = Date(timeIntervalSince1970: TimeInterval(expired))
+        let localString = date.formatted(date: .long, time: .shortened)
+        return LTInfoCellModel(
             title: "id_expiration".localized,
-            hint1: "", // "In \(abs(invoice?.expiringInMinutes ?? 0)) minutes",
+            hint1: localString,
             hint2: "")
     }
     var infoLwkSwapCellModel: LTInfoCellModel {
@@ -212,8 +230,6 @@ class ReceiveViewModel {
         switch type {
         case .bolt11:
             return bolt11
-        case .breezSwap:
-            return breezSwap?.bitcoinAddress
         case .lwkSwap:
             return bolt11
         case .address:
@@ -231,16 +247,12 @@ class ReceiveViewModel {
     }
 
     var addressCellModel: ReceiveAddressCellModel {
-        let nodeState = account.lightningSession?.nodeState
         return ReceiveAddressCellModel(text: text,
                                        isBip21: isBip21,
                                        type: type,
-                                       swapInfo: breezSwap,
                                        satoshi: satoshi,
-                                       maxLimit: nodeState?.maxReceivableSatoshi,
+                                       maxLimit: nil,
                                        inputDenomination: inputDenomination,
-                                       nodeState: nodeState,
-                                       breezSdk: account.lightningSession?.lightBridge,
                                        isLightning: account.gdkNetwork.lightning
         )
     }
@@ -276,12 +288,11 @@ class ReceiveViewModel {
     }
 
     func getBalance() -> Balance? {
-        return Balance.fromSatoshi(satoshi ?? Int64(0), assetId: anyOrAsset.assetId ?? "")
+        return Balance.fromSatoshi(satoshi ?? Int64(0), assetId: anyOrAsset.assetId)
     }
 
-    func ltSuccessViewModel(details: InvoicePaidDetails) async throws -> LTSuccessViewModel? {
-        let satoshi = details.payment?.amountSatoshi
-        if let balance = Balance.fromSatoshi(satoshi ?? 0, assetId: AssetInfo.btcId) {
+    func ltSuccessViewModel(satoshi: UInt64) async throws -> LTSuccessViewModel? {
+        if let balance = Balance.fromSatoshi(satoshi, assetId: AssetInfo.btcId) {
             let (amount, denom) = balance.toDenom(inputDenomination)
             return LTSuccessViewModel(account: account.name, amount: amount, denom: denom)
         }

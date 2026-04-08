@@ -3,7 +3,6 @@ import core
 import gdk
 import greenaddress
 import UIKit
-import BreezSDK
 import LiquidWalletKit
 
 enum VerifyAddressState {
@@ -37,14 +36,6 @@ class SendTxConfirmViewModel {
     var signedPsbt: String?
     var bcurUnsignedPsbt: BcurEncodedData?
     var importSignedPsbt = false
-    var isWithdraw: Bool { withdrawData != nil }
-    var withdrawData: LnUrlWithdrawRequestData?
-    var hasWithdrawNote: Bool { withdrawNote != nil && withdrawNote != "" }
-    var withdrawNote: String? {
-        guard let withdrawData = withdrawData else { return nil }
-        return withdrawData.defaultDescription
-    }
-    var withdrawAmount: UInt64 = 0
     var txAddresses: [gdk.Address]? {
         transaction?.addressees.compactMap { Address(address: $0.address, subtype: $0.subtype, userPath: $0.userPath, isGreedy: $0.isGreedy) }
     }
@@ -84,11 +75,11 @@ class SendTxConfirmViewModel {
     }
 
     var note: String? {
-        get { isWithdraw ? withdrawNote : transaction?.memo }
+        get { transaction?.memo }
         set { transaction?.memo = newValue }
     }
 
-    var amount: Balance? { Balance.fromSatoshi( isWithdraw ? Int64(withdrawAmount) : Int64(satoshi ?? 0), assetId: assetId) }
+    var amount: Balance? { Balance.fromSatoshi(Int64(satoshi ?? 0), assetId: assetId) }
     var fee: Balance? { Balance.fromSatoshi(transaction?.fee ?? 0, assetId: transaction?.feeAsset ?? "btc") }
     var total: Balance? {
         let feeAsset = session?.gdkNetwork.getFeeAsset()
@@ -113,7 +104,7 @@ class SendTxConfirmViewModel {
     var totalText: String? { isFiat ? "≈ \(totalFiatText ?? "")" : totalDenomText }
     var conversionText: String? { isFiat ? totalDenomText : "≈ \(totalFiatText ?? "")" }
     var addressTitle: String { isLightning ? "id_recipient".localized : isConsolitating ? "id_your_redeposit_address".localized : "id_address".localized }
-    var amountTitle: String { isWithdraw ? "id_amount_to_receive".localized : isConsolitating ? "id_redepositing".localized : "id_recipient_receives".localized }
+    var amountTitle: String { isConsolitating ? "id_redepositing".localized : "id_recipient_receives".localized }
     var recipientReceivesHidden: Bool { isConsolitating }
     var verifyAddressState: VerifyAddressState
 
@@ -146,7 +137,7 @@ class SendTxConfirmViewModel {
         !AssetInfo.baseIds.contains(assetId) && hasPrice
     }
     var totalFiatForPricedAsset: String {
-        if let balance = Balance.fromSatoshi( isWithdraw ? Int64(withdrawAmount) : Int64(satoshi ?? 0), assetId: assetId),
+        if let balance = Balance.fromSatoshi(Int64(satoshi ?? 0), assetId: assetId),
            let amount = Decimal(string: (balance.fiat ?? ""), locale: ConverterManager.enUSLocale), let feeBalance =  Balance.fromSatoshi(transaction?.fee ?? 0, assetId: transaction?.feeAsset ?? "btc"),
            let fee = Decimal(string: feeBalance.fiat ?? "", locale: ConverterManager.enUSLocale), let feeCurr = feeBalance.fiatCurrency {
             let totalFiat = amount + fee
@@ -246,7 +237,7 @@ class SendTxConfirmViewModel {
                 transactionSgmt: transSgmt,
                 withMemo: withMemo,
                 prettyError: error.description() ?? "",
-                nodeId: wm?.lightningSession?.nodeState?.id
+                nodeId: nil
             )
             self.error = error
             throw error
@@ -276,23 +267,6 @@ class SendTxConfirmViewModel {
 
     func urlForTxUnblinded() -> URL? {
         return URL(string: (subaccount?.gdkNetwork.txExplorerUrl ?? "") + (sendTransaction?.txHash ?? "") + (transaction?.blindingUrlString(address: address) ?? ""))
-    }
-
-    func withdrawLnurl(desc: String) async throws -> LnUrlWithdrawSuccessData? {
-        guard let withdrawData = withdrawData else {
-            throw TransactionError.failure(localizedDescription: "id_data_not_available".localized, paymentHash: "")
-        }
-        let res = try wm?.lightningSession?.lightBridge?.withdrawLnurl(requestData: withdrawData, amount: withdrawAmount, description: desc)
-        switch res {
-        case .errorStatus(let data):
-            throw TransactionError.failure(localizedDescription: data.reason.localized, paymentHash: "")
-        case .timeout(let data):
-            throw TransactionError.failure(localizedDescription: "id_timeout".localized, paymentHash: "")
-        case .ok(let data):
-            return data
-        case .none:
-            throw TransactionError.failure(localizedDescription: "id_data_not_available".localized, paymentHash: "")
-        }
     }
 
     func validateHW(_ address: gdk.Address) async throws -> Bool {

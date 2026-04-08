@@ -9,9 +9,13 @@ public var lwkLogger = Logger(
     subsystem: Bundle.main.bundleIdentifier!,
     category: "Lwk")
 
+public var lightningLogger = Logger(
+    subsystem: Bundle.main.bundleIdentifier!,
+    category: "Lightning")
+
+
 extension Logger {
 
-    @available(iOSApplicationExtension 15.0, *)
     public func export(category: String) -> [String] {
         do {
             let store = try OSLogStore(scope: .currentProcessIdentifier)
@@ -30,15 +34,15 @@ extension Logger {
 
     public func logFile(category: String) -> URL {
         let basePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        if category == "Lightning" {
-            if let nodeId = WalletManager.current?.lightningSession?.nodeId {
-                return basePath.appendingPathComponent("Greenlight_Logs_\(nodeId).txt")
-            }
+        if category == "Lwk" {
+            return basePath.appendingPathComponent("Lwk.log")
+        } else if category == "Lightning" {
+            return basePath.appendingPathComponent("Greenlight.log")
+        } else {
+            return basePath.appendingPathComponent("Green.log")
         }
-        return basePath.appendingPathComponent("Greenlight_Logs.txt")
     }
 
-    @available(iOSApplicationExtension 15.0, *)
     public func write(category: String) {
         let contents = export(category: category).joined(separator: "\n").data(using: .utf8)
         let _ = FileManager.default.createFile(atPath: logFile(category: category).path, contents: contents, attributes: nil)

@@ -130,10 +130,10 @@ class AmountCell: UITableViewCell {
         if let value = textField.text {
             Task.detached { [weak self] in
                 let satoshi = await self?.getSatoshi(value)
-                let fee = await self?.model.buildOpenChannelFee(satoshi ?? 0)
+                //let fee = await self?.model.buildOpenChannelFee(satoshi ?? 0)
                 await MainActor.run { [weak self] in
                     self?.model.satoshi = satoshi
-                    self?.model.setOpenChannelFee(fee ?? 0)
+                    //self?.model.setOpenChannelFee(fee ?? 0)
                     self?.updateState()
                     self?.reload()
                     if let self = self {
@@ -190,11 +190,8 @@ class AmountCell: UITableViewCell {
     func errorState(text: String) {
         bg.borderColor = UIColor.gRedWarn()
         infoPanel.backgroundColor = UIColor.gRedWarn()
-        btnFeeInfo.setStyle(.underline(txt: "id_read_more".localized, color: .white))
         lblInfo.text = text
         lblInfo.isHidden = false
-        btnFeeInfo.isHidden = false
-        lblMoreInfo.isHidden = false
         lblAmount.isHidden = true
         toReceiveAmount(show: false)
     }
@@ -204,8 +201,6 @@ class AmountCell: UITableViewCell {
         infoPanel.backgroundColor = UIColor.clear
         // lblInfo.isHidden = true
         lblInfo.text = " "
-        btnFeeInfo.isHidden = true
-        lblMoreInfo.isHidden = true
         lblAmount.isHidden = false
         toReceiveAmount(show: false)
     }
@@ -227,15 +222,11 @@ class AmountCell: UITableViewCell {
                 lblToReceiveHint.text = model.subamountText
             }
         case .aboveInboundLiquidity:
-            let amount = Int64(model.breezSdk?.nodeInfo?.inboundLiquiditySatoshi ?? 0)
-            let text = String(format: "The amount is above your inbound liquidity. Please type an amount lower than %@ (%@).", model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
-            errorState(text: text)
+            break
         case .tooHigh:
-            let amount = Int64(model.breezSdk?.nodeInfo?.maxReceivableSatoshi ?? 0)
-            let text = String(format: "id_you_cannot_receive_more_than_s".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
-            errorState(text: text)
+            break
         case .tooLow:
-            let amount = model.openChannelFee
+            let amount = Int64(model.openChannelFee ?? 0)
             let text = String(format: "id_this_amount_is_below_the".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
             errorState(text: text)
         case .disabled:
@@ -255,8 +246,6 @@ class AmountCell: UITableViewCell {
                 bg.borderColor = UIColor.gRedWarn()
                 infoPanel.backgroundColor = UIColor.gRedWarn()
             }
-            lblMoreInfo.isHidden = true
-            btnFeeInfo.isHidden = true
         case .invalidReverseSwap:
             moreInfoView.isHidden = false
             lblInfo.text = model.message(.invalidReverseSwap) ?? ""
@@ -264,8 +253,6 @@ class AmountCell: UITableViewCell {
             lblToReceiveHint.text = model.subamountText
             bg.borderColor = UIColor.gRedWarn()
             infoPanel.backgroundColor = UIColor.gRedWarn()
-            lblMoreInfo.isHidden = true
-            btnFeeInfo.isHidden = true
             lblToReceiveHint.isHidden = true
         }
     }

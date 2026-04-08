@@ -3,10 +3,10 @@ import UIKit
 import core
 import gdk
 import LiquidWalletKit
-import BreezSDK
 
 enum SendRoute {
     case selectSubaccount(SendAccountAssetViewModel)
+    case enterLegacyAmount(SendAmountViewModelLegacy)
     case enterAmount(SendAmountViewModel)
     case signAtomicSwap(SendLwkSignViewModel)
     case confirm(SendTxConfirmViewModel)
@@ -24,6 +24,8 @@ final class SendCoordinator {
     private let builder = TransactionBuilder()
     private let wallet: WalletDataModel
     private let mainAccount: Account
+    private var selectedFiat: Bool = false
+    private var selectedDenomination: DenominationType = .Sats
 
     private var draft: TransactionDraft?
     private var gdkTransaction: gdk.Transaction?
@@ -118,15 +120,19 @@ final class SendCoordinator {
         return nil
     }
     
-    func sendAmountViewController(model: SendAmountViewModel) -> SendAmountViewController? {
+    func sendAmountViewController(model: SendAmountViewModel) -> SendAmountViewController {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendAmountViewController") as? SendAmountViewController {
-            vc.viewModel = model
-            return vc
+        return storyboard.instantiateViewController(identifier: "SendAmountViewController") { coder in
+            SendAmountViewController(coder: coder, viewModel: model)
         }
-        return nil
     }
-    
+    func sendAmountViewControllerLegacy(model: SendAmountViewModelLegacy) -> SendAmountViewControllerLegacy {
+        let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
+        return storyboard.instantiateViewController(identifier: "SendAmountViewControllerLegacy") { coder in
+            SendAmountViewControllerLegacy(coder: coder, viewModel: model)
+        }
+    }
+
     func sendTxConfirmViewController(model: SendTxConfirmViewModel) -> SendTxConfirmViewController? {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendTxConfirmViewController") as? SendTxConfirmViewController {
@@ -135,7 +141,7 @@ final class SendCoordinator {
         }
         return nil
     }
-    
+
     func sendAccountAssetViewController(model: SendAccountAssetViewModel) -> SendAccountAssetViewController {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         return storyboard.instantiateViewController(identifier: "SendAccountAssetViewController") { coder in
@@ -192,16 +198,18 @@ extension SendCoordinator {
         case .selectSubaccount(let model):
             let vc = sendAccountAssetViewController(model: model)
             nav.pushViewController(vc, animated: true)
+        case .enterLegacyAmount(let model):
+            let vc = sendAmountViewControllerLegacy(model: model)
+            nav.pushViewController(vc, animated: true)
         case .enterAmount(let model):
-            if let vc = sendAmountViewController(model: model) {
-                nav.pushViewController(vc, animated: true)
-            }
+            let vc = sendAmountViewController(model: model)
+            nav.pushViewController(vc, animated: true)
         case .signAtomicSwap(let model):
             let vc = sendLwkSignViewController(model: model)
             nav.pushViewController(vc, animated: true)
         case .confirm(let model):
             if let vc = sendTxConfirmViewController(model: model) {
-                await nav.presentAsync(vc, animated: true)
+                nav.pushViewController(vc, animated: true)
             }
         case .success(let model):
             let vc = sendSuccessViewController(model: model)
@@ -243,16 +251,16 @@ extension SendCoordinator {
                 return .selectSubaccount(model)
             }
             let createTx = try TransactionBuilder.buildCreateTx(draft)
-            let model = SendAmountViewModel(createTx: createTx)
-            return .enterAmount(model)
+            let model = SendAmountViewModelLegacy(createTx: createTx)
+            return .enterLegacyAmount(model)
         case .liquidAddress, .liquidBip21, .pset:
             if draft.subaccount == nil || draft.assetId == nil {
                 let model = sendAccountAssetViewModel(draft: draft)
                 return .selectSubaccount(model)
             }
             let createTx = try TransactionBuilder.buildCreateTx(draft)
-            let model = SendAmountViewModel(createTx: createTx)
-            return .enterAmount(model)
+            let model = SendAmountViewModelLegacy(createTx: createTx)
+            return .enterLegacyAmount(model)
         case .lightningInvoice(let invoice):
             guard let subaccount = draft.subaccount else {
                 let model = sendAccountAssetViewModel(draft: draft)
@@ -260,16 +268,33 @@ extension SendCoordinator {
             }
             if subaccount.networkType.lightning {
                 // send lightning tx
-                let createTx = try TransactionBuilder.buildBreezCreateTx(input: invoice.description, subaccount: subaccount)
-                if createTx.anyAmounts ?? false {
-                    let model = SendAmountViewModel(createTx: createTx)
+                if invoice.amountMilliSatoshis() == nil && draft.satoshi == nil {
+                    let model = SendAmountViewModel(
+                        mainAccount: mainAccount,
+                        wallet: wallet,
+                        draft: draft,
+                        tx: nil,
+                        subaccount: subaccount,
+                        denominationType: selectedDenomination,
+                        isFiat: selectedFiat,
+                        delegate: self
+                    )
                     return .enterAmount(model)
                 } else {
                     nav.topViewController?.startLoader(message: "")
-                    let tx = try await TransactionBuilder.buildGdkTransactionFomBreez(lightningSubaccount: subaccount, createTx: createTx)
-                    let model = SendTxConfirmViewModel(transaction: tx, subaccount: subaccount, denominationType: .Sats, isFiat: false, txType: .bolt11, unsignedPsbt: nil, signedPsbt: nil)
+                    let tx = try await TransactionBuilder.build(
+                        from: subaccount,
+                        invoice: invoice,
+                        satoshi: draft.satoshi)
+                    let model = SendLwkSignViewModel(
+                        transactionDraft: draft,
+                        denominationType: selectedDenomination,
+                        isFiat: selectedFiat,
+                        subaccount: subaccount,
+                        delegate: self,
+                        tx: tx)
                     nav.topViewController?.stopLoader()
-                    return .confirm(model)
+                    return .signAtomicSwap(model)
                 }
             } else {
                 // bitcoin/liquid swap: open sign swap screen
@@ -278,12 +303,24 @@ extension SendCoordinator {
                 guard let xpub, let lwk else {
                     throw SendFlowError.invalidSession
                 }
+                if subaccount.networkType.bitcoin {
+                    throw SendFlowError.wrongSubaccount
+                }
+                if invoice.amountMilliSatoshis() == nil {
+                    throw SendFlowError.generic("Invoice without amount not supported. Paste an invoice with an amount")
+                }
                 nav.topViewController?.startLoader(message: "")
                 let (swap, tx) = try await TransactionBuilder.buildSubmarineSwapTransaction(invoice: invoice.description, lwk: lwk, subaccount: subaccount, xpub: xpub)
                 var draft = draft
                 draft.swapPayResponse = swap
                 self.draft = draft
-                let model = SendLwkSignViewModel(transactionDraft: draft, denominationType: .Sats, isFiat: false, subaccount: subaccount, delegate: self, tx: tx)
+                let model = SendLwkSignViewModel(
+                    transactionDraft: draft,
+                    denominationType: selectedDenomination,
+                    isFiat: selectedFiat,
+                    subaccount: subaccount,
+                    delegate: self,
+                    tx: tx)
                 nav.topViewController?.stopLoader()
                 return .signAtomicSwap(model)
             }
@@ -293,8 +330,8 @@ extension SendCoordinator {
                 return .selectSubaccount(model)
             }
             let createTx = try TransactionBuilder.buildCreateTx(draft)
-            let model = SendAmountViewModel(createTx: createTx)
-            return .enterAmount(model)
+            let model = SendAmountViewModelLegacy(createTx: createTx)
+            return .enterLegacyAmount(model)
         case .lightningOffer, .lnUrl:
             // lightning tx
             guard draft.subaccount != nil else {
@@ -302,8 +339,8 @@ extension SendCoordinator {
                 return .selectSubaccount(model)
             }
             let createTx = try TransactionBuilder.buildCreateTx(draft)
-            let model = SendAmountViewModel(createTx: createTx)
-            return .enterAmount(model)
+            let model = SendAmountViewModelLegacy(createTx: createTx)
+            return .enterLegacyAmount(model)
         }
     }
     func forwardError(_ error: Error?) {
@@ -314,6 +351,22 @@ extension SendCoordinator {
     func forwardError(_ error: SendFlowError?) {
         if let vc = nav.topViewController as? SendFlowErrorDisplayable {
             vc.handleSendFlowError(error)
+        }
+    }
+
+    func routeAndNavigate() {
+        guard let draft else { return }
+        nav.topViewController?.startLoader()
+        Task { [weak self] in
+            do {
+                if let route = try await self?.route(draft: draft) {
+                    self?.nav.topViewController?.stopLoader()
+                    await self?.navigate(to: route)
+                }
+            } catch {
+                self?.nav.topViewController?.stopLoader()
+                self?.forwardError(error)
+            }
         }
     }
 }
@@ -367,16 +420,7 @@ extension SendCoordinator: SendAddressViewModelDelegate {
             subaccount: subaccountToUse,
             assetId: assetIdToUse)
         self.draft = draft
-        Task { [weak self] in
-            do {
-                if let route = try await self?.route(draft: draft) {
-                    await self?.navigate(to: route)
-                }
-            } catch {
-                self?.nav.topViewController?.stopLoader()
-                self?.forwardError(error)
-            }
-        }
+        routeAndNavigate()
     }
 }
 extension SendCoordinator: SendAccountAssetViewModelDelegate {
@@ -396,16 +440,7 @@ extension SendCoordinator: SendAccountAssetViewModelDelegate {
             forwardError(SendFlowError.failedToBuildTransaction)
             return
         }
-        Task { [weak self] in
-            do {
-                if let route = try await self?.route(draft: draft) {
-                    await self?.navigate(to: route)
-                }
-            } catch {
-                self?.nav.topViewController?.stopLoader()
-                self?.forwardError(error)
-            }
-        }
+        routeAndNavigate()
     }
 }
 extension SendCoordinator: SendSuccessViewModelDelegate {
@@ -596,11 +631,19 @@ extension SendCoordinator: SendSwapViewModelDelegate {
     func sendSwapViewModelDidTransaction(_ vm: SendSwapViewModel, draft: TransactionDraft, gdkTransaction: gdk.Transaction) {
         self.gdkTransaction = gdkTransaction
         self.draft = draft
+        self.selectedFiat = vm.currentState().isFiat
+        self.selectedDenomination = vm.currentState().denomination
         guard let subaccount = draft.subaccount else {
             forwardError(SendFlowError.failedToBuildTransaction)
             return
         }
-        let model = SendLwkSignViewModel(transactionDraft: draft, denominationType: vm.currentState().denomination, isFiat: false, subaccount: subaccount, delegate: self, tx: gdkTransaction)
+        let model = SendLwkSignViewModel(
+            transactionDraft: draft,
+            denominationType: selectedDenomination,
+            isFiat: selectedFiat,
+            subaccount: subaccount,
+            delegate: self,
+            tx: gdkTransaction)
         Task { await navigate(to: .signAtomicSwap(model)) }
     }
     func sendSwapViewModelDidFail(_ vm: SendSwapViewModel, error: any Error) {
@@ -626,4 +669,25 @@ extension SendCoordinator: SendSwapFeeViewModelDelegate {
             }
         }
     }
+}
+
+extension SendCoordinator: SendAmountViewModelDelegate {
+    func sendAmountViewModel(
+        _ vm: SendAmountViewModel,
+        didFailWith error: any Error) {
+        forwardError(error)
+    }
+
+    func sendAmountViewModel(
+        _ vm: SendAmountViewModel,
+        draft: TransactionDraft) {
+            self.draft = draft
+            self.selectedFiat = vm.isFiat
+            self.selectedDenomination = vm.denominationType
+            guard (draft.subaccount != nil) else {
+                forwardError(SendFlowError.failedToBuildTransaction)
+                return
+            }
+            routeAndNavigate()
+        }
 }

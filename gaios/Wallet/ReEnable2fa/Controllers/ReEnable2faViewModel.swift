@@ -12,12 +12,12 @@ class ReEnable2faViewModel {
         self.expiredSubaccounts = expiredSubaccounts
     }
 
-    func sendAmountViewModel() -> SendAmountViewModel? {
+    func sendAmountViewModel() -> SendAmountViewModelLegacy? {
         guard let subaccount = subaccount else { return nil }
         var createTx = CreateTx(
             subaccount: subaccount,
             txType: .redepositExpiredUtxos
         )
-        return SendAmountViewModel(createTx: createTx)
+        return SendAmountViewModelLegacy(createTx: createTx)
     }
 }

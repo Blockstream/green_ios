@@ -152,10 +152,16 @@ class ManageAssetViewModel {
     }
 
     func canSendLightning() -> Bool {
-        return (wallet.lightningSession?.nodeState?.channelsBalanceSatoshi ?? 0) > 0
+        return (
+            wallet.lightningSession?
+                .nodeState()?.channelsBalanceMsat.satoshi ?? 0
+        ) > 0
     }
     func hasOnchainFunds() -> Bool {
-        return (wallet.lightningSession?.nodeState?.onchainBalanceSatoshi ?? 0) > 0
+        return (
+            wallet.lightningSession?
+                .nodeState()?.onchainBalanceMsat.satoshi ?? 0
+        ) > 0
     }
     func currency() -> String? {
         wallet.prominentSession?.settings?.pricing["currency"]
@@ -167,5 +173,19 @@ class ManageAssetViewModel {
             return false
         }
         return true
+    }
+
+    func lTSettingsViewModel() -> LTSettingsViewModel? {
+        guard let lightningSession = wallet.lightningSession else { return nil }
+        return LTSettingsViewModel(
+            mainAccount: mainAccount,
+            wallet: walletDataModel,
+            lightningSession: lightningSession)
+    }
+
+    func lTCreateViewModel() -> LTCreateViewModel? {
+        return LTCreateViewModel(
+            mainAccount: mainAccount,
+            wallet: walletDataModel)
     }
 }

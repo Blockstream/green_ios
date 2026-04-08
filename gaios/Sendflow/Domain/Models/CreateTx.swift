@@ -2,7 +2,6 @@ import Foundation
 import gdk
 import greenaddress
 import core
-import BreezSDK
 import lightning
 
 struct CreateTx {
@@ -14,7 +13,6 @@ struct CreateTx {
     var previousTransaction: [String: Any]?
     var anyAmounts: Bool?
     var bolt11: String?
-    var lightningType: InputType?
     var assetId: String? {
         get { addressee.assetId }
         set { addressee.assetId = newValue }
@@ -35,10 +33,9 @@ struct CreateTx {
         get { addressee.isGreedy ?? false }
         set { addressee.isGreedy = newValue }
     }
-    var isLightning: Bool { lightningType != nil || address?.starts(with: "lnbc") == true }
+    var isLightning: Bool { address?.starts(with: "lnbc") == true }
     var isLiquid: Bool { !isLightning && (assetId != nil && assetId != "btc") }
     var isBitcoin: Bool { !isLightning && (assetId == nil || assetId == "btc") }
-
     var txType: TxType
     var psbt: String?
 }

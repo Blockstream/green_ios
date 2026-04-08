@@ -19,11 +19,9 @@ class LTSettingsViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
 
     @IBOutlet weak var btnMnemonic: UIButton!
-    @IBOutlet weak var btnEmpty: UIButton!
     @IBOutlet weak var btnDisable: UIButton!
-    @IBOutlet weak var btnSwaps: UIButton!
     @IBOutlet weak var btnSweep: UIButton!
-    @IBOutlet weak var btnDiagnostic: UIButton!
+    @IBOutlet weak var btnNewAddr: UIButton!
 
     var viewModel: LTSettingsViewModel!
     private var nodeCellTypes: [LTSettingsCellType] { viewModel.cellTypes }
@@ -37,6 +35,7 @@ class LTSettingsViewController: UIViewController {
         register()
         setContent()
         setStyle()
+        triggerReload()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -47,29 +46,47 @@ class LTSettingsViewController: UIViewController {
         }
     }
 
+    func triggerReload() {
+        Task { [weak self] in
+            await self?.viewModel.updateNodeInfo()
+            await MainActor.run {
+                if self?.tableView?.refreshControl?.isRefreshing == true {
+                    self?.tableView?.refreshControl?.endRefreshing()
+                    self?.tableView.reloadData()
+                }
+            }
+        }
+    }
+
     func setContent() {
         lblTitle.text = "id_lightning_network".localized
         lblSubtitle.text = "id_your_lightning_account_is_set".localized
         btnMnemonic.setTitle("id_show_recovery_phrase".localized, for: .normal)
-        btnEmpty.setTitle("id_empty_lightning_account".localized, for: .normal)
         btnDisable.setTitle("id_disable_lightning".localized, for: .normal)
-        btnSwaps.setTitle("id_rescan_swaps".localized, for: .normal)
         btnSweep.setTitle("Transfer Node Onchain Balance".localized, for: .normal)
+        btnNewAddr.setTitle("id_generate_new_address".localized, for: .normal)
         btnSweep.isHidden = viewModel.onchainBalanceSatoshi ?? 0 == 0
-        btnEmpty.isHidden = viewModel.channelsBalance ?? 0 == 0
-        btnDiagnostic.setTitle("Generate diagnostic data", for: .normal)
+        btnNewAddr.isHidden = !Bundle.main.dev
+        btnDisable.isHidden = !Bundle.main.dev
     }
 
     func setStyle() {
         lblTitle.setStyle(.title)
         lblSubtitle.setStyle(.txtBigger)
-        [btnEmpty, btnMnemonic, btnDisable, btnSwaps, btnSweep, btnDiagnostic].forEach({ $0.setStyle(.outlined) })
+        [btnMnemonic, btnDisable, btnSweep, btnNewAddr].forEach({ $0.setStyle(.outlined) })
     }
 
     func register() {
         ["LTSettingCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
+        tableView?.refreshControl = UIRefreshControl()
+        tableView?.refreshControl!.tintColor = UIColor.white
+        tableView?.refreshControl!.addTarget(self, action: #selector(pull(_:)), for: .valueChanged)
+    }
+
+    @objc func pull(_ sender: UIRefreshControl? = nil) {
+        triggerReload()
     }
 
     @IBAction func btnMnemonic(_ sender: Any) {
@@ -84,21 +101,20 @@ class LTSettingsViewController: UIViewController {
         }
     }
 
-    @IBAction func btnCloseChannel(_ sender: Any) {
-        if let viewModel = viewModel.ltRecoverFundsViewModelSendAll() {
-            pushLTRecoverFundsViewController(viewModel)
+    @IBAction func btnNewAddr(_ sender: Any) {
+        Task { [weak self] in
+            let address = await self?.viewModel.newAddress()
+            self?.showAlert(
+                title: "Onchain Address".localized,
+                message: address ?? "") {
+                    UIPasteboard.general.string = address
+                }
         }
     }
 
     @IBAction func btnSweep(_ sender: Any) {
-        if let viewModel = viewModel.ltRecoverFundsViewModelSweep() {
+        if let viewModel = viewModel.ltRedeemViewModel() {
             pushLTRecoverFundsViewController(viewModel)
-        }
-    }
-
-    @IBAction func btnSwaps(_ sender: Any) {
-        Task { [weak self] in
-            await self?.rescanSwaps()
         }
     }
 
@@ -108,35 +124,6 @@ class LTSettingsViewController: UIViewController {
         }
     }
 
-    @IBAction func btnDiagnostic(_ sender: Any) {
-        startLoader(message: "id_loading".localized)
-        Task { [weak self] in
-            do {
-                let msg = await self?.viewModel?.lightningSession.diagnosticData()
-                if let msg {
-                    UIPasteboard.general.string = msg
-                    DropAlert().info(message: "id_copied_to_clipboard".localized)
-                }
-                self?.stopLoader()
-            }
-        }
-    }
-
-    func rescanSwaps() async {
-        startLoader(message: "id_rescan_swaps_initiated".localized)
-        let task = Task.detached { [weak self] in
-            try await self?.viewModel.rescanSwaps()
-        }
-        switch await task.result {
-        case .success:
-            stopLoader()
-            DropAlert().success(message: "id_rescan_swaps_completed".localized)
-            tableView.reloadData()
-        case .failure(let error):
-            stopLoader()
-            showError(error)
-        }
-    }
     func disableLightning() async {
         startLoader(message: "id_disabling".localized)
         let task = Task.detached { [weak self] in
@@ -154,9 +141,9 @@ class LTSettingsViewController: UIViewController {
         }
     }
 
-    func pushLTRecoverFundsViewController(_ model: LTRecoverFundsViewModel) {
+    func pushLTRecoverFundsViewController(_ model: LTRedeemViewModel) {
         let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTRecoverFundsViewController") as? LTRecoverFundsViewController {
+        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTRedeemViewController") as? LTRedeemViewController {
             vc.viewModel = model
             vc.modalPresentationStyle = .overFullScreen
             navigationController?.pushViewController(vc, animated: true)

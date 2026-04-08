@@ -67,7 +67,7 @@ struct ZendeskErrorRequest {
         var result = error ?? ""
         result += "\r\n"
         result += "Timestamp: \(Int(timestamp))\r\n"
-        if let nodeId = WalletManager.current?.lightningSession?.nodeId {
+        if let nodeId = WalletManager.current?.lightningSession?.nodeState()?.id {
             result += "Lightning node id: \(nodeId)\r\n"
             result += "Lightning logged: \(WalletManager.current?.lightningSession?.logged ?? false)\r\n"
         }
@@ -140,7 +140,6 @@ class ZendeskSdk {
         }
         return components.url
     }
-
     func getCurrentShortDate() -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd-MM-yyyy_HH-mm-ss"

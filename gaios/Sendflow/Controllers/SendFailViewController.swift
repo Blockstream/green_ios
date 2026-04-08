@@ -2,7 +2,6 @@ import Foundation
 import UIKit
 import core
 import lightning
-import BreezSDK
 import gdk
 
 protocol SendFailViewControllerDelegate: AnyObject {

@@ -44,7 +44,7 @@ class JadeBoltzSwapViewController: UIViewController {
             $0.setStyle(.txtCard)
         }
         btnNotNow.setStyle(.outlined)
-        btnLearnMore.setStyle(.underline(txt: "Learn More".localized, color: UIColor.gAccent()))
+        btnLearnMore.setStyle(.underline(txt: "id_learn_more".localized, color: UIColor.gAccent()))
     }
     func reload() {
         lblDisableWarn.text = "You cannot disable while a swap is in progress.".localized
