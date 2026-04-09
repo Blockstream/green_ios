@@ -21,15 +21,15 @@ extension Error {
             case HWError.Abort(let txt), HWError.Declined(let txt):
                 return txt
             case HWError.Disconnected(_):
-                return "id_disconnect"
+                return "id_your_device_was_disconnected"
             case .URLError:
                 return "id_invalid_url"
             case .InvalidResponse:
-                return "Invalid Response"
+                return "id_invalid_response"
             case .NoNewFirmwareFound:
-                return "Firmware up to date"
+                return "id_firmware_up_to_date"
             case .Rebooted(_):
-                return "Device rebooted, waiting to reconnect"
+                return "id_device_rebooted_reconnecting"
             }
         }
         if let swError = self as? BleLedgerConnection.SWError {
@@ -50,7 +50,7 @@ extension Error {
             case LoginError.hostUnblindingDisabled(let txt):
                 return txt ?? "id_operation_failure"
             case LoginError.walletMismatch( _):
-                return "Wallet mismatch"
+                return "id_wallet_mismatch"
             case LoginError.walletsJustRestored(_):
                 return "id_wallet_already_restored"
             case LoginError.invalidMnemonic(_):
@@ -60,15 +60,15 @@ extension Error {
         if let gdkError = self as? GaError {
             switch gdkError {
             case GaError.NotAuthorizedError:
-                return "Not Authorized Error"
+                return "id_not_authorized"
             case GaError.GenericError(let txt):
                 return txt ?? "id_operation_failure"
             case .ReconnectError:
-                return "Reconnect Error"
+                return "id_reconnect_error"
             case .SessionLost:
-                return "Session Error"
+                return "id_session_expired"
             case .TimeoutError:
-                return "Timeout Error"
+                return "id_timeout"
             }
         }
         if let resolverError = self as? TwoFactorCallError {
@@ -90,28 +90,28 @@ extension Error {
             }
         }
         if let breezError = self as? BreezSDK.SdkError {
-            return breezError.description() ?? "Sdk error"
+            return breezError.description() ?? "id_operation_failure"
         }
         if let breezError = self as? BreezSDK.SendOnchainError {
-            return breezError.description() ?? "Send onchain error"
+            return breezError.description() ?? "id_operation_failure"
         }
         if let breezError = self as? BreezSDK.SendPaymentError {
-            return breezError.description() ?? "Send payment error"
+            return breezError.description() ?? "id_operation_failure"
         }
         if let breezError = self as? BreezSDK.ReceiveOnchainError {
-            return breezError.description() ?? "Receive onchain error"
+            return breezError.description() ?? "id_operation_failure"
         }
         if let breezError = self as? BreezSDK.ReceivePaymentError {
-            return breezError.description() ?? "Receive payment error"
+            return breezError.description() ?? "id_operation_failure"
         }
         if let breezError = self as? BreezSDK.LnUrlPayError {
             return breezError.description() ?? "id_operation_failure"
         }
         if let breezError = self as? BreezSDK.LnUrlAuthError {
-            return breezError.description() ?? "LN url auth error"
+            return breezError.description() ?? "id_operation_failure"
         }
         if let breezError = self as? BreezSDK.ConnectError {
-            return breezError.description() ?? "Connection error"
+            return breezError.description() ?? "id_connection_failed"
         }
         if let error = self as? LwkError {
             return error.description()
