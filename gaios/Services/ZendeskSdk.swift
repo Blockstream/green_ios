@@ -147,12 +147,18 @@ class ZendeskSdk {
         return dateFormatter.string(from: Date())
     }
 
+    static let maxLogBytes = 5 * 1024 * 1024 // 5 MB per log file
+
     func uploadLogs(_ text: String, category: String = "Green") async throws -> ZDKUploadResponse {
         let uploadProvider = ZDKUploadProvider()
         let filename = "\(getCurrentShortDate())_\(category).log"
+        var data = text.data(using: .utf8) ?? Data()
+        if data.count > ZendeskSdk.maxLogBytes {
+            data = Data(data.suffix(ZendeskSdk.maxLogBytes))
+        }
         return try await withCheckedThrowingContinuation { continuation in
             uploadProvider.uploadAttachment(
-                text.data(using: .utf8),
+                data,
                 withFilename: filename,
                 andContentType: "text/plain",
                 callback: { uploadResponse, error in
@@ -208,9 +214,8 @@ class ZendeskSdk {
             for category in ["Green", "Lightning", "Lwk"] {
                 let content = logger.export(category: category).joined(separator: "\n")
                 guard !content.isEmpty else { continue }
-                if let response = try? await uploadLogs(content, category: category) {
-                    attachments.append(response)
-                }
+                let response = try await uploadLogs(content, category: category)
+                attachments.append(response)
             }
             if !attachments.isEmpty {
                 request.attachments = attachments
