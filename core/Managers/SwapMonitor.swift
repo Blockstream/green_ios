@@ -70,28 +70,28 @@ public actor SwapMonitor {
         let swap = try await getPendingSwap(id: id)
         guard let swap else { return }
         if swap.isPending == false { return }
-        logger.info("LWK \(swap.id ?? "", privacy: .public): \(swap.data?.prefix(128) ?? "")")
+        lwkLogger.info("\(swap.id ?? "", privacy: .public): \(swap.data?.prefix(128) ?? "")")
         switch swap.type {
         case .some(BoltzSwapTypes.Submarine):
             if let pay = try await lwkSession.restorePreparePay(data: swap.data ?? "") {
-                logger.info("LWK \(swap.id ?? "", privacy: .public) restored")
+                lwkLogger.info("\(swap.id ?? "", privacy: .public) restored")
                 let state = try await loopSwap(swap: SwapResponse.submarine(pay))
-                logger.info("LWK \(swap.id ?? "", privacy: .public) \(state.localized, privacy: .public)")
+                lwkLogger.info("\(swap.id ?? "", privacy: .public) \(state.localized, privacy: .public)")
             }
         case .some(BoltzSwapTypes.ReverseSubmarine):
             if let invoice = try await lwkSession.restoreInvoice(data: swap.data ?? "") {
-                logger.info("LWK \(swap.id ?? "", privacy: .public) restored")
+                lwkLogger.info("\(swap.id ?? "", privacy: .public) restored")
                 let state = try await loopSwap(swap: SwapResponse.reverseSubmarine(invoice))
-                logger.info("LWK \(swap.id ?? "", privacy: .public) \(state.localized, privacy: .public)")
+                lwkLogger.info("\(swap.id ?? "", privacy: .public) \(state.localized, privacy: .public)")
             }
         case .some(.Chain):
             if let lockup = try await lwkSession.restoreLockup(data: swap.data ?? "") {
-                logger.info("LWK \(swap.id ?? "", privacy: .public) restored")
+                lwkLogger.info("\(swap.id ?? "", privacy: .public) restored")
                 let state = try await loopSwap(swap: SwapResponse.chain(lockup))
-                logger.info("LWK \(swap.id ?? "", privacy: .public) \(state.localized, privacy: .public)")
+                lwkLogger.info("\(swap.id ?? "", privacy: .public) \(state.localized, privacy: .public)")
             }
         case .none:
-            logger.info("LWK \(swap.id ?? "", privacy: .public) invalid")
+            lwkLogger.info("\(swap.id ?? "", privacy: .public) invalid")
         }
     }
 
@@ -102,11 +102,11 @@ public actor SwapMonitor {
             switch state {
             case .continue:
                 let data = try swap.serialize()
-                logger.info("LWK \(swapId, privacy: .public) updated with \(data.prefix(64), privacy: .public)")
+                lwkLogger.info("\(swapId, privacy: .public) updated with \(data.prefix(64), privacy: .public)")
                 _ = try await BoltzController.shared.update(with: persistentId, newData: data, newIsPending: true)
                 try await Task.sleep(nanoseconds: 100_000_000)
             case .success:
-                logger.info("LWK \(swapId, privacy: .public) completed successfully!")
+                lwkLogger.info("\(swapId, privacy: .public) completed successfully!")
                 let newTxHash: String? = {
                     switch swap {
                     case .reverseSubmarine(let swap):
@@ -119,33 +119,33 @@ public actor SwapMonitor {
                 }()
                 _ = try await BoltzController.shared.update(with: persistentId, newIsPending: false, newTxHash: newTxHash)
             case .failed:
-                logger.info("LWK \(swapId, privacy: .public) failed!")
+                lwkLogger.info("\(swapId, privacy: .public) failed!")
                 _ = try await BoltzController.shared.update(with: persistentId, newIsPending: false)
             }
             return state
         } catch LwkError.NoBoltzUpdate {
             try await Task.sleep(nanoseconds: 1_000_000_000)
-            logger.info("LWK \(swapId, privacy: .public) NoBoltzUpdate!")
+            lwkLogger.info("\(swapId, privacy: .public) NoBoltzUpdate!")
             if let swap = try? await BoltzController.shared.get(with: persistentId) {
                 return swap.isPending ? PaymentState.continue : PaymentState.success
             } else {
                 return .failed
             }
         } catch LwkError.ObjectConsumed {
-            logger.error("LWK \(swapId, privacy: .public) object consumed")
+            lwkLogger.error("\(swapId, privacy: .public) object consumed")
             return .failed
         } catch {
-            logger.error("LWK \(swapId, privacy: .public) unrecoverable error: \(error.localizedDescription, privacy: .public)")
+            lwkLogger.error("\(swapId, privacy: .public) unrecoverable error: \(error.localizedDescription, privacy: .public)")
             return .failed
         }
     }
 
     nonisolated public func loopSwap(swap: SwapResponse) async throws -> PaymentState {
         let swapId = try swap.swapId()
-        logger.error("LWK \(swapId, privacy: .public) loopSwap")
+        lwkLogger.error("\(swapId, privacy: .public) loopSwap")
         let persistentId = try? await BoltzController.shared.fetchID(byId: swapId)
         guard let persistentId else {
-            logger.error("LWK \(swapId, privacy: .public) not found")
+            lwkLogger.error("\(swapId, privacy: .public) not found")
             throw LwkError.Generic(msg: "Swap not found")
         }
         var state = PaymentState.continue

@@ -5,6 +5,10 @@ public var logger = Logger(
     subsystem: Bundle.main.bundleIdentifier!,
     category: "Green")
 
+public var lwkLogger = Logger(
+    subsystem: Bundle.main.bundleIdentifier!,
+    category: "Lwk")
+
 extension Logger {
 
     @available(iOSApplicationExtension 15.0, *)

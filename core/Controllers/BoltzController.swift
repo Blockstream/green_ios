@@ -94,7 +94,7 @@ public actor BoltzController {
         ])
         for id in ids {
             if let swap = try? await get(with: id) {
-                logger.info("LWK \(swap.id ?? "") \(swap.xpubHashId ?? "") \(swap.txHash ?? "")  \(swap.isPending) \(swap.data ?? "")")
+                lwkLogger.info("\(swap.id ?? "") \(swap.xpubHashId ?? "") \(swap.txHash ?? "")  \(swap.isPending)")
             }
         }
     }

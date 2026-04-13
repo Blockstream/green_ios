@@ -211,10 +211,10 @@ public class LwkSessionManager: SessionManager {
 
     nonisolated public func fetchReverseSwapsInfo() async throws -> BoltzReverseSwapInfoLBTC? {
         guard let jsonString = try boltzSession?.fetchSwapsInfo() else {
-            logger.error("LWK fetchReverseSwapsInfo failed")
+            lwkLogger.error("fetchReverseSwapsInfo failed")
             throw LwkError.Generic(msg: "Fails to fetch swaps info")
         }
-        logger.info("LWK fetchReverseSwapsInfo \(jsonString)")
+        lwkLogger.info("fetchReverseSwapsInfo \(jsonString)")
         let data = Data(jsonString.utf8)
         let dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
         let reverse = dict?["reverse"] as? [String: Any]
@@ -225,10 +225,10 @@ public class LwkSessionManager: SessionManager {
 
     nonisolated public func fetchSubmarineSwapsInfo() async throws -> BoltzSubmarineSwapInfoLBTC? {
         guard let jsonString = try boltzSession?.fetchSwapsInfo() else {
-            logger.error("LWK fetchSubmarineSwapsInfo failed")
+            lwkLogger.error("fetchSubmarineSwapsInfo failed")
             throw LwkError.Generic(msg: "Fails to fetch swaps info")
         }
-        logger.info("LWK fetchSubmarineSwapsInfo \(jsonString)")
+        lwkLogger.info("fetchSubmarineSwapsInfo \(jsonString)")
         let data = Data(jsonString.utf8)
         let dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
         let submarine = dict?["submarine"] as? [String: Any]
@@ -245,13 +245,13 @@ public class LwkSessionManager: SessionManager {
         let list = try boltzSession.swapRestore()
         // Reverse Submarine Swaps: avoid to restore reverse submarine swaps for lack of informations to correctly restore them.
         // Submarine Swaps: restore swaps with lockup transaction and refund liquid address
-        logger.info("LWK Restoring submarine swaps using address \(liquidAddress)")
+        lwkLogger.info("Restoring submarine swaps using address \(liquidAddress)")
         let submarineSwaps = try boltzSession.restorableSubmarineSwaps(swapList: list, refundAddress: liquidAddress)
         for submarineSwap in submarineSwaps {
             let pay = try boltzSession.restorePreparePay(data: submarineSwap)
             let swapId = try pay.swapId()
             let data = try pay.serialize()
-            logger.info("LWK Restoring \(swapId)")
+            lwkLogger.info("Restoring \(swapId)")
             if let swapDbId = try? await BoltzController.shared.fetchID(byId: swapId) {
                 try? await BoltzController.shared.update(
                     with: swapDbId,
@@ -268,7 +268,7 @@ public class LwkSessionManager: SessionManager {
                     txHash: try? pay.lockupTxid())
             }
         }
-        logger.info("LWK Restoring swaps using address \(bitcoinAddress)")
+        lwkLogger.info("Restoring swaps using address \(bitcoinAddress)")
         let bitcoinAddress = try BitcoinAddress(s: bitcoinAddress)
         let btcToLbtcSwaps = try boltzSession.restorableBtcToLbtcSwaps(swapList: list, claimAddress: liquidAddress, refundAddress: bitcoinAddress)
         let lbtcToBtcSwaps = try boltzSession.restorableLbtcToBtcSwaps(swapList: list, claimAddress: bitcoinAddress, refundAddress: liquidAddress)
@@ -276,7 +276,7 @@ public class LwkSessionManager: SessionManager {
             let lockup = try boltzSession.restoreLockup(data: swap)
             let swapId = try lockup.swapId()
             let data = try lockup.serialize()
-            logger.info("LWK Restoring \(swapId)")
+            lwkLogger.info("Restoring \(swapId)")
             if let swapDbId = try? await BoltzController.shared.fetchID(byId: swapId) {
                 try? await BoltzController.shared.update(
                     with: swapDbId,
@@ -300,13 +300,13 @@ extension LwkSessionManager: Logging {
     public func log(level: LiquidWalletKit.LogLevel, message: String) {
         switch level {
         case .debug:
-            logger.debug("\(message, privacy: .public)")
+            lwkLogger.debug("\(message, privacy: .public)")
         case .info:
-            logger.info("\(message, privacy: .public)")
+            lwkLogger.info("\(message, privacy: .public)")
         case .warn:
-            logger.warning("\(message, privacy: .public)")
+            lwkLogger.warning("\(message, privacy: .public)")
         case .error:
-            logger.error("\(message, privacy: .public)")
+            lwkLogger.error("\(message, privacy: .public)")
         }
     }
 }
