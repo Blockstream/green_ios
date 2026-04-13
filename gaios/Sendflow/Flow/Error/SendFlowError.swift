@@ -22,7 +22,7 @@ enum SendFlowError: Error, Sendable, Equatable {
         case .invalidPaymentTarget:
             return "id_invalid_address"
         case .failedToBuildTransaction:
-            return "Failed to build transaction"
+            return "id_failed_to_build_transaction"
         case .wrongSubaccount:
             return "id_invalid_address"
         case .wrongAssetId(let ticker):
@@ -30,11 +30,11 @@ enum SendFlowError: Error, Sendable, Equatable {
         case .insufficientFunds:
             return "id_insufficient_funds"
         case .invalidSession:
-            return "Invalid session"
+            return "id_invalid_session"
         case .generic(let msg):
             return msg.localized
         case .serviceUnavailable:
-            return "Service temporary unavailable"
+            return "id_service_temporarily_unavailable"
         case .gdkError(let msg):
             return msg.localized
         case .invalidAmount(let msg):

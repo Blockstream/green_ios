@@ -17,18 +17,18 @@ extension LwkError {
         switch self {
         case .Generic(msg: let msg):
             return msg.replacingOccurrences(of: "BoltzApi(HTTP(\"\\\"", with: "").replacingOccurrences(of: "\\\"\"))", with: "")
-        case .PoisonError(msg: let msg):
-            return "Poison Error \(msg)"
+        case .PoisonError(msg: _):
+            return "An internal error occurred. Please try again or contact support."
         case .MagicRoutingHint(_, _, _):
-            return "Magic Routing Hint"
+            return "A routing error occurred. Please try again."
         case .SwapExpired(_, _):
-            return "Swap Expired"
+            return "This swap has expired. Please start a new one."
         case .NoBoltzUpdate:
-            return "No Boltz Update"
+            return "The swap service is not responding. Please try again later."
         case .ObjectConsumed:
-            return "Object Consumed"
-        case .BoltzBackendHttpError(status: let status, error: let error):
-            return "Http error \(status): \(error ?? "")"
+            return "An internal error occurred. Please restart the app and try again."
+        case .BoltzBackendHttpError(status: let status, error: _):
+            return "A server error occurred (code \(status)). Please try again later."
         }
     }
 }

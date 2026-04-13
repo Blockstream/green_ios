@@ -52,19 +52,19 @@ public class BleLedgerConnection: HWConnectionProtocol {
             case .SW_OK:
                 return nil
             case .SW_INS_NOT_SUPPORTED:
-                return "Command not supported"
+                return "This command is not supported by your Ledger device."
             case .SW_WRONG_P1_P2:
-                return "Wrong package"
+                return "Communication error with your Ledger. Please try again."
             case .SW_INCORRECT_P1_P2:
-                return "Incorrect package"
+                return "Communication error with your Ledger. Please try again."
             case .SW_RECONNECT:
-                return "Reconnection required"
+                return "Your Ledger needs to reconnect. Please disconnect and reconnect it."
             case .SW_INVALID_STATUS:
-                return "Invalid status"
+                return "Your Ledger is in an unexpected state. Please unlock it and try again."
             case .SW_REJECTED:
                 return "Transaction was rejected by user"
             case .SW_INVALID_PKG:
-                return "Invalid package"
+                return "Communication error with your Ledger. Please try again."
             case .SW_ABORT:
                 return "Aborted operation"
             }
