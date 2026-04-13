@@ -163,7 +163,7 @@ class ManageAssetViewModel {
     func canSwap() -> Bool {
         if mainAccount.isWatchonly ||
             (mainAccount.isHW && mainAccount.boardType == .v2c ||
-             !AssetInfo.baseIds.contains(assetId)) {
+             !AssetInfo.baseIds.contains(assetId) || assetId == AssetInfo.lightningId) {
             return false
         }
         return true
