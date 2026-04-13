@@ -505,8 +505,8 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
                 } else if vm.isSubmarineSwap {
                     AnalyticsManager.shared.swapSend(
                         account: AccountsRepository.shared.current,
-                        from: SwapChainName.lightning.rawValue,
-                        to: SwapChainName.liquid.rawValue)
+                        from: SwapChainName.liquid.rawValue,
+                        to: SwapChainName.lightning.rawValue)
                 }
                 await navigate(to: route)
             case .failure(let model):

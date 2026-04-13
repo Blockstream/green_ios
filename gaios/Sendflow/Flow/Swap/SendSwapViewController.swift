@@ -58,6 +58,7 @@ class SendSwapViewController: UIViewController {
             btnNext.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -16),
             btnNext.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
+        AnalyticsManager.shared.recordView(.sendSwap, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
     }
 
     override func viewIsAppearing(_ animated: Bool) {
