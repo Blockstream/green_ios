@@ -73,10 +73,7 @@ class TransactActionsCell: UITableViewCell {
             controlSend.alpha = 0.3
             controlSend.isUserInteractionEnabled = false
         }
-        if onSwap == nil {
-            controlSwap.alpha = 0.3
-            controlSwap.isUserInteractionEnabled = false
-        }
+        controlSwap.isHidden = onSwap == nil
     }
     @objc func didTapBuy() {
         controlBuy.pressAnimate { [weak self] in
