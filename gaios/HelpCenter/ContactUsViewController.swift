@@ -71,7 +71,6 @@ class ContactUsViewController: KeyboardViewController {
         lblPlaceMessage.isHidden = messageTextView.text.count > 0
         btnSubmit.setStyle(isValid ? .primary : .primaryDisabled)
         iconLogs.image = request.shareLogs ? imgChecked : imgUnchecked
-        iconPubkey.image = request.shareKeys ? imgChecked : imgUnchecked
         iconSettings.image = request.shareSettings ? imgChecked : imgUnchecked
         iconTor.image = torAllow ? imgChecked : imgUnchecked
     }
@@ -91,7 +90,7 @@ class ContactUsViewController: KeyboardViewController {
         btnScreenshot.setTitle("id_take_a_screenshot".localized, for: .normal)
         btnGallery.setTitle("id_upload_from_gallery".localized, for: .normal)
         btnCopy.setTitle("id_copy_to_clipboard".localized, for: .normal)
-        [btnScreenRecord, btnScreenshot, btnGallery].forEach {
+        [btnScreenRecord, btnScreenshot, btnGallery, btnPubkey, lblPubkey, iconPubkey].forEach {
             $0?.isHidden = true
         }
         btnCopy.isHidden = !Bundle.main.dev
@@ -140,9 +139,9 @@ class ContactUsViewController: KeyboardViewController {
     @IBAction func btnCopy(_ sender: Any) {
         startLoader(message: "id_copying".localized)
         DispatchQueue.main.async {
-            UIPasteboard.general.string = self.request.logs(truncated: false)
+            UIPasteboard.general.string = self.request.logs()
             self.stopLoader()
-            DropAlert().warning(message: "id_copied_to_clipboard".localized, delay: 2.0)
+            DropAlert().success(message: "id_copied_to_clipboard".localized, delay: 1.0)
         }
     }
 
@@ -189,10 +188,6 @@ class ContactUsViewController: KeyboardViewController {
     }
     @IBAction func btnTor(_ sender: Any) {
         torAllow.toggle()
-        updateState()
-    }
-    @IBAction func btnPukey(_ sender: Any) {
-        request.shareKeys.toggle()
         updateState()
     }
     @IBAction func btnSettings(_ sender: Any) {

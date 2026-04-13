@@ -19,12 +19,9 @@ struct ZendeskErrorRequest {
     var paymentHash: String?
     var message: String?
     var shareLogs: Bool = false
-    var shareKeys: Bool = false
     var shareSettings: Bool = false
     var screenName: String?
     var type: ZendeskErrorRequestType = .incident
-
-    let maxLogsSize = 8000
 
     var hw: String? {
         let account = AccountsRepository.shared.current
@@ -79,51 +76,21 @@ struct ZendeskErrorRequest {
             result += AppSettings.shared.gdkSettings?.stringify() ?? ""
             result += "\r\n"
         }
-        if shareKeys {
-            let pubkeys = WalletManager.current?.subaccounts.compactMap { $0.extendedPubkey }.joined(separator: ",")
-            let descriptors = WalletManager.current?.subaccounts.compactMap { $0.coreDescriptors?.joined(separator: ",") }.joined(separator: ",")
-            result += ["Pubkey", pubkeys ?? "", "Descriptors", descriptors ?? ""].joined(separator: "\r\n")
-        }
         return result
     }
 
-    func logs(truncated: Bool) -> String? {
-        var logs = metadata()
+    func logs() -> String {
+        var sections = [metadata()]
         if shareLogs {
-            let greenLogsFull = logger.export(category: "Green").joined(separator: "\r\n")
-            let lightningLogsFull = logger.export(category: "Lightning").joined(separator: "\r\n")
-            let lwkLogsFull = logger.export(category: "Lwk").joined(separator: "\r\n")
-            if truncated == true {
-                logs = cutLogs(head: logs,
-                               greenLogs: greenLogsFull,
-                               lightningLogs: lightningLogsFull,
-                               lwkLogs: lwkLogsFull)
-            } else {
-                logs += ["Green logs", greenLogsFull, "Lightning logs", lightningLogsFull, "Lwk logs", lwkLogsFull].joined(separator: "\r\n")
+            let categories = ["Green", "Lightning", "Lwk"]
+            let formattedLogs = categories.map { category in
+                let title = "======= \(category) logs ======="
+                let body = logger.export(category: category).joined(separator: "\n")
+                return "\(title)\n\(body)"
             }
+            sections.append(contentsOf: formattedLogs)
         }
-        return logs
-    }
-
-    func cutLogs(head: String, greenLogs: String, lightningLogs: String, lwkLogs: String) -> String {
-        var logs = ""
-        var pos = 1
-        var validLogs = head
-
-        while logs.utf8.count < maxLogsSize {
-            let greenLogs = greenLogs.suffix(pos)
-            let lightningLogs = lightningLogs.suffix(pos)
-            let lwkLogs = lwkLogs.suffix(pos)
-            logs = head + ["Green logs", greenLogs, "Lightning logs", lightningLogs, "Lwk logs", lwkLogs].joined(separator: "\r\n")
-            if logs == validLogs {
-                return validLogs
-            }
-            if logs.utf8.count < maxLogsSize {
-                validLogs = logs
-            }
-            pos += 1
-        }
-        return validLogs
+        return sections.joined(separator: "\n\n")
     }
 }
 
@@ -144,6 +111,9 @@ class ZendeskSdk {
         Support.initialize(withZendesk: Zendesk.instance)
     }
 
+    /// Tor fallback: builds a pre-filled web URL for the Blockstream support form.
+    /// Used when Tor is active and the Zendesk SDK cannot submit directly.
+    /// Only metadata is included since file attachments are not supported on this path.
     func createNewTicketUrl(
         req: ZendeskErrorRequest
     ) async -> URL? {
@@ -157,7 +127,7 @@ class ZendeskSdk {
             URLQueryItem(name: "tf_42657567831833", value: osInfo),
             URLQueryItem(name: "tf_900009625166", value: Bundle.main.versionNumber),
             URLQueryItem(name: "tf_900003758323", value: "green"),
-            URLQueryItem(name: "tf_21409433258649", value: req.logs(truncated: true)),
+            URLQueryItem(name: "tf_21409433258649", value: req.metadata()),
             URLQueryItem(name: "tf_42306364242073", value: countlyId),
             URLQueryItem(name: "tf_42575138597145", value: req.type.rawValue),
             URLQueryItem(name: "tf_23833728377881", value: supportId)
