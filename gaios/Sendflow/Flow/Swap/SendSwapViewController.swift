@@ -138,8 +138,8 @@ class SendSwapViewController: UIViewController {
         iconAssetTo.image = state.to.assetIcon
         lblFeesTime.text = viewModel.feeRateTime()
         lblFeesRate.text = viewModel.feeRateText() ?? "-"
-        btnAccountFrom.isHidden = !viewModel.shouldShowSelector(state.from.assetId)
-        btnAccountTo.isHidden = !viewModel.shouldShowSelector(state.to.assetId)
+        btnAccountFrom.setStyle(viewModel.shouldShowSelector(state.from.assetId) ? .inline : .inlineDisabled)
+        btnAccountTo.setStyle(viewModel.shouldShowSelector(state.to.assetId) ? .inline : .inlineDisabled)
         iconAssetTo.image = state.to.assetIcon
         // error
         let errorMsg = state.error?.description().localized
