@@ -60,7 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/angelix/countly-sdk-ios",
       "state" : {
-        "revision" : "1892410d13fceccd7cf91f803f06f110efc215b3"
+        "revision" : "1892410d13fceccd7cf91f803f06f110efc215b3",
+        "version" : "23.6.1-ave"
       }
     },
     {

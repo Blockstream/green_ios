@@ -7635,8 +7635,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/angelix/countly-sdk-ios";
 			requirement = {
-				kind = revision;
-				revision = 1892410d13fceccd7cf91f803f06f110efc215b3;
+				kind = exactVersion;
+				version = "23.6.1-ave";
 			};
 		};
 		81CB5A3A2F504BF300908553 /* XCRemoteSwiftPackageReference "lwk-swift" */ = {
