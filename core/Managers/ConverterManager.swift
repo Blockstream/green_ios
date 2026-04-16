@@ -11,7 +11,7 @@ public class ConverterManager {
 
     private let provider: ConverterProvider
     private let testnet: Bool
-    private static let enUSLocale = Locale(identifier: "en_US")
+    public static let enUSLocale = Locale(identifier: "en_US")
 
     private let fiatFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
@@ -97,14 +97,22 @@ public class ConverterManager {
               let val = Decimal(string: fiat, locale: Self.enUSLocale) else {
             return nil
         }
+        if withCurrency, let fiatCurrency = b.fiatCurrency {
+            return formatFiat(value: val, currency: fiatCurrency, withGroupSeparator: withGroupSeparator)
+        } else {
+            return formatFiat(value: val, currency: nil, withGroupSeparator: withGroupSeparator)
+        }
+    }
+    public func formatFiat(value: Decimal, currency: String? = nil, withGroupSeparator: Bool = true) -> String? {
+
         let formatter = withGroupSeparator ? fiatFormatter : fiatFormatterNoSeparator
-        guard let number = formatter.string(from: val as NSDecimalNumber) else {
+        guard let numberStr = formatter.string(from: value as NSDecimalNumber) else {
             return nil
         }
-        if withCurrency, let fiatCurrency = b.fiatCurrency {
-            return "\(number) \(fiatCurrency)"
+        if let currency {
+            return "\(numberStr) \(currency)"
         } else {
-            return number
+            return numberStr
         }
     }
     public func formatBTC(_ b: Balance, denomination: DenominationType, withDenomination: Bool = true, withGroupSeparator: Bool = true) -> String? {

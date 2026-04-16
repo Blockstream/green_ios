@@ -169,6 +169,8 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: BalanceCell.identifier, for: indexPath) as? BalanceCell {
                 let balanceItem = BalanceItem(satoshi: viewModel.totals?.1, assetId: viewModel.totals?.0)
                 cell.configure(
+                    balances: viewModel.balances,
+                    currency: viewModel.defaultCurrency,
                     item: balanceItem,
                     denomBalance: viewModel.state.balanceDisplayMode,
                     hideBalance: viewModel.hideBalance,

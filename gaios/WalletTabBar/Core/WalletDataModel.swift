@@ -116,7 +116,6 @@ actor WalletDataModel {
             }
         }
     }
-
     private func performFetchBalance() async {
         do {
             let subaccounts = state.subaccounts
