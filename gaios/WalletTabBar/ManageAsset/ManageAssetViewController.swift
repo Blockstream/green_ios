@@ -110,7 +110,11 @@ class ManageAssetViewController: UIViewController {
         actions.append(.archive)
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountSettingsViewController") as? AccountSettingsViewController {
-            vc.viewModel = AccountSettingsViewModel(title: "id_account_settings".localized, actions: actions, isFunded: viewModel.isFunded == true)
+            vc.viewModel = AccountSettingsViewModel(title: "id_account_settings".localized,
+                                                    actions: actions,
+                                                    isFunded: viewModel.isFunded == true,
+                                                    // count subaccounts by network
+                                                    isArchivable: viewModel.subaccounts.count > 1)
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)

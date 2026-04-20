@@ -30,7 +30,7 @@ class AccountSettingsCell: UITableViewCell {
         self.lblTitle.text = model.title
         switch model.type {
         case .archive:
-            if model.isFunded == true {
+            if model.isFunded == true || model.isArchivable == false {
                 self.onTap = nil
                 self.bg.alpha = 0.4
             }
