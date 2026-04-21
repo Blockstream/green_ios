@@ -65,6 +65,7 @@ public class WalletManager {
     public var isLedger: Bool { hwDevice?.isLedger ?? false }
     public var hwDevice: HWDevice?
     public var updatedRegistryAt: Double?
+    public var deferredLwkLoginTask: Task<Void, Error>?
 
     public var popupResolver: PopupResolverDelegate? {
         didSet {
@@ -115,6 +116,8 @@ public class WalletManager {
     }
 
     public func disconnect() async {
+        deferredLwkLoginTask?.cancel()
+        deferredLwkLoginTask = nil
         try? await lightningSession?.disconnect()
         for session in sessions.values {
             try? await session.disconnect()
@@ -412,10 +415,17 @@ public class WalletManager {
             }
         }
         await failureSessionsError.reset()
-        let sessions = self.sessions.values.filter { !$0.logged }
-        logger.info("WM login: \(sessions.count) sessions")
+        let allSessions = self.sessions.values.filter { !$0.logged }
+        let lwkSessions = allSessions.filter { $0.networkType == .lwkMainnet }
+        let mainSessions = allSessions.filter { $0.networkType != .lwkMainnet }
+        logger.info("WM login: \(mainSessions.count) sessions + \(lwkSessions.count) deferred LWK")
+        if let lwkSession = lwkSessions.first {
+            deferredLwkLoginTask = Task(priority: .high) { [loginTask] in
+                _ = await loginTask(lwkSession)
+            }
+        }
         let loginUserDatas = await withTaskGroup(of: (NetworkSecurityCase, LoginUserResult?).self) { group in
-            for session in sessions {
+            for session in mainSessions {
                 group.addTask(priority: .high) {
                     return (session.networkType, await loginTask(session))
                 }
