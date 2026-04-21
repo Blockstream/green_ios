@@ -43,6 +43,9 @@ class SendLightningViewModel {
     }
 
     func createSwap(invoice: String) async throws -> PreparePayResponse {
+        guard let lwk = await WalletManager.current?.awaitLwkSession() else {
+            throw GaError.GenericError("No LWK account")
+        }
         let xpub = AccountsRepository.shared.current?.xpubHashId
         let existingSwapIds = try await BoltzController.shared.fetchSwaps(xpubHashId: xpub ?? "", invoice: invoice, swapType: .Submarine)
         if let swapId = existingSwapIds.first {

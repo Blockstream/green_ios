@@ -274,7 +274,7 @@ extension SendCoordinator {
             } else {
                 // bitcoin/liquid swap: open sign swap screen
                 let xpub = AccountsRepository.shared.current?.xpubHashId
-                let lwk = wallet.wallet.lwkSession
+                let lwk = await wallet.wallet.awaitLwkSession()
                 guard let xpub, let lwk else {
                     throw SendFlowError.invalidSession
                 }

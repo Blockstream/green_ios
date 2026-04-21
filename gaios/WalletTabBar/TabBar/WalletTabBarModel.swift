@@ -86,10 +86,7 @@ class WalletTabBarModel {
         }
     }
     func startSwapMonitor() async throws {
-        if let lwkTask = wallet.deferredLwkLoginTask {
-            _ = try? await lwkTask.value
-            wallet.deferredLwkLoginTask = nil
-        }
+        _ = await wallet.awaitLwkSession()
         if isRestored {
             let liquidAddress = await getAddress(subaccount: wallet.liquidSubaccounts.first)
             let bitcoinAddress = await getAddress(subaccount: wallet.bitcoinSubaccounts.first)

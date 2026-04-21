@@ -245,7 +245,7 @@ class SendAddressInputViewModel {
     }
 
     func checkLwkLimits() async throws {
-        let res = try await wm?.lwkSession?.fetchSubmarineSwapsInfo()
+        let res = try await wm?.awaitLwkSession()?.fetchSubmarineSwapsInfo()
         if let satoshi = createTx?.satoshi {
             if let limitsMinimal = res?.limits.minimal, satoshi < limitsMinimal {
                 throw GaError.GenericError("Amount too low".localized)

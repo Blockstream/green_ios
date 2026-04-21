@@ -310,7 +310,7 @@ final class SendSwapViewModel {
         guard let accountFrom = state.from.account, let accountTo = state.to.account, let amount = state.from.amount else {
             throw SendFlowError.invalidPaymentTarget
         }
-        guard let xpub = AccountsRepository.shared.current?.xpubHashId, let lwk = await wm.lwkSession else {
+        guard let xpub = AccountsRepository.shared.current?.xpubHashId, let lwk = await wm.awaitLwkSession() else {
             throw SendFlowError.invalidPaymentTarget
         }
         guard (accountFrom.btc ?? 0) >= amount else {

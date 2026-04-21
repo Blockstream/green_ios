@@ -104,7 +104,7 @@ class ReceiveViewModel {
             }
             logger.info("BOLTZ invoice")
             let claimAddress = try LiquidWalletKit.Address(s: address)
-            let invoice = try await wm.lwkSession?.invoice(amount: UInt64(satoshi ?? 0), description: description ?? "", claimAddress: claimAddress)
+            let invoice = try await wm.awaitLwkSession()?.invoice(amount: UInt64(satoshi ?? 0), description: description ?? "", claimAddress: claimAddress)
             self.lwkInvoice = invoice
             self.bolt11 = try invoice?.bolt11Invoice().description
             logger.info("BOLTZ invoiced")

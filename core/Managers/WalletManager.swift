@@ -152,6 +152,13 @@ public class WalletManager {
         return sessions[NetworkSecurityCase.lwkMainnet.network] as? LwkSessionManager
     }
 
+    public func awaitLwkSession() async -> LwkSessionManager? {
+        if let task = deferredLwkLoginTask {
+            _ = try? await task.value
+        }
+        return lwkSession
+    }
+
     public var lightningSubaccount: WalletItem? {
         return subaccounts.filter {$0.gdkNetwork.lightning }.first
     }
@@ -419,7 +426,8 @@ public class WalletManager {
         let lwkSessions = allSessions.filter { $0.networkType == .lwkMainnet }
         let mainSessions = allSessions.filter { $0.networkType != .lwkMainnet }
         logger.info("WM login: \(mainSessions.count) sessions + \(lwkSessions.count) deferred LWK")
-        if let lwkSession = lwkSessions.first {
+        // Only defer LWK if credentials exist; HW wallets provide them later via BIP85 export
+        if let lwkSession = lwkSessions.first, boltzCredentials != nil {
             deferredLwkLoginTask = Task(priority: .high) { [loginTask] in
                 _ = await loginTask(lwkSession)
             }
