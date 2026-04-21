@@ -13,6 +13,7 @@ actor WalletDataModel {
 
     // Private
     private var state = WalletState()
+    private var isFetchingBalance = false
     private var isFetchingTransactions = false
 
     // Channels
@@ -116,9 +117,15 @@ actor WalletDataModel {
             }
         }
     }
+
+    // TODO: isFetchingBalance is a temp guard; the real fix is making WalletManager an actor
     private func performFetchBalance() async {
+        if isFetchingBalance { return }
+        isFetchingBalance = true
+        defer { isFetchingBalance = false }
         do {
             let subaccounts = state.subaccounts
+            if subaccounts.isEmpty { return }
             let balances = try await wallet.balances(subaccounts: subaccounts)
             let totals = balances.filter { AssetInfo.baseIds.contains($0.0) }.map { $0.1 }.reduce(0, { (res, partial) in res + partial })
             let assetAmountList = AssetAmountList(balances)
