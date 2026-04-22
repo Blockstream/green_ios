@@ -480,7 +480,7 @@ public class WalletManager {
         activeSinglesigSessions.map { $0.networkType }
     }
     public var activeMultisigNetworks: [NetworkSecurityCase] {
-        activeSinglesigSessions.map { $0.networkType }
+        activeMultisigSessions.map { $0.networkType }
     }
 
     public var activeBitcoinMultisig: Bool { sessions[bitcoinMultisigNetwork.rawValue]?.logged ?? false }
