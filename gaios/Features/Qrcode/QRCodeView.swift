@@ -18,7 +18,7 @@ final class QRCodeView: UIView {
         let ai = UIActivityIndicatorView(style: .medium)
         ai.hidesWhenStopped = true
         ai.translatesAutoresizingMaskIntoConstraints = false
-        ai.color = .white
+        ai.color = UIColor.gAccent()
         return ai
     }()
 

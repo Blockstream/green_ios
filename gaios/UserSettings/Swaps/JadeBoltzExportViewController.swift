@@ -79,13 +79,13 @@ class JadeBoltzExportViewController: UIViewController {
         }
     }
 
-    func dialogScanViewController() {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogScanViewController") as? DialogScanViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.delegate = self
-            present(vc, animated: false, completion: nil)
+    func qrScannerViewController() {
+        let storyboard = UIStoryboard(name: "Scanner", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: "QrScannerViewController") { coder in
+            QrScannerViewController(coder: coder, titleText: nil, delegate: self)
         }
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: false, completion: nil)
     }
 
     @objc func showQRFullScreen() {
@@ -111,12 +111,12 @@ class JadeBoltzExportViewController: UIViewController {
     }
 
     @IBAction func tapNextButton(_ sender: Any) {
-        dialogScanViewController()
+        qrScannerViewController()
     }
 }
 
-extension JadeBoltzExportViewController: DialogScanViewControllerDelegate {
-    func didScan(value: ScanResult, index: Int?) {
+extension JadeBoltzExportViewController: QrScannerViewControllerDelegate {
+    func didScan(value: ScanResult) {
         Task { [weak self] in
             await self?.storeKey(value: value)
         }

@@ -198,14 +198,13 @@ class WODetailsCompactViewController: KeyboardViewController {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
     @IBAction func btnScan(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogScanViewController") as? DialogScanViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.delegate = self
-            present(vc, animated: false, completion: nil)
-
-            AnalyticsManager.shared.scanQr(account: nil, screen: .onBoardWOCredentials)
+        let storyboard = UIStoryboard(name: "Scanner", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: "QrScannerViewController") { coder in
+            QrScannerViewController(coder: coder, titleText: nil, delegate: self)
         }
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: false, completion: nil)
+        AnalyticsManager.shared.scanQr(account: nil, screen: .onBoardWOCredentials)
         updatePlaceholderVisibility()
     }
     @IBAction func btnImport(_ sender: Any) {
@@ -232,8 +231,8 @@ extension WODetailsCompactViewController: UITextViewDelegate {
     }
 }
 
-extension WODetailsCompactViewController: DialogScanViewControllerDelegate {
-    func didScan(value: ScanResult, index: Int?) {
+extension WODetailsCompactViewController: QrScannerViewControllerDelegate {
+    func didScan(value: ScanResult) {
         if let result = value.result {
             textView.text = result
         } else if let descriptor = value.bcur?.descriptor {

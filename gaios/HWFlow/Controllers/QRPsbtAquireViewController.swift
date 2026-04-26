@@ -15,8 +15,8 @@ class QRPsbtAquireViewController: UIViewController {
     @IBOutlet weak var lblStep: UILabel!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-    @IBOutlet weak var qrScanView: QRCodeReaderView!
-    @IBOutlet weak var progress: UIProgressView!
+    @IBOutlet weak var qrScanView: QrScannerView!
+    @IBOutlet weak var progressView: SmoothProgressView!
     @IBOutlet weak var imgStep: UIImageView!
     @IBOutlet weak var btnImport: UIButton!
     weak var delegate: QRPsbtAquireViewControllerDelegate?
@@ -27,6 +27,7 @@ class QRPsbtAquireViewController: UIViewController {
         setContent()
         setStyle()
         qrScanView.delegate = self
+        qrScanView.startScanningCheckPermission()
         AnalyticsManager.shared.recordView(.camera)
         view.backgroundColor = UIColor.gBlackBg()
 //        view.alpha = 0.0
@@ -37,18 +38,16 @@ class QRPsbtAquireViewController: UIViewController {
         lblStep.text = "\("id_step".localized) 2".uppercased()
         lblTitle.text = "id_scan_qr_on_jade".localized
         lblHint.text = "id_import_signed_transaction".localized
-        btnImport.setTitle("Import from file", for: .normal)
+        btnImport.setTitle("id_import_from_file", for: .normal)
     }
 
     func setStyle() {
-        progress.isHidden = true
+        progressView.isHidden = true
         lblStep.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblStep.textColor = UIColor.gAccent()
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         lblHint.setStyle(.txtCard)
         qrScanView.layer.masksToBounds = true
-        qrScanView.borderWidth = 10.0
-        qrScanView.borderColor = UIColor.gGrayCamera()
         qrScanView.cornerRadius = 10.0
         imgStep.image = UIImage(named: "ic_qr_scan_square")?.maskWithColor(color: UIColor.gAccent())
         btnImport.setStyle(.outlinedWhite)
@@ -59,31 +58,15 @@ class QRPsbtAquireViewController: UIViewController {
 //            self.view.alpha = 1.0
 //            self.view.layoutIfNeeded()
 //        }
-        Task.detached(priority: .medium) { [weak self] in
-            await self?.startCapture()
-        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        qrScanView.stopScan()
+        qrScanView.stopScanning()
     }
 
     func dismiss(animated: Bool) {
         navigationController?.popToViewController(ofClass: SendTxConfirmViewController.self)
-    }
-
-    private func startCapture() {
-        if qrScanView.isSessionNotDetermined() {
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                self.startCapture()
-            }
-            return
-        }
-        if !qrScanView.isSessionAuthorized() {
-            return
-        }
-        qrScanView.startScan()
     }
 
     func updateNavigationItem() {
@@ -114,7 +97,7 @@ class QRPsbtAquireViewController: UIViewController {
                 return txt
             }
         }
-        throw GaError.GenericError("Not a valid PSBT")
+        throw GaError.GenericError("id_invalid_psbt")
     }
 }
 extension QRPsbtAquireViewController: UIDocumentPickerDelegate {
@@ -137,28 +120,38 @@ extension QRPsbtAquireViewController: UIDocumentPickerDelegate {
     }
 }
 
-extension QRPsbtAquireViewController: QRCodeReaderDelegate {
-    func onBcurProgress(_ info: gdk.ResolveCodeAuthData) {
-        progress.progress = Float((info.estimatedProgress ?? 0)) / 100
-        progress.isHidden = false
+extension QRPsbtAquireViewController: QrScannerViewDelegate {
+    func didFindCode(_ code: ScanResult) {
+        qrScanView.stopScanning()
+        guard let psbt = code.bcur?.psbt,
+              Wally.psbtIsBase64(psbt)
+        else {
+            DispatchQueue.main.async { [weak self] in
+                self?.showAlert(
+                    title: "id_error".localized,
+                    message: "id_invalid_psbt".localized) {
+                        self?.progressView.setProgress(0)
+                        self?.qrScanView.startScanningCheckPermission()
+                    }
+            }
+            return
+        }
+        DispatchQueue.main.async {
+            self.delegate?.didSign(psbt: psbt)
+            self.dismiss(animated: true)
+        }
     }
 
-    func userDidGrant(_: Bool) { }
+    func didUpdateProgress(_ progress: Float) {
+        self.progressView.setProgress(progress)
+        self.progressView.isHidden = false
+    }
 
-    func onQRCodeReadSuccess(result: ScanResult) {
-        qrScanView.stopScan()
-        do {
-            guard let psbt = result.bcur?.psbt,
-                  Wally.psbtIsBase64(psbt)
-            else {
-                throw GaError.GenericError("Not a valid PSBT")
-            }
-            DispatchQueue.main.async {
-                self.delegate?.didSign(psbt: psbt)
-                self.dismiss(animated: true)
-            }
-        } catch {
-            showError(error.description().localized)
-        }
+    func didFailWithError(_ error: String) {
+        DropAlert().error(message: error)
+    }
+
+    func didChangeAuthorization(isAuthorized: Bool) {
+        DropAlert().error(message: "id_please_enable_camera".localized)
     }
 }

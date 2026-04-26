@@ -18,12 +18,12 @@ class QRUnlockJadeViewController: UIViewController {
     @IBOutlet weak var stepView: UIView!
     @IBOutlet weak var lblStep: UILabel!
     @IBOutlet weak var imgStep: UIImageView!
-    @IBOutlet weak var progress: UIProgressView!
     @IBOutlet weak var qrCodeView: QRCodeView!
-    @IBOutlet weak var qrScanView: QRCodeReaderView!
+    @IBOutlet weak var qrScanView: QrScannerView!
     @IBOutlet weak var btnNext: UIButton!
     @IBOutlet weak var btnBack: UIButton!
 
+    @IBOutlet weak var progressView: SmoothProgressView!
     @IBOutlet weak var userHelp: UIView!
     @IBOutlet weak var lblUserHelpTitle: UILabel!
     @IBOutlet weak var lblUserHelpHint: UILabel!
@@ -83,7 +83,7 @@ class QRUnlockJadeViewController: UIViewController {
         btnNext.setTitle("id_next".localized, for: .normal)
         qrCodeView.isHidden = !vm.showQRCode()
         btnNext.isHidden = !vm.showQRCode()
-        progress.isHidden = true
+        progressView.isHidden = true
         lblStep.isHidden = false
         lblUserHelpTitle.text = "id_import_pubkey".localized
         lblUserHelpHint.text = "id_navigate_on_your_jade_to".localized
@@ -93,7 +93,7 @@ class QRUnlockJadeViewController: UIViewController {
 
     func setStyle() {
 
-        progress.isHidden = true
+        progressView.isHidden = true
         lblHint.setStyle(.txtCard)
         lblStep.setStyle(.txtSmaller)
         btnBack.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
@@ -107,33 +107,20 @@ class QRUnlockJadeViewController: UIViewController {
         btnUserHelpScan.setStyle(.primary)
         btnUserHelpLearn.setStyle(.inline)
         qrScanView.layer.masksToBounds = true
-        qrScanView.borderWidth = 10.0
-        qrScanView.borderColor = UIColor.gGrayCamera()
         qrScanView.cornerRadius = 10.0
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        progress.setProgress(0.0, animated: false)
     }
 
     @MainActor
     private func startCapture() {
-        if qrScanView.isSessionNotDetermined() {
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                self.startCapture()
-            }
-            return
-        }
-        if !qrScanView.isSessionAuthorized() {
-            return
-        }
-        qrScanView.startScan()
+        progressView.setProgress(0.0)
+        qrScanView.isHidden = false
+        qrScanView.startScanningCheckPermission()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        qrScanView.stopScan()
+        qrScanView.isHidden = true
+        qrScanView.stopScanning()
     }
 
     @MainActor
@@ -211,14 +198,10 @@ class QRUnlockJadeViewController: UIViewController {
             refresh()
             return
         }
-        await onScanHandshakeInit(result)
+        await onScanHandshakeInit(bcur)
     }
 
-    func onScanHandshakeInit(_ result: ScanResult) async {
-        guard let bcur = result.bcur else {
-            startCapture()
-            return
-        }
+    func onScanHandshakeInit(_ bcur: BcurDecodedData) async {
         do {
             let bcurHandshake = try await vm.jade.qrauth(bcur: bcur)
             await MainActor.run {
@@ -227,8 +210,11 @@ class QRUnlockJadeViewController: UIViewController {
                 refresh()
             }
         } catch {
-            startCapture()
-            showError(error)
+            showAlert(
+                title: "id_error".localized,
+                message: error.description().localized) {
+                    self.startCapture()
+                }
         }
     }
 
@@ -267,7 +253,6 @@ class QRUnlockJadeViewController: UIViewController {
     }
 
     func onScanResult(_ result: ScanResult) {
-        print(result)
         DispatchQueue.main.async {
             self.onScanCompleted(result)
         }
@@ -315,18 +300,25 @@ class QRUnlockJadeViewController: UIViewController {
     }
 }
 
-extension QRUnlockJadeViewController: QRCodeReaderDelegate {
-    func onBcurProgress(_ info: gdk.ResolveCodeAuthData) {
-        progress.progress = Float((info.estimatedProgress ?? 0)) / 100
-        progress.isHidden = false
+extension QRUnlockJadeViewController: QrScannerViewDelegate {
+    func didFindCode(_ code: ScanResult) {
+        qrScanView.isHidden = true
+        qrScanView.stopScanning()
+        onScanResult(code)
     }
 
-    func onQRCodeReadSuccess(result: ScanResult) {
-        qrScanView.stopScan()
-        onScanResult(result)
+    func didUpdateProgress(_ progress: Float) {
+        progressView.setProgress(progress)
+        progressView.isHidden = false
     }
 
-    func userDidGrant(_: Bool) { }
+    func didFailWithError(_ error: String) {
+        DropAlert().error(message: error)
+    }
+
+    func didChangeAuthorization(isAuthorized: Bool) {
+        DropAlert().error(message: "id_please_enable_camera".localized)
+    }
 }
 
 extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate {

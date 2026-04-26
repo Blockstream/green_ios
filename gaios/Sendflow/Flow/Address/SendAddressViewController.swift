@@ -216,16 +216,16 @@ class SendAddressViewController: KeyboardViewController {
     }
 
     func presentQrcodeScanner() {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogScanViewController") as? DialogScanViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.index = nil
-            vc.delegate = self
-            present(vc, animated: false, completion: nil)
-            AnalyticsManager.shared.scanQr(account: AccountsRepository.shared.current,
-                                           screen: .send)
+        let storyboard = UIStoryboard(name: "Scanner", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: "QrScannerViewController") { coder in
+            QrScannerViewController(coder: coder, titleText: nil, delegate: self)
         }
-    }  
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: false, completion: nil)
+        AnalyticsManager.shared.scanQr(
+            account: AccountsRepository.shared.current,
+            screen: .send)
+    }
 }
 
 extension SendAddressViewController: UITextViewDelegate {
@@ -242,8 +242,16 @@ extension SendAddressViewController: UITextViewDelegate {
         perform(#selector(self.textChanged), with: nil, afterDelay: 0.3)
     }
 }
-extension SendAddressViewController: DialogScanViewControllerDelegate {
-    func didScan(value: ScanResult, index: Int?) {
+
+extension SendAddressViewController: SendFlowErrorDisplayable {
+    func handleSendFlowError(_ error: Error?) {
+        viewModel.canContinue = false
+        viewModel.error = error
+        reload()
+    }
+}
+extension SendAddressViewController: QrScannerViewControllerDelegate {
+    func didScan(value: ScanResult) {
         var input = value.result
         if let psbt = value.bcur?.psbt {
             input = psbt
@@ -255,13 +263,5 @@ extension SendAddressViewController: DialogScanViewControllerDelegate {
         }
     }
     func didStop() {
-    }
-}
-
-extension SendAddressViewController: SendFlowErrorDisplayable {
-    func handleSendFlowError(_ error: Error?) {
-        viewModel.canContinue = false
-        viewModel.error = error
-        reload()
     }
 }

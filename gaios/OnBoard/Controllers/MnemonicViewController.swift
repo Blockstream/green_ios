@@ -78,13 +78,13 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     }
 
     @objc func qrButtonTapped(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogScanViewController") as? DialogScanViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.delegate = self
-            present(vc, animated: false, completion: nil)
-            AnalyticsManager.shared.scanQr(account: nil, screen: .onBoardRecovery)
+        let storyboard = UIStoryboard(name: "Scanner", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: "QrScannerViewController") { coder in
+            QrScannerViewController(coder: coder, titleText: nil, delegate: self)
         }
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: false, completion: nil)
+        AnalyticsManager.shared.scanQr(account: nil, screen: .onBoardRecovery)
     }
     @objc func btnPaste(_ sender: Any) {
         onPaste(UIPasteboard.general.string ?? "")
@@ -387,8 +387,8 @@ extension MnemonicViewController: DialogRecoveryHelpViewControllerDelegate {
 
 }
 
-extension MnemonicViewController: DialogScanViewControllerDelegate {
-    func didScan(value: ScanResult, index: Int?) {
+extension MnemonicViewController: QrScannerViewControllerDelegate {
+    func didScan(value: ScanResult) {
         onPaste(value.result ?? "")
     }
     func didStop() { }
