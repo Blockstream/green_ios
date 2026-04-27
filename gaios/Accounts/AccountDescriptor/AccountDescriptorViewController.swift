@@ -52,7 +52,7 @@ class AccountDescriptorViewController: UIViewController {
         }
     }
     func onQR(_ qrInfo: QRDialogInfo) {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        let storyboard = UIStoryboard(name: "Qrcode", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogQRViewController") as? DialogQRViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.qrDialogInfo = qrInfo

@@ -4,25 +4,30 @@ import CoreImage
 import CoreImage.CIFilterBuiltins
 
 actor QRGenerator {
-    
+
     // Single context for performance reason
     private let context = CIContext(options: [.workingColorSpace: NSNull(), .useSoftwareRenderer: false])
-    
-    func generateStatic(text: String, size: CGSize, padding: CGFloat = 16, correction: String = "M") -> UIImage? {
+
+    func generateStatic(
+        text: String,
+        size: CGSize,
+        padding: CGFloat = 16,
+        correction: String = "M",
+        screenScale: CGFloat) -> UIImage? {
         guard let ciImage = makeCIImage(content: text, correction: correction) else {
             return nil
         }
-        return scale(ciImage: ciImage, targetSize: size, padding: padding)
+        return scale(ciImage: ciImage, targetSize: size, padding: padding, screenScale: screenScale)
     }
-    
-    private func makeCIImage(content: String, correction: String) -> CIImage? {
+
+    private nonisolated func makeCIImage(content: String, correction: String) -> CIImage? {
         guard let data = content.data(using: .ascii) else { return nil }
         let filter = CIFilter.qrCodeGenerator()
         filter.message = data
         filter.correctionLevel = correction
         return filter.outputImage
     }
-    private func scale(ciImage: CIImage, targetSize: CGSize, padding: CGFloat) -> UIImage? {
+    private func scale(ciImage: CIImage, targetSize: CGSize, padding: CGFloat, screenScale: CGFloat) -> UIImage? {
         let moduleRect = ciImage.extent
         let availableSize = CGSize(
             width:  targetSize.width  - padding * 2,
@@ -45,7 +50,6 @@ actor QRGenerator {
         let scaled = ciImage.transformed(by: transform)
         
         // Render into a screen-scale CGImage for maximum sharpness.
-        let screenScale = UIScreen.main.scale
         let bitmapSize = CGSize(
             width:  targetSize.width  * screenScale,
             height: targetSize.height * screenScale
@@ -69,18 +73,21 @@ actor QRGenerator {
         contents: [String],
         size: CGSize,
         padding: CGFloat = 16,
-        correction: String = "M"
+        correction: String = "M",
+        screenScale: CGFloat
     ) async throws -> [UIImage] {
         return try await withThrowingTaskGroup(of: (Int, UIImage).self) { group in
             for (index, content) in contents.enumerated() {
                 group.addTask { [self] in
-                    guard let ci = await self.makeCIImage(content: content, correction: correction) else {
-                        throw NSError()
+                    if let image = await self.generateStatic(
+                        text: content,
+                        size: size,
+                        padding: padding,
+                        correction: correction,
+                        screenScale: screenScale) {
+                        return (index, image)
                     }
-                    guard let image = await self.scale(ciImage: ci, targetSize: size, padding: padding) else {
-                        throw NSError()
-                    }
-                    return (index, image)
+                    throw NSError()
                 }
             }
             // Re-order results (TaskGroup may complete out-of-order).

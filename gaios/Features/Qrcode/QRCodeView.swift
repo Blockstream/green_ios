@@ -81,7 +81,8 @@ final class QRCodeView: UIView {
                     contents: contents,
                     size: CGSize(width: size.width, height: size.height),
                     padding: padding,
-                    correction: contents.count == 1 ? "M" : "L"
+                    correction: contents.count == 1 ? "M" : "L",
+                    screenScale: UIScreen.main.scale
                 )
 
                 guard !Task.isCancelled else { return }

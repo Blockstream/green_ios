@@ -331,7 +331,7 @@ class ReceiveViewController: KeyboardViewController {
         guard let text = viewModel.text else { return UIImage() }
         let frame = CGRect(x: 0.0, y: 0.0, width: 256, height: 256)
         return await QRGenerator()
-            .generateStatic(text: text, size: frame.size, padding: 16) ?? UIImage()
+            .generateStatic(text: text, size: frame.size, padding: 16, screenScale: UIScreen.main.scale) ?? UIImage()
     }
 
     @objc func helpBtnTap() {
@@ -390,7 +390,7 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func magnifyQR() {
-        let stb = UIStoryboard(name: "Utility", bundle: nil)
+        let stb = UIStoryboard(name: "Qrcode", bundle: nil)
         if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
             vc.qrTxt = viewModel.text
             vc.textNoURI = viewModel.text

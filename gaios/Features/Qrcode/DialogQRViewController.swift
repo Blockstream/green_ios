@@ -106,7 +106,7 @@ class DialogQRViewController: UIViewController {
     }
 
     func magnifyQR() {
-        let stb = UIStoryboard(name: "Utility", bundle: nil)
+        let stb = UIStoryboard(name: "Qrcode", bundle: nil)
         if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController, let txt = qrDialogInfo?.item {
             vc.qrTxt = txt
             vc.modalPresentationStyle = .overFullScreen
