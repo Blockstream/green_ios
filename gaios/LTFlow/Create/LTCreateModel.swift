@@ -35,10 +35,12 @@ struct LTCreateViewModel {
                 for: mainAccount.keychainLightning
             )
         // Update subaccounts and UI
-        _ = try await wallet.wallet.subaccounts()
+        await wallet.triggerRefresh(
+                features: [.subaccounts]
+            )
         await wallet
             .triggerRefresh(
-                features: [.subaccounts, .balance, .txs(reset: true)]
+                features: [.balance, .txs(reset: true)]
             )
     }
 }

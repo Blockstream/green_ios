@@ -472,14 +472,15 @@ extension TabSettingsVC: DialogWatchOnlySetUpViewControllerDelegate {
 extension TabSettingsVC: DenominationExchangeViewControllerDelegate {
     func onDenominationExchangeSave() {
         self.tableView.reloadData()
-        viewModel.refresh(features: [.subaccounts, .balance, .txs(reset: true), .priceChart])
+        viewModel.refresh(features: [.balance, .txs(reset: true), .priceChart])
     }
 }
 
 extension TabSettingsVC: AccountArchiveViewControllerDelegate {
     func archiveDidChange() {
         self.tableView.reloadData()
-        viewModel.refresh(features: [.subaccounts, .balance, .txs(reset: true)])
+        viewModel.refresh(features: [.subaccounts])
+        viewModel.refresh(features: [.balance, .txs(reset: true)])
     }
 }
 
@@ -501,7 +502,8 @@ extension TabSettingsVC: DialogRenameViewControllerDelegate {
     func didRename(name: String, index: String?) {
         viewModel.mainAccount.name = name
         AccountsRepository.shared.upsert(viewModel.mainAccount)
-        viewModel.refresh(features: [.settings, .subaccounts, .balance, .txs(reset: true)])
+        viewModel.refresh(features: [.subaccounts])
+        viewModel.refresh(features: [.settings, .balance, .txs(reset: true)])
     }
     func didCancel() {
     }

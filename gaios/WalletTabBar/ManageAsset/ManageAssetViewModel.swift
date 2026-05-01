@@ -85,9 +85,11 @@ class ManageAssetViewModel {
     func refresh() {
         Task {
             if let selectedSubaccount {
-                await walletDataModel.triggerRefresh(features: [.subaccounts, .balance, .nestedTxs(subaccount: selectedSubaccount.id, assetId: assetId)])
+                await walletDataModel.triggerRefresh(features: [.subaccounts])
+                await walletDataModel.triggerRefresh(features: [.balance, .nestedTxs(subaccount: selectedSubaccount.id, assetId: assetId)])
             } else {
-                await walletDataModel.triggerRefresh(features: [.subaccounts, .balance])
+                await walletDataModel.triggerRefresh(features: [.subaccounts])
+                await walletDataModel.triggerRefresh(features: [.balance])
             }
         }
     }

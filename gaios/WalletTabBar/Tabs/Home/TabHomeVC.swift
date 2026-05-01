@@ -29,7 +29,7 @@ class TabHomeVC: TabViewController {
                 self?.onUpdate(feature: feature)
             }
         }
-        viewModel.refresh(features: [.alertCards, .promos, .subaccounts, .priceChart])
+        viewModel.refresh(features: [.alertCards, .promos, .priceChart])
     }
 
     func onUpdate(feature: RefreshFeature?) {
@@ -274,7 +274,8 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                             }
                             switch await task.result {
                             case .success:
-                                self?.viewModel.refresh(features: [.alertCards, .subaccounts, .balance, .txs(reset: true)])
+                                self?.viewModel.refresh(features: [.subaccounts])
+                                self?.viewModel.refresh(features: [.alertCards, .balance, .txs(reset: true)])
                                 self?.stopLoader()
                             case .failure(let error):
                                 self?.stopLoader()

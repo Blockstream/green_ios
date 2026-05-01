@@ -146,10 +146,12 @@ class LTSettingsViewModel {
         await lightningSession.disconnect()
         mainAccount.removeAuthentication(.AuthKeyLightning)
         // Update subaccounts and UI
-        _ = try? await wallet.wallet.subaccounts()
+        await wallet.triggerRefresh(
+            features: [.subaccounts]
+        )
         await wallet
             .triggerRefresh(
-                features: [.subaccounts, .balance, .txs(reset: true)]
+                features: [.balance, .txs(reset: true)]
             )
     }
     func ltRedeemViewModel() -> LTRedeemViewModel? {
