@@ -8,7 +8,7 @@ class TabViewModel {
     let wallet: WalletManager
     var mainAccount: Account
     var state = WalletState()
-    var onUpdate: ((RefreshFeature?) -> Void)?
+    @MainActor var onUpdate: ((RefreshFeature?) -> Void)?
     var observationTask: Task<Void, Never>?
 
     init(walletDataModel: WalletDataModel, wallet: WalletManager, mainAccount: Account) {
@@ -27,7 +27,7 @@ class TabViewModel {
                 guard !Task.isCancelled else { break }
                 await MainActor.run { [weak self] in
                     self?.state = update.state
-                    self?.onUpdate?(update.feature )
+                    self?.onUpdate?(update.feature)
                 }
             }
         }

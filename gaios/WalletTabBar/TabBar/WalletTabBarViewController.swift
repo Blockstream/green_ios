@@ -34,59 +34,29 @@ class WalletTabBarViewController: UITabBarController {
         super.viewDidLoad()
         setTabBar()
         AppNotifications.shared.checkNotificationStatusAndPromptIfNeeded(from: self)
-        Task.detached { [weak self] in
-            await self?.setupRemoteNotifications()
-        }
-        Task.detached { [weak self] in
-            await self?.walletTabBarModel.callAnalytics()
-        }
-        Task.detached { [weak self] in
-            try await self?.walletTabBarModel.startSwapMonitor()
-        }
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        Task.detached { [weak self] in
-            try await self?.walletTabBarModel.wallet.refreshRegistryIfNeeded()
-        }
-    }
-
-    func setupRemoteNotifications() async {
-        let res = Task.detached(priority: .background) { [weak self] in
-            try await self?.walletTabBarModel.registerNotifications()
-        }
-        switch try? await res.value {
-        case .none:
-            DropAlert().error(message: "Notifications error".localized)
-        default:
-            break
-        }
+        walletTabBarModel.startup()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
-        if walletTabBarModel.isCreated {
-            // moved this reset in model
-            // after discovery completes
-            walletTabBarModel.isCreated = false
-            // load welcome dialog
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if walletTabBarModel.showWelcomeStatus() {
             addWelcomeDialog()
-            // load backup alert
-            if !walletTabBarModel.wallet.isHW && !walletTabBarModel.wallet.isWatchonly {
-                BackupHelper.shared.addToBackupList(mainAccount.id)
-            }
         }
-        setSecurityState(BackupHelper.shared.needsBackup(walletId: mainAccount.id) ? .alerted : .normal)
     }
 
     func addWelcomeDialog() {
         // load welcome dialog
-        if let view = UIApplication.shared.delegate?.window??.rootViewController?.view {
-            view.addSubview(wView)
+        guard let windowView = view.window else {
+            return
         }
         wView.frame = view.frame
+        wView.frame = windowView.bounds
+        windowView.addSubview(wView)
         wView.configure(with: WelcomeViewModel(), onTap: {[weak self] in
             AnalyticsManager.shared.swwCreated(account: self?.mainAccount)
             self?.wView.removeFromSuperview()
@@ -128,6 +98,7 @@ class WalletTabBarViewController: UITabBarController {
         let viewControllers = [tabHomeVC, tabTransactVC, tabSecurityVC, tabSettingsVC]
         self.setViewControllers(viewControllers, animated: false)
         delegate = self
+        setSecurityState(BackupHelper.shared.needsBackup(walletId: mainAccount.id) ? .alerted : .normal)
     }
     func changeTab(_ tab: WalletTab) {
         self.selectedIndex = tab.rawValue

@@ -31,7 +31,6 @@ class TabTransactVC: TabViewController {
                 self?.onUpdate(feature: feature)
             }
         }
-        viewModel.refresh(features: [.balance, .txs(reset: true)])
     }
     func onUpdate(feature: RefreshFeature?) {
         switch feature {

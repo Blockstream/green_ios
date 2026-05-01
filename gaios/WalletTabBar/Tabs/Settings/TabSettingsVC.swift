@@ -28,7 +28,6 @@ class TabSettingsVC: TabViewController {
                 self?.onUpdate(feature: feature)
             }
         }
-        viewModel.refresh(features: [.settings])
     }
 
     func onUpdate(feature: RefreshFeature?) {

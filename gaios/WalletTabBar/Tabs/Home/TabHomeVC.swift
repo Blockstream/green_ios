@@ -29,7 +29,6 @@ class TabHomeVC: TabViewController {
                 self?.onUpdate(feature: feature)
             }
         }
-        viewModel.refresh(features: [.alertCards, .promos, .priceChart])
     }
 
     func onUpdate(feature: RefreshFeature?) {
@@ -50,7 +49,6 @@ class TabHomeVC: TabViewController {
             URLSchemeManager.shared.url = nil
             sendScreen(walletDataModel: viewModel.walletDataModel, input: url.absoluteString)
         }
-        viewModel.refresh(features: [.alertCards])
     }
 
     func setContent() {

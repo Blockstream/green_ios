@@ -118,4 +118,31 @@ class WalletTabBarModel {
                 accounts: wallet.subaccounts.count,
                 accountsTypes: accountsTypes))
     }
+
+    func startup() {
+        Task {
+            if isCreated && !wallet.isHW && !wallet.isWatchonly {
+                BackupHelper.shared.addToBackupList(mainAccount.id)
+            }
+            await walletDataModel.triggerRefresh(features: [.subaccounts])
+            await walletDataModel.triggerRefresh(features: [
+                .alertCards, .promos, .priceChart,
+                .balance, .settings, .security, .txs(reset: true)
+            ])
+        }
+        Task(priority: .background) {
+            callAnalytics()
+            try? await registerNotifications()
+            try? await startSwapMonitor()
+            try? await wallet.refreshRegistryIfNeeded()
+        }
+    }
+
+    func showWelcomeStatus() -> Bool {
+        if isCreated {
+            isCreated = false
+            return true
+        }
+        return false
+    }
 }

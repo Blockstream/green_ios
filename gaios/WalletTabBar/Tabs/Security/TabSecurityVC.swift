@@ -27,7 +27,6 @@ class TabSecurityVC: TabViewController {
                 self?.onUpdate(feature: feature)
             }
         }
-        viewModel.refresh(features: [.security])
     }
     func onUpdate(feature: RefreshFeature?) {
         switch feature {
@@ -46,7 +45,6 @@ class TabSecurityVC: TabViewController {
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        viewModel.refresh(features: [.security])
     }
     func setContent() {
         tableView.refreshControl = UIRefreshControl()
