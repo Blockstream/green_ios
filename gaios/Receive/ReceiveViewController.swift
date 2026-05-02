@@ -95,7 +95,7 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     override func keyboardWillHide(notification: Notification) {
-        super.keyboardWillShow(notification: notification)
+        super.keyboardWillHide(notification: notification)
         keyboardVisible = false
         stackBottom.constant = 0.0
     }

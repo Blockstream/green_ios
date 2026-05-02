@@ -88,7 +88,7 @@ class DialogLoginPassphraseViewController: KeyboardViewController {
     }
 
     override func keyboardWillHide(notification: Notification) {
-        super.keyboardWillShow(notification: notification)
+        super.keyboardWillHide(notification: notification)
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
             self.buttonConstraint?.isActive = false
         })

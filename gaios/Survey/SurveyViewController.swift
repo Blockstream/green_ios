@@ -200,7 +200,7 @@ class SurveyViewController: KeyboardViewController {
     }
 
     override func keyboardWillHide(notification: Notification) {
-        super.keyboardWillShow(notification: notification)
+        super.keyboardWillHide(notification: notification)
         cardBottom.constant = cardBottomSpace
         UIView.animate(withDuration: 0.5, animations: { [weak self] in
             self?.view.layoutIfNeeded()

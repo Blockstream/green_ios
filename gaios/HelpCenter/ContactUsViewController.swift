@@ -133,7 +133,7 @@ class ContactUsViewController: KeyboardViewController {
     }
 
     override func keyboardWillHide(notification: Notification) {
-        super.keyboardWillShow(notification: notification)
+        super.keyboardWillHide(notification: notification)
     }
 
     @IBAction func btnCopy(_ sender: Any) {

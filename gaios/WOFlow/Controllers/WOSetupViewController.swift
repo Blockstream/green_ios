@@ -137,7 +137,7 @@ class WOSetupViewController: KeyboardViewController {
     }
 
     override func keyboardWillHide(notification: Notification) {
-        super.keyboardWillShow(notification: notification)
+        super.keyboardWillHide(notification: notification)
     }
 
     @objc func click(_ sender: Any) {
