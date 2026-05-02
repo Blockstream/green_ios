@@ -439,8 +439,10 @@ extension WalletDataModel: NewNotificationDelegate {
             logger.info("WalletDataModel disconnected")
         case .reconnected:
             logger.info("WalletDataModel reconnect")
-            await performFetchBalance()
-            await performFetchTransactions(reset: true)
+            if !wallet.isPaused() {
+                await performFetchBalance()
+                await performFetchTransactions(reset: true)
+            }
         case .tor:
             break
         case .refreshAssets:
