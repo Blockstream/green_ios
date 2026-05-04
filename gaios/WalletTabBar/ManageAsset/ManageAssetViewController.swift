@@ -495,8 +495,8 @@ extension ManageAssetViewController {
             present(vc, animated: false, completion: nil)
         } else {
             if let nav = navigationController {
-                activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self] in
-                    nav.popToRootViewController(animated: true)
+                activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self, weak nav] in
+                    nav?.popToRootViewController(animated: true)
                     self?.activeSendCoordinator = nil
                 }
                 activeSendCoordinator?.startSwap(subaccount: viewModel.selectedSubaccount, assetId: viewModel.assetId)

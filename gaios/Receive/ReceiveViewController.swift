@@ -355,8 +355,8 @@ class ReceiveViewController: KeyboardViewController {
 
     func sendScreen() {
         if let nav = navigationController {
-            activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self] in
-                nav.popToRootViewController(animated: true)
+            activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self, weak nav] in
+                nav?.popToRootViewController(animated: true)
                 self?.activeSendCoordinator = nil
             }
             activeSendCoordinator?.start(input: nil, subaccount: viewModel.account, assetId: viewModel.anyOrAsset.assetId)

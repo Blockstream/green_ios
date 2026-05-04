@@ -72,8 +72,8 @@ class TabViewController: UIViewController {
     private var activeSendCoordinator: SendCoordinator?
     func sendScreen(walletDataModel: WalletDataModel, input: String?) {
         if let nav = navigationController {
-            activeSendCoordinator = SendCoordinator(nav: nav, wallet: walletDataModel, mainAccount: walletTab.mainAccount) { [weak self] in
-                nav.popToRootViewController(animated: true)
+            activeSendCoordinator = SendCoordinator(nav: nav, wallet: walletDataModel, mainAccount: walletTab.mainAccount) { [weak self, weak nav] in
+                nav?.popToRootViewController(animated: true)
                 self?.activeSendCoordinator = nil
             }
             activeSendCoordinator?.start(input: input, subaccount: nil, assetId: nil)
