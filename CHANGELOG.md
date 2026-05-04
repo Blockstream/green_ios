@@ -3,10 +3,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [5.4.0] - 2026-05-04
+
+### Added
+= Aggregate fiat total balance across all wallet assets
+- Update Send flow for lightning
+
+### Fixed
+- Swap improvements
+- QR Code improvements
+- Bug fixes
 
 ### Changed
-- Total balance: display FIAT cumulative value for all priced assets
+- Migrate lightning from Breez to Greenlight
+- Upload logs as attachments to Zendesk
+- Update GDK to Release 0.77.3
 
 ## [5.3.0] - 2026-04-07 
 
