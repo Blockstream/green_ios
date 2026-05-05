@@ -290,8 +290,8 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
         case .assetBalance:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AssetBalanceCell.identifier, for: indexPath) as? AssetBalanceCell {
                 var satoshi: Int64?
-                if let subaccount = viewModel.selectedSubaccount {
-                    satoshi = subaccount.satoshi?[viewModel.assetId]
+                if viewModel.selectedSubaccount != nil {
+                    satoshi = viewModel.selectedBalances?[viewModel.assetId]
                 } else {
                     satoshi = viewModel.balances?[viewModel.assetId]
                 }
