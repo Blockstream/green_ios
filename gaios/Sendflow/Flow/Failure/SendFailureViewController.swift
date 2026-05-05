@@ -54,6 +54,7 @@ class SendFailureViewController: UIViewController {
         lblTitle.setStyle(.subTitle)
         btnAgain.setStyle(.primary)
         btnSupport.setStyle(.outlined)
+        btnAgain.isHidden = true
     }
 
     @IBAction func btnDismiss(_ sender: Any) {
