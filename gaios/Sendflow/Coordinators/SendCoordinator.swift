@@ -306,8 +306,11 @@ extension SendCoordinator {
                 if subaccount.networkType.bitcoin {
                     throw SendFlowError.wrongSubaccount
                 }
-                if invoice.amountMilliSatoshis() == nil {
+                guard let amount = invoice.amountMilliSatoshis()?.satoshi else {
                     throw SendFlowError.generic("Invoice without amount not supported. Paste an invoice with an amount")
+                }
+                if amount > subaccount.btc ?? 0 {
+                    throw SendFlowError.insufficientFunds
                 }
                 nav.topViewController?.startLoader(message: "")
                 let (swap, tx) = try await TransactionBuilder.buildSubmarineSwapTransaction(invoice: invoice.description, lwk: lwk, subaccount: subaccount, xpub: xpub)
