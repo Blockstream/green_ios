@@ -569,8 +569,9 @@ public class WalletManager {
         }
         return res
     }
-    public func balances(subaccounts: [WalletItem]) async throws -> [String: Int64] {
-        let balances = try await withThrowingTaskGroup(of: [String: Int64].self, returning: [[String: Int64]].self) { group in
+
+    public func balances(subaccounts: [WalletItem]) async throws -> [String: [String: Int64]] {
+        return try await withThrowingTaskGroup(of: (String, [String: Int64]).self, returning: [String: [String: Int64]].self) { group in
             for account in subaccounts.enumerated() {
                 group.addTask {
                     let acc = account.element
@@ -580,21 +581,13 @@ public class WalletManager {
                         self.subaccounts[index].hasTxs = satoshi.count > 1 ? true : account.element.hasTxs
                         self.subaccounts[index].hasTxs = (satoshi.first?.value ?? 0) > 0 ? true : account.element.hasTxs
                     }
-                    return satoshi ?? [:]
+                    return (acc.id, satoshi ?? [:])
                 }
             }
-            return try await group.reduce(into: [[String: Int64]]()) { partial, result in
-                partial += [result]
+            return try await group.reduce(into: [String: [String: Int64]]()) { partial, res in
+                partial[res.0] = res.1
             }
         }
-        return balances
-            .flatMap { $0 }
-            .reduce([String: Int64]()) { (dict, tuple) in
-                var nextDict = dict
-                let prevValue = dict[tuple.key] ?? 0
-                nextDict.updateValue(prevValue + tuple.value, forKey: tuple.key)
-                return nextDict
-            }
     }
 
     public func transactions(subaccounts: [WalletItem], first: Int = 0, count: Int? = nil) async throws -> [gdk.Transaction] {

@@ -43,6 +43,12 @@ class ManageAssetViewModel {
     var balances: [String: Int64]? {
         state.balances
     }
+    var selectedBalances: [String: Int64]? {
+        guard let selectedSubaccount else {
+            return nil
+        }
+        return state.balancesForSubaccount?[selectedSubaccount.id]
+    }
     var totals: (String, Int64)? {
         state.totals
     }

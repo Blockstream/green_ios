@@ -57,12 +57,22 @@ actor WalletDataModel {
         isFetchingBalance = true
         defer { isFetchingBalance = false }
         do {
+            logger.info("WalletDataModel performFetchBalance")
             let subaccounts = state.subaccounts
             if subaccounts.isEmpty { return }
-            let balances = try await wallet.balances(subaccounts: subaccounts)
+            let balancesForSubaccount = try await wallet.balances(subaccounts: subaccounts)
+            let balances = balancesForSubaccount
+                .flatMap { $0.value }
+                .reduce([String: Int64]()) { (dict, tuple) in
+                    var nextDict = dict
+                    let prevValue = dict[tuple.key] ?? 0
+                    nextDict.updateValue(prevValue + tuple.value, forKey: tuple.key)
+                    return nextDict
+                }
             let totals = balances.filter { AssetInfo.baseIds.contains($0.0) }.map { $0.1 }.reduce(0, { (res, partial) in res + partial })
             let assetAmountList = AssetAmountList(balances)
             await update(.balance) {
+                $0.balancesForSubaccount = balancesForSubaccount
                 $0.balances = balances
                 $0.totals = ("btc", totals)
                 $0.assetAmountList = assetAmountList
@@ -86,6 +96,7 @@ actor WalletDataModel {
         isFetchingTransactions = true
         defer { isFetchingTransactions = false }
         do {
+            logger.info("WalletDataModel performFetchTransactions")
             let subaccounts = state.subaccounts
             let currentPage = reset ? 0 : state.currentPage
             let txsCurrentPage = try await wallet.pagedTransactions(subaccounts: subaccounts, of: currentPage)
@@ -415,44 +426,39 @@ extension WalletDataModel: NewNotificationDelegate {
                     )
             }
             if pendings?.count ?? 0 > 0 {
-                await performFetchBalance()
-                await performFetchTransactions(reset: true)
+                await triggerRefresh(features: [.balance, .txs(reset: true)])
             }
         case .newSubaccount:
             logger.info("WalletDataModel newSubaccount")
-            //await performFetchSubaccounts(refresh: false)
-            //await performFetchBalance()
-            //await performFetchTransactions(reset: true)
         case .newTransaction:
             logger.info("WalletDataModel newTransaction")
-            await performFetchBalance()
-            await performFetchTransactions(reset: true)
+            await triggerRefresh(features: [.balance, .txs(reset: true)])
         case .twoFactorReset:
             logger.info("WalletDataModel twoFactorReset")
-            await performFetchSubaccounts(refresh: false)
-            await performSettings()
+            await triggerRefresh(features: [.subaccounts])
+            await triggerRefresh(features: [.settings])
         case .updateSettings:
             logger.info("WalletDataModel updateSettings")
-            await performFetchSubaccounts(refresh: false)
-            await performSettings()
+            await triggerRefresh(features: [.subaccounts])
+            await triggerRefresh(features: [.settings])
         case .disconnected:
             logger.info("WalletDataModel disconnected")
         case .reconnected:
             logger.info("WalletDataModel reconnect")
             if !wallet.isPaused() {
-                await performFetchBalance()
-                await performFetchTransactions(reset: true)
+                await triggerRefresh(features: [.balance, .txs(reset: true)])
             }
         case .tor:
             break
         case .refreshAssets:
-            await performFetchBalance()
+            logger.info("WalletDataModel refreshAssets")
+            await triggerRefresh(features: [.balance, .txs(reset: true)])
         case .invoicePaid:
-            await performFetchBalance()
-            await performFetchTransactions(reset: true)
+            logger.info("WalletDataModel invoicePaid")
+            await triggerRefresh(features: [.balance, .txs(reset: true)])
         case .paymentSucceed:
-            await performFetchBalance()
-            await performFetchTransactions(reset: true)
+            logger.info("WalletDataModel paymentSucceed")
+            await triggerRefresh(features: [.balance, .txs(reset: true)])
         case .paymentFailed:
             break
         }
