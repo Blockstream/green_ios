@@ -132,11 +132,8 @@ class SendLwkSignViewController: UIViewController {
         lblAssetNameFrom.text = viewModel.assetFrom?.name ?? viewModel.assetIdFrom
         lblAccount1From.text = viewModel.subaccountFrom.localizedName.uppercased()
         iconAssetFrom.image = viewModel.assetImageFrom
-        lblSumFeeValue.isHidden = true
-        lblSumAmountValue.isHidden = true
-        lblSumTotalValue.isHidden = true
+        totalsView.isHidden = true
         lblConversion.isHidden = true
-        lblSumAmountView.isHidden = true
         lblAmountSubtitle.isHidden = true
         lblAmountValue.text = convertToDenom(viewModel.invoiceSatoshi ?? 0)
         lblAmountFiat.text = "≈ \(convertToFiat(viewModel.invoiceSatoshi ?? 0) ?? "")"
