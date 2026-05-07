@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Blockstream/gl-sdk-swift",
       "state" : {
-        "branch" : "2026w17-gl-sdk-0.2.1",
-        "revision" : "caf8a6fd158b2a09ff2f5c151da81dcd48094be8"
+        "revision" : "c34fce5a2577091ebbc9527d842c9931ca4ea16c",
+        "version" : "0.2.1"
       }
     },
     {

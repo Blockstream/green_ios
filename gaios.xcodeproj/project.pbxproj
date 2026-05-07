@@ -655,6 +655,9 @@
 		8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8187B47E21E9026900235A35 /* InfoPlist.strings */; };
 		8189230429F67F5500551824 /* WOViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8189230329F67F5500551824 /* WOViewModel.swift */; };
 		8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8189BEFF2236F2270091B466 /* ScreenLocker.swift */; };
+		818A8E472FACBC04005471BF /* GreenlightSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 818A8E462FACBC04005471BF /* GreenlightSDK */; };
+		818A8E492FACBC0F005471BF /* GreenlightSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 818A8E482FACBC0F005471BF /* GreenlightSDK */; };
+		818A8E4B2FACBC16005471BF /* GreenlightSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 818A8E4A2FACBC16005471BF /* GreenlightSDK */; };
 		818BA7032A2F6A6300DFB03A /* AsyncBluetooth in Frameworks */ = {isa = PBXBuildFile; productRef = 818BA7022A2F6A6300DFB03A /* AsyncBluetooth */; };
 		818BA7072A2F8ACB00DFB03A /* ScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818BA7062A2F8ACB00DFB03A /* ScanViewModel.swift */; };
 		818BA70F2A2F900900DFB03A /* ScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818BA70E2A2F900900DFB03A /* ScanViewController.swift */; };
@@ -783,9 +786,6 @@
 		81D401EB2FA2FAA800384005 /* LightningCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D401EA2FA2FA9F00384005 /* LightningCredentials.swift */; };
 		81D404E12A1D6138002631F5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D404E02A1D6138002631F5 /* Utils.swift */; };
 		81D6B3072EE8189400A637C4 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 81D6B3062EE8189400A637C4 /* AsyncAlgorithms */; };
-		81D89ED82FA8ADEF00AC04A4 /* GreenlightSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 81D89ED72FA8ADEF00AC04A4 /* GreenlightSDK */; };
-		81D89EDA2FA8AE1000AC04A4 /* GreenlightSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 81D89ED92FA8AE1000AC04A4 /* GreenlightSDK */; };
-		81D89EDC2FA8AE1900AC04A4 /* GreenlightSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 81D89EDB2FA8AE1900AC04A4 /* GreenlightSDK */; };
 		81D932132A77968500356D06 /* DialogSignViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D932122A77968500356D06 /* DialogSignViewModel.swift */; };
 		81DAEE042DD4110F00635591 /* ReceiveAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81DAEE022DD4110E00635591 /* ReceiveAssetCell.xib */; };
 		81DAEE052DD4110F00635591 /* ReceiveAssetCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DAEE012DD4110E00635591 /* ReceiveAssetCellModel.swift */; };
@@ -1860,7 +1860,7 @@
 				81961A6129E46B5600E9B94D /* gdk.framework in Frameworks */,
 				81961ACE29E4E41600E9B94D /* RiveRuntime in Frameworks */,
 				81A8F8FB29E5069F0052B214 /* lightning.framework in Frameworks */,
-				81D89EDA2FA8AE1000AC04A4 /* GreenlightSDK in Frameworks */,
+				818A8E472FACBC04005471BF /* GreenlightSDK in Frameworks */,
 				81961AEC29E4EC2F00E9B94D /* hw.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1899,7 +1899,7 @@
 				81BC54412BB1E083009F7631 /* greenaddress.framework in Frameworks */,
 				8177EDDB2B6C7B9C00C2271C /* Countly in Frameworks */,
 				81CB5A3E2F504C1700908553 /* LiquidWalletKit in Frameworks */,
-				81D89EDC2FA8AE1900AC04A4 /* GreenlightSDK in Frameworks */,
+				818A8E4B2FACBC16005471BF /* GreenlightSDK in Frameworks */,
 				81BC54432BB1E084009F7631 /* hw.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1935,7 +1935,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81D89ED82FA8ADEF00AC04A4 /* GreenlightSDK in Frameworks */,
+				818A8E492FACBC0F005471BF /* GreenlightSDK in Frameworks */,
 				81FE7C6F2F872C2400520095 /* LiquidWalletKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4672,7 +4672,7 @@
 				34A7F4FB2DE83CBE0003B9FE /* ScreenShield */,
 				81D6B3062EE8189400A637C4 /* AsyncAlgorithms */,
 				81CB5A3B2F504BF300908553 /* LiquidWalletKit */,
-				81D89ED92FA8AE1000AC04A4 /* GreenlightSDK */,
+				818A8E462FACBC04005471BF /* GreenlightSDK */,
 			);
 			productName = gaios;
 			productReference = 676FCF1C1F9D0CF800354E93 /* gaios.app */;
@@ -4758,7 +4758,7 @@
 			packageProductDependencies = (
 				8177EDDA2B6C7B9C00C2271C /* Countly */,
 				81CB5A3D2F504C1700908553 /* LiquidWalletKit */,
-				81D89EDB2FA8AE1900AC04A4 /* GreenlightSDK */,
+				818A8E4A2FACBC16005471BF /* GreenlightSDK */,
 			);
 			productName = core;
 			productReference = 8177ED882B6C688C00C2271C /* core.framework */;
@@ -4842,7 +4842,7 @@
 			name = lightning;
 			packageProductDependencies = (
 				81FE7C6E2F872C2400520095 /* LiquidWalletKit */,
-				81D89ED72FA8ADEF00AC04A4 /* GreenlightSDK */,
+				818A8E482FACBC0F005471BF /* GreenlightSDK */,
 			);
 			productName = lightning;
 			productReference = 81A8F8F529E5069E0052B214 /* lightning.framework */;
@@ -4932,7 +4932,7 @@
 				34A7F4FA2DE83CBE0003B9FE /* XCRemoteSwiftPackageReference "ScreenShield" */,
 				81D6B3052EE8189400A637C4 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
 				81CB5A3A2F504BF300908553 /* XCRemoteSwiftPackageReference "lwk-swift" */,
-				81D89ED62FA8ADEF00AC04A4 /* XCRemoteSwiftPackageReference "gl-sdk-swift" */,
+				818A8E452FACBC04005471BF /* XCRemoteSwiftPackageReference "gl-sdk-swift" */,
 			);
 			productRefGroup = 676FCF1D1F9D0CF800354E93 /* Products */;
 			projectDirPath = "";
@@ -7571,6 +7571,14 @@
 				version = 0.0.8;
 			};
 		};
+		818A8E452FACBC04005471BF /* XCRemoteSwiftPackageReference "gl-sdk-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Blockstream/gl-sdk-swift";
+			requirement = {
+				kind = exactVersion;
+				version = 0.2.1;
+			};
+		};
 		818BA7012A2F6A6300DFB03A /* XCRemoteSwiftPackageReference "AsyncBluetooth" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/manolofdez/AsyncBluetooth";
@@ -7619,14 +7627,6 @@
 				minimumVersion = 1.1.1;
 			};
 		};
-		81D89ED62FA8ADEF00AC04A4 /* XCRemoteSwiftPackageReference "gl-sdk-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Blockstream/gl-sdk-swift";
-			requirement = {
-				branch = "2026w17-gl-sdk-0.2.1";
-				kind = branch;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -7659,6 +7659,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 817A0B2F2A3CC52500E2F80D /* XCRemoteSwiftPackageReference "Semaphore" */;
 			productName = Semaphore;
+		};
+		818A8E462FACBC04005471BF /* GreenlightSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 818A8E452FACBC04005471BF /* XCRemoteSwiftPackageReference "gl-sdk-swift" */;
+			productName = GreenlightSDK;
+		};
+		818A8E482FACBC0F005471BF /* GreenlightSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 818A8E452FACBC04005471BF /* XCRemoteSwiftPackageReference "gl-sdk-swift" */;
+			productName = GreenlightSDK;
+		};
+		818A8E4A2FACBC16005471BF /* GreenlightSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 818A8E452FACBC04005471BF /* XCRemoteSwiftPackageReference "gl-sdk-swift" */;
+			productName = GreenlightSDK;
 		};
 		818BA7022A2F6A6300DFB03A /* AsyncBluetooth */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -7699,21 +7714,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 81D6B3052EE8189400A637C4 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
 			productName = AsyncAlgorithms;
-		};
-		81D89ED72FA8ADEF00AC04A4 /* GreenlightSDK */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81D89ED62FA8ADEF00AC04A4 /* XCRemoteSwiftPackageReference "gl-sdk-swift" */;
-			productName = GreenlightSDK;
-		};
-		81D89ED92FA8AE1000AC04A4 /* GreenlightSDK */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81D89ED62FA8ADEF00AC04A4 /* XCRemoteSwiftPackageReference "gl-sdk-swift" */;
-			productName = GreenlightSDK;
-		};
-		81D89EDB2FA8AE1900AC04A4 /* GreenlightSDK */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81D89ED62FA8ADEF00AC04A4 /* XCRemoteSwiftPackageReference "gl-sdk-swift" */;
-			productName = GreenlightSDK;
 		};
 		81FE7C6E2F872C2400520095 /* LiquidWalletKit */ = {
 			isa = XCSwiftPackageProductDependency;
