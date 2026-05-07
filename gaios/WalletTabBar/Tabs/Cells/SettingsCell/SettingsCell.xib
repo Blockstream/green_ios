@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -22,17 +22,28 @@
                         <rect key="frame" x="25" y="3" width="301" height="86"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="oOR-uo-0BS">
-                                <rect key="frame" x="20" y="20" width="229" height="46"/>
+                                <rect key="frame" x="20" y="20" width="28" height="46"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wBp-Os-rTR">
-                                        <rect key="frame" x="0.0" y="0.0" width="229" height="18"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="28" height="18"/>
                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="hint" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZXQ-NZ-3y6">
-                                        <rect key="frame" x="0.0" y="21" width="229" height="25"/>
+                                        <rect key="frame" x="0.0" y="21" width="28" height="25"/>
                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="lCo-5e-l3O">
+                                <rect key="frame" x="53" y="34" width="206" height="18"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="tag" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LwT-Xe-Yec">
+                                        <rect key="frame" x="0.0" y="0.0" width="206" height="18"/>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -49,13 +60,14 @@
                         <color key="backgroundColor" name="gGrayCard"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="7zo-G2-SjN" secondAttribute="trailing" constant="12" id="2Dr-iV-rMj"/>
+                            <constraint firstItem="7zo-G2-SjN" firstAttribute="leading" secondItem="lCo-5e-l3O" secondAttribute="trailing" constant="10" id="RNA-P1-B4p"/>
                             <constraint firstItem="7zo-G2-SjN" firstAttribute="centerY" secondItem="9Xm-hp-jIe" secondAttribute="centerY" id="Tsu-d8-34D"/>
                             <constraint firstAttribute="bottom" secondItem="oOR-uo-0BS" secondAttribute="bottom" constant="20" id="XYk-1R-E62"/>
+                            <constraint firstItem="lCo-5e-l3O" firstAttribute="centerY" secondItem="9Xm-hp-jIe" secondAttribute="centerY" id="ZFa-NC-bkZ"/>
                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="64" id="ib7-Tk-HIf"/>
                             <constraint firstItem="oOR-uo-0BS" firstAttribute="leading" secondItem="9Xm-hp-jIe" secondAttribute="leading" constant="20" id="qDS-ie-5qU"/>
-                            <constraint firstItem="7zo-G2-SjN" firstAttribute="leading" secondItem="oOR-uo-0BS" secondAttribute="trailing" constant="20" id="qwd-cr-NaX"/>
+                            <constraint firstItem="lCo-5e-l3O" firstAttribute="leading" secondItem="oOR-uo-0BS" secondAttribute="trailing" constant="5" id="r1T-Od-Dvz"/>
                             <constraint firstItem="oOR-uo-0BS" firstAttribute="top" secondItem="9Xm-hp-jIe" secondAttribute="top" constant="20" id="wGv-8j-ofF"/>
-                            <constraint firstAttribute="trailing" secondItem="oOR-uo-0BS" secondAttribute="trailing" priority="100" constant="20" id="zsv-Jh-v0x"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -73,6 +85,7 @@
                 <outlet property="bg" destination="9Xm-hp-jIe" id="TEx-ey-STZ"/>
                 <outlet property="icon" destination="7zo-G2-SjN" id="ses-89-bzm"/>
                 <outlet property="lblHint" destination="ZXQ-NZ-3y6" id="cPm-fQ-dLl"/>
+                <outlet property="lblTag" destination="LwT-Xe-Yec" id="WVe-of-Dln"/>
                 <outlet property="lblTitle" destination="wBp-Os-rTR" id="5Ab-lK-dCX"/>
             </connections>
             <point key="canvasLocation" x="46.564885496183201" y="4.2253521126760569"/>
