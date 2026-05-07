@@ -62,10 +62,10 @@ class ReEnable2faViewController: UIViewController {
     @MainActor
     func presentSendAmountViewController(sendViewModel: SendAmountViewModelLegacy) {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendAmountViewControllerLegacy") as? SendAmountViewControllerLegacy {
-            vc.viewModel = sendViewModel
-            navigationController?.pushViewController(vc, animated: true)
+        let vc = storyboard.instantiateViewController(identifier: "SendAmountViewControllerLegacy") { coder in
+            SendAmountViewControllerLegacy(coder: coder, viewModel: sendViewModel)
         }
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
