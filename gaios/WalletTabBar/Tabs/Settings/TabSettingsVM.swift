@@ -36,6 +36,7 @@ class TabSettingsVM: TabViewModel {
             guard let session = WalletManager.current?.prominentSession, let settings = session.settings else { return nil }
             return gaios.TabSettingsCellModel(
                 title: SettingsItem.unifiedDenominationExchange.string,
+                icon: UIImage(named: "rightArrow"),
                 subtitle: "",
                 attributed: getDenominationExchangeInfo(settings: settings, network: session.networkType),
                 type: setting)
@@ -48,27 +49,32 @@ class TabSettingsVM: TabViewModel {
         case .archievedAccounts:
             return gaios.TabSettingsCellModel(
                 title: SettingsItem.archievedAccounts.string,
+                icon: UIImage(named: "rightArrow"),
                 subtitle: "",
                 type: .archievedAccounts)
         case .watchOnly:
             return gaios.TabSettingsCellModel(
                 title: SettingsItem.watchOnly.string,
+                icon: UIImage(named: "rightArrow"),
                 subtitle: "",
                 type: .watchOnly)
         case .twoFactorAuthication:
             return gaios.TabSettingsCellModel(
                 title: SettingsItem.twoFactorAuthication.string,
+                icon: UIImage(named: "rightArrow"),
                 subtitle: "",
                 type: .twoFactorAuthication)
         case .pgpKey:
             return gaios.TabSettingsCellModel(
                 title: SettingsItem.pgpKey.string,
+                icon: UIImage(named: "rightArrow"),
                 subtitle: "",
                 type: .pgpKey)
         case .autoLogout:
             guard let session = WalletManager.current?.prominentSession, let settings = session.settings else { return nil }
             return gaios.TabSettingsCellModel(
                 title: SettingsItem.autoLogout.string,
+                icon: UIImage(named: "rightArrow"),
                 subtitle: (settings.autolock).string,
                 type: .autoLogout)
         case .version:
@@ -85,31 +91,37 @@ class TabSettingsVM: TabViewModel {
         case .rename:
             return gaios.TabSettingsCellModel(
                 title: "\("id_rename".localized)",
+                icon: UIImage(named: "rightArrow"),
                 subtitle: "\(AccountsRepository.shared.current?.name ?? "")",
                 type: .rename)
         case .lightning:
             return gaios.TabSettingsCellModel(
                 title: SettingsItem.lightning.string,
+                icon: UIImage(named: "rightArrow"),
                 subtitle: "",
                 type: .lightning)
         case .ampID:
             return gaios.TabSettingsCellModel(
                 title: SettingsItem.ampID.string,
+                icon: UIImage(named: "rightArrow"),
                 subtitle: "",
                 type: .ampID)
         case .createAccount:
             return gaios.TabSettingsCellModel(
                 title: SettingsItem.createAccount.string,
+                icon: UIImage(named: "rightArrow"),
                 subtitle: "",
                 type: .createAccount)
         case .swaps:
             return gaios.TabSettingsCellModel(
                 title: SettingsItem.swaps.string,
+                icon: UIImage(named: "rightArrow"),
                 subtitle: "",
                 type: .swaps)
         case .rescanSwaps:
             return gaios.TabSettingsCellModel(
                 title: SettingsItem.rescanSwaps.string,
+                icon: UIImage(named: "rightArrow"),
                 subtitle: "",
                 type: .rescanSwaps)
         }

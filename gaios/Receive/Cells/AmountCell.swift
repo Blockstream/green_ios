@@ -99,7 +99,7 @@ class AmountCell: UITableViewCell {
 //        btnPaste.isHidden = textField.text?.count ?? 0 > 0
         let balance = "\(model?.maxLimitAmount ?? "") \(model?.denomText ?? "")"
         lblAmount.text = String(format: "id_max_limit_s".localized, balance)
-        if model.scope == .reverseSwap {
+        if model.scope == .reverseSwap || model.scope == .ltReceive {
             lblAmount.isHidden = true
             bottomStackPad.constant = model.showMessage ? 10 : -24
         }
