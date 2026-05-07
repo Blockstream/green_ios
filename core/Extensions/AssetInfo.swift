@@ -40,7 +40,7 @@ extension AssetInfo {
     public static var lightning: AssetInfo {
         let denom = WalletManager.current?.prominentSession?.settings?.denomination ?? .BTC
         return AssetInfo(assetId: lightningId,
-                         name: "Bitcoin (Lightning)",
+                         name: "Lightning Bitcoin",
                          precision: denom.digits,
                          ticker: DenominationType.denominationsBTC[denom])
     }
