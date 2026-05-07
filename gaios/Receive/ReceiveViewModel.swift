@@ -165,10 +165,10 @@ class ReceiveViewModel {
             .nodeState()?.totalInboundLiquidityMsat.satoshi
         let hasActiveChannel = lightningSession?
             .nodeState()?.numActiveChannels ?? 0 > 0
-        let estimateOpeningFeeSatoshi: UInt64 = 5000
+        let minAmountOpening: UInt64 = 25000
         return AmountCellModel(
             satoshi: satoshi,
-            openChannelFee: hasActiveChannel ? nil : estimateOpeningFeeSatoshi,
+            minAmountOpening: hasActiveChannel ? nil : minAmountOpening,
             maxLimit: maxLimit,
             isFiat: isFiat,
             inputDenomination: inputDenomination,

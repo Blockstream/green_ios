@@ -226,8 +226,8 @@ class AmountCell: UITableViewCell {
         case .tooHigh:
             break
         case .tooLow:
-            let amount = Int64(model.openChannelFee ?? 0)
-            let text = String(format: "id_this_amount_is_below_the".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
+            let amount = Int64(model.minAmountOpening ?? 0)
+            let text = String(format: "id_amount_must_be_at_least_s".localized, model.toBtcText(amount) ?? "")
             errorState(text: text)
         case .disabled:
             disableState()

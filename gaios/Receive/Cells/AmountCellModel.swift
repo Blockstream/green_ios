@@ -10,7 +10,7 @@ enum AmountCellScope {
 }
 struct AmountCellModel {
     var satoshi: Int64?
-    var openChannelFee: UInt64?
+    var minAmountOpening: UInt64?
     var maxLimit: UInt64?
     var isFiat: Bool
     var inputDenomination: gdk.DenominationType
@@ -45,8 +45,8 @@ struct AmountCellModel {
             }
             return "Invalid amount"
         } else if state == .tooLow {
-            let amount = Int64(openChannelFee ?? 0)
-            return String(format: "id_a_set_up_funding_fee_of_s_s".localized, toBtcText(amount) ?? "", toFiatText(amount) ?? "")
+            let amount = Int64(minAmountOpening ?? 0)
+            return String(format: "id_amount_must_be_at_least_s".localized, toBtcText(amount) ?? "")
         }
         return nil
     }
@@ -82,14 +82,6 @@ struct AmountCellModel {
         } else {
             return defaultDenomination
         }
-    }
-    var toReceiveAmountStr: String {
-        if let satoshi = satoshi, let openChannelFee = openChannelFee, let balance = Balance.fromSatoshi(satoshi - Int64(openChannelFee), assetId: "btc") {
-            let (value, denom) = balance.toDenom(inputDenomination)
-            let (fiat, currency) = balance.toFiat()
-            return "\(value) \(denom) ~(\(fiat) \(currency))"
-        }
-        return ""
     }
     var denomUnderlineText: NSAttributedString {
         return NSAttributedString(string: denomText ?? "", attributes:
@@ -129,7 +121,7 @@ struct AmountCellModel {
         case .ltReceive:
             /*if satoshi >= nodeState.maxReceivableSatoshi {
                 return .tooHigh
-            } else if satoshi <= nodeState.inboundLiquiditySatoshi || satoshi >= openChannelFee ?? 0 {
+            } else if satoshi <= nodeState.inboundLiquiditySatoshi || satoshi >= minAmountOpening ?? 0 {
                 if nodeState.inboundLiquiditySatoshi == 0 || satoshi > nodeState.inboundLiquiditySatoshi {
                     return .aboveInboundLiquidity
                 } else {
@@ -137,7 +129,7 @@ struct AmountCellModel {
                 }
             } else
             */
-            if satoshi <= openChannelFee ?? 0 {
+            if satoshi < minAmountOpening ?? 0 {
                 return .tooLow
             } else {
                 return .valid
