@@ -12,7 +12,7 @@ class SendLwkSignViewModel {
     let isFiat: Bool
     let subaccount: WalletItem
     let delegate: SendLwkSignViewModelDelegate?
-    let tx: gdk.Transaction
+    var tx: gdk.Transaction
     // Variables
     var sendTransactionSuccess: SendTransactionSuccess?
     var error: Error?
@@ -21,6 +21,16 @@ class SendLwkSignViewModel {
     var address: String? { addressee?.address }
     var sendAll: Bool { addressee?.isGreedy ?? false}
     var isLightningPayment: Bool { subaccount.networkType == .lightning }
+    var note: String? {
+        let description = try? bolt11.invoiceDescription()
+        return tx.memo ?? description
+    }
+    var isNoteEditable : Bool {
+        !isLightningPayment
+    }
+    var isNoteHidden : Bool {
+        note?.isEmpty ?? true
+    }
     var satoshiWithFee: UInt64? {
         if isLightningPayment {
             return try? bolt11.amountMilliSatoshis()?.satoshi

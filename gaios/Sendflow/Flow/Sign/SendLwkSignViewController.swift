@@ -61,6 +61,9 @@ class SendLwkSignViewController: UIViewController {
         squareSliderView.delegate = self
         setContent()
         setStyle()
+        if viewModel.isNoteEditable {
+            addNoteInNavigation()
+        }
         reload()
     }
 
@@ -107,6 +110,19 @@ class SendLwkSignViewController: UIViewController {
         lblAmountSubtitle.setStyle(.txt)
         btnInfoFee.setImage(UIImage(named: "ic_lightning_info_err")!.maskWithColor(color: UIColor.gW40()), for: .normal)
     }
+
+    func addNoteInNavigation() {
+        let noteBtn = UIButton(type: .system)
+        noteBtn.setStyle(.inline)
+        noteBtn
+            .setTitle(
+                Common.noteActionName(viewModel.tx.memo ?? ""),
+                for: .normal
+            )
+        noteBtn.addTarget(self, action: #selector(noteBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: noteBtn)]
+    }
+
     func reloadLightningPayment() {
         lblToAssetTitleTo.isHidden = true
         cardAssetFrom.isHidden = false
@@ -122,19 +138,17 @@ class SendLwkSignViewController: UIViewController {
         lblConversion.isHidden = true
         lblSumAmountView.isHidden = true
         lblAmountSubtitle.isHidden = true
-        totalsView.isHidden = true
-        noteView.isHidden = true
         lblAmountValue.text = convertToDenom(viewModel.invoiceSatoshi ?? 0)
         lblAmountFiat.text = "≈ \(convertToFiat(viewModel.invoiceSatoshi ?? 0) ?? "")"
         if let bolt11 = try? viewModel.bolt11 {
-            lblNoteTxt.text = bolt11.invoiceDescription()
-            noteView.isHidden = bolt11.invoiceDescription().isEmpty
             AddressDisplay.configure(
                 address: bolt11.description,
                 textView: addressTextView,
                 style: .yellow,
                 truncate: true)
         }
+        noteView.isHidden = viewModel.isNoteHidden
+        lblNoteTxt.text = viewModel.note
     }
     func reloadCrossChainSwap() {
         lblAmountValue.text = convertToDenom(viewModel.recipientSatoshi ?? 0)
@@ -159,7 +173,8 @@ class SendLwkSignViewController: UIViewController {
         lblSumAmountView.isHidden = false
         lblAmountSubtitle.isHidden = true
         totalsView.isHidden = false
-        noteView.isHidden = true
+        noteView.isHidden = viewModel.isNoteHidden
+        lblNoteTxt.text = viewModel.note
     }
     func convertToDenom(_ satoshi: UInt64) -> String? {
         return viewModel.convertToDenom(satoshi: satoshi)
@@ -185,17 +200,15 @@ class SendLwkSignViewController: UIViewController {
         lblSumAmountView.isHidden = true
         lblAmountSubtitle.isHidden = false
         totalsView.isHidden = false
-        lblNoteTxt.text = ""
-        noteView.isHidden = true
         if let bolt11 = try? viewModel.bolt11 {
-            lblNoteTxt.text = bolt11.invoiceDescription()
-            noteView.isHidden = bolt11.invoiceDescription().isEmpty
             AddressDisplay.configure(
                 address: bolt11.description,
                 textView: addressTextView,
                 style: .yellow,
                 truncate: true)
         }
+        noteView.isHidden = viewModel.isNoteHidden
+        lblNoteTxt.text = viewModel.note
     }
     func reload() {
         if viewModel.isLightningPayment {
@@ -244,6 +257,23 @@ class SendLwkSignViewController: UIViewController {
         vc.authentication = true
         vc.modalPresentationStyle = .overFullScreen
         return vc
+    }
+
+    @objc func noteBtnTapped(_ sender: Any) {
+        if let vc = dialogEditViewController() {
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func dialogEditViewController() -> DialogEditViewController? {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogEditViewController") as? DialogEditViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.prefill = viewModel.tx.memo ?? ""
+            vc.delegate = self
+            return vc
+        }
+        return nil
     }
 
     func send() {
@@ -303,5 +333,16 @@ extension SendLwkSignViewController: SendFlowErrorDisplayable {
         if let error {
             showError(error.description().localized)
         }
+    }
+}
+
+extension SendLwkSignViewController: DialogEditViewControllerDelegate {
+
+    func didSave(_ note: String) {
+        viewModel.tx.memo = note
+        reload()
+    }
+
+    func didClose() {
     }
 }
