@@ -283,7 +283,7 @@ class TxDetailsViewController: UIViewController {
                     createTx.addressee = addressee
                 }
                 stopAnimating()
-                presentSendAmountViewController(createTx: createTx, tx: tx)
+                pushSendAmountViewController(createTx: createTx, tx: tx)
             } catch {
                 stopAnimating()
                 let error = error.description().localized
@@ -293,15 +293,16 @@ class TxDetailsViewController: UIViewController {
     }
 
     @MainActor
-    func presentSendAmountViewController(createTx: CreateTx, tx: Transaction) {
+    func pushSendAmountViewController(createTx: CreateTx, tx: Transaction) {
+        let model = SendAmountViewModelLegacy(
+            createTx: createTx,
+            transaction: tx
+        )
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendAmountViewControllerLegacy") as? SendAmountViewControllerLegacy {
-            vc.viewModel = SendAmountViewModelLegacy(
-                createTx: createTx,
-                transaction: tx
-            )
-            navigationController?.pushViewController(vc, animated: true)
+        let vc = storyboard.instantiateViewController(identifier: "SendAmountViewControllerLegacy") { coder in
+            SendAmountViewControllerLegacy(coder: coder, viewModel: model)
         }
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     func didSelectInfoAt(_ index: Int) {
