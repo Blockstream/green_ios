@@ -316,7 +316,7 @@ actor WalletDataModel {
             walletItems.removeAll(where: { $0 == .rename })
         }
         var accountItems: [SettingsItem] = []
-        if !wallet.isEphemeral && AppSettings.shared.experimental {
+        if !wallet.isEphemeral {
             accountItems += [.lightning]
         }
         accountItems += [.ampID]

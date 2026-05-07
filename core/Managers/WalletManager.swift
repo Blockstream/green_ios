@@ -99,7 +99,7 @@ public class WalletManager {
     public init(prominentNetwork: NetworkSecurityCase?) {
         self.mainnet = prominentNetwork?.gdkNetwork.mainnet ?? true
         self.prominentNetwork = prominentNetwork ?? .bitcoinSS
-        self.registry = AssetsManager(testnet: !mainnet, lightning: AppSettings.shared.experimental)
+        self.registry = AssetsManager(testnet: !mainnet, lightning: true)
         self.converter = ConverterManager(provider: self, testnet: !mainnet)
         if mainnet {
             addSession(for: .bitcoinSS)
@@ -293,7 +293,7 @@ public class WalletManager {
         parentWalletId: WalletIdentifier?
     ) async throws -> LoginUserResult? {
         // verify session
-        if !AppSettings.shared.experimental || testnet {
+        if testnet {
             logger.error("WM login lightning no available")
             return nil
         } else if credentials.bip39Passphrase != nil {
