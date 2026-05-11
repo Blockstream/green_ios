@@ -120,6 +120,9 @@ class SendLwkSignViewModel {
     var isSubmarineSwap: Bool {
         draft.swapPayResponse != nil
     }
+    var isSwapTransaction: Bool {
+        isCrossChainSwap || isSubmarineSwap || swapId != nil
+    }
     var subaccountFrom: WalletItem {
         if let swap = draft.swapPosition {
             return swap.from.account ?? subaccount

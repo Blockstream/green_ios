@@ -533,18 +533,21 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
                     walletItem: transaction.subaccount,
                     transactionSgmt: segment,
                     withMemo: false)
-                if vm.isCrossChainSwap {
-                    let from = try vm.draft.lockupResponse?.chainFrom() ?? ""
-                    let to = try vm.draft.lockupResponse?.chainTo() ?? ""
-                    AnalyticsManager.shared.swapInternal(
-                        account: AccountsRepository.shared.current,
-                        from: from,
-                        to: to)
-                } else if vm.isSubmarineSwap {
-                    AnalyticsManager.shared.swapSend(
-                        account: AccountsRepository.shared.current,
-                        from: SwapChainName.liquid.rawValue,
-                        to: SwapChainName.lightning.rawValue)
+                // Swap analytics must never be emitted for pure lightning payments.
+                if vm.isSwapTransaction {
+                    if vm.isCrossChainSwap {
+                        let from = try vm.draft.lockupResponse?.chainFrom() ?? ""
+                        let to = try vm.draft.lockupResponse?.chainTo() ?? ""
+                        AnalyticsManager.shared.swapInternal(
+                            account: AccountsRepository.shared.current,
+                            from: from,
+                            to: to)
+                    } else if vm.isSubmarineSwap {
+                        AnalyticsManager.shared.swapSend(
+                            account: AccountsRepository.shared.current,
+                            from: SwapChainName.liquid.rawValue,
+                            to: SwapChainName.lightning.rawValue)
+                    }
                 }
                 await navigate(to: route)
             case .failure(let model):
@@ -606,7 +609,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
                 tx: transaction,
                 total: vm.convertToDenom(satoshi: vm.satoshiWithFee ?? 0),
                 delegate: self)
-            if let swapId = vm.swapId {
+            if vm.isSwapTransaction, let swapId = vm.swapId {
                 Task { [weak wallet] in
                     if let persistentId = try? await BoltzController.shared.fetchID(byId: swapId) {
                         await wallet?.wallet.swapMonitor?.monitorSwap(id: persistentId)
