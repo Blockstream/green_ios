@@ -149,6 +149,31 @@ public class LwkSessionManager: SessionManager {
             txHash: nil)
         return res
     }
+
+    nonisolated public func preparePay(
+        lightningPayment: LightningPayment,
+        refundAddress: LiquidWalletKit.Address,
+        paymentIdentifier: String? = nil
+    ) async throws -> PreparePayResponse {
+        guard let boltzSession = boltzSession else {
+            throw LwkError.Generic(msg: "No lwk session")
+        }
+        let preparePayStatuses = ["invoice.paid", "swap.expired", "invoice.failedToPay", "transaction.lockupFailed"]
+        let res = try boltzSession.preparePay(
+            lightningPayment: lightningPayment,
+            refundAddress: refundAddress,
+            webhook: try webhook(status: preparePayStatuses))
+        _ = try await BoltzController.shared.create(
+            id: try res.swapId(),
+            data: try res.serialize(),
+            isPending: true,
+            xpubHashId: xpubHashId,
+            invoice: paymentIdentifier,
+            swapType: .submarineSwap,
+            txHash: nil)
+        return res
+    }
+
     nonisolated public func lbtcToBtc(amount: UInt64, refundAddress: String, claimAddress: String, xpubHashId: String) async throws -> LockupResponse {
         guard let boltzSession = boltzSession else {
             throw LwkError.Generic(msg: "No lwk session")
