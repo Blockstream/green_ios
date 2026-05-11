@@ -18,6 +18,7 @@ actor WalletDataModel {
 
     // Channels
     private var subscribers: [UUID: AsyncStream<SubscriberUpdate>.Continuation] = [:]
+    private var eventSubscribers: [UUID: AsyncStream<EventNotificationTypes>.Continuation] = [:]
 
     init(wallet: WalletManager, mainAccount: Account) {
         self.wallet = wallet
@@ -37,9 +38,27 @@ actor WalletDataModel {
         return stream
     }
 
+    func events() -> AsyncStream<EventNotificationTypes> {
+        let id = UUID()
+        let (stream, continuation) = AsyncStream<EventNotificationTypes>.makeStream()
+        eventSubscribers[id] = continuation
+
+        // This guarantees no memory leaks. When the ViewModel cancels its Task,
+        // this termination block cleans up the dictionary entry.
+        continuation.onTermination = { @Sendable [weak self] _ in
+            Task { await self?.removeEventSubscriber(id: id) }
+        }
+        return stream
+    }
+
     private func removeSubscriber(id: UUID) {
         subscribers[id]?.finish()
         subscribers.removeValue(forKey: id)
+    }
+
+    private func removeEventSubscriber(id: UUID) {
+        eventSubscribers[id]?.finish()
+        eventSubscribers.removeValue(forKey: id)
     }
 
     // Trigger a refresh event on features
@@ -402,6 +421,10 @@ actor WalletDataModel {
             cont.finish()
         }
         subscribers.removeAll()
+        for cont in eventSubscribers.values {
+            cont.finish()
+        }
+        eventSubscribers.removeAll()
     }
 }
 
@@ -414,6 +437,9 @@ extension WalletDataModel: NewNotificationDelegate {
     }
 
     func handleEvent(_ event: core.EventNotificationTypes) async {
+        for cont in eventSubscribers.values {
+            cont.yield(event)
+        }
         switch event {
         case .newBlock:
             logger.info("WalletDataModel newBlock")

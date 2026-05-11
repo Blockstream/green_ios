@@ -7,6 +7,9 @@ public extension AnalyticsManager {
     static let countlyRemoteConfigFeatureOnOffRamps = "feature_on_off_ramps"
     static let countlyRemoteConfigBuyDefaultValues = "buy_default_values"
     static let countlyRemoteConfigEnableBuyIosUk = "enable_buy_ios_uk"
+    static let countlyRemoteConfigLnRecommendedSatoshis = "ln_recommended_satoshis"
+    static let countlyRemoteConfigLnMinSatoshis = "ln_min_satoshis"
+    static let countlyRemoteConfigLnMaxSatoshis = "ln_max_satoshis"
 
     static let strNetworks = "wallet_networks"
     static let strNetwork = "account_network"

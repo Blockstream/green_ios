@@ -444,7 +444,7 @@ extension TabTransactVC: AssetSelectViewControllerDelegate {
 }
 extension TabTransactVC: DialogAccountsViewControllerDelegate {
     func didSelectAccount(_ walletItem: gdk.WalletItem?) {
-        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        let storyboard = UIStoryboard(name: "ReceiveFlow", bundle: nil)
         if let walletItem, let anyOrAsset, let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
             vc.viewModel = ReceiveViewModel(
                 mainAccount: viewModel.mainAccount,

@@ -12,12 +12,17 @@ enum AmountCellState: Int {
     case disconnected
     case invalidBuy
     case invalidReverseSwap
+    case lnBelowMin
+    case lnAboveMax
+    case lnRecommend
+    case lnShowFunding
 }
 
 protocol AmountCellDelegate: AnyObject {
     func textFieldDidChange(_ satoshi: Int64?, isFiat: Bool)
     func textFieldEnabled()
     func onFeeInfo()
+    func onFundingFeeInfo()
     func onInputDenomination()
     func stateDidChange(_ state: AmountCellState)
 }
@@ -30,7 +35,7 @@ class AmountCell: UITableViewCell {
     @IBOutlet weak var lblAmount: UILabel!
     @IBOutlet weak var lblInfo: UILabel!
     @IBOutlet weak var infoPanel: UIView!
-
+    @IBOutlet weak var lblConversion: UILabel!
     @IBOutlet weak var lblMoreInfo: UILabel!
     @IBOutlet weak var btnCancel: UIButton!
     @IBOutlet weak var btnPaste: UIButton!
@@ -70,6 +75,12 @@ class AmountCell: UITableViewCell {
         btnFeeInfo.isHidden = true
         lblToReceiveTitle.isHidden = true
         lblToReceiveHint.isHidden = true
+        btnCancel.setImage(UIImage(named: "ic_cancel")?.maskWithColor(color: UIColor.gGrayTxt()), for: .normal)
+        lblConversion.text = ""
+        lblConversion.setStyle(.txtCard)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+            self.textField.becomeFirstResponder()
+        }
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -92,11 +103,11 @@ class AmountCell: UITableViewCell {
 
     func reload() {
         textField.isEnabled = enabled
-//        btnEdit.isHidden = enabled
-//        btnCancel.isHidden = enabled
-//        btnPaste.isHidden = !enabled
-//        btnCancel.isHidden = !(textField.text?.count ?? 0 > 0)
-//        btnPaste.isHidden = textField.text?.count ?? 0 > 0
+        btnCancel.isHidden = !(textField.text?.count ?? 0 > 0)
+        // btnCancel.isHidden = enabled
+        // btnEdit.isHidden = enabled
+        // btnPaste.isHidden = !enabled
+        // btnPaste.isHidden = textField.text?.count ?? 0 > 0
         let balance = "\(model?.maxLimitAmount ?? "") \(model?.denomText ?? "")"
         lblAmount.text = String(format: "id_max_limit_s".localized, balance)
         if model.scope == .reverseSwap || model.scope == .ltReceive {
@@ -107,7 +118,8 @@ class AmountCell: UITableViewCell {
 
         btnPaste.isHidden = true // always hidden
         btnEdit.isHidden = true  // always hidden
-        btnCancel.isHidden = enabled
+        
+        lblConversion.text = model.conversionText()
     }
 
     func toReceiveAmount(show: Bool) {
@@ -209,6 +221,8 @@ class AmountCell: UITableViewCell {
         [lblInfo, lblMoreInfo].forEach {
             $0.setStyle(.txt)
         }
+        infoPanel.borderWidth = 1
+        infoPanel.borderColor = .clear
         switch model.state {
         case .invalidAmount:
             let text = "id_invalid_amount".localized
@@ -254,9 +268,64 @@ class AmountCell: UITableViewCell {
             bg.borderColor = UIColor.gRedWarn()
             infoPanel.backgroundColor = UIColor.gRedWarn()
             lblToReceiveHint.isHidden = true
+        case .lnBelowMin:
+            moreInfoView.isHidden = false
+            lblInfo.text = model.lnMessage(model.state)
+            lblInfo.isHidden = false
+            bg.borderColor = UIColor.gRedWarn()
+            infoPanel.backgroundColor = UIColor.gRedSwapErr1()
+            infoPanel.borderColor = UIColor.gRedWarn()
+        case .lnAboveMax:
+            moreInfoView.isHidden = false
+            lblInfo.text = model.lnMessage(model.state)
+            lblInfo.isHidden = false
+            bg.borderColor = UIColor.gRedWarn()
+            infoPanel.backgroundColor = UIColor.gRedSwapErr1()
+            infoPanel.borderColor = UIColor.gRedWarn()
+        case .lnRecommend:
+            moreInfoView.isHidden = false
+            lblInfo.text = model.lnMessage(model.state)
+            lblInfo.isHidden = false
+            bg.borderColor = UIColor.gRedWarn()
+            infoPanel.backgroundColor = UIColor.gWarnCardBg()
+            addGesture(model.lnMessage(model.state))
+            infoPanel.borderColor = UIColor.gRedWarn()
+        case .lnShowFunding:
+            moreInfoView.isHidden = false
+            lblInfo.isHidden = false
+            bg.borderColor = UIColor.gWarnCardBgBlue()
+            infoPanel.backgroundColor = UIColor.gWarnCardBgBlue()
+            infoPanel.borderColor = UIColor.gWarnCardBgBlue()
+            addGesture(model.lnMessage(model.state))
         }
     }
 
+    func addGesture(_ str: String) {
+        let strLearnWhy = "Learn why".localized
+        let pStyle = NSMutableParagraphStyle()
+        pStyle.lineSpacing = 2.0
+        let bAttr: [NSAttributedString.Key: Any] = [
+            NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 14.0),
+            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        let attrStr = NSMutableAttributedString(string: str)
+        attrStr.addAttribute (
+            NSAttributedString.Key.paragraphStyle,
+            value: pStyle,
+            range: NSRange(location: 0, length: attrStr.length))
+        attrStr.setAttributes(bAttr, for: strLearnWhy)
+        lblInfo.attributedText = attrStr
+        lblInfo.isUserInteractionEnabled = true
+        lblInfo.lineBreakMode = .byWordWrapping
+        lblInfo.textAlignment = .left
+        let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(onTap(_:)))
+        tapGesture.numberOfTouchesRequired = 1
+        lblInfo.addGestureRecognizer(tapGesture)
+    }
+
+    @objc func onTap(_ sender: UITapGestureRecognizer) {
+        delegate?.onFundingFeeInfo()
+    }
     @IBAction func btnFeeInfo(_ sender: Any) {
         delegate?.onFeeInfo()
     }

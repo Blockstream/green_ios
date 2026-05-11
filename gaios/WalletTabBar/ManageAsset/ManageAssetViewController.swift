@@ -542,7 +542,7 @@ extension ManageAssetViewController {
         }
     }
     func receiveScreen() {
-        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        let storyboard = UIStoryboard(name: "ReceiveFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController, let account = viewModel.selectedSubaccount {
             vc.viewModel = ReceiveViewModel(
                 mainAccount: viewModel.mainAccount,

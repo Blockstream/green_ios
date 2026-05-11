@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Bump LWK to version 0.17.2
 - Send flow: improved support for lightning transactions
+- Receive flow: improved support for lightninig invoices
 
 ## [5.4.1] - 2026-05-18
 

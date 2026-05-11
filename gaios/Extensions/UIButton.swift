@@ -20,6 +20,7 @@ enum ButtonStyle {
     case qrEnlarge
     case underline(txt: String, color: UIColor)
     case blackWithImg
+    case accentWithImg
     case sectionTitle
 }
 
@@ -197,6 +198,14 @@ extension UIButton {
             tintColor = UIColor.gGrayTxt()
             layer.cornerRadius = 0
             titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+        case .accentWithImg:
+            backgroundColor = .clear
+            setTitleColor(UIColor.gAccent(), for: .normal)
+            tintColor = UIColor.gAccent()
+            layer.cornerRadius = 8.0
+            layer.borderWidth = 1.0
+            layer.borderColor = UIColor.gAccent().cgColor
+            titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
         }
     }
 }

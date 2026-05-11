@@ -124,6 +124,10 @@
 		343FDF592D01CF5600EF59CC /* AmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343FDF582D01CF5600EF59CC /* AmountCell.swift */; };
 		343FDF5B2D01CF6800EF59CC /* AmountCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343FDF5A2D01CF6800EF59CC /* AmountCellModel.swift */; };
 		3440B7DA2D5666A500B1478D /* LangHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3440B7D92D5666A500B1478D /* LangHelper.swift */; };
+		34422E392FB1C562002FA916 /* DialogFundingFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34422E382FB1C548002FA916 /* DialogFundingFeeViewController.swift */; };
+		34422E3D2FB1D5E9002FA916 /* LNInvoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34422E3C2FB1D5E9002FA916 /* LNInvoiceViewController.swift */; };
+		34422E3F2FB1D67F002FA916 /* LNInvoiceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34422E3E2FB1D678002FA916 /* LNInvoiceViewModel.swift */; };
+		34422E412FB1D959002FA916 /* ReceiveFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34422E402FB1D959002FA916 /* ReceiveFlow.storyboard */; };
 		344471BC2C46B2A20051957E /* DialogGroupListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344471BB2C46B2A20051957E /* DialogGroupListViewController.swift */; };
 		344471BE2C46B31F0051957E /* DialogGroupListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344471BD2C46B31F0051957E /* DialogGroupListViewModel.swift */; };
 		344471C22C478DBD0051957E /* DialogGroupListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344471C12C478DBD0051957E /* DialogGroupListCell.xib */; };
@@ -1127,6 +1131,10 @@
 		343FDF582D01CF5600EF59CC /* AmountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountCell.swift; sourceTree = "<group>"; };
 		343FDF5A2D01CF6800EF59CC /* AmountCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountCellModel.swift; sourceTree = "<group>"; };
 		3440B7D92D5666A500B1478D /* LangHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LangHelper.swift; sourceTree = "<group>"; };
+		34422E382FB1C548002FA916 /* DialogFundingFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogFundingFeeViewController.swift; sourceTree = "<group>"; };
+		34422E3C2FB1D5E9002FA916 /* LNInvoiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNInvoiceViewController.swift; sourceTree = "<group>"; };
+		34422E3E2FB1D678002FA916 /* LNInvoiceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNInvoiceViewModel.swift; sourceTree = "<group>"; };
+		34422E402FB1D959002FA916 /* ReceiveFlow.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ReceiveFlow.storyboard; sourceTree = "<group>"; };
 		344471BB2C46B2A20051957E /* DialogGroupListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogGroupListViewController.swift; sourceTree = "<group>"; };
 		344471BD2C46B31F0051957E /* DialogGroupListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogGroupListViewModel.swift; sourceTree = "<group>"; };
 		344471C12C478DBD0051957E /* DialogGroupListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DialogGroupListCell.xib; sourceTree = "<group>"; };
@@ -2038,6 +2046,9 @@
 		34128F9C27391A99002E19F5 /* Receive */ = {
 			isa = PBXGroup;
 			children = (
+				34422E402FB1D959002FA916 /* ReceiveFlow.storyboard */,
+				34422E422FB1E43C002FA916 /* LNInvoice */,
+				34422E432FB1E44E002FA916 /* DialogFundingFee */,
 				344915E62A0CE1F800D35818 /* Cells */,
 				347C037B272838D500C2EEF6 /* ReceiveViewController.swift */,
 				346752EA291E316E00256132 /* ReceiveViewModel.swift */,
@@ -2324,6 +2335,23 @@
 				343BC94C2AA702F600F0FEE5 /* GreenPickerCell.xib */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		34422E422FB1E43C002FA916 /* LNInvoice */ = {
+			isa = PBXGroup;
+			children = (
+				34422E3C2FB1D5E9002FA916 /* LNInvoiceViewController.swift */,
+				34422E3E2FB1D678002FA916 /* LNInvoiceViewModel.swift */,
+			);
+			path = LNInvoice;
+			sourceTree = "<group>";
+		};
+		34422E432FB1E44E002FA916 /* DialogFundingFee */ = {
+			isa = PBXGroup;
+			children = (
+				34422E382FB1C548002FA916 /* DialogFundingFeeViewController.swift */,
+			);
+			path = DialogFundingFee;
 			sourceTree = "<group>";
 		};
 		344471BA2C46B2650051957E /* DialogGroupList */ = {
@@ -5030,6 +5058,7 @@
 				345B28D52DD1D74B0075860A /* animation_02_jade_v1.riv in Resources */,
 				3423CC072E2E34B7007CEC13 /* AccountDescriptorCell.xib in Resources */,
 				3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */,
+				34422E412FB1D959002FA916 /* ReceiveFlow.storyboard in Resources */,
 				8135873F2DBFCC8C0000116B /* HWDialogs.storyboard in Resources */,
 				34610C5B2B864B84005157C8 /* BleUnavailable.storyboard in Resources */,
 				81C2F2042B879B1C000845EA /* GoogleService-Prod-Info.plist in Resources */,
@@ -5292,6 +5321,7 @@
 				34F615262E424AFE007D38F9 /* TFAHeaderCell.swift in Sources */,
 				3448B5CF29D59ADF008D5746 /* UITapGestureRecognizer.swift in Sources */,
 				348AD31C2BFCAAAF00F560C8 /* ReEnable2faSuccessViewController.swift in Sources */,
+				34422E392FB1C562002FA916 /* DialogFundingFeeViewController.swift in Sources */,
 				34145FE52DBB727300F725E0 /* SelectCountryViewModel.swift in Sources */,
 				34F370072E55B63A00791659 /* WODetailsCompactViewController.swift in Sources */,
 				34A883A02BA30050004A1826 /* TxDetailsMultiAmountCell.swift in Sources */,
@@ -5450,6 +5480,7 @@
 				81C3BC2C2F269EC000CD4F2D /* SendFailureViewController.swift in Sources */,
 				3415862129EE80AC005002D9 /* WOSetupViewController.swift in Sources */,
 				34C680F02A72786500369639 /* DialogInputDenominationCell.swift in Sources */,
+				34422E3F2FB1D67F002FA916 /* LNInvoiceViewModel.swift in Sources */,
 				812DBDC42977EE7F002992D6 /* TwoFactorSettingsViewModel.swift in Sources */,
 				34145FD72DBA40E100F725E0 /* SelectProviderCell.swift in Sources */,
 				817621ED2F337E5F0060621E /* Error.swift in Sources */,
@@ -5461,6 +5492,7 @@
 				34FAB3152D95929300317454 /* BackupHelper.swift in Sources */,
 				81A5919929155F6A001D1A65 /* MultisigSettingsViewController.swift in Sources */,
 				34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */,
+				34422E3D2FB1D5E9002FA916 /* LNInvoiceViewController.swift in Sources */,
 				81D401CD2F9BAC4700384005 /* SendAmountViewModel.swift in Sources */,
 				81C3BC1F2F26969A00CD4F2D /* SendAddressViewModelDelegate.swift in Sources */,
 				344EF1C12C10525300689D63 /* TxDetailsTotalsCell.swift in Sources */,

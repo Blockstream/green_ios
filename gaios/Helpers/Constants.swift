@@ -57,6 +57,7 @@ enum ExternalUrls {
     static let swapFeeSectionDialog = "https://help.blockstream.com/hc/en-us/articles/4407567899801-Why-do-I-have-to-pay-transaction-fees-and-why-are-they-sometimes-high"
     static let swapJadeGetMoreSettings = "https://help.blockstream.com/hc/en-us/articles/55337210713241-Perform-an-on-chain-swap"
     static let understandingLightningSupport = "https://help.blockstream.com/hc/en-us/articles/18788578831897-Understand-Lightning-support-in-the-Blockstream-app"
+    static let lnFundingFee = "https://help.blockstream.com/hc/en-us/articles/18788499177753-Understand-receive-capacity-and-funding-fees-on-your-Instant-Lightning-account"
 }
 
 enum RiveModel {

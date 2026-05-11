@@ -237,7 +237,11 @@ extension LightningSessionManager: GreenlightSDK.NodeEventListener {
                 )
             Task {
                 _ = try? await updateNodeInfoState()
-                newNotificationDelegate?.didReceive(event: .invoicePaid, networkType: networkType)
+                newNotificationDelegate?
+                    .didReceive(
+                        event: .invoicePaid(details),
+                        networkType: networkType
+                    )
             }
         }
     }

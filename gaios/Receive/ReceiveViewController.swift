@@ -111,7 +111,13 @@ class ReceiveViewController: KeyboardViewController {
         title = "id_receive".localized
         btnShare.setTitle("id_share".localized, for: .normal)
         btnVerify.setTitle("id_verify_on_device".localized, for: .normal)
-        btnConfirm.setTitle("id_confirm".localized, for: .normal)
+        switch viewModel.type {
+        case .address:
+            btnConfirm.setTitle("id_confirm".localized, for: .normal)
+        case .bolt11, .lwkSwap:
+            btnConfirm.setTitle("id_create_invoice".localized, for: .normal)
+        }
+        
         footerLabel.text = "You will receive Liquid bitcoin via Lightning invoice.".localized
     }
 
@@ -520,13 +526,38 @@ class ReceiveViewController: KeyboardViewController {
     func onAccountChange() {
         accountsScreen()
     }
+    func dialogFundingFee() {
+        let storyboard = UIStoryboard(name: "ReceiveFlow", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: "DialogFundingFeeViewController") { coder in
+            DialogFundingFeeViewController(coder: coder)
+        }
+        // vc.delegate = self
+        vc.modalPresentationStyle = .overFullScreen
+        present(vc, animated: false, completion: nil)
+    }
+    func showLightningInvoice() {
+
+        let model = LNInvoiceViewModel(satoshi: viewModel.satoshi ?? 0,
+                                       description: viewModel.description ?? "",
+                                       account: viewModel.account,
+                                       walletDataModel: viewModel.walletDataModel,
+                                       type: viewModel.type,
+                                       inputDenomination: viewModel.inputDenomination)
+        let storyboard = UIStoryboard(name: "ReceiveFlow", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: "LNInvoiceViewController") { coder in
+            LNInvoiceViewController(coder: coder, viewModel: model)
+        }
+        // vc.delegate = self
+        self.navigationController?.pushViewController(vc, animated: true)
+
+    }
     @IBAction func btnConfirm(_ sender: Any) {
-        if viewModel.satoshi != nil {
-            lightningAmountEditing = false
-            newAddress()
+        if viewModel.type == .bolt11 || viewModel.type == .lwkSwap {
             AnalyticsManager.shared.swapReceive(account: AccountsRepository.shared.current,
                                                 from: SwapChainName.lightning.rawValue,
                                                 to: SwapChainName.liquid.rawValue)
+            showLightningInvoice()
+            return
         }
     }
 }
@@ -653,6 +684,8 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
                     }
 
                 }
+            case .invoice:
+                break
             }
         default:
             break
@@ -783,9 +816,12 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
                     selected: selectedSegment,
                     onLeftTap: { [weak self] in
                         self?.viewModel.type = .address
+                        self?.viewModel.satoshi = nil
                         self?.selectedSegment = 0
-                        self?.reload() },
+                        self?.reload()
+                    },
                     onRightTap: { [weak self] in
+                        self?.viewModel.satoshi = nil
                         self?.prepareReverseSwap()
                         AnalyticsManager.shared.swapToggle(account: AccountsRepository.shared.current,
                                                            from: SwapChainName.lightning.rawValue,
@@ -844,7 +880,7 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
                 return headerView("id_invoice".localized)
             }
         case ReceiveSection.amount:
-            return headerView("id_amount".localized)
+            return headerView("Receive Amount".localized)
         case ReceiveSection.note:
             return headerView("id_note".localized)
         case ReceiveSection.segmented:
@@ -910,7 +946,9 @@ extension ReceiveViewController: AmountCellDelegate {
     func onFeeInfo() {
         showLightningFeeInfo()
     }
-
+    func onFundingFeeInfo() {
+        dialogFundingFee()
+    }
     func textFieldEnabled() {
         if self.viewModel.type == .bolt11 || self.viewModel.type == .lwkSwap {
             viewModel.bolt11 = nil
@@ -925,9 +963,16 @@ extension ReceiveViewController: AmountCellDelegate {
         tableView.beginUpdates()
         tableView.endUpdates()
     }
+    var isConfirmEnabled: Bool {
+        if viewModel.satoshi == 0 {
+            return false
+        } else {
+            return viewModel.state == .valid || viewModel.state == .lnRecommend || viewModel.state == .lnShowFunding
+        }
+    }
     func stateDidChange(_ state: AmountCellState) {
         viewModel.state = state
-        btnConfirm.isEnabled = viewModel.state == .valid
+        btnConfirm.isEnabled = isConfirmEnabled
         btnConfirm.setStyle( btnConfirm.isEnabled ? .primary : .primaryDisabled)
     }
 }

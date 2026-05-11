@@ -8,8 +8,14 @@ enum AmountCellScope {
     case ltReceive
     case reverseSwap
 }
+enum AmountCellColorType {
+    case error
+    case warning
+    case ready
+}
 struct AmountCellModel {
     var satoshi: Int64?
+    var hasActiveChannel: Bool
     var minAmountOpening: UInt64?
     var maxLimit: UInt64?
     var isFiat: Bool
@@ -85,9 +91,59 @@ struct AmountCellModel {
     }
     var denomUnderlineText: NSAttributedString {
         return NSAttributedString(string: denomText ?? "", attributes:
-                [.underlineStyle: NSUnderlineStyle.single.rawValue])
+                nil // [.underlineStyle: NSUnderlineStyle.single.rawValue]
+        )
     }
-
+    var lnReccomendedSatoshis: UInt64 {
+        return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigLnRecommendedSatoshis) as? UInt64 ?? 85_000
+    }
+    var lnMinSatoshis: UInt64 {
+        return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigLnMinSatoshis) as? UInt64 ?? 5_000
+    }
+    var lnMaxSatoshis: UInt64 {
+        return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigLnMaxSatoshis) as? UInt64 ?? 400_000
+    }
+    func lnLimitsStr(satoshi: UInt64?, showFiat: Bool) -> String {
+        var str = "N/A"
+        if let satoshi = satoshi, let balance = Balance.fromSatoshi(satoshi, assetId: AssetInfo.btcId) {
+            let (value, denom) = balance.toDenom(inputDenomination)
+            let (fiat, currency) = balance.toFiat()
+            if showFiat {
+                str = "\(value) \(denom) (≈ \(fiat) \(currency))"
+            } else {
+                str = "\(value) \(denom)"
+            }
+        }
+        return str
+    }
+    func lnMessage(_ state: AmountCellState) -> String {
+        switch state {
+        case .lnBelowMin:
+            return String(format: "Minimum is %@".localized, lnLimitsStr(satoshi: lnMinSatoshis, showFiat: true))
+        case .lnAboveMax:
+            return String(format: "Maximum is %@".localized, lnLimitsStr(satoshi: lnMaxSatoshis, showFiat: true))
+        case .lnRecommend:
+            return String(format: "Recommended amount is at least %@ to avoid high funding fees. Learn why.".localized,
+                          lnLimitsStr(satoshi: lnReccomendedSatoshis, showFiat: false))
+        case .lnShowFunding:
+            return "Requires a funding fee. Learn why.".localized
+        default:
+            return ""
+        }
+    }
+    func conversionText() -> String {
+        if isFiat {
+            if let satoshi = satoshi, let balance = Balance.fromSatoshi(satoshi, assetId: AssetInfo.btcId)?.toDenom(inputDenomination, locale: false) {
+                return "\(balance.0) \(balance.1)"
+            }
+            return ""
+        } else {
+            if let satoshi = satoshi, let balance = Balance.fromSatoshi(satoshi, assetId: AssetInfo.btcId)?.toFiat(locale: false) {
+                return "≈ \(balance.0) \(balance.1)"
+            }
+            return ""
+        }
+    }
     var btc: String? {
         if let satoshi = satoshi {
             return Balance.fromSatoshi(satoshi, assetId: AssetInfo.btcId)?.toDenom(inputDenomination, locale: false).0
@@ -119,21 +175,27 @@ struct AmountCellModel {
         guard let satoshi = satoshi else { return .disabled }
         switch scope {
         case .ltReceive:
-            /*if satoshi >= nodeState.maxReceivableSatoshi {
-                return .tooHigh
-            } else if satoshi <= nodeState.inboundLiquiditySatoshi || satoshi >= minAmountOpening ?? 0 {
-                if nodeState.inboundLiquiditySatoshi == 0 || satoshi > nodeState.inboundLiquiditySatoshi {
-                    return .aboveInboundLiquidity
-                } else {
-                    return .valid
-                }
-            } else
-            */
-            if satoshi < minAmountOpening ?? 0 {
-                return .tooLow
-            } else {
-                return .valid
+            if satoshi > lnMaxSatoshis {
+                return .lnAboveMax
             }
+            if hasActiveChannel && satoshi > maxLimit ?? 0 {
+                // amount above inbound liquidity
+                if satoshi < lnReccomendedSatoshis {
+                    return .lnRecommend
+                } else {
+                    return .lnShowFunding
+                }
+            }
+            if !hasActiveChannel {
+                if satoshi < lnMinSatoshis {
+                    return .lnBelowMin
+                } else if satoshi >= lnMinSatoshis && satoshi < lnReccomendedSatoshis {
+                    return .lnRecommend
+                } else if satoshi >= lnReccomendedSatoshis && satoshi < lnMaxSatoshis {
+                    return .lnShowFunding
+                }
+            }
+            return .valid
         case .reverseSwap:
             if satoshi < reverseSwapLimits?.0 ?? 0 || satoshi > reverseSwapLimits?.1 ?? 0 {
                 return .invalidReverseSwap

@@ -1,6 +1,7 @@
 import Foundation
 import greenaddress
 import gdk
+import GreenlightSDK
 
 public enum EventNotificationTypes {
     case newBlock(blockheight: UInt32)
@@ -12,7 +13,7 @@ public enum EventNotificationTypes {
     case reconnected
     case tor(data: TorNotification)
     case refreshAssets
-    case invoicePaid
+    case invoicePaid(_ details: InvoicePaidEvent)
     case paymentSucceed
     case paymentFailed
 }

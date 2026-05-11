@@ -22,7 +22,7 @@ class ReceiveViewModel {
     var isFiat: Bool = false
     var type: ReceiveType
     var description: String?
-    
+
     // liquid / bitcoin address
     var address: gdk.Address?
     // lwk lightning invoice response
@@ -85,35 +85,8 @@ class ReceiveViewModel {
             address = nil
             let session = self.wm.sessions[account.gdkNetwork.network]
             address = try await session?.getReceiveAddress(subaccount: account.pointer)
-        case .bolt11:
-            if satoshi == nil {
-                return
-            }
-            lightningReceivePayment = try await wm.lightningSession?.createInvoice(satoshi: UInt64(satoshi ?? 0), description: description ?? "")
-            bolt11 = lightningReceivePayment?.invoice.bolt11
-            //receivePaymentResponse = try await wm.lightningSession?.createInvoice(satoshi: UInt64(satoshi ?? 0), description: description ?? "")
-            //bolt11 = receivePaymentResponse?.lnInvoice.bolt11
-        case .lwkSwap:
-            let liquidAccount: WalletItem? = {
-                if self.account.networkType.liquid {
-                    return self.account
-                }
-                return self.wm.liquidSubaccounts.first
-            }()
-            guard let account = liquidAccount else {
-                throw GaError.GenericError("No liquid session")
-            }
-            logger.info("BOLTZ getReceiveAddress")
-            let address = try await account.session?.getReceiveAddress(subaccount: account.pointer)
-            guard let address = address?.address else {
-                throw GaError.GenericError("Invalid address")
-            }
-            logger.info("BOLTZ invoice")
-            let claimAddress = try LiquidWalletKit.Address(s: address)
-            let invoice = try await wm.awaitLwkSession()?.invoice(amount: UInt64(satoshi ?? 0), description: description ?? "", claimAddress: claimAddress)
-            self.lwkInvoice = invoice
-            self.bolt11 = try invoice?.bolt11Invoice().description
-            logger.info("BOLTZ invoiced")
+        default:
+            break
         }
     }
 
@@ -158,7 +131,9 @@ class ReceiveViewModel {
     func toBTC(_ satoshi: Int64) -> Double {
         return Double(satoshi) / 100000000
     }
-
+    var hasActiveChannel: Bool {
+        walletDataModel.wallet.lightningSession?.nodeState()?.numActiveChannels ?? 0 > 0
+    }
     var amountCellModel: AmountCellModel {
         let lightningSession = walletDataModel.wallet.lightningSession
         let maxLimit = lightningSession?
@@ -168,6 +143,7 @@ class ReceiveViewModel {
         let minAmountOpening: UInt64 = 25000
         return AmountCellModel(
             satoshi: satoshi,
+            hasActiveChannel: hasActiveChannel,
             minAmountOpening: hasActiveChannel ? nil : minAmountOpening,
             maxLimit: maxLimit,
             isFiat: isFiat,
