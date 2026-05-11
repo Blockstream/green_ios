@@ -34,6 +34,9 @@ final class SendCoordinator {
     private var sendSwapViewModel: SendSwapViewModel?
     private var swapPositionState: SwapPositionState?
     private var swapLockupResponse: LockupResponse?
+    private var isRoutingInProgress = false
+    // TODO: Replace string keys with a typed swap-preparation key model.
+    private var inFlightSwapPreparationTasks: [String: Task<(PreparePayResponse?, gdk.Transaction), Error>] = [:]
 
     init(nav: UINavigationController, wallet: WalletDataModel, mainAccount: Account, onFinish: (() -> Void)?) {
         self.nav = nav
@@ -169,25 +172,38 @@ final class SendCoordinator {
     }
 }
 extension SendCoordinator {
-    func resolveSubaccounts(paymentTarget: PaymentTarget) -> [WalletItem] {
-        guard let wallet = WalletManager.current else { return [] }
-        switch paymentTarget {
-        case .bitcoinAddress, .bip21, .psbt, .privateKey:
+    private func subaccounts(for rail: PaymentRail, wallet: WalletManager) -> [WalletItem] {
+        switch rail {
+        case .bitcoin:
             return wallet.bitcoinSubaccountsWithFunds
-        case .liquidAddress, .liquidBip21, .pset:
+        case .liquid:
             return wallet.liquidSubaccountsWithFunds
-        case .lightningInvoice:
-            var subaccounts = wallet.liquidSubaccountsWithFunds
-            if let ln = wallet.lightningSubaccount { subaccounts.append(ln) }
-            return subaccounts
-        case .lightningOffer, .lnUrl(_):
+        case .lightning:
             if let subaccount = wallet.lightningSubaccount {
                 return [subaccount]
             }
             return []
-        default:
-            return []
         }
+    }
+
+    private func rail(for subaccount: WalletItem) -> PaymentRail? {
+        if subaccount.networkType.liquid {
+            return .liquid
+        }
+        if subaccount.networkType.lightning {
+            return .lightning
+        }
+        if subaccount.networkType.bitcoin {
+            return .bitcoin
+        }
+        return nil
+    }
+
+    func resolveSubaccounts(paymentTarget: PaymentTarget) -> [WalletItem] {
+        guard let wallet = WalletManager.current else { return [] }
+        return paymentTarget
+            .eligibleRails()
+            .flatMap { subaccounts(for: $0, wallet: wallet) }
     }
 
     func navigate(to route: SendRoute) async {
@@ -313,7 +329,15 @@ extension SendCoordinator {
                     throw SendFlowError.insufficientFunds
                 }
                 nav.topViewController?.startLoader(message: "")
-                let (swap, tx) = try await TransactionBuilder.buildSubmarineSwapTransaction(invoice: invoice.description, lwk: lwk, subaccount: subaccount, xpub: xpub)
+                let prepareKey = "bolt11|\(invoice.description)|\(amount)|\(subaccount.id)"
+                let (swap, tx) = try await prepareSwapTransactionOnce(key: prepareKey) {
+                    try await TransactionBuilder.buildSubmarineSwapTransaction(
+                        invoice: invoice.description,
+                        lwk: lwk,
+                        subaccount: subaccount,
+                        xpub: xpub
+                    )
+                }
                 var draft = draft
                 draft.swapPayResponse = swap
                 self.draft = draft
@@ -335,15 +359,140 @@ extension SendCoordinator {
             let createTx = try TransactionBuilder.buildCreateTx(draft)
             let model = SendAmountViewModelLegacy(createTx: createTx)
             return .enterLegacyAmount(model)
-        case .lightningOffer, .lnUrl:
-            // lightning tx
-            guard draft.subaccount != nil else {
+        case .lightningOffer(let offer):
+            guard let subaccount = draft.subaccount else {
                 let model = sendAccountAssetViewModel(draft: draft)
                 return .selectSubaccount(model)
             }
-            let createTx = try TransactionBuilder.buildCreateTx(draft)
-            let model = SendAmountViewModelLegacy(createTx: createTx)
-            return .enterLegacyAmount(model)
+            // BOLT12 payment currently relies on LWK preparePay flow, so only Liquid rail is executable.
+            guard subaccount.networkType.liquid else {
+                throw SendFlowError.wrongSubaccount
+            }
+            guard let amount = draft.satoshi, amount > 0 else {
+                let model = SendAmountViewModel(
+                    mainAccount: mainAccount,
+                    wallet: wallet,
+                    draft: draft,
+                    tx: nil,
+                    subaccount: subaccount,
+                    denominationType: selectedDenomination,
+                    isFiat: selectedFiat,
+                    delegate: self
+                )
+                return .enterAmount(model)
+            }
+            let lwk = await wallet.wallet.awaitLwkSession()
+            guard let lwk else {
+                throw SendFlowError.invalidSession
+            }
+            guard let xpub = AccountsRepository.shared.current?.xpubHashId else {
+                throw SendFlowError.invalidSession
+            }
+            nav.topViewController?.startLoader(message: "")
+            let prepareKey = "bolt12|\(offer)|\(amount)|\(subaccount.id)"
+            let (swap, tx) = try await prepareSwapTransactionOnce(key: prepareKey) {
+                let (response, transaction) = try await TransactionBuilder.buildBolt12SwapTransaction(
+                    offer: offer,
+                    amount: amount,
+                    lwk: lwk,
+                    subaccount: subaccount,
+                    xpub: xpub
+                )
+                return (response, transaction)
+            }
+            var draft = draft
+            draft.swapPayResponse = swap
+            self.draft = draft
+            let model = SendLwkSignViewModel(
+                transactionDraft: draft,
+                denominationType: selectedDenomination,
+                isFiat: selectedFiat,
+                subaccount: subaccount,
+                delegate: self,
+                tx: tx)
+            nav.topViewController?.stopLoader()
+            return .signAtomicSwap(model)
+        case .lnUrl(let input):
+            guard let subaccount = draft.subaccount else {
+                let model = sendAccountAssetViewModel(draft: draft)
+                return .selectSubaccount(model)
+            }
+            if subaccount.networkType.lightning {
+                guard let amount = draft.satoshi, amount > 0 else {
+                    let model = SendAmountViewModel(
+                        mainAccount: mainAccount,
+                        wallet: wallet,
+                        draft: draft,
+                        tx: nil,
+                        subaccount: subaccount,
+                        denominationType: selectedDenomination,
+                        isFiat: selectedFiat,
+                        delegate: self
+                    )
+                    return .enterAmount(model)
+                }
+                nav.topViewController?.startLoader(message: "")
+                let tx = try await TransactionBuilder.build(
+                    from: subaccount,
+                    lnurl: input,
+                    satoshi: amount)
+                let model = SendLwkSignViewModel(
+                    transactionDraft: draft,
+                    denominationType: selectedDenomination,
+                    isFiat: selectedFiat,
+                    subaccount: subaccount,
+                    delegate: self,
+                    tx: tx)
+                nav.topViewController?.stopLoader()
+                return .signAtomicSwap(model)
+            }
+            guard subaccount.networkType.liquid else {
+                throw SendFlowError.wrongSubaccount
+            }
+            guard let amount = draft.satoshi, amount > 0 else {
+                let model = SendAmountViewModel(
+                    mainAccount: mainAccount,
+                    wallet: wallet,
+                    draft: draft,
+                    tx: nil,
+                    subaccount: subaccount,
+                    denominationType: selectedDenomination,
+                    isFiat: selectedFiat,
+                    delegate: self
+                )
+                return .enterAmount(model)
+            }
+            let lwk = await wallet.wallet.awaitLwkSession()
+            guard let lwk else {
+                throw SendFlowError.invalidSession
+            }
+            guard let xpub = AccountsRepository.shared.current?.xpubHashId else {
+                throw SendFlowError.invalidSession
+            }
+            nav.topViewController?.startLoader(message: "")
+            let prepareKey = "lnurl|\(input)|\(amount)|\(subaccount.id)"
+            let (swap, tx) = try await prepareSwapTransactionOnce(key: prepareKey) {
+                let (response, transaction) = try await TransactionBuilder.buildLnurlSwapTransaction(
+                    input: input,
+                    amount: amount,
+                    lwk: lwk,
+                    subaccount: subaccount,
+                    xpub: xpub
+                )
+                return (response, transaction)
+            }
+            var draft = draft
+            draft.swapPayResponse = swap
+            self.draft = draft
+            let model = SendLwkSignViewModel(
+                transactionDraft: draft,
+                denominationType: selectedDenomination,
+                isFiat: selectedFiat,
+                subaccount: subaccount,
+                delegate: self,
+                tx: tx)
+            nav.topViewController?.stopLoader()
+            return .signAtomicSwap(model)
         }
     }
     func forwardError(_ error: Error?) {
@@ -359,8 +508,15 @@ extension SendCoordinator {
 
     func routeAndNavigate() {
         guard let draft else { return }
+        if isRoutingInProgress {
+            return
+        }
+        isRoutingInProgress = true
         nav.topViewController?.startLoader()
         Task { [weak self] in
+            defer {
+                self?.isRoutingInProgress = false
+            }
             do {
                 if let route = try await self?.route(draft: draft) {
                     self?.nav.topViewController?.stopLoader()
@@ -371,6 +527,23 @@ extension SendCoordinator {
                 self?.forwardError(error)
             }
         }
+    }
+
+    private func prepareSwapTransactionOnce(
+        key: String,
+        _ operation: @escaping @Sendable () async throws -> (PreparePayResponse?, gdk.Transaction)
+    ) async throws -> (PreparePayResponse?, gdk.Transaction) {
+        if let task = inFlightSwapPreparationTasks[key] {
+            return try await task.value
+        }
+        let task = Task {
+            try await operation()
+        }
+        inFlightSwapPreparationTasks[key] = task
+        defer {
+            inFlightSwapPreparationTasks.removeValue(forKey: key)
+        }
+        return try await task.value
     }
 }
 extension SendCoordinator: SendAddressViewModelDelegate {
@@ -394,7 +567,37 @@ extension SendCoordinator: SendAddressViewModelDelegate {
         assetId: String?) {
         var subaccountToUse: WalletItem? = subaccount
         var assetIdToUse: AssetId? = assetId
-        if let subaccount {
+        if !paymentTarget.eligibleRails().isEmpty &&
+            resolveSubaccounts(paymentTarget: paymentTarget).isEmpty {
+            let error: SendFlowError = {
+                if case .lightningOffer = paymentTarget {
+                    return .generic("Bolt12 payment is only available via LBTC")
+                }
+                return .noAvailableSubaccounts
+            }()
+            vm.delegate?.sendAddressViewModel(vm, didFailWith: error)
+            return
+        }
+        if case .lightningOffer = paymentTarget, subaccountToUse?.networkType.lightning == true {
+            vm.delegate?.sendAddressViewModel(vm, didFailWith: SendFlowError.generic("Bolt12 payment is only available via LBTC"))
+            return
+        }
+        if let selected = subaccountToUse,
+           let selectedRail = rail(for: selected),
+           !paymentTarget.eligibleRails().contains(selectedRail) {
+            subaccountToUse = nil
+        }
+        if case .lnUrl = paymentTarget {
+            let eligibleSubaccounts = resolveSubaccounts(paymentTarget: paymentTarget)
+            let hasLiquid = eligibleSubaccounts.contains { $0.networkType.liquid }
+            let hasLightning = eligibleSubaccounts.contains { $0.networkType.lightning }
+            // Preserve explicit upstream account selection (e.g. Home/Manage Asset).
+            // Only force picker when no subaccount was preselected.
+            if subaccount == nil && hasLiquid && hasLightning {
+                subaccountToUse = nil
+            }
+        }
+        if let subaccount = subaccountToUse {
             if subaccountChain(subaccount) != paymentTarget.chain() && paymentTarget.chain() != .lightning {
                 vm.delegate?.sendAddressViewModel(vm, didFailWith: SendFlowError.wrongSubaccount)
                 return
@@ -416,7 +619,12 @@ extension SendCoordinator: SendAddressViewModelDelegate {
                 vm.delegate?.sendAddressViewModel(vm, didFailWith: SendFlowError.wrongAssetId(asset))
                 return
             }
-            assetIdToUse = paymentAssetId
+            if paymentTarget.chain() == .lightning, let subaccount = subaccountToUse {
+                // For lightning-destination flows, the source rail determines displayed/spent asset.
+                assetIdToUse = subaccount.networkType.liquid ? subaccount.gdkNetwork.getFeeAsset() : paymentAssetId
+            } else {
+                assetIdToUse = paymentAssetId
+            }
         }
         let draft = TransactionBuilder.buildTransactionDraft(
             paymentTarget: paymentTarget,

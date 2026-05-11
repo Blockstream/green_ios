@@ -26,7 +26,7 @@ class SendAccountAssetViewModel {
             .flatMap { subaccount in
                 (subaccount.satoshi ?? [:])
                     .filter { assetId, _ in
-                        filter(for: assetId)
+                        filter(for: assetId, subaccount: subaccount)
                     }.compactMap { assetId, amount in
                         AccountAssetCellModel(
                             account: subaccount,
@@ -40,12 +40,19 @@ class SendAccountAssetViewModel {
             .sorted()
     }
 
-    private func filter(for assetId: String) -> Bool {
+    private func filter(for assetId: String, subaccount: WalletItem) -> Bool {
         switch draft.paymentTarget {
         case .liquidBip21(let liquidBip21):
             return liquidBip21.asset == assetId
-        case .lightningInvoice:
-            return AssetInfo.baseIds.contains(assetId)
+        case .lightningInvoice, .lightningOffer, .lnUrl:
+            if subaccount.networkType.lightning {
+                return assetId == AssetInfo.lightningId
+            }
+            if subaccount.networkType.liquid {
+                // For lightning-destination flows on Liquid, only allow paying with fee asset (LBTC).
+                return assetId == subaccount.gdkNetwork.getFeeAsset()
+            }
+            return false
         default:
             return true
         }

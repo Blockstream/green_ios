@@ -83,23 +83,22 @@ final class SendAddressViewModel: Sendable {
     }
 
     func fundedSubaccounts() -> [WalletItem] {
-        switch paymentTarget {
-        case .bitcoinAddress, .bip21, .psbt, .privateKey:
-            return wm.bitcoinSubaccountsWithFunds
-        case .liquidAddress, .liquidBip21, .pset:
-            return wm.liquidSubaccountsWithFunds
-        case .lightningInvoice:
-            var subaccounts = wm.bitcoinSubaccountsWithFunds + wm.liquidSubaccountsWithFunds
-            if let subaccount = wm.lightningSubaccount {
-                subaccounts += [subaccount]
+        guard let paymentTarget else { return [] }
+        return paymentTarget
+            .eligibleRails()
+            .flatMap { subaccounts(for: $0, wallet: wm) }
+    }
+
+    private func subaccounts(for rail: PaymentRail, wallet: WalletManager) -> [WalletItem] {
+        switch rail {
+        case .bitcoin:
+            return wallet.bitcoinSubaccountsWithFunds
+        case .liquid:
+            return wallet.liquidSubaccountsWithFunds
+        case .lightning:
+            if let subaccount = wallet.lightningSubaccount {
+                return [subaccount]
             }
-            return subaccounts
-        case .lightningOffer, .lnUrl(_):
-            if let subaccount = wm.lightningSubaccount {
-                 return [subaccount]
-            }
-            return []
-        default:
             return []
         }
     }

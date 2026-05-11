@@ -73,7 +73,9 @@ class SendAmountViewModelLegacy {
         self.createTx = createTx
         self.transaction = transaction
         self.denominationType = wm?.prominentSession?.settings?.denomination ?? .BTC
-        self.feeEstimator = FeeEstimator(session: session!)
+        if let session {
+            self.feeEstimator = FeeEstimator(session: session)
+        }
         if transaction?.previousTransaction != nil {
             transactionPriority = .Custom
         }

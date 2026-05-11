@@ -212,6 +212,8 @@ final class SendAmountViewModel: Sendable {
             return invoice.amountMilliSatoshis() == nil
         case .lightningOffer:
             return true
+        case .lnUrl:
+            return true
         case .privateKey:
             return false
         default:
@@ -224,7 +226,9 @@ final class SendAmountViewModel: Sendable {
         case .lightningInvoice(let invoice):
             return invoice.amountMilliSatoshis() == nil
         case .lightningOffer:
-            return true
+            return false
+        case .lnUrl:
+            return false
         case .privateKey:
             return false
         default:

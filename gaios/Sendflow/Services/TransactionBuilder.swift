@@ -6,6 +6,109 @@ import greenaddress
 import lightning
 
 actor TransactionBuilder {
+    static func buildBolt12SwapTransaction(offer: String, amount: UInt64, lwk: LwkSessionManager, subaccount: WalletItem, xpub: String) async throws -> (PreparePayResponse, gdk.Transaction) {
+        return try await Task.detached(priority: .userInitiated) {
+            guard let session = subaccount.session else {
+                throw TransactionError.invalid(localizedDescription: "No Lwk session")
+            }
+            let lightningPayment = try LightningPayment(s: offer)
+            let effectiveAmount: UInt64
+            if let offerAmount = try lightningPayment.bolt12InvoiceAmount(), offerAmount > 0 {
+                effectiveAmount = offerAmount
+            } else {
+                try lightningPayment.setBolt12InvoiceAmount(amountSats: amount)
+                effectiveAmount = amount
+            }
+            guard let refundAddressStr = try await session.getReceiveAddress(subaccount: subaccount.pointer).address else {
+                throw TransactionError.invalid(localizedDescription: "Invalid address")
+            }
+            let refundAddress = try LiquidWalletKit.Address(s: refundAddressStr)
+            let paymentIdentifier = "bolt12|\(offer)|amountSats=\(effectiveAmount)"
+            let swapIdsByInstruction = try await BoltzController.shared.fetchSwaps(
+                xpubHashId: xpub,
+                invoice: paymentIdentifier,
+                swapType: .Submarine
+            )
+            let swapsByInstruction = try await BoltzController.shared.gets(with: swapIdsByInstruction)
+            if let swap = swapsByInstruction.first(where: { $0.txHash == nil }), let data = swap.data {
+                if let restored = try await lwk.restorePreparePay(data: data) {
+                    let tx = try await TransactionBuilder.buildGdkTransaction(
+                        uri: try restored.uri(),
+                        satoshi: Int64(try restored.uriAmount()),
+                        session: session,
+                        subaccount: subaccount
+                    )
+                    return (restored, tx)
+                }
+            }
+            let response = try await lwk.preparePay(
+                lightningPayment: lightningPayment,
+                refundAddress: refundAddress,
+                paymentIdentifier: paymentIdentifier)
+            let tx = try await TransactionBuilder.buildGdkTransaction(
+                uri: try response.uri(),
+                satoshi: Int64(try response.uriAmount()),
+                session: session,
+                subaccount: subaccount)
+            return (response, tx)
+        }.value
+    }
+
+    static func buildLnurlSwapTransaction(input: String, amount: UInt64, lwk: LwkSessionManager, subaccount: WalletItem, xpub: String) async throws -> (PreparePayResponse, gdk.Transaction) {
+        return try await Task.detached(priority: .userInitiated) {
+            guard let session = subaccount.session else {
+                throw TransactionError.invalid(localizedDescription: "No Lwk session")
+            }
+            let paymentIdentifier = "lnurl|\(input)|amountSats=\(amount)"
+            let swapIdsByInstruction = try await BoltzController.shared.fetchSwaps(
+                xpubHashId: xpub,
+                invoice: paymentIdentifier,
+                swapType: .Submarine
+            )
+            let swapsByInstruction = try await BoltzController.shared.gets(with: swapIdsByInstruction)
+            if let swap = swapsByInstruction.first(where: { $0.txHash == nil }), let data = swap.data {
+                if let restored = try await lwk.restorePreparePay(data: data) {
+                    let tx = try await TransactionBuilder.buildGdkTransaction(
+                        uri: try restored.uri(),
+                        satoshi: Int64(try restored.uriAmount()),
+                        session: session,
+                        subaccount: subaccount
+                    )
+                    return (restored, tx)
+                }
+            }
+            let payment = try Payment(s: input)
+            let invoice: String
+            if payment.kind() == .lnUrl {
+                let info = try payment.resolveLnurlInfo()
+                let lnurlInvoice = try payment.fetchLnurlInvoice(info: info, amountSats: amount)
+                guard let resolvedInvoice = lnurlInvoice.lightningInvoice()?.description else {
+                    throw TransactionError.invalid(localizedDescription: "Invalid LNURL invoice")
+                }
+                invoice = resolvedInvoice
+            } else {
+                invoice = input
+            }
+            let refundAddress = try await subaccount.session?.getReceiveAddress(subaccount: subaccount.pointer)
+            guard let refundAddress = refundAddress?.address else {
+                throw TransactionError.invalid(localizedDescription: "Invalid address")
+            }
+            let lightningPayment = LightningPayment.fromBolt11Invoice(invoice: try Bolt11Invoice(s: invoice))
+            let response = try await lwk.preparePay(
+                lightningPayment: lightningPayment,
+                refundAddress: LiquidWalletKit.Address(s: refundAddress),
+                paymentIdentifier: paymentIdentifier
+            )
+            let tx = try await TransactionBuilder.buildGdkTransaction(
+                uri: try response.uri(),
+                satoshi: Int64(try response.uriAmount()),
+                session: session,
+                subaccount: subaccount
+            )
+            return (response, tx)
+        }.value
+    }
+
 
     static func buildTransactionDraft(paymentTarget: PaymentTarget, subaccount: WalletItem?, assetId: String?, lockupResponse: LockupResponse? = nil, swapPayResponse: PreparePayResponse? = nil, swapPosition: SwapPositionState? = nil) -> TransactionDraft {
         switch paymentTarget {
@@ -268,11 +371,17 @@ actor TransactionBuilder {
             return CreateTx(txType: .bolt11)
         case .lightningOffer(let offer):
             return CreateTx(
+                addressee: Addressee.from(address: offer, satoshi: tx.satoshi == nil ? nil : Int64(tx.satoshi ?? 0), assetId: nil, txType: .bolt11),
                 subaccount: tx.subaccount,
+                anyAmounts: tx.satoshi == nil,
                 bolt11: offer.description,
                 txType: .bolt11)
         case .lnUrl(let url):
-            return CreateTx(txType: .lnurl)
+            return CreateTx(
+                addressee: Addressee.from(address: url, satoshi: nil, assetId: nil),
+                subaccount: tx.subaccount,
+                anyAmounts: true,
+                txType: .lnurl)
         case .bip353(_):
             throw TransactionError.invalid(localizedDescription: "bip353 not supported")
         case .bip21(let bip21):
@@ -312,9 +421,10 @@ actor TransactionBuilder {
 
     static func build(from lightningSubaccount: WalletItem, invoice: Bolt11Invoice, satoshi: UInt64?) async throws -> gdk.Transaction {
         return try await Task.detached(priority: .userInitiated) {
-            guard let lightningSession = lightningSubaccount.session else {
-                throw GaError.GenericError("No lightning session")
+            guard let fallbackSession = lightningSubaccount.session else {
+                throw GaError.GenericError("No lightning subaccount session")
             }
+            let lightningSession = WalletManager.current?.lightningSession ?? fallbackSession
             let satoshi = invoice.amountMilliSatoshis()?.satoshi ?? satoshi
             let addressee = Addressee.from(
                 address: invoice.description,
@@ -332,6 +442,26 @@ actor TransactionBuilder {
             var created = try await lightningSession.createTransaction(tx: tx)
             created.subaccountId = lightningSubaccount.id
             return created
+        }.value
+    }
+
+    static func build(from lightningSubaccount: WalletItem, lnurl: String, satoshi: UInt64) async throws -> gdk.Transaction {
+        return try await Task.detached(priority: .userInitiated) {
+            let payment = try Payment(s: lnurl)
+            guard payment.kind() == .lnUrl else {
+                throw TransactionError.invalid(localizedDescription: "Invalid LNURL")
+            }
+            let info = try payment.resolveLnurlInfo()
+            let lnurlInvoice = try payment.fetchLnurlInvoice(info: info, amountSats: satoshi)
+            guard let resolvedInvoice = lnurlInvoice.lightningInvoice()?.description else {
+                throw TransactionError.invalid(localizedDescription: "Invalid LNURL invoice")
+            }
+            let bolt11 = try Bolt11Invoice(s: resolvedInvoice)
+            return try await TransactionBuilder.build(
+                from: lightningSubaccount,
+                invoice: bolt11,
+                satoshi: nil
+            )
         }.value
     }
 }

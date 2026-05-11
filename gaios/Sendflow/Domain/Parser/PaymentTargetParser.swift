@@ -78,9 +78,14 @@ struct PaymentTargetParser: Sendable {
                 return .lightningInvoice(lightningInvoice)
             }
         case .lightningOffer:
-            throw SendFlowError.generic("Lightning offer not supported. Paste an invoice with an amount")
+            if let offer = payment.lightningOffer() {
+                return .lightningOffer(offer)
+            }
         case .lnUrl:
-            throw SendFlowError.generic("LNURL not supported. Paste an invoice with an amount")
+            if let lnurl = payment.lnurl() {
+                return .lnUrl(lnurl)
+            }
+            return .lnUrl(text)
         case .bip353:
             throw SendFlowError.generic("DNS Payment Instructions not supported")
         case .bip21:

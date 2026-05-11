@@ -109,6 +109,10 @@ class SendAmountViewController: KeyboardViewController {
     }
 
     func reload() {
+        // This controller does not support the redeposit multi-asset card variants.
+        multiAssetCard.isHidden = true
+        redepositMultiStack.isHidden = true
+        redepositNoEditView.isHidden = true
         if viewModel.isLightningPayment {
             reloadLightning()
         }
