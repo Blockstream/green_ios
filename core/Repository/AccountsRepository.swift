@@ -6,6 +6,8 @@ public class AccountsRepository {
     static let attrAccount = "AccountsManager_Account"
     static let attrServicev0 = "AccountsManager_Service"
     static let attrServicev1 = "AccountsManager_Service_v1"
+    
+    private static let addWalletKey = "ADD_WALLET"
 
     public static let shared = AccountsRepository()
     let storage = KeychainStorage(account: AccountsRepository.attrAccount, service: AccountsRepository.attrServicev1)
@@ -117,5 +119,33 @@ public class AccountsRepository {
             }
         }
         return baseName
+    }
+    
+    public func injectWalletFromEnvironment() {
+        guard let base64Wallet = UserDefaults.standard.string(forKey: Self.addWalletKey),
+            !base64Wallet.isEmpty,
+            let data = Data(base64Encoded: base64Wallet),
+            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+            let walletJson = json["wallet"] as? [String: Any],
+            let network = walletJson["network"] as? String else { return }
+        
+        let walletName = walletJson["name"] as? String ?? network
+        let networkCase = NetworkSecurityCase(rawValue: network) ?? .bitcoinSS
+        let account = Account(name: walletName, network: networkCase)
+        
+        upsert(account)
+        
+        if let loginCredentials = json["login_credentials"] as? [AnyHashable: Any],
+           let credentials = Credentials.from(loginCredentials) as? Credentials,
+           let pinData = credentials.pinData {
+            try? AuthenticationTypeHandler.setPinData(
+                method: .AuthKeyPIN,
+                pinData: pinData,
+                extraData: nil,
+                for: account.keychain
+            )
+        }
+         
+        UserDefaults.standard.removeObject(forKey: Self.addWalletKey)
     }
 }

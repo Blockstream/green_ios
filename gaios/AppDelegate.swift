@@ -75,7 +75,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // run account migration
         MigratorManager.shared.migrate()
-
+        
+        #if DEBUG
+        // parse externally injected wallet
+        AccountsRepository.shared.injectWalletFromEnvironment()
+        #endif
+      
+        
         // Open first page
         AccountNavigator.navFirstPage()
 
