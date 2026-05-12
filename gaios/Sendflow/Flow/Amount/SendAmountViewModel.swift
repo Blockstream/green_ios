@@ -29,6 +29,30 @@ final class SendAmountViewModel: Sendable {
     var canContinue: Bool {
         error == nil && satoshi != nil
     }
+    var isSwapTarget: Bool {
+        draft.paymentTarget?.isLightningSwapTarget ?? false
+    }
+    // Lightning rail caps the payment by node capacity; Liquid rail caps it
+    // by subaccount balance, so the user-facing label differs.
+    var availableLabel: String {
+        if isLightningPayment {
+            return "Max single payment amount".localized
+        }
+        return "id_available".localized
+    }
+    var screenTitle: String {
+        if isRedepositExpired2FA {
+            return "id_reenable_2fa".localized
+        }
+        switch draft.paymentTarget {
+        case .lnUrl:
+            return "LNURL amount"
+        case .lightningOffer:
+            return "BOLT12 amount"
+        default:
+            return "id_send".localized
+        }
+    }
 
     init(
         mainAccount: Account,

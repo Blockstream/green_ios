@@ -52,7 +52,8 @@ final class SendAddressViewModel: Sendable {
         }
         return false
     }
-    func validate(text: String) async {
+    // `triggerNavigation` routes onto the next step on a successful parse.
+    func validate(text: String, triggerNavigation: Bool = false) async {
         error = nil
         paymentTarget = nil
         canContinue = false
@@ -73,7 +74,9 @@ final class SendAddressViewModel: Sendable {
             }
             paymentTarget = type
             canContinue = true
-            delegate?.sendAddressViewModel(self, paymentTarget: type, subaccount: subaccount, assetId: assetId)            
+            if triggerNavigation {
+                delegate?.sendAddressViewModel(self, paymentTarget: type, subaccount: subaccount, assetId: assetId)
+            }
         case .failure(let error):
             if let error = error as? SendFlowError {
                 delegate?.sendAddressViewModel(self, didFailWith: error)

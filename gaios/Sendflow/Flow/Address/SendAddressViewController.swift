@@ -21,6 +21,9 @@ class SendAddressViewController: KeyboardViewController {
     @IBOutlet weak var btnNext: UIButton!
     @IBOutlet weak var anchorBottom: NSLayoutConstraint!
 
+    private static let bip353Prefix = "\u{20BF}"
+    private static let lightningAddressProviders = ["walletofsatoshi.com", "phoenixwallet.me"]
+
     private let viewModel: SendAddressViewModel
 
     init?(coder: NSCoder, viewModel: SendAddressViewModel) {
@@ -34,6 +37,7 @@ class SendAddressViewController: KeyboardViewController {
         super.viewDidLoad()
         setContent()
         setStyle()
+        setupSuggestionBar()
         reload()
         viewModel.onStateChanged = { [weak self] in
             self?.reload()
@@ -74,9 +78,73 @@ class SendAddressViewController: KeyboardViewController {
         addressTextView.textContainer.lineBreakMode = .byTruncatingTail
     }
 
+    // Scrollable ₿ + curated LN domain chips above the keyboard.
+    private func setupSuggestionBar() {
+        let container = UIInputView(
+            frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44),
+            inputViewStyle: .keyboard
+        )
+
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.spacing = 16
+        stack.alignment = .center
+
+        let titles = [Self.bip353Prefix] + Self.lightningAddressProviders.map { "@" + $0 }
+        for title in titles {
+            let button = makeChip(title: title)
+            button.addTarget(self, action: #selector(didTapSuggestionChip(_:)), for: .touchUpInside)
+            stack.addArrangedSubview(button)
+        }
+
+        let scroll = UIScrollView()
+        scroll.showsHorizontalScrollIndicator = false
+        scroll.alwaysBounceHorizontal = true
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        scroll.addSubview(stack)
+        container.addSubview(scroll)
+
+        NSLayoutConstraint.activate([
+            scroll.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            scroll.topAnchor.constraint(equalTo: container.topAnchor),
+            scroll.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            stack.leadingAnchor.constraint(equalTo: scroll.contentLayoutGuide.leadingAnchor, constant: 12),
+            stack.trailingAnchor.constraint(equalTo: scroll.contentLayoutGuide.trailingAnchor, constant: -12),
+            stack.topAnchor.constraint(equalTo: scroll.contentLayoutGuide.topAnchor),
+            stack.bottomAnchor.constraint(equalTo: scroll.contentLayoutGuide.bottomAnchor),
+            stack.heightAnchor.constraint(equalTo: scroll.frameLayoutGuide.heightAnchor)
+        ])
+
+        addressTextView.inputAccessoryView = container
+    }
+
+    private func makeChip(title: String) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        button.contentEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
+        return button
+    }
+
+    @objc private func didTapSuggestionChip(_ sender: UIButton) {
+        replaceText((addressTextView.text ?? "") + (sender.title(for: .normal) ?? ""))
+    }
+
+    private func replaceText(_ newText: String) {
+        addressTextView.text = newText
+        let end = addressTextView.endOfDocument
+        addressTextView.selectedTextRange = addressTextView.textRange(from: end, to: end)
+        reload()
+        Task { [weak self] in await self?.validate(triggerNavigation: false) }
+    }
+
     @MainActor
     @objc private func textChanged() {
-        Task { await self.validate() }
+        // Typing only refreshes state.
+        Task { await self.validate(triggerNavigation: false) }
     }
 
     @MainActor
@@ -109,7 +177,7 @@ class SendAddressViewController: KeyboardViewController {
         if let text = UIPasteboard.general.string {
             addressTextView.text = text
             reload()
-            Task { [weak self] in await self?.validate() }
+            Task { [weak self] in await self?.validate(triggerNavigation: true) }
         }
     }
 
@@ -122,13 +190,30 @@ class SendAddressViewController: KeyboardViewController {
     }
 
     @IBAction func btnNext(_ sender: Any) {
-        Task { [weak self] in await self?.validate() }
+        Task { [weak self] in await self?.validate(triggerNavigation: true) }
     }
 
-    func validate() async {
+    func validate(triggerNavigation: Bool = false) async {
         if let text = addressTextView.text {
-            await viewModel.validate(text: text)
+            await viewModel.validate(text: text, triggerNavigation: triggerNavigation)
         }
+    }
+
+    override func keyboardWillShow(notification: Notification) {
+        super.keyboardWillShow(notification: notification)
+        UIView.animate(withDuration: 0.5, animations: { [unowned self] in
+            let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+            self.anchorBottom.constant = keyboardFrame.height - 20.0
+            self.view.layoutIfNeeded()
+        })
+    }
+
+    override func keyboardWillHide(notification: Notification) {
+        super.keyboardWillHide(notification: notification)
+        UIView.animate(withDuration: 0.5, animations: { [unowned self] in
+            self.anchorBottom.constant = 20.0
+            self.view.layoutIfNeeded()
+        })
     }
 
     func presentQrcodeScanner() {
@@ -167,7 +252,7 @@ extension SendAddressViewController: DialogScanViewControllerDelegate {
         addressTextView.text = input
         reload()
         Task { [weak self] in
-            await self?.validate()
+            await self?.validate(triggerNavigation: true)
         }
     }
     func didStop() {

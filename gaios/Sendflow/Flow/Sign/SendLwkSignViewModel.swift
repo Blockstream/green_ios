@@ -20,6 +20,33 @@ class SendLwkSignViewModel {
     var addressee: Addressee? { tx.addressees.first }
     var address: String? { addressee?.address }
     var sendAll: Bool { addressee?.isGreedy ?? false}
+    // Normalized recipient for the review screen. For LNURL/BOLT12 the gdk
+    // transaction address points at the Liquid swap URI, not the user-facing
+    // destination, so prefer the parsed payment target payload when available.
+    var recipientAddress: String? {
+        switch draft.paymentTarget {
+        case .lightningInvoice(let bolt11):
+            return bolt11.description
+        case .lnUrl(let input):
+            return input
+        case .lightningOffer(let offer):
+            return offer
+        default:
+            return address
+        }
+    }
+    // Submarine-swap subtitle phrased per payment target so users get the
+    // correct destination kind on the review screen (invoice / LNURL / offer).
+    var submarineSubtitle: String {
+        switch draft.paymentTarget {
+        case .lnUrl:
+            return "You are paying this LNURL with Liquid bitcoin"
+        case .lightningOffer:
+            return "You are paying this Lightning offer with Liquid bitcoin"
+        default:
+            return "You are paying this Lightning invoice with Liquid bitcoin"
+        }
+    }
     var isLightningPayment: Bool { subaccount.networkType == .lightning }
     var note: String? {
         let description = try? bolt11.invoiceDescription()
@@ -33,7 +60,9 @@ class SendLwkSignViewModel {
     }
     var satoshiWithFee: UInt64? {
         if isLightningPayment {
-            return try? bolt11.amountMilliSatoshis()?.satoshi
+            // LNURL on Lightning rail keeps `.lnUrl` as the draft payment target,
+            // so the bolt11 accessor throws; fall back to the entered amount.
+            return invoiceSatoshi
         }
         let feeAsset = subaccount.gdkNetwork.getFeeAsset()
         if let amount = tx.amountsWithFee[feeAsset] {

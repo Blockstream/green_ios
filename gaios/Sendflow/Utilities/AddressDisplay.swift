@@ -21,6 +21,14 @@ class AddressDisplay {
                           appearance: AddressDisplayAppearance = .dark,
                           wordsPerRow: Int = 4
     ) {
+        // Lightning addresses (user@domain.tld) and similar human-readable
+        // identifiers become illegible when chunked into 4-character groups,
+        // so render them as plain centered text. Bitcoin/Liquid addresses,
+        // bolt11, bolt12 offers and encoded LNURLs never contain '@'.
+        if address.contains("@") {
+            configureHumanReadable(text: address, textView: textView)
+            return
+        }
         var address = address
         var fontSize: CGFloat = 16.0
         var align: NSTextAlignment = .center
@@ -120,5 +128,15 @@ class AddressDisplay {
                                range: rangeP)
         }
         textView.attributedText = attrS
+    }
+
+    private static func configureHumanReadable(text: String, textView: UITextView) {
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+        textView.attributedText = NSAttributedString(string: text, attributes: [
+            .paragraphStyle: paragraph,
+            .font: UIFont.systemFont(ofSize: 14.0),
+            .foregroundColor: UIColor.white
+        ])
     }
 }

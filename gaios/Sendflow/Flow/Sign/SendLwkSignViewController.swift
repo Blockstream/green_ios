@@ -89,7 +89,7 @@ class SendLwkSignViewController: UIViewController {
         lblNoteTxt.text = ""
         squareSliderView.isHidden = false
         lblAmountSubtitle.isHidden = viewModel.isCrossChainSwap && !viewModel.isLightningPayment
-        lblAmountSubtitle.text = "You are paying this Lightning invoice with Liquid bitcoin".localized
+        lblAmountSubtitle.text = viewModel.submarineSubtitle.localized
     }
 
     func setStyle() {
@@ -137,9 +137,9 @@ class SendLwkSignViewController: UIViewController {
         lblAmountSubtitle.isHidden = true
         lblAmountValue.text = convertToDenom(viewModel.invoiceSatoshi ?? 0)
         lblAmountFiat.text = "≈ \(convertToFiat(viewModel.invoiceSatoshi ?? 0) ?? "")"
-        if let bolt11 = try? viewModel.bolt11 {
+        if let recipient = viewModel.recipientAddress {
             AddressDisplay.configure(
-                address: bolt11.description,
+                address: recipient,
                 textView: addressTextView,
                 style: .yellow,
                 truncate: true)
@@ -197,9 +197,9 @@ class SendLwkSignViewController: UIViewController {
         lblSumAmountView.isHidden = true
         lblAmountSubtitle.isHidden = false
         totalsView.isHidden = false
-        if let bolt11 = try? viewModel.bolt11 {
+        if let recipient = viewModel.recipientAddress {
             AddressDisplay.configure(
-                address: bolt11.description,
+                address: recipient,
                 textView: addressTextView,
                 style: .yellow,
                 truncate: true)
