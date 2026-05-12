@@ -45,7 +45,35 @@ struct PaymentTargetParser: Sendable {
     }
 
     nonisolated func parseLwk(_ text: String) async throws -> PaymentTarget {
-        let payment = try Payment(s: text)
+        let payment = try LiquidWalletKit.Payment(s: text)
+        return try await mapPayment(payment, originalText: text)
+    }
+
+    // Resolve a BIP-353 input (e.g. ₿user@domain.tld) via DNS and map the
+    // returned payment into our PaymentTarget. The caller passes the already
+    // parsed `LiquidWalletKit.Payment` (built once in `mapPayment` and carried
+    // on `PaymentTarget.bip353`) so we never re-parse the input here. A second
+    // hop of BIP-353 is rejected to avoid infinite recursion against malicious
+    // DNS records.
+    nonisolated func resolveBip353(_ text: String, payment: LiquidWalletKit.Payment) async throws -> PaymentTarget {
+        do {
+            let resolved = try payment.resolveBip353()
+            if resolved.kind() == .bip353 {
+                throw SendFlowError.generic("BIP353 resolved to another BIP353; aborting")
+            }
+            return try await mapPayment(resolved, originalText: text)
+        } catch let error as LwkError {
+            throw SendFlowError.lwkError(error)
+        } catch let error as SendFlowError {
+            throw error
+        } catch {
+            throw SendFlowError.generic(error.description())
+        }
+    }
+
+    // Shared payment-kind switch used both for initial parse and for the
+    // post-resolution mapping after a BIP-353 DNS lookup.
+    nonisolated func mapPayment(_ payment: LiquidWalletKit.Payment, originalText: String) async throws -> PaymentTarget {
         switch payment.kind() {
         case .bitcoinAddress:
             if let bitcoinAddress = payment.bitcoinAddress() {
@@ -88,7 +116,13 @@ struct PaymentTargetParser: Sendable {
             }
             return .lnUrl(originalText, payment)
         case .bip353:
-            throw SendFlowError.generic("DNS Payment Instructions not supported")
+            // Carry both the raw ₿-prefixed input (for the review screen) and
+            // the already-parsed `Payment` so the routing layer can call
+            // `resolveBip353` directly without re-parsing. LWK strips the ₿ in
+            // `payment.bip353()`, so we cannot reconstruct the kind .bip353
+            // payment by re-parsing `payment.bip353()` later: it would be
+            // reclassified as .lnUrl.
+            return .bip353(originalText, payment)
         case .bip21:
             if let bip21 = payment.bip21() {
                 return .bip21(bip21)

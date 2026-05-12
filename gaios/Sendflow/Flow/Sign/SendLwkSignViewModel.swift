@@ -24,6 +24,12 @@ class SendLwkSignViewModel {
     // transaction address points at the Liquid swap URI, not the user-facing
     // destination, so prefer the parsed payment target payload when available.
     var recipientAddress: String? {
+        // BIP-353 is resolved into another target (BOLT12, BOLT11, BIP-21, …)
+        // before routing reaches the review screen, so prefer the preserved
+        // human-readable origin when available.
+        if let origin = draft.bip353Origin {
+            return origin
+        }
         switch draft.paymentTarget {
         case .lightningInvoice(let bolt11):
             return bolt11.description
@@ -31,6 +37,8 @@ class SendLwkSignViewModel {
             return input
         case .lightningOffer(let offer, _):
             return offer
+        case .bip353(let input, _):
+            return input
         default:
             return address
         }

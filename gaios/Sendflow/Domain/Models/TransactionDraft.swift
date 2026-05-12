@@ -14,6 +14,10 @@ struct TransactionDraft: Sendable {
     var swapPosition: SwapPositionState?
     var swapPayResponse: PreparePayResponse?
     var persistentId: NSManagedObjectID?
+    // Original ₿-prefixed BIP-353 input. Preserved across routing so the review
+    // screen can show the human-readable address even after we replace the
+    // payment target with the resolved BOLT12/BIP-21/BOLT11 target.
+    var bip353Origin: String?
 
     var network: NetworkSecurityCase? { subaccount?.networkType }
 
@@ -31,6 +35,7 @@ struct TransactionDraft: Sendable {
             lockupResponse: new.lockupResponse ?? self.lockupResponse,
             swapPosition: new.swapPosition ?? self.swapPosition,
             swapPayResponse: new.swapPayResponse ?? self.swapPayResponse,
-            persistentId: new.persistentId ?? self.persistentId)
+            persistentId: new.persistentId ?? self.persistentId,
+            bip353Origin: new.bip353Origin ?? self.bip353Origin)
     }
 }

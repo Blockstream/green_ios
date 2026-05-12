@@ -10,7 +10,7 @@ enum PaymentTarget {
     case lightningInvoice(Bolt11Invoice)
     case lightningOffer(String, LightningPayment)
     case lnUrl(String, LiquidWalletKit.Payment)
-    case bip353(String)
+    case bip353(String, LiquidWalletKit.Payment)
     case bip21(Bip21)
     case bip321(Bip321)
     case liquidBip21(LiquidBip21)
@@ -62,6 +62,10 @@ extension PaymentTarget {
             return [.liquid]
         case .lnUrl:
             return [.liquid, .lightning]
+        case .bip353:
+            // BIP-353 resolves to any kind of payment via DNS; accept any rail
+            // here and let the routing layer re-validate after resolution.
+            return [.bitcoin, .liquid, .lightning]
         default:
             return []
         }

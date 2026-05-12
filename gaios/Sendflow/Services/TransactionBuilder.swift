@@ -303,7 +303,7 @@ actor TransactionBuilder {
                 subaccount: tx.subaccount,
                 anyAmounts: true,
                 txType: .lnurl)
-        case .bip353(_):
+        case .bip353:
             throw TransactionError.invalid(localizedDescription: "bip353 not supported")
         case .bip21(let bip21):
             var amount: Int64?

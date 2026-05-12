@@ -259,7 +259,7 @@ extension SendCoordinator {
             throw SendFlowError.invalidPaymentTarget
         }
         switch target {
-        case .bitcoinAddress, .bip21, .psbt, .bip353, .bip321, .privateKey:
+        case .bitcoinAddress, .bip21, .psbt, .bip321, .privateKey:
             if draft.subaccount == nil {
                 return .selectSubaccount(sendAccountAssetViewModel(draft: draft))
             }
@@ -286,9 +286,37 @@ extension SendCoordinator {
                 return .selectSubaccount(sendAccountAssetViewModel(draft: draft))
             }
             return try await routeLnUrl(input, payment: payment, draft: draft, subaccount: subaccount)
-        case .bip353(let original):
-            return try await routeBip353(original, draft: draft)
+        case .bip353(let original, let payment):
+            return try await routeBip353(original, payment: payment, draft: draft)
         }
+    }
+
+    // BIP-353: resolve the DNS-based payment instruction, store the original
+    // ₿-prefixed string on the draft for review-screen display, and re-enter
+    // route(draft:) with the resolved target so existing handlers (BOLT11,
+    // BOLT12, LNURL, on-chain) take over. The `LiquidWalletKit.Payment` is
+    // built once in `PaymentTargetParser.mapPayment` and carried on the
+    // `.bip353` case, so we don't re-parse the input here.
+    private func routeBip353(
+        _ original: String,
+        payment: LiquidWalletKit.Payment,
+        draft: TransactionDraft
+    ) async throws -> SendRoute {
+        nav.topViewController?.startLoader(message: "")
+        let parser = PaymentTargetParser(mainAccount: mainAccount)
+        let resolved: PaymentTarget
+        do {
+            resolved = try await parser.resolveBip353(original, payment: payment)
+        } catch {
+            nav.topViewController?.stopLoader()
+            throw error
+        }
+        nav.topViewController?.stopLoader()
+        var updated = draft
+        updated.paymentTarget = resolved
+        updated.bip353Origin = original
+        self.draft = updated
+        return try await route(draft: updated)
     }
 
     // BOLT11: native Lightning send on a Lightning subaccount, otherwise a
@@ -541,7 +569,13 @@ extension SendCoordinator: SendAddressViewModelDelegate {
             }
         }
         if let subaccount = subaccountToUse {
-            if subaccountChain(subaccount) != paymentTarget.chain() && paymentTarget.chain() != .lightning {
+            // BIP-353 resolves to any chain via DNS; defer chain validation to the
+            // routing layer once we have the resolved target.
+            let skipChainCheck: Bool = {
+                if case .bip353 = paymentTarget { return true }
+                return false
+            }()
+            if !skipChainCheck && subaccountChain(subaccount) != paymentTarget.chain() && paymentTarget.chain() != .lightning {
                 vm.delegate?.sendAddressViewModel(vm, didFailWith: SendFlowError.wrongSubaccount)
                 return
             }
