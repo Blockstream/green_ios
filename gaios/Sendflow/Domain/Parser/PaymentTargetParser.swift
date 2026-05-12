@@ -79,13 +79,14 @@ struct PaymentTargetParser: Sendable {
             }
         case .lightningOffer:
             if let offer = payment.lightningOffer() {
-                return .lightningOffer(offer)
+                let lightningPayment = try LightningPayment(s: offer)
+                return .lightningOffer(offer, lightningPayment)
             }
         case .lnUrl:
             if let lnurl = payment.lnurl() {
-                return .lnUrl(lnurl)
+                return .lnUrl(lnurl, payment)
             }
-            return .lnUrl(text)
+            return .lnUrl(originalText, payment)
         case .bip353:
             throw SendFlowError.generic("DNS Payment Instructions not supported")
         case .bip21:

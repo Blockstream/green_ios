@@ -113,10 +113,8 @@ class SendAmountViewController: KeyboardViewController {
         multiAssetCard.isHidden = true
         redepositMultiStack.isHidden = true
         redepositNoEditView.isHidden = true
-        if viewModel.isLightningPayment {
+        if viewModel.usesLightningRail || viewModel.usesSubmarineAmountUi {
             reloadLightning()
-        } else if viewModel.isSwapTarget {
-            reloadSwapTarget()
         }
         reloadNavigationBar()
         reloadError()
@@ -270,6 +268,10 @@ class SendAmountViewController: KeyboardViewController {
         }
     }
 
+    // Shared amount-screen layout for lightning destinations: hide on-chain
+    // fee widgets (real fee comes from the swap preparation step on review)
+    // and hide send-all (not supported on lightning rail nor on submarine
+    // swaps to lightning).
     func reloadLightning() {
         lblFeeTitle.isHidden = true
         lblFeeRate.isHidden = true
@@ -278,22 +280,6 @@ class SendAmountViewController: KeyboardViewController {
         lblTime.isHidden = true
         totalsView.isHidden = true
         btnSendall.isHidden = true
-        redepositMultiStack.isHidden = true
-        redepositNoEditView.isHidden = true
-    }
-
-    // LNURL/BOLT12 on a Liquid subaccount: on-chain fee widgets do not apply
-    // because the real fee comes from the swap preparation step on review.
-    // Send-all is kept visible but dimmed to mirror the disabled view-model state.
-    func reloadSwapTarget() {
-        lblFeeTitle.isHidden = true
-        lblFeeRate.isHidden = true
-        lblNtwFee.isHidden = true
-        btnChangeSpeed.isHidden = true
-        lblTime.isHidden = true
-        totalsView.isHidden = true
-        btnSendall.isHidden = false
-        btnSendall.alpha = 0.4
         redepositMultiStack.isHidden = true
         redepositNoEditView.isHidden = true
     }

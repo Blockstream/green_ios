@@ -24,18 +24,20 @@ final class SendAmountViewModel: Sendable {
     // Callback for UI updates
     var onStateChanged: (() -> Void)?
 
-    var isLightningPayment: Bool { subaccount.networkType == .lightning }
+    // True when paying a lightning destination via the Lightning rail (the
+    // selected subaccount is Lightning). False for Liquid -> Lightning swaps.
+    var usesLightningRail: Bool { subaccount.networkType == .lightning }
     var isRedepositExpired2FA: Bool { false }
     var canContinue: Bool {
         error == nil && satoshi != nil
     }
-    var isSwapTarget: Bool {
-        draft.paymentTarget?.isLightningSwapTarget ?? false
+    var usesSubmarineAmountUi: Bool {
+        draft.paymentTarget?.usesSubmarineAmountUi ?? false
     }
     // Lightning rail caps the payment by node capacity; Liquid rail caps it
     // by subaccount balance, so the user-facing label differs.
     var availableLabel: String {
-        if isLightningPayment {
+        if usesLightningRail {
             return "Max single payment amount".localized
         }
         return "id_available".localized
@@ -247,13 +249,7 @@ final class SendAmountViewModel: Sendable {
 
     var sendAllEnabled: Bool {
         switch draft.paymentTarget {
-        case .lightningInvoice(let invoice):
-            return invoice.amountMilliSatoshis() == nil
-        case .lightningOffer:
-            return false
-        case .lnUrl:
-            return false
-        case .privateKey:
+        case .lightningInvoice, .lightningOffer, .lnUrl, .privateKey:
             return false
         default:
             return !(draft.sendAll ?? false) && !isRedepositExpired2FA

@@ -129,31 +129,9 @@ public class LwkSessionManager: SessionManager {
         return res
     }
 
-    nonisolated public func preparePay(invoice: String, refundAddress: LiquidWalletKit.Address) async throws -> PreparePayResponse {
-        guard let boltzSession = boltzSession else {
-            throw LwkError.Generic(msg: "No lwk session")
-        }
-        let bolt11 = try Bolt11Invoice(s: invoice)
-        let preparePayStatuses = ["invoice.paid", "swap.expired", "invoice.failedToPay", "transaction.lockupFailed"]
-        let res = try boltzSession.preparePay(
-            lightningPayment: LightningPayment.fromBolt11Invoice(invoice: bolt11),
-            refundAddress: refundAddress,
-            webhook: try webhook(status: preparePayStatuses))
-        _ = try await BoltzController.shared.create(
-            id: try res.swapId(),
-            data: try res.serialize(),
-            isPending: true,
-            xpubHashId: xpubHashId,
-            invoice: invoice,
-            swapType: .submarineSwap,
-            txHash: nil)
-        return res
-    }
-
     nonisolated public func preparePay(
         lightningPayment: LightningPayment,
-        refundAddress: LiquidWalletKit.Address,
-        paymentIdentifier: String? = nil
+        refundAddress: LiquidWalletKit.Address
     ) async throws -> PreparePayResponse {
         guard let boltzSession = boltzSession else {
             throw LwkError.Generic(msg: "No lwk session")
@@ -168,7 +146,7 @@ public class LwkSessionManager: SessionManager {
             data: try res.serialize(),
             isPending: true,
             xpubHashId: xpubHashId,
-            invoice: paymentIdentifier,
+            invoice: try lightningPayment.bolt11Invoice()?.description,
             swapType: .submarineSwap,
             txHash: nil)
         return res

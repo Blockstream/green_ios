@@ -8,8 +8,8 @@ enum PaymentTarget {
     case bitcoinAddress(BitcoinAddress)
     case liquidAddress(LiquidWalletKit.Address)
     case lightningInvoice(Bolt11Invoice)
-    case lightningOffer(String)
-    case lnUrl(String)
+    case lightningOffer(String, LightningPayment)
+    case lnUrl(String, LiquidWalletKit.Payment)
     case bip353(String)
     case bip21(Bip21)
     case bip321(Bip321)
@@ -67,12 +67,9 @@ extension PaymentTarget {
         }
     }
 
-    // LNURL and BOLT12 are resolved into a Lightning payment regardless of the
-    // source rail (Lightning native or Liquid submarine swap), so amount-screen
-    // and review-screen UIs need to treat them as off-chain destinations.
-    // BOLT11 is intentionally excluded: the amount screen is bypassed on the
-    // Liquid rail (an explicit amount is required upstream).
-    var isLightningSwapTarget: Bool {
+    // UI-only flag used by the amount screen to apply the LNURL/BOLT12
+    // swap-style layout on the Liquid rail.
+    var usesSubmarineAmountUi: Bool {
         switch self {
         case .lnUrl, .lightningOffer:
             return true

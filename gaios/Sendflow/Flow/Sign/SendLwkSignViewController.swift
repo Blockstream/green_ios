@@ -88,7 +88,7 @@ class SendLwkSignViewController: UIViewController {
         lblNoteTitle.text = "id_my_notes".localized
         lblNoteTxt.text = ""
         squareSliderView.isHidden = false
-        lblAmountSubtitle.isHidden = viewModel.isCrossChainSwap && !viewModel.isLightningPayment
+        lblAmountSubtitle.isHidden = viewModel.isCrossChainSwap && !viewModel.usesLightningRail
         lblAmountSubtitle.text = viewModel.submarineSubtitle.localized
     }
 
@@ -208,7 +208,7 @@ class SendLwkSignViewController: UIViewController {
         lblNoteTxt.text = viewModel.note
     }
     func reload() {
-        if viewModel.isLightningPayment {
+        if viewModel.usesLightningRail {
             reloadLightningPayment()
         } else if viewModel.isCrossChainSwap {
             reloadCrossChainSwap()

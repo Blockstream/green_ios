@@ -27,9 +27,9 @@ class SendLwkSignViewModel {
         switch draft.paymentTarget {
         case .lightningInvoice(let bolt11):
             return bolt11.description
-        case .lnUrl(let input):
+        case .lnUrl(let input, _):
             return input
-        case .lightningOffer(let offer):
+        case .lightningOffer(let offer, _):
             return offer
         default:
             return address
@@ -47,19 +47,21 @@ class SendLwkSignViewModel {
             return "You are paying this Lightning invoice with Liquid bitcoin"
         }
     }
-    var isLightningPayment: Bool { subaccount.networkType == .lightning }
+    // True when paying a lightning destination via the Lightning rail (the
+    // selected subaccount is Lightning). False for Liquid -> Lightning swaps.
+    var usesLightningRail: Bool { subaccount.networkType == .lightning }
     var note: String? {
         let description = try? bolt11.invoiceDescription()
         return tx.memo ?? description
     }
     var isNoteEditable : Bool {
-        !isLightningPayment
+        !usesLightningRail
     }
     var isNoteHidden : Bool {
         note?.isEmpty ?? true
     }
     var satoshiWithFee: UInt64? {
-        if isLightningPayment {
+        if usesLightningRail {
             // LNURL on Lightning rail keeps `.lnUrl` as the draft payment target,
             // so the bolt11 accessor throws; fall back to the entered amount.
             return invoiceSatoshi
