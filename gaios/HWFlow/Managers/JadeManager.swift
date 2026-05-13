@@ -18,7 +18,12 @@ class JadeManager {
     }
 
     init(connection: HWConnectionProtocol) {
-        jade = Jade(connection: connection)
+        #if DEBUG
+        let overrideUrl = UserDefaults.standard.string(forKey: "PIN_SERVER_URL")
+        #else
+        let overrideUrl: String? = nil
+        #endif
+        jade = Jade(connection: connection, pinServerOverrideUrl: overrideUrl)
         jade.gdkRequestDelegate = self
     }
 

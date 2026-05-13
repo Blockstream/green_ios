@@ -20,21 +20,33 @@ public class JadeCommands {
 
     public static let MIN_ALLOWED_FW_VERSION = "1.0.38"
     public static let FEATURE_SECURE_BOOT = "SB"
+    
+    public let pinServerOverrideUrl: String?
 
-    public let blockstreamUrls = [
-        JadeCommands.PIN_SERVERv2_HTTPS,
-        JadeCommands.FW_SERVER_HTTPS,
-        JadeCommands.FW_SERVER_ONION,
-        JadeCommands.PIN_SERVER_HTTPS,
-        JadeCommands.PIN_SERVER_ONION]
+    public var blockstreamUrls: [String] {
+        var urls = [
+            JadeCommands.PIN_SERVERv2_HTTPS,
+            JadeCommands.FW_SERVER_HTTPS,
+            JadeCommands.FW_SERVER_ONION,
+            JadeCommands.PIN_SERVER_HTTPS,
+            JadeCommands.PIN_SERVER_ONION
+        ]
+        if let overrideUrl = pinServerOverrideUrl, !overrideUrl.isEmpty {
+            urls.append(overrideUrl)
+        }
+        return urls
+    }
 
     public weak var gdkRequestDelegate: JadeGdkRequest?
     public var connection: HWConnectionProtocol
 
     public init(gdkRequestDelegate: JadeGdkRequest? = nil, 
-                connection: HWConnectionProtocol) {
+                connection: HWConnectionProtocol,
+                pinServerOverrideUrl: String? = nil
+    ) {
         self.gdkRequestDelegate = gdkRequestDelegate
         self.connection = connection
+        self.pinServerOverrideUrl = pinServerOverrideUrl
     }
 
     public func version() async throws -> JadeVersionInfo {
@@ -218,8 +230,32 @@ public class JadeCommands {
     }*/
 
     public func makeHttpRequest(_ httpRequest: [String: Any]) async throws -> [String: Any] {
-        let params = httpRequest["params"] as? [String: Any]
-        let urls = params?["urls"] as? [String] ?? []
+        var params = httpRequest["params"] as? [String: Any]
+        var urls = params?["urls"] as? [String] ?? []
+        
+        if let overrideUrl = pinServerOverrideUrl, !overrideUrl.isEmpty {
+            let pinServerUrlHost = URLComponents(string: JadeCommands.PIN_SERVER_HTTPS)?.host
+            let pinServerV2UrlHost = URLComponents(string: JadeCommands.PIN_SERVERv2_HTTPS)?.host
+
+            urls = urls.map { url in
+                guard var urlComponents = URLComponents(string: url),
+                      let overrideUrlComponents = URLComponents(string: overrideUrl) else {
+                    return url
+                }
+                let isPinServerUrl = (urlComponents.host == pinServerUrlHost ||
+                                      urlComponents.host == pinServerV2UrlHost) &&
+                                      urlComponents.scheme == "https"
+                guard isPinServerUrl else { return url }
+                
+                urlComponents.scheme = overrideUrlComponents.scheme
+                urlComponents.host = overrideUrlComponents.host
+                urlComponents.port = overrideUrlComponents.port
+                
+                return urlComponents.url?.absoluteString ?? url
+            }
+            params?["urls"] = urls
+        }
+        
         let isUrlSafe = urls.allSatisfy { url in !blockstreamUrls.filter { url.starts(with: $0) }.isEmpty }
 
         let torStstus = await gdkRequestDelegate?.validateTor(urls: urls)
