@@ -50,8 +50,8 @@ extension Error {
                 return txt ?? "id_operation_failure"
             case LoginError.walletMismatch( _):
                 return "Wallet mismatch"
-            case LoginError.walletsJustRestored(_):
-                return "id_wallet_already_restored"
+            case LoginError.walletsJustRestored(let txt):
+                return txt ?? "id_wallet_already_restored"
             case LoginError.invalidMnemonic(_):
                 return "id_invalid_mnemonic"
             }

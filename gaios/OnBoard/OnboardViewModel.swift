@@ -49,6 +49,9 @@ class OnboardViewModel {
                 $0.id != account.id &&
                 $0.id != OnboardViewModel.restoreAccountId } ?? []
         if !prevAccounts.isEmpty {
+            if prevAccounts.count == 1, let name = prevAccounts.first?.name {
+                throw LoginError.walletsJustRestored(String(format: "id_wallet_already_restored_s".localized, name))
+            }
             throw LoginError.walletsJustRestored()
         }
     }
