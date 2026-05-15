@@ -216,13 +216,10 @@ class TabSettingsVM: TabViewModel {
         let address = try? await session?.getReceiveAddress(subaccount: subaccount.pointer)
         return address?.address
     }
-
-    func lTSettingsViewModel() -> LTSettingsViewModel? {
+    
+    func lTDetailsViewModel() -> LTDetailsViewModel? {
         guard let lightningSession = wallet.lightningSession else { return nil }
-        return LTSettingsViewModel(
-            mainAccount: mainAccount,
-            wallet: walletDataModel,
-            lightningSession: lightningSession)
+        return LTDetailsViewModel(lightningSession: lightningSession)
     }
 
     func lTCreateViewModel() -> LTCreateViewModel? {

@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-struct LTSettingCellModel {
+struct LTSettingDialogCellModel {
     var title: String
     var subtitle: String?
     var value: String?

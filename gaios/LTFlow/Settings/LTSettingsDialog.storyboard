@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--LT Settings Dialog View Controller-->
+        <scene sceneID="LTd-00-scn">
+            <objects>
+                <viewController storyboardIdentifier="LTSettingsDialogViewController" id="LTd-00-vc" customClass="LTSettingsDialogViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="LTd-00-vw">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-sv-001">
+                                <rect key="frame" x="0.0" y="118" width="393" height="734"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-cv-001">
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="734"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-tb-001">
+                                                <rect key="frame" x="0.0" y="0.0" width="393" height="84"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-oc-001">
+                                                <rect key="frame" x="0.0" y="84" width="393" height="650"/>
+                                                <subviews>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-hd-001">
+                                                        <rect key="frame" x="164" y="9" width="65" height="3"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="65" id="LTd-c1-001"/>
+                                                            <constraint firstAttribute="height" constant="3" id="LTd-c2-001"/>
+                                                        </constraints>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-cd-001">
+                                                        <rect key="frame" x="0.0" y="15" width="393" height="635"/>
+                                                        <subviews>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-ta-001">
+                                                                <rect key="frame" x="0.0" y="0.0" width="393" height="65"/>
+                                                                <subviews>
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Account Settings" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-lt-001">
+                                                                        <rect key="frame" x="20" y="22" width="353" height="22"/>
+                                                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                        <nil key="highlightedColor"/>
+                                                                    </label>
+                                                                </subviews>
+                                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                <constraints>
+                                                                    <constraint firstItem="LTd-lt-001" firstAttribute="leading" secondItem="LTd-ta-001" secondAttribute="leading" constant="20" id="LTd-c3-001"/>
+                                                                    <constraint firstItem="LTd-lt-001" firstAttribute="top" secondItem="LTd-ta-001" secondAttribute="top" constant="22" id="LTd-c4-001"/>
+                                                                    <constraint firstAttribute="bottom" secondItem="LTd-lt-001" secondAttribute="bottom" constant="21" id="LTd-c5-001"/>
+                                                                    <constraint firstAttribute="trailing" secondItem="LTd-lt-001" secondAttribute="trailing" constant="20" id="LTd-c6-001"/>
+                                                                </constraints>
+                                                            </view>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-ca-001">
+                                                                <rect key="frame" x="0.0" y="65" width="393" height="570"/>
+                                                                <subviews>
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Details" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="1" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-ls-001">
+                                                                        <rect key="frame" x="16" y="8" width="361" height="18"/>
+                                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                                        <color key="textColor" white="0.6" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                        <nil key="highlightedColor"/>
+                                                                    </label>
+                                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-tw-001">
+                                                                        <rect key="frame" x="0.0" y="34" width="393" height="300"/>
+                                                                        <subviews>
+                                                                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-tv-001">
+                                                                                <rect key="frame" x="0.0" y="0.0" width="393" height="300"/>
+                                                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                <constraints>
+                                                                                    <constraint firstAttribute="height" constant="300" id="LTd-thc-001"/>
+                                                                                </constraints>
+                                                                                <connections>
+                                                                                    <outlet property="dataSource" destination="LTd-00-vc" id="LTd-ds-001"/>
+                                                                                    <outlet property="delegate" destination="LTd-00-vc" id="LTd-dl-001"/>
+                                                                                </connections>
+                                                                            </tableView>
+                                                                        </subviews>
+                                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                        <constraints>
+                                                                            <constraint firstItem="LTd-tv-001" firstAttribute="top" secondItem="LTd-tw-001" secondAttribute="top" id="LTd-c7-001"/>
+                                                                            <constraint firstAttribute="trailing" secondItem="LTd-tv-001" secondAttribute="trailing" id="LTd-c8-001"/>
+                                                                            <constraint firstAttribute="bottom" secondItem="LTd-tv-001" secondAttribute="bottom" id="LTd-c9-001"/>
+                                                                            <constraint firstItem="LTd-tv-001" firstAttribute="leading" secondItem="LTd-tw-001" secondAttribute="leading" id="LTd-ca-002"/>
+                                                                        </constraints>
+                                                                    </view>
+                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-bm-001">
+                                                                        <rect key="frame" x="16" y="342" width="361" height="48"/>
+                                                                        <constraints>
+                                                                            <constraint firstAttribute="height" constant="48" id="LTd-cb-001"/>
+                                                                        </constraints>
+                                                                        <state key="normal" title="Show Recovery Phrase"/>
+                                                                        <connections>
+                                                                            <action selector="btnMnemonicTapped:" destination="LTd-00-vc" eventType="touchUpInside" id="LTd-a1-001"/>
+                                                                        </connections>
+                                                                    </button>
+                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-bs-001">
+                                                                        <rect key="frame" x="16" y="398" width="361" height="48"/>
+                                                                        <constraints>
+                                                                            <constraint firstAttribute="height" constant="48" id="LTd-cc-001"/>
+                                                                        </constraints>
+                                                                        <state key="normal" title="Transfer Node Onchain Balance"/>
+                                                                        <connections>
+                                                                            <action selector="btnSweepTapped:" destination="LTd-00-vc" eventType="touchUpInside" id="LTd-a2-001"/>
+                                                                        </connections>
+                                                                    </button>
+                                                                </subviews>
+                                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                <constraints>
+                                                                    <constraint firstItem="LTd-ls-001" firstAttribute="top" secondItem="LTd-ca-001" secondAttribute="top" constant="8" id="LTd-cd-002"/>
+                                                                    <constraint firstItem="LTd-ls-001" firstAttribute="leading" secondItem="LTd-ca-001" secondAttribute="leading" constant="16" id="LTd-cd-003"/>
+                                                                    <constraint firstAttribute="trailing" secondItem="LTd-ls-001" secondAttribute="trailing" constant="16" id="LTd-cd-004"/>
+                                                                    <constraint firstItem="LTd-tw-001" firstAttribute="top" secondItem="LTd-ls-001" secondAttribute="bottom" constant="8" id="LTd-cd-005"/>
+                                                                    <constraint firstItem="LTd-tw-001" firstAttribute="leading" secondItem="LTd-ca-001" secondAttribute="leading" id="LTd-cd-006"/>
+                                                                    <constraint firstAttribute="trailing" secondItem="LTd-tw-001" secondAttribute="trailing" id="LTd-cd-007"/>
+                                                                    <constraint firstItem="LTd-bm-001" firstAttribute="top" secondItem="LTd-tw-001" secondAttribute="bottom" constant="8" id="LTd-cd-008"/>
+                                                                    <constraint firstItem="LTd-bm-001" firstAttribute="leading" secondItem="LTd-ca-001" secondAttribute="leading" constant="16" id="LTd-cd-009"/>
+                                                                    <constraint firstAttribute="trailing" secondItem="LTd-bm-001" secondAttribute="trailing" constant="16" id="LTd-cd-010"/>
+                                                                    <constraint firstItem="LTd-bs-001" firstAttribute="top" secondItem="LTd-bm-001" secondAttribute="bottom" constant="8" id="LTd-cd-011"/>
+                                                                    <constraint firstItem="LTd-bs-001" firstAttribute="leading" secondItem="LTd-ca-001" secondAttribute="leading" constant="16" id="LTd-cd-012"/>
+                                                                    <constraint firstAttribute="trailing" secondItem="LTd-bs-001" secondAttribute="trailing" constant="16" id="LTd-cd-013"/>
+                                                                    <constraint firstAttribute="bottom" secondItem="LTd-bs-001" secondAttribute="bottom" constant="16" id="LTd-cd-014"/>
+                                                                </constraints>
+                                                            </view>
+                                                        </subviews>
+                                                        <color key="backgroundColor" red="0.1333333333" green="0.1333333333" blue="0.14901960780000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <constraints>
+                                                            <constraint firstItem="LTd-ta-001" firstAttribute="top" secondItem="LTd-cd-001" secondAttribute="top" id="LTd-ce-001"/>
+                                                            <constraint firstItem="LTd-ta-001" firstAttribute="leading" secondItem="LTd-cd-001" secondAttribute="leading" id="LTd-ce-002"/>
+                                                            <constraint firstAttribute="trailing" secondItem="LTd-ta-001" secondAttribute="trailing" id="LTd-ce-003"/>
+                                                            <constraint firstItem="LTd-ca-001" firstAttribute="top" secondItem="LTd-ta-001" secondAttribute="bottom" id="LTd-ce-004"/>
+                                                            <constraint firstItem="LTd-ca-001" firstAttribute="leading" secondItem="LTd-cd-001" secondAttribute="leading" id="LTd-ce-005"/>
+                                                            <constraint firstAttribute="trailing" secondItem="LTd-ca-001" secondAttribute="trailing" id="LTd-ce-006"/>
+                                                            <constraint firstAttribute="bottom" secondItem="LTd-ca-001" secondAttribute="bottom" id="LTd-ce-007"/>
+                                                        </constraints>
+                                                    </view>
+                                                </subviews>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstItem="LTd-hd-001" firstAttribute="centerX" secondItem="LTd-cd-001" secondAttribute="centerX" id="LTd-cf-001"/>
+                                                    <constraint firstItem="LTd-hd-001" firstAttribute="top" secondItem="LTd-oc-001" secondAttribute="top" constant="9" id="LTd-cf-002"/>
+                                                    <constraint firstItem="LTd-cd-001" firstAttribute="top" secondItem="LTd-hd-001" secondAttribute="bottom" constant="3" id="LTd-cf-003"/>
+                                                    <constraint firstItem="LTd-cd-001" firstAttribute="leading" secondItem="LTd-oc-001" secondAttribute="leading" id="LTd-cf-004"/>
+                                                    <constraint firstAttribute="trailing" secondItem="LTd-cd-001" secondAttribute="trailing" id="LTd-cf-005"/>
+                                                    <constraint firstAttribute="bottom" secondItem="LTd-cd-001" secondAttribute="bottom" id="LTd-cf-006"/>
+                                                </constraints>
+                                            </view>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="LTd-tb-001" firstAttribute="top" secondItem="LTd-cv-001" secondAttribute="top" id="LTd-cg-001"/>
+                                            <constraint firstItem="LTd-tb-001" firstAttribute="leading" secondItem="LTd-cv-001" secondAttribute="leading" id="LTd-cg-002"/>
+                                            <constraint firstAttribute="trailing" secondItem="LTd-tb-001" secondAttribute="trailing" id="LTd-cg-003"/>
+                                            <constraint firstItem="LTd-oc-001" firstAttribute="top" secondItem="LTd-tb-001" secondAttribute="bottom" id="LTd-cg-004"/>
+                                            <constraint firstItem="LTd-oc-001" firstAttribute="leading" secondItem="LTd-cv-001" secondAttribute="leading" id="LTd-cg-005"/>
+                                            <constraint firstAttribute="trailing" secondItem="LTd-oc-001" secondAttribute="trailing" id="LTd-cg-006"/>
+                                            <constraint firstAttribute="bottom" secondItem="LTd-oc-001" secondAttribute="bottom" id="LTd-cg-007"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="LTd-cv-001" secondAttribute="bottom" id="LTd-ch-001"/>
+                                    <constraint firstItem="LTd-cv-001" firstAttribute="leading" secondItem="LTd-sv-001" secondAttribute="leading" id="LTd-ch-002"/>
+                                    <constraint firstAttribute="trailing" secondItem="LTd-cv-001" secondAttribute="trailing" id="LTd-ch-003"/>
+                                    <constraint firstItem="LTd-cv-001" firstAttribute="height" secondItem="LTd-sv-001" secondAttribute="height" id="LTd-ch-004"/>
+                                    <constraint firstItem="LTd-cv-001" firstAttribute="top" secondItem="LTd-sv-001" secondAttribute="top" id="LTd-ch-005"/>
+                                </constraints>
+                                <viewLayoutGuide key="contentLayoutGuide" id="LTd-clg-001"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="LTd-flg-001"/>
+                            </scrollView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LTd-av-001">
+                                <rect key="frame" x="0.0" y="783" width="393" height="1"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="1" id="LTd-ci-001"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="LTd-sa-001"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="LTd-cv-001" firstAttribute="width" secondItem="LTd-00-vw" secondAttribute="width" id="LTd-cj-001"/>
+                            <constraint firstItem="LTd-sa-001" firstAttribute="top" secondItem="LTd-sv-001" secondAttribute="top" id="LTd-cj-002"/>
+                            <constraint firstItem="LTd-sa-001" firstAttribute="trailing" secondItem="LTd-sv-001" secondAttribute="trailing" id="LTd-cj-003"/>
+                            <constraint firstItem="LTd-sv-001" firstAttribute="leading" secondItem="LTd-sa-001" secondAttribute="leading" id="LTd-cj-004"/>
+                            <constraint firstItem="LTd-sv-001" firstAttribute="bottom" secondItem="LTd-00-vw" secondAttribute="bottom" id="LTd-cj-005"/>
+                            <constraint firstItem="LTd-av-001" firstAttribute="leading" secondItem="LTd-sa-001" secondAttribute="leading" id="LTd-cj-006"/>
+                            <constraint firstItem="LTd-sa-001" firstAttribute="trailing" secondItem="LTd-av-001" secondAttribute="trailing" id="LTd-cj-007"/>
+                            <constraint firstItem="LTd-sa-001" firstAttribute="bottom" secondItem="LTd-av-001" secondAttribute="bottom" id="LTd-ab-001"/>
+                            <constraint firstItem="LTd-av-001" firstAttribute="top" secondItem="LTd-ca-001" secondAttribute="bottom" id="LTd-cj-008"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="anchorBottom" destination="LTd-ab-001" id="LTd-o1-001"/>
+                        <outlet property="btnMnemonic" destination="LTd-bm-001" id="LTd-o2-001"/>
+                        <outlet property="btnSweep" destination="LTd-bs-001" id="LTd-o3-001"/>
+                        <outlet property="cardView" destination="LTd-cd-001" id="LTd-o4-001"/>
+                        <outlet property="handle" destination="LTd-hd-001" id="LTd-o5-001"/>
+                        <outlet property="lblSection" destination="LTd-ls-001" id="LTd-o6-001"/>
+                        <outlet property="lblTitle" destination="LTd-lt-001" id="LTd-o7-001"/>
+                        <outlet property="scrollView" destination="LTd-sv-001" id="LTd-o8-001"/>
+                        <outlet property="tableView" destination="LTd-tv-001" id="LTd-o9-001"/>
+                        <outlet property="tableViewHeight" destination="LTd-thc-001" id="LTd-o10-001"/>
+                        <outlet property="tappableBg" destination="LTd-tb-001" id="LTd-o11-001"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LTd-fr-001" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="0" y="0"/>
+        </scene>
+    </scenes>
+</document>

@@ -19,6 +19,8 @@ enum AlertCardType {
     case descriptorInfo
     case TFAWarnMulti
     case TFAInfoExpire
+    case lightningBeta
+    case lightningOnJade
 }
 
 class AlertCardCell: UITableViewCell {
@@ -209,6 +211,18 @@ class AlertCardCell: UITableViewCell {
             btnRight.isHidden = true
             btnsContainer.isHidden = true
             btnDismiss.isHidden = onDismiss == nil
+        case .lightningBeta:
+            lblTitle.text = "Lightning Is in Beta".localized
+            lblHint.text = "You may experience bugs or instability during active development.".localized
+            btnRight.isHidden = true
+            btnLeft.isHidden = true
+            btnsContainer.isHidden = true
+        case .lightningOnJade:
+            lblTitle.text = "Generates a New Private Key".localized
+            lblHint.text = "Lightning on Jade requires a new private key to authorize transactions from the Blockstream app.".localized
+            btnRight.isHidden = true
+            btnLeft.isHidden = true
+            btnsContainer.isHidden = true
         }
     }
     func styleWarn() {

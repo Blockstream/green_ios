@@ -14,8 +14,7 @@ class LTExportJadeViewController: UIViewController {
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var qrCodeView: QRCodeView!
-
-    @IBOutlet weak var btnLearnMore: UIButton!
+    @IBOutlet weak var qrCodeFrame: UIView!
     @IBOutlet weak var btnQREnlarge: UIButton!
 
     var delegate: LTExportJadeViewControllerDelegate?
@@ -24,33 +23,62 @@ class LTExportJadeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setStyle()
         setContent()
+        setStyle()
+        setupAlertCard()
         Task { await load() }
     }
 
     func setContent() {
-        title = "id_export_lightning_key".localized
-        subtitleLabel.text = "id_scan_qr_with_jade".localized
-        descriptionLabel.text = "id_securely_import_from_your_jade".localized
+        subtitleLabel.text = "Enable Lightning".localized
+        descriptionLabel.text = "Unlock your Jade and scan this QR. Jade keeps your private keys secure.".localized
         nextButton.setTitle("id_next".localized, for: .normal)
         let tapQRcodeSmall = UITapGestureRecognizer(target: self, action: #selector(showQRFullScreen))
         qrCodeView.addGestureRecognizer(tapQRcodeSmall)
         qrCodeView.isUserInteractionEnabled = true
-        btnLearnMore.setTitle("id_learn_more".localized, for: .normal)
+        let image = UIImage(named: "ic_magnify_qr")?.maskWithColor(color: UIColor.gAccent())
+        btnQREnlarge.setImage(image, for: .normal)
         btnQREnlarge.setTitle("id_increase_qr_size".localized, for: .normal)
     }
 
     func setStyle() {
-        subtitleLabel.setStyle(.title)
+        subtitleLabel.setStyle(.titleDialog)
+        subtitleLabel.textAlignment = .center
         descriptionLabel.setStyle(.txtCard)
+        descriptionLabel.textAlignment = .center
+        qrCodeFrame.backgroundColor = .clear
+        qrCodeFrame.borderWidth = 5.0
+        qrCodeFrame.borderColor = UIColor.gAccent()
+        qrCodeFrame.cornerRadius = 20.0
+        btnQREnlarge.setStyle(.outlined)
+        btnQREnlarge.tintColor = UIColor.gAccent()
         nextButton.setStyle(.primary)
-        btnLearnMore.setTitleColor(UIColor.gAccent(), for: .normal)
-        btnQREnlarge.setStyle(.qrEnlarge)
+    }
+    
+    func setupAlertCard() {
+        let nib = UINib(nibName: "AlertCardCell", bundle: nil)
+        guard let cell = nib.instantiate(withOwner: nil, options: nil).first as? AlertCardCell else { return }
+        cell.configure(AlertCardCellModel(type: .lightningOnJade), onLeft: nil, onRight: nil, onDismiss: nil)
+        cell.translatesAutoresizingMaskIntoConstraints = false
+        cell.contentView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(cell)
+        
+        NSLayoutConstraint.activate([
+            cell.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: -5),
+            cell.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 5),
+            cell.bottomAnchor.constraint(equalTo: nextButton.topAnchor, constant: -12),
+            cell.contentView.topAnchor.constraint(equalTo: cell.topAnchor),
+            cell.contentView.bottomAnchor.constraint(equalTo: cell.bottomAnchor),
+            cell.contentView.leadingAnchor.constraint(equalTo: cell.leadingAnchor),
+            cell.contentView.trailingAnchor.constraint(equalTo: cell.trailingAnchor)
+        ])
     }
 
+    @MainActor
     func load() async {
         if let bcurParts = try? await viewModel.request() {
+            self.bcur = bcurParts
             qrCodeView.configure(frames: bcurParts.parts)
         }
     }
@@ -70,12 +98,6 @@ class LTExportJadeViewController: UIViewController {
             vc.qrBcur = bcur
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
-        }
-    }
-
-    @IBAction func btnLearnMore(_ sender: Any) {
-        if let url = URL(string: ExternalUrls.lightningJadeHelp) {
-            SafeNavigationManager.shared.navigate( url )
         }
     }
 

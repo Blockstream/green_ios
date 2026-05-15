@@ -7,6 +7,11 @@ class LTExportJadeViewModel {
     private var wm: WalletManager? { WalletManager.current }
     private var mainAccount: Account? { AccountsRepository.shared.current }
     private var privateKey: Data?
+    private var wallet: WalletDataModel
+    
+    init(wallet: WalletDataModel) {
+        self.wallet = wallet
+    }
 
     func request() async throws -> BcurEncodedData? {
         guard let session = wm?.prominentSession else { return nil }
@@ -46,5 +51,8 @@ class LTExportJadeViewModel {
         _ = try await wm?.subaccounts()
         // Add auth into keychain
         try AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: credentials, for: account.keychainLightning)
+        // Update subaccounts and UI
+        await wallet.triggerRefresh(features: [.subaccounts])
+        await wallet.triggerRefresh(features: [.balance, .txs(reset: true)])
     }
 }

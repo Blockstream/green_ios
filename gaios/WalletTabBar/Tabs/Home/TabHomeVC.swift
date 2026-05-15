@@ -304,7 +304,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                                    onDismiss: nil)
                 case .backup:
                     break
-                case .descriptorInfo, .TFAWarnMulti, .TFAInfoExpire:
+                case .descriptorInfo, .TFAWarnMulti, .TFAInfoExpire, .lightningBeta, .lightningOnJade:
                     break
                 }
                 cell.selectionStyle = .none

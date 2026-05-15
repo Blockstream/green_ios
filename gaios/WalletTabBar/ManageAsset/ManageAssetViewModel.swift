@@ -175,9 +175,9 @@ class ManageAssetViewModel {
         return true
     }
 
-    func lTSettingsViewModel() -> LTSettingsViewModel? {
+    func lTSettingsDialogViewModel() -> LTSettingsDialogViewModel? {
         guard let lightningSession = wallet.lightningSession else { return nil }
-        return LTSettingsViewModel(
+        return LTSettingsDialogViewModel(
             mainAccount: mainAccount,
             wallet: walletDataModel,
             lightningSession: lightningSession)

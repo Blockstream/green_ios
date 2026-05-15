@@ -146,7 +146,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
             presentDialogRenameViewController()
         case .lightning:
             if viewModel.hasLightning() {
-                pushLTSettingsViewController()
+                pushLTDetailsViewController()
             } else {
                 pushLTCreateViewController()
             }
@@ -366,14 +366,15 @@ extension TabSettingsVC {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-
-    func pushLTSettingsViewController() {
+    
+    func pushLTDetailsViewController() {
         let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "LTSettingsViewController") as? LTSettingsViewController {
-            vc.viewModel = viewModel.lTSettingsViewModel()
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LTDetailsViewController") as? LTDetailsViewController {
+            vc.viewModel = viewModel.lTDetailsViewModel()
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+
 
     func pushLTCreateViewController() {
         let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)

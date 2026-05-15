@@ -4,7 +4,7 @@ import core
 import lightning
 import GreenlightSDK
 
-enum LTSettingsCellType: CaseIterable {
+enum LTSettingsDialogCellType: CaseIterable {
     case id
     case totalBalance
     case channelsBalance
@@ -13,7 +13,7 @@ enum LTSettingsCellType: CaseIterable {
     case blockHeight
 }
 
-class LTSettingsViewModel {
+class LTSettingsDialogViewModel {
 
     var mainAccount: Account
     var wallet: WalletDataModel
@@ -33,44 +33,44 @@ class LTSettingsViewModel {
         nodeInfo = try? await lightningSession.updateNodeInfoState()
     }
 
-    var cellTypes: [LTSettingsCellType] {
-        return LTSettingsCellType.allCases
+    var cellTypes: [LTSettingsDialogCellType] {
+        return LTSettingsDialogCellType.allCases
     }
 
-    func cellModelByType(_ cellType: LTSettingsCellType) -> LTSettingCellModel {
+    func cellModelByType(_ cellType: LTSettingsDialogCellType) ->LTSettingDialogCellModel {
         switch cellType {
         case .id:
-            return LTSettingCellModel(
+            return LTSettingDialogCellModel(
                 title: "ID",
                 subtitle: nil,
                 value: "\(id.prefix(8))...\(id.suffix(8))",
                 hiddenIcon: false)
         case .totalBalance:
-            return LTSettingCellModel(
+            return LTSettingDialogCellModel(
                 title: "id_account_balance".localized,
                 subtitle: nil,
                 value: totalBalanceSatoshiText,
                 hiddenIcon: true)
         case .channelsBalance:
-            return LTSettingCellModel(
+            return LTSettingDialogCellModel(
                 title: "Channel Balance".localized,
                 subtitle: nil,
                 value: channelsBalanceText,
                 hiddenIcon: true)
         case .inboundLiquidity:
-            return LTSettingCellModel(
+            return LTSettingDialogCellModel(
                 title: "id_inbound_liquidity".localized,
                 subtitle: nil,
                 value: inboundLiquidity,
                 hiddenIcon: true)
         case .onchainBalanceSatoshi:
-            return LTSettingCellModel(
-                title: "id_onchain_balance_satoshi".localized,
+            return LTSettingDialogCellModel(
+                title: "Onchain Balance".localized,
                 subtitle: nil,
                 value: onchainBalanceSatoshiText,
                 hiddenIcon: true)
         case .blockHeight:
-            return LTSettingCellModel(
+            return LTSettingDialogCellModel(
                 title: "id_block_height".localized,
                 subtitle: nil,
                 value: "\(blockHeight ?? 0)",
@@ -153,15 +153,6 @@ class LTSettingsViewModel {
             .triggerRefresh(
                 features: [.balance, .txs(reset: true)]
             )
-    }
-    func ltRedeemViewModel() -> LTRedeemViewModel? {
-        guard let subaccount = WalletManager.current?.lightningSubaccount else {
-            return nil
-        }
-        return LTRedeemViewModel(
-            wallet: subaccount,
-            amount: subaccount.lightningSession?
-                .nodeState()?.onchainBalanceMsat.satoshi ?? 0)
     }
 
     func newAddress() async -> String? {

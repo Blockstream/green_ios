@@ -86,7 +86,7 @@ class ManageAssetViewController: UIViewController {
         }
     }
     func reloadNavigation() {
-        if viewModel.selectedSubaccount != nil {
+        if viewModel.selectedSubaccount != nil && Bundle.main.dev {
             let settingsBtn = UIButton(type: .system)
             settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
             settingsBtn.setImage(UIImage(named: "ic_nav_disclose"), for: .normal)
@@ -246,10 +246,11 @@ class ManageAssetViewController: UIViewController {
             DropAlert().warning(message: "Create a lightning account")
             return
         }
-        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "LTSettingsViewController") as? LTSettingsViewController {
-            vc.viewModel = viewModel.lTSettingsViewModel()
-            navigationController?.pushViewController(vc, animated: true)
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LTSettingsDialogViewController") as? LTSettingsDialogViewController {
+            vc.viewModel = viewModel.lTSettingsDialogViewModel()
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
     }
     @MainActor
