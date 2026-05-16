@@ -71,9 +71,9 @@ public struct Account: Codable, Equatable {
         if !isEphemeral {
             return nil
         }
-        return AccountsRepository.shared.ephAccounts
+        return (AccountsRepository.shared.ephAccounts
             .filter({ $0.keychain == keychain })
-            .firstIndex(of: self) ?? 0 + 1
+            .firstIndex(of: self) ?? 0) + 1
     }
 
     public var isHW: Bool { isJade || isLedger }
@@ -121,6 +121,7 @@ public struct Account: Codable, Equatable {
     }
 
     public func removeAuthentication(_ method: AuthenticationTypeHandler.AuthType) {
+        guard !isEphemeral else { return }
         _ = AuthenticationTypeHandler.removeAuth(method: method, for: keychain)
         if method == .AuthKeyLightning {
             _ = AuthenticationTypeHandler

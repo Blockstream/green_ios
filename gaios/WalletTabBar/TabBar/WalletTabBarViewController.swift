@@ -121,8 +121,11 @@ class WalletTabBarViewController: UITabBarController {
                 try? await BleHwManager.shared.disconnect()
             }
             await wallet.disconnect()
+            if wallet.isEphemeral {
+                await AccountsRepository.shared.remove(mainAccount)
+            }
             WalletsRepository.shared.delete(for: mainAccount.id)
-            AccountNavigator.navLogout(accountId: mainAccount.id)
+            AccountNavigator.navLogout(accountId: wallet.isEphemeral ? nil : mainAccount.id)
             self.stopLoader()
         }
     }

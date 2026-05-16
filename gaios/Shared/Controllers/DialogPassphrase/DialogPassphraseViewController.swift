@@ -3,6 +3,7 @@ import UIKit
 
 protocol DialogPassphraseViewControllerDelegate: AnyObject {
     func didConfirm(passphrase: String, alwaysAsk: Bool)
+    func didClean()
 }
 
 enum PassphraseAction {
@@ -126,7 +127,7 @@ class DialogPassphraseViewController: KeyboardViewController {
         fieldPassphrase.attributedPlaceholder = NSAttributedString(string: hint, attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         lblHint1.text = "id_different_passphrases_generate".localized
         lblAskTitle.text = "id_always_ask".localized
-        btnClear.setTitle("Clear Passphrase", for: .normal)
+        btnClear.setTitle("Login without Passphrase", for: .normal)
         btnConfirm.setTitle("id_submit".localized, for: .normal)
     }
 
@@ -142,8 +143,9 @@ class DialogPassphraseViewController: KeyboardViewController {
         fieldPassphrase.setRightPaddingPoints(15.0)
         fieldPassphrase.leftViewMode = .always
         fieldPassphrase.backgroundColor = UIColor.gGrayElement()
-        btnConfirm.setStyle(.primary)
         btnClear.setStyle(.inline)
+        btnConfirm.isUserInteractionEnabled = false
+        btnConfirm.setStyle(.primaryGray)
     }
 
     func dismiss(_ action: PassphraseAction) {
@@ -157,8 +159,10 @@ class DialogPassphraseViewController: KeyboardViewController {
             case .cancel:
                 break
             case .confirm:
-                if let passphrase = self.fieldPassphrase.text {
+                if let passphrase = self.fieldPassphrase.text, !passphrase.isEmpty {
                     self.delegate?.didConfirm(passphrase: passphrase, alwaysAsk: self.isAlwaysAsk)
+                } else {
+                    self.delegate?.didClean()
                 }
             }
         })
@@ -182,6 +186,11 @@ class DialogPassphraseViewController: KeyboardViewController {
             passphrase.count <= 100 &&
             passphrase.first != " " &&
             passphrase.last != " " {
+            btnConfirm.isUserInteractionEnabled = true
+            btnConfirm.setStyle(.primary)
+        } else {
+            btnConfirm.isUserInteractionEnabled = false
+            btnConfirm.setStyle(.primaryGray)
         }
     }
 

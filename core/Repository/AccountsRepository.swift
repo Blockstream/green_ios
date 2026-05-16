@@ -95,6 +95,7 @@ public class AccountsRepository {
         account.removeAuthentication(.AuthKeyWoCredentials)
         account.removeAuthentication(.AuthKeyBoltz)
         account.removeAuthentication(.AuthKeyLightning)
+        ephAccounts.removeAll(where: { $0.id == account.id})
         accounts.removeAll(where: { $0.id == account.id})
     }
 

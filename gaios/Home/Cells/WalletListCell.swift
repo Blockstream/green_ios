@@ -40,7 +40,7 @@ class WalletListCell: UITableViewCell {
             lblHint.text = "id_watchonly".localized
         }
         if let ephemeralId = item.ephemeralId {
-            lblHint.text = "BIP39 #\( ephemeralId )"
+            lblHint.text = "\("id_bip39_passphrase_login".localized) #\(ephemeralId)"
         }
         self.indexPath = indexPath
         self.onTap = onTap

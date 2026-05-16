@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Bump LWK to version 0.17.0
 
+### Fixed
+- Fix passphrase validation for bip39 wallets
+
 ## [5.4.0] - 2026-05-07
 
 ### Added

@@ -551,6 +551,10 @@ extension LoginViewController: UIPopoverPresentationControllerDelegate {
 }
 
 extension LoginViewController: DialogPassphraseViewControllerDelegate {
+    func didClean() {
+        bip39passphare = nil
+    }
+
     func didConfirm(passphrase: String, alwaysAsk: Bool) {
         bip39passphare = passphrase
         viewModel.updateAccountAskEphemeral(alwaysAsk)

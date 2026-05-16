@@ -148,7 +148,7 @@ class ScreenLocker {
             Task { await self.logout() }
         }
     }
-    
+
     func logout() async {
         guard let mainAccount = AccountsRepository.shared.current else {
             return
@@ -156,10 +156,14 @@ class ScreenLocker {
         if mainAccount.isHW {
             try? await BleHwManager.shared.disconnect()
         }
-        await WalletsRepository.shared.get(for: mainAccount.id)?.disconnect()
+        let wallet = WalletsRepository.shared.get(for: mainAccount.id)
+        await wallet?.disconnect()
+        if wallet?.isEphemeral ?? false {
+            await AccountsRepository.shared.remove(mainAccount)
+        }
         WalletsRepository.shared.delete(for: mainAccount.id)
         await MainActor.run {
-            AccountNavigator.navLogout(accountId: mainAccount.id)
+            AccountNavigator.navLogout(accountId: wallet?.isEphemeral ?? false ? nil : mainAccount.id)
         }
     }
 

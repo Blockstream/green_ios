@@ -296,7 +296,7 @@ public class WalletManager {
         if testnet {
             logger.error("WM login lightning no available")
             return nil
-        } else if credentials.bip39Passphrase != nil {
+        } else if !credentials.bip39Passphrase.isNilOrEmpty {
             logger.error("WM login no credentials found for lightning")
             return nil
         }
@@ -387,7 +387,7 @@ public class WalletManager {
         creation: Bool,
         parentWalletId: WalletIdentifier?
     ) async throws -> LoginUserResult? {
-        isEphemeral = credentials?.bip39Passphrase != nil
+        isEphemeral = !(credentials?.bip39Passphrase ?? "").isEmpty
         isWatchonly = false
         hwDevice = device
         let loginTask: ((_ session: SessionManager) async -> LoginUserResult?) = { [self] session in
