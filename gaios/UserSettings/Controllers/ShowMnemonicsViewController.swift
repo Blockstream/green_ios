@@ -78,6 +78,7 @@ class ShowMnemonicsViewController: UIViewController {
         switch await task.result {
         case .success(let credentials):
             items = credentials?.mnemonic?.split(separator: " ").map(String.init) ?? []
+            bip39Passphrase = credentials?.bip39Passphrase
             collectionView.reloadData()
         case .failure(let err):
             showError(err)
