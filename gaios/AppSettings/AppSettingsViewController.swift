@@ -52,9 +52,9 @@ class AppSettingsViewController: KeyboardViewController {
 
         guard let userInfo = notification.userInfo else { return }
         // swiftlint:disable force_cast
-        var keyboardFrame: CGRect = (userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+        var keyboardFrame: CGRect = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         keyboardFrame = self.view.convert(keyboardFrame, from: nil)
-        tableView.setBottomInset(to: keyboardFrame.size.height + 40.0)
+        tableView.setBottomInset(to: keyboardFrame.size.height + 20.0)
     }
     override func keyboardWillHide(notification: Notification) {
         tableView.setBottomInset(to: 0)
