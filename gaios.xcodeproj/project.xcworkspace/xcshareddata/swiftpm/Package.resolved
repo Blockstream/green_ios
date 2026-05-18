@@ -149,8 +149,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/blockstream/lwk-swift",
       "state" : {
-        "revision" : "f579b039a210143ceeb165b01a147ec69458fb00",
-        "version" : "0.17.0"
+        "revision" : "f63f5a9b651a35704571a26db9eb676edcf743a6",
+        "version" : "0.17.0-1"
       }
     },
     {
