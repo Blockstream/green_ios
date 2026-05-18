@@ -386,16 +386,22 @@ extension SendCoordinator {
         guard let amount, amount > 0 else {
             return .enterAmount(makeEnterAmountViewModel(draft: draftForRouting, subaccount: subaccount))
         }
+        // Keep the parsed offer read-only; amountless offers need a fresh instance
+        // so retries/back navigation cannot reuse a previously set amount.
+        let paymentForExecution: LightningPayment
+        if try lightningPayment.bolt12InvoiceAmount() == nil {
+            paymentForExecution = try LightningPayment(s: offer)
+            try paymentForExecution.setBolt12InvoiceAmount(amountSats: amount)
+        } else {
+            paymentForExecution = lightningPayment
+        }
         let lwk = await wallet.wallet.awaitLwkSession()
         guard let lwk, let xpub = AccountsRepository.shared.current?.xpubHashId else {
             throw SendFlowError.invalidSession
         }
-        if try lightningPayment.bolt12InvoiceAmount() == nil {
-            try lightningPayment.setBolt12InvoiceAmount(amountSats: amount)
-        }
         nav.topViewController?.startLoader(message: "")
         let (swap, tx) = try await TransactionBuilder.buildSubmarineSwapTransaction(
-            lightningPayment: lightningPayment,
+            lightningPayment: paymentForExecution,
             lwk: lwk,
             subaccount: subaccount,
             xpub: xpub
