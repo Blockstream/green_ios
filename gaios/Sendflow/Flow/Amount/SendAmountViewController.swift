@@ -383,3 +383,11 @@ extension SendAmountViewController: DialogLiquidAssetToFiatViewControllerDelegat
         onLiquidAssetFiatChange()
     }
 }
+
+extension SendAmountViewController: SendFlowErrorDisplayable {
+    func handleSendFlowError(_ error: Error?) {
+        btnNextEnabled = false
+        viewModel.error = error
+        reload()
+    }
+}

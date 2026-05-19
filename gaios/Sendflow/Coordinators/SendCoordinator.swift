@@ -48,27 +48,27 @@ final class SendCoordinator {
         let vc = sendAddressViewController(model: model)
         nav.pushViewController(vc, animated: true)
     }
-    
+
     func startSwap(subaccount: WalletItem?, assetId: String?) {
         let model = SendSwapViewModel(wallet: wallet.wallet, subaccount: subaccount, assetId: assetId, delegate: self)
         let vc = sendSwapViewController(model: model)
         nav.pushViewController(vc, animated: true)
     }
-    
+
     func sendLwkSignViewController(model: SendLwkSignViewModel) -> SendLwkSignViewController {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         return storyboard.instantiateViewController(identifier: "SendLwkSignViewController") { coder in
             SendLwkSignViewController(coder: coder, viewModel: model)
         }
     }
-    
+
     func sendSwapViewController(model: SendSwapViewModel) -> SendSwapViewController {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         return storyboard.instantiateViewController(identifier: "SendSwapViewController") { coder in
             SendSwapViewController(coder: coder, viewModel: model)
         }
     }
-    
+
     func sendAddressViewController(model: SendAddressViewModel) -> SendAddressViewController {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         return storyboard.instantiateViewController(identifier: "SendAddressViewController") { coder in
@@ -83,7 +83,7 @@ final class SendCoordinator {
         vc.modalPresentationStyle = .overFullScreen
         return vc
     }
-    
+
     func sendFailureViewController(model: SendFailureViewModel) -> SendFailureViewController {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         let vc = storyboard.instantiateViewController(identifier: "SendFailureViewController") { coder in
@@ -100,7 +100,7 @@ final class SendCoordinator {
         vc.modalPresentationStyle = .overFullScreen
         return vc
     }
-    
+
     func sendHWViewController(model: SendHWViewModel) -> SendHWViewController {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         let vc = storyboard.instantiateViewController(identifier: "SendHWViewController") { coder in
@@ -110,7 +110,7 @@ final class SendCoordinator {
         vc.modalPresentationStyle = .overFullScreen
         return vc
     }
-    
+
     func contactUsViewController(request: ZendeskErrorRequest) -> ContactUsViewController? {
         let storyboard = UIStoryboard(name: "HelpCenter", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
@@ -120,7 +120,7 @@ final class SendCoordinator {
         }
         return nil
     }
-    
+
     func sendAmountViewController(model: SendAmountViewModel) -> SendAmountViewController {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         return storyboard.instantiateViewController(identifier: "SendAmountViewController") { coder in
@@ -275,17 +275,29 @@ extension SendCoordinator {
             guard let subaccount = draft.subaccount else {
                 return .selectSubaccount(sendAccountAssetViewModel(draft: draft))
             }
-            return try await routeLightningInvoice(invoice, draft: draft, subaccount: subaccount)
+            if subaccount.networkType.lightning {
+                return try await routeLightningInvoicePay(invoice, draft: draft, subaccount: subaccount)
+            } else {
+                return try await routeLightningInvoiceSwap(invoice, draft: draft, subaccount: subaccount)
+            }
         case .lightningOffer(let offer, let lightningPayment):
             guard let subaccount = draft.subaccount else {
                 return .selectSubaccount(sendAccountAssetViewModel(draft: draft))
             }
-            return try await routeLightningOffer(offer, lightningPayment: lightningPayment, draft: draft, subaccount: subaccount)
+            if subaccount.networkType.liquid {
+                return try await routeLightningOffer(offer, lightningPayment: lightningPayment, draft: draft, subaccount: subaccount)
+            } else {
+                throw SendFlowError.wrongSubaccount
+            }
         case .lnUrl(let input, let payment):
             guard let subaccount = draft.subaccount else {
                 return .selectSubaccount(sendAccountAssetViewModel(draft: draft))
             }
-            return try await routeLnUrl(input, payment: payment, draft: draft, subaccount: subaccount)
+            if subaccount.networkType.liquid {
+                return try await routeLnUrl(input, payment: payment, draft: draft, subaccount: subaccount)
+            } else {
+                throw SendFlowError.wrongSubaccount
+            }
         case .bip353(let original, let payment):
             return try await routeBip353(original, payment: payment, draft: draft)
         }
@@ -318,32 +330,18 @@ extension SendCoordinator {
         self.draft = updated
         return try await route(draft: updated)
     }
-
-    // BOLT11: native Lightning send on a Lightning subaccount, otherwise a
     // Liquid -> Lightning submarine swap. Bitcoin subaccounts are rejected.
-    private func routeLightningInvoice(
+    private func routeLightningInvoiceSwap(
         _ invoice: Bolt11Invoice,
         draft: TransactionDraft,
         subaccount: WalletItem
     ) async throws -> SendRoute {
-        if subaccount.networkType.lightning {
-            if invoice.amountMilliSatoshis() == nil && draft.satoshi == nil {
-                return .enterAmount(makeEnterAmountViewModel(draft: draft, subaccount: subaccount))
-            }
-            nav.topViewController?.startLoader(message: "")
-            let tx = try await TransactionBuilder.build(
-                from: subaccount,
-                invoice: invoice,
-                satoshi: draft.satoshi)
-            nav.topViewController?.stopLoader()
-            return .signAtomicSwap(makeSignViewModel(draft: draft, subaccount: subaccount, tx: tx))
-        }
         let xpub = AccountsRepository.shared.current?.xpubHashId
         let lwk = await wallet.wallet.awaitLwkSession()
         guard let xpub, let lwk else {
             throw SendFlowError.invalidSession
         }
-        if subaccount.networkType.bitcoin {
+        if !subaccount.networkType.liquid {
             throw SendFlowError.wrongSubaccount
         }
         guard let amount = invoice.amountMilliSatoshis()?.satoshi else {
@@ -360,9 +358,26 @@ extension SendCoordinator {
             subaccount: subaccount,
             xpub: xpub
         )
-        let preparedDraft = persistSwapResponse(swap, on: draft)
+        let preparedDraft = updateTransactionDraft(swap: swap, on: draft)
         nav.topViewController?.stopLoader()
         return .signAtomicSwap(makeSignViewModel(draft: preparedDraft, subaccount: subaccount, tx: tx))
+    }
+    // BOLT11: native Lightning send on a Lightning subaccount
+    private func routeLightningInvoicePay(
+        _ invoice: Bolt11Invoice,
+        draft: TransactionDraft,
+        subaccount: WalletItem
+    ) async throws -> SendRoute {
+            if invoice.amountMilliSatoshis() == nil && draft.satoshi == nil {
+                return .enterAmount(makeEnterAmountViewModel(draft: draft, subaccount: subaccount))
+            }
+            nav.topViewController?.startLoader(message: "")
+            let tx = try await TransactionBuilder.build(
+                from: subaccount,
+                invoice: invoice,
+                satoshi: draft.satoshi)
+            nav.topViewController?.stopLoader()
+            return .signAtomicSwap(makeSignViewModel(draft: draft, subaccount: subaccount, tx: tx))
     }
 
     // BOLT12: Liquid-only submarine swap via LWK preparePay.
@@ -376,24 +391,24 @@ extension SendCoordinator {
         guard subaccount.networkType.liquid else {
             throw SendFlowError.wrongSubaccount
         }
-        var draftForRouting = draft
-        var amount = draft.satoshi
+        var preparedDraft = updateTransactionDraft(
+            satoshi: draft.satoshi,
+            on: draft
+        )
         // If the offer already carries an amount, always use it.
-        if let offerAmount = try lightningPayment.bolt12InvoiceAmount(), offerAmount > 0 {
-            amount = offerAmount
-            draftForRouting.satoshi = offerAmount
-        }
-        guard let amount, amount > 0 else {
-            return .enterAmount(makeEnterAmountViewModel(draft: draftForRouting, subaccount: subaccount))
-        }
-        // Keep the parsed offer read-only; amountless offers need a fresh instance
-        // so retries/back navigation cannot reuse a previously set amount.
-        let paymentForExecution: LightningPayment
-        if try lightningPayment.bolt12InvoiceAmount() == nil {
-            paymentForExecution = try LightningPayment(s: offer)
-            try paymentForExecution.setBolt12InvoiceAmount(amountSats: amount)
+        if try lightningPayment.bolt12OfferHasAmount() {
+            try lightningPayment.setBolt12InvoiceAmountViaItems(items: 1)
+            if let offerAmount = try lightningPayment.bolt12InvoiceAmount(), offerAmount > 0 {
+                preparedDraft = updateTransactionDraft(
+                    satoshi: offerAmount,
+                    on: draft
+                )
+            }
         } else {
-            paymentForExecution = lightningPayment
+            guard let satoshi = preparedDraft.satoshi, satoshi <= 0 else {
+                return .enterAmount(makeEnterAmountViewModel(draft: preparedDraft, subaccount: subaccount))
+            }
+            try lightningPayment.setBolt12InvoiceAmount(amountSats: satoshi)
         }
         let lwk = await wallet.wallet.awaitLwkSession()
         guard let lwk, let xpub = AccountsRepository.shared.current?.xpubHashId else {
@@ -401,12 +416,11 @@ extension SendCoordinator {
         }
         nav.topViewController?.startLoader(message: "")
         let (swap, tx) = try await TransactionBuilder.buildSubmarineSwapTransaction(
-            lightningPayment: paymentForExecution,
+            lightningPayment: lightningPayment,
             lwk: lwk,
             subaccount: subaccount,
             xpub: xpub
         )
-        let preparedDraft = persistSwapResponse(swap, on: draftForRouting)
         nav.topViewController?.stopLoader()
         return .signAtomicSwap(makeSignViewModel(draft: preparedDraft, subaccount: subaccount, tx: tx))
     }
@@ -450,7 +464,10 @@ extension SendCoordinator {
             subaccount: subaccount,
             xpub: xpub
         )
-        let preparedDraft = persistSwapResponse(swap, on: draft)
+        let preparedDraft = updateTransactionDraft(
+            swap: swap,
+            on: draft
+        )
         nav.topViewController?.stopLoader()
         return .signAtomicSwap(makeSignViewModel(draft: preparedDraft, subaccount: subaccount, tx: tx))
     }
@@ -482,9 +499,10 @@ extension SendCoordinator {
             tx: tx)
     }
 
-    private func persistSwapResponse(_ swap: PreparePayResponse?, on draft: TransactionDraft) -> TransactionDraft {
+    private func updateTransactionDraft(swap: PreparePayResponse? = nil, satoshi: UInt64? = nil, on draft: TransactionDraft) -> TransactionDraft {
         var updated = draft
         updated.swapPayResponse = swap
+        updated.satoshi = satoshi
         self.draft = updated
         return updated
     }
