@@ -50,7 +50,6 @@ class SendAddressViewController: KeyboardViewController {
         lblInvalid.text = "id_invalid_address".localized
         btnQR.setTitle("id_scan_qr_code".localized, for: .normal)
         btnPaste.setTitle("id_paste".localized, for: .normal)
-        infoIcon.image = UIImage(named: "ic_lightning_info")!.maskWithColor(color: .white)
         btnPaste.setImage(UIImage(named: "ic_clipboard")?.maskWithColor(color: UIColor.gBlackBg()), for: .normal)
         btnNext.setTitle("id_next".localized, for: .normal)
         if viewModel.sweepPrivateKey {

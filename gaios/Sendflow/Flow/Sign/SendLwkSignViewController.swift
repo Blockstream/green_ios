@@ -108,7 +108,6 @@ class SendLwkSignViewController: UIViewController {
             $0?.setStyle(.txtBigger)
         }
         lblAmountSubtitle.setStyle(.txt)
-        btnInfoFee.setImage(UIImage(named: "ic_lightning_info_err")!.maskWithColor(color: UIColor.gW40()), for: .normal)
     }
 
     func addNoteInNavigation() {

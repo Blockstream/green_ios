@@ -215,9 +215,6 @@ class SendAmountViewControllerLegacy: KeyboardViewController {
         [infoBg, infoMultiBg].forEach {
             $0.cornerRadius = 4.0
         }
-        [infoIcon, infoMultiIcon].forEach {
-            $0.image = UIImage(named: "ic_lightning_info")!.maskWithColor(color: .white)
-        }
         [lblError, lblMultiError].forEach {
             $0.setStyle(.txt)
         }
