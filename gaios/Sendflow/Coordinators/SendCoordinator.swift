@@ -336,16 +336,10 @@ extension SendCoordinator {
         payment: LiquidWalletKit.Payment,
         draft: TransactionDraft
     ) async throws -> SendRoute {
-        nav.topViewController?.startLoader(message: "")
         let parser = PaymentTargetParser(mainAccount: mainAccount)
-        let resolved: PaymentTarget
-        do {
-            resolved = try await parser.resolveBip353(original, payment: payment)
-        } catch {
-            nav.topViewController?.stopLoader()
-            throw error
+        let resolved = try await withRouteLoader(message: "Resolve DNS Payment") {
+            try await parser.resolveBip353(original, payment: payment)
         }
-        nav.topViewController?.stopLoader()
         var updated = draft
         updated.paymentTarget = resolved
         updated.bip353Origin = original
@@ -372,16 +366,16 @@ extension SendCoordinator {
         if amount > subaccount.btc ?? 0 {
             throw SendFlowError.insufficientFunds
         }
-        nav.topViewController?.startLoader(message: "")
         let lightningPayment = LightningPayment.fromBolt11Invoice(invoice: invoice)
-        let (swap, tx) = try await TransactionBuilder.buildSubmarineSwapTransaction(
-            lightningPayment: lightningPayment,
-            lwk: lwk,
-            subaccount: subaccount,
-            xpub: xpub
-        )
+        let (swap, tx) = try await withRouteLoader(message: "Preparing Payment") {
+            try await TransactionBuilder.buildSubmarineSwapTransaction(
+                lightningPayment: lightningPayment,
+                lwk: lwk,
+                subaccount: subaccount,
+                xpub: xpub
+            )
+        }
         let preparedDraft = updateTransactionDraft(swap: swap, on: draft)
-        nav.topViewController?.stopLoader()
         return .signAtomicSwap(makeSignViewModel(draft: preparedDraft, subaccount: subaccount, tx: tx))
     }
     // BOLT11: native Lightning send on a Lightning subaccount
@@ -390,12 +384,12 @@ extension SendCoordinator {
         draft: TransactionDraft,
         subaccount: WalletItem
     ) async throws -> SendRoute {
-        nav.topViewController?.startLoader(message: "")
-        let tx = try await TransactionBuilder.build(
-            from: subaccount,
-            invoice: invoice,
-            satoshi: draft.satoshi)
-        nav.topViewController?.stopLoader()
+        let tx = try await withRouteLoader(message: "Preparing Payment") {
+            try await TransactionBuilder.build(
+                from: subaccount,
+                invoice: invoice,
+                satoshi: draft.satoshi)
+        }
         return .signAtomicSwap(makeSignViewModel(draft: draft, subaccount: subaccount, tx: tx))
     }
 
@@ -433,14 +427,14 @@ extension SendCoordinator {
         guard let lwk, let xpub = AccountsRepository.shared.current?.xpubHashId else {
             throw SendFlowError.invalidSession
         }
-        nav.topViewController?.startLoader(message: "")
-        let (swap, tx) = try await TransactionBuilder.buildSubmarineSwapTransaction(
-            lightningPayment: lightningPayment,
-            lwk: lwk,
-            subaccount: subaccount,
-            xpub: xpub
-        )
-        nav.topViewController?.stopLoader()
+        let (swap, tx) = try await withRouteLoader(message: "Preparing Payment") {
+            try await TransactionBuilder.buildSubmarineSwapTransaction(
+                lightningPayment: lightningPayment,
+                lwk: lwk,
+                subaccount: subaccount,
+                xpub: xpub
+            )
+        }
         return .signAtomicSwap(makeSignViewModel(draft: preparedDraft, subaccount: subaccount, tx: tx))
     }
 
@@ -452,13 +446,13 @@ extension SendCoordinator {
         subaccount: WalletItem,
         satoshi: UInt64
     ) async throws -> SendRoute {
-        nav.topViewController?.startLoader(message: "")
-        let tx = try await TransactionBuilder.build(
-            from: subaccount,
-            lnurl: input,
-            payment: payment,
-            satoshi: satoshi)
-        nav.topViewController?.stopLoader()
+        let tx = try await withRouteLoader(message: "Fetching Invoice..") {
+            return try await TransactionBuilder.build(
+                from: subaccount,
+                lnurl: input,
+                payment: payment,
+                satoshi: satoshi)
+        }
         return .signAtomicSwap(makeSignViewModel(draft: draft, subaccount: subaccount, tx: tx))
     }
     // Liquid it goes through the same LWK preparePay flow as BOLT12.
@@ -473,23 +467,34 @@ extension SendCoordinator {
         guard let lwk, let xpub = AccountsRepository.shared.current?.xpubHashId else {
             throw SendFlowError.invalidSession
         }
-        nav.topViewController?.startLoader(message: "")
-        let lightningPayment = try await TransactionBuilder.resolveLnurlPayment(
-            payment,
-            amount: satoshi
-        )
-        let (swap, tx) = try await TransactionBuilder.buildSubmarineSwapTransaction(
-            lightningPayment: lightningPayment,
-            lwk: lwk,
-            subaccount: subaccount,
-            xpub: xpub
-        )
+        let (swap, tx) = try await withRouteLoader(message: "Preparing Payment") {
+            let lightningPayment = try await TransactionBuilder.resolveLnurlPayment(
+                payment,
+                amount: satoshi
+            )
+            return try await TransactionBuilder.buildSubmarineSwapTransaction(
+                lightningPayment: lightningPayment,
+                lwk: lwk,
+                subaccount: subaccount,
+                xpub: xpub
+            )
+        }
         let preparedDraft = updateTransactionDraft(
             swap: swap,
             on: draft
         )
-        nav.topViewController?.stopLoader()
         return .signAtomicSwap(makeSignViewModel(draft: preparedDraft, subaccount: subaccount, tx: tx))
+    }
+
+    private func withRouteLoader<T>(
+        message: String = "",
+        operation: () async throws -> T
+    ) async throws -> T {
+        nav.topViewController?.startLoader(message: message)
+        defer {
+            nav.topViewController?.stopLoader()
+        }
+        return try await operation()
     }
 
     private func makeEnterAmountViewModel(draft: TransactionDraft, subaccount: WalletItem) -> SendAmountViewModel {
@@ -543,18 +548,15 @@ extension SendCoordinator {
             return
         }
         isRoutingInProgress = true
-        nav.topViewController?.startLoader()
         Task { [weak self] in
             defer {
                 self?.isRoutingInProgress = false
             }
             do {
                 if let route = try await self?.route(draft: draft) {
-                    self?.nav.topViewController?.stopLoader()
                     await self?.navigate(to: route)
                 }
             } catch {
-                self?.nav.topViewController?.stopLoader()
                 self?.forwardError(error)
             }
         }
