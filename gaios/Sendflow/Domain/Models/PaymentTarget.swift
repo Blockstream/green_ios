@@ -55,7 +55,10 @@ extension PaymentTarget {
             return [.bitcoin]
         case .liquidAddress, .liquidBip21, .pset:
             return [.liquid]
-        case .lightningInvoice:
+        case .lightningInvoice(let invoice):
+            if invoice.amountMilliSatoshis() == nil {
+                return [.lightning]
+            }
             return [.liquid, .lightning]
         case .lightningOffer:
             // BOLT12 is liquid-only for now; Lightning can be re-enabled later.

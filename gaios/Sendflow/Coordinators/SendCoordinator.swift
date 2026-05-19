@@ -590,6 +590,10 @@ extension SendCoordinator: SendAddressViewModelDelegate {
                 if case .lightningOffer = paymentTarget {
                     return .generic("Bolt12 payment is only available via LBTC")
                 }
+                if case .lightningInvoice(let invoice) = paymentTarget,
+                   invoice.amountMilliSatoshis() == nil {
+                    return .generic("Invoices without an amount can only be paid from a Lightning account")
+                }
                 return .noAvailableSubaccounts
             }()
             vm.delegate?.sendAddressViewModel(vm, didFailWith: error)
