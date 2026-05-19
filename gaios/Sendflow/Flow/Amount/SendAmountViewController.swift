@@ -25,7 +25,6 @@ class SendAmountViewController: KeyboardViewController {
 
     @IBOutlet weak var lblAvailable: UILabel!
     @IBOutlet weak var lblFiat: UILabel!
-    @IBOutlet weak var btnSendall: UIButton!
     @IBOutlet weak var btnDenomination: UIButton!
 
     @IBOutlet weak var lblFeeTitle: UILabel!
@@ -41,7 +40,7 @@ class SendAmountViewController: KeyboardViewController {
     @IBOutlet weak var actionsStack: UIStackView!
 
     @IBOutlet weak var changeSpeedView: UIView!
-    //@IBOutlet weak var networkFeeView: UIView!
+    // @IBOutlet weak var networkFeeView: UIView!
 
     @IBOutlet weak var multiAssetCard: UIView!
     @IBOutlet weak var lblMultiAssetTitle: UILabel!
@@ -101,7 +100,7 @@ class SendAmountViewController: KeyboardViewController {
     func setContent() {
         title = "id_amount".localized
         btnNext.setTitle("id_next".localized, for: .normal)
-        //lblPayRequestTitle.text = "id_payment_request_of".localized
+        // lblPayRequestTitle.text = "id_payment_request_of".localized
         lblMultiAssetTitle.text = ""
         lblMultiAssetHint.text = "id_multiple_assets".localized
         lblMultiAssetInfo.text = "id_the_amount_cant_be_changed".localized
@@ -119,12 +118,11 @@ class SendAmountViewController: KeyboardViewController {
         reloadNavigationBar()
         reloadError()
         btnNextEnabled = viewModel.canContinue
-        btnSendAllPressed = viewModel.sendAll
 
         [lblFiat, btnDenomination].forEach {
             $0?.isHidden = viewModel.hasPrice == false
         }
-        lblAvailable.text = "\(viewModel.availableLabel): \(viewModel.convertToText(viewModel.maxSendAmount ?? 0) ?? "")"
+        lblAvailable.text = "\("Available".localized): \(viewModel.convertToText(viewModel.maxSendAmount ?? 0) ?? "")"
         btnDenomination.setTitle(viewModel.currencyOrTicker, for: .normal)
         if viewModel.hasPrice == false {
             [lblFiat, btnDenomination].forEach {
@@ -153,16 +151,6 @@ class SendAmountViewController: KeyboardViewController {
         }
     }
 
-    var btnSendAllPressed: Bool = false {
-        didSet {
-            if btnSendAllPressed {
-                btnSendall.setStyle(.underline(txt: "id_send_all".localized, color: UIColor.gW40()))
-            } else {
-                btnSendall.setStyle(.underline(txt: "id_send_all".localized, color: UIColor.gAccent()))
-            }
-        }
-    }
-
     func setStyle() {
         textBg.setStyle(CardStyle.defaultStyle)
         [infoBg, infoMultiBg].forEach {
@@ -171,10 +159,9 @@ class SendAmountViewController: KeyboardViewController {
         [lblError, lblMultiError].forEach {
             $0.setStyle(.txt)
         }
-        [lblAvailable, lblFiat, lblFeeTitle, lblNtwFee, lblTime].forEach {
+        [lblAvailable, lblFiat, lblFeeTitle, lblNtwFee, lblTime, lblMultiAssetHint, lblMultiAssetInfo, lblRedepositNoEdit].forEach {
             $0?.setStyle(.txtCard)
         }
-        btnSendall.setStyle(.underline(txt: "id_send_all".localized, color: UIColor.gAccent()))
         btnDenomination.setStyle(.inline)
         btnDenomination.setTitleColor(.white, for: .normal)
         btnDenomination.titleLabel?.font = UIFont.systemFont(ofSize: 13.0, weight: .medium)
@@ -183,9 +170,6 @@ class SendAmountViewController: KeyboardViewController {
         [multiAssetCard].forEach {
             $0.cornerRadius = 4.0
         }
-        lblMultiAssetHint.setStyle(.txtCard)
-        lblMultiAssetInfo.setStyle(.txtCard)
-        lblRedepositNoEdit.setStyle(.txtCard)
     }
     @MainActor
     func reloadNavigationBar() {
@@ -235,16 +219,6 @@ class SendAmountViewController: KeyboardViewController {
         viewModel.next()
     }
 
-    @IBAction func btnSendAll(_ sender: Any) {
-        viewModel.sendAll.toggle()
-        btnSendAllPressed = viewModel.sendAll
-        if !viewModel.sendAll {
-            viewModel.amountText = nil
-            reloadAmount()
-        }
-        viewModel.triggerValidation()
-    }
-
     @IBAction func btnDenomination(_ sender: Any) {
         if AssetInfo.baseIds.contains(viewModel.assetId) {
             let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
@@ -276,7 +250,6 @@ class SendAmountViewController: KeyboardViewController {
         btnChangeSpeed.isHidden = true
         lblTime.isHidden = true
         totalsView.isHidden = true
-        btnSendall.isHidden = true
         redepositMultiStack.isHidden = true
         redepositNoEditView.isHidden = true
     }
@@ -284,8 +257,6 @@ class SendAmountViewController: KeyboardViewController {
     @MainActor
     func reloadAmount() {
         amountField.isUserInteractionEnabled = viewModel.amountEditable
-        btnSendall.isUserInteractionEnabled = viewModel.sendAllEnabled
-        //amountField.text = viewModel.amountText ?? ""
         lblFiat.isHidden = viewModel.satoshi == nil
         if viewModel.isFiat {
             lblFiat.text = "≈ \(viewModel.convertToDenom(viewModel.satoshi ?? 0) ?? "")"
@@ -299,7 +270,6 @@ class SendAmountViewController: KeyboardViewController {
             btnClear.isHidden = !viewModel.amountEditable || viewModel.amountText == nil
             amountField.textColor = .white
         }
-        btnSendAllPressed = viewModel.sendAll
     }
 /*
     @MainActor
@@ -337,7 +307,7 @@ extension SendAmountViewController: DialogInputDenominationViewControllerDelegat
         if let satoshi = viewModel.satoshi {
             amountField.text = Balance
                 .fromSatoshi(satoshi, assetId: viewModel.assetId)?
-                .toDenom(denomination).0
+                .toDenom(denomination, locale: false).0
         }
         viewModel.triggerValidation()
     }
@@ -353,8 +323,6 @@ extension SendAmountViewController {
 }
 extension SendAmountViewController: SendDialogFeeViewControllerProtocol {
     func select(transactionPriority: gdk.TransactionPriority, feeRate: UInt64?) {
-        //viewModel.createTx.feeRate = feeRate
-        //viewModel.transactionPriority = transactionPriority
         reload()
         reloadAmount()
         Task { [weak self] in

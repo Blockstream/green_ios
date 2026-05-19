@@ -44,12 +44,14 @@ final class SendCoordinator {
     }
 
     func start(input: String?, subaccount: WalletItem?, assetId: String?) {
+        selectedDenomination = wallet.wallet.prominentSession?.settings?.denomination ?? .Sats
         let model = SendAddressViewModel(mainAccount: mainAccount, wallet: wallet, text: input, subaccount: subaccount, assetId: assetId, delegate: self)
         let vc = sendAddressViewController(model: model)
         nav.pushViewController(vc, animated: true)
     }
 
     func startSwap(subaccount: WalletItem?, assetId: String?) {
+        selectedDenomination = wallet.wallet.prominentSession?.settings?.denomination ?? .Sats
         let model = SendSwapViewModel(wallet: wallet.wallet, subaccount: subaccount, assetId: assetId, delegate: self)
         let vc = sendSwapViewController(model: model)
         nav.pushViewController(vc, animated: true)
@@ -702,6 +704,13 @@ extension SendCoordinator: SendSuccessViewModelDelegate {
 }
 
 extension SendCoordinator: SendFailureViewModelDelegate {
+    func sendFailureViewModelOk(_ vm: SendFailureViewModel) {
+        Task {
+            await nav.dismissAsync(animated: true)
+            forwardError(nil)
+        }
+    }
+
     func sendFailureViewModelDismiss(_ vm: SendFailureViewModel) {
         Task {
             await nav.dismissAsync(animated: true)
@@ -747,7 +756,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
 
     func didSendLwkSignViewModelDidFailure(_ vm: SendLwkSignViewModel, error: Error) {
         Task {
-            let model = SendFailureViewModel(delegate: self, error: error)
+            let model = SendFailureViewModel(delegate: self, error: error, hideErrors: false)
             await self.navigate(to: .failure(model))
         }
     }
@@ -854,7 +863,9 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             return .success(model)
         case .failure(let error):
             nav.topViewController?.stopLoader()
-            let model = SendFailureViewModel(delegate: self, error: error)
+            let model = SendFailureViewModel(delegate: self,
+                                             error: error,
+                                             hideErrors: transaction.subaccount?.networkType.lightning ?? false)
             return .failure(model)
         }
     }

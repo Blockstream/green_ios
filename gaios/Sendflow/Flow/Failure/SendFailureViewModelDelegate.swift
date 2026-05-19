@@ -6,4 +6,6 @@ protocol SendFailureViewModelDelegate: AnyObject {
     func sendFailureViewModelDidAgain(_ vm: SendFailureViewModel)
     @MainActor
     func sendFailureViewModelDidSupport(_ vm: SendFailureViewModel, error: Error)
+    @MainActor
+    func sendFailureViewModelOk(_ vm: SendFailureViewModel)
 }

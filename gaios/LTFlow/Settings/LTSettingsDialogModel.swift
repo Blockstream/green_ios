@@ -9,6 +9,7 @@ enum LTSettingsDialogCellType: CaseIterable {
     case totalBalance
     case channelsBalance
     case inboundLiquidity
+    case maxPayble
     case onchainBalanceSatoshi
     case blockHeight
 }
@@ -62,6 +63,12 @@ class LTSettingsDialogViewModel {
                 title: "id_inbound_liquidity".localized,
                 subtitle: nil,
                 value: inboundLiquidity,
+                hiddenIcon: true)
+        case .maxPayble:
+            return LTSettingDialogCellModel(
+                title: "id_max_payable_amount".localized,
+                subtitle: nil,
+                value: maxPayble,
                 hiddenIcon: true)
         case .onchainBalanceSatoshi:
             return LTSettingDialogCellModel(

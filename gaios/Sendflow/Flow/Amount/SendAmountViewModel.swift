@@ -47,10 +47,8 @@ final class SendAmountViewModel: Sendable {
             return "id_reenable_2fa".localized
         }
         switch draft.paymentTarget {
-        case .lnUrl:
-            return "LNURL amount"
-        case .lightningOffer:
-            return "BOLT12 amount"
+        case .lnUrl, .lightningInvoice, .lightningOffer:
+            return "Send Lightning Bitcoin".localized
         default:
             return "id_send".localized
         }

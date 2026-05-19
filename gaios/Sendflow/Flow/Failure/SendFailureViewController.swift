@@ -15,6 +15,7 @@ class SendFailureViewController: UIViewController {
     @IBOutlet weak var errorTextView: UITextView!
     @IBOutlet weak var btnAgain: UIButton!
     @IBOutlet weak var btnSupport: UIButton!
+    @IBOutlet weak var btnOk: UIButton!
 
     let viewModel: SendFailureViewModel
 
@@ -43,9 +44,14 @@ class SendFailureViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = "id_transaction_failed".localized
-        errorTextView.text = viewModel.error.description().localized
+        if viewModel.hideErrors {
+            errorTextView.text = "Your transaction could not reach the network. Please try again.".localized
+        } else {
+            errorTextView.text = viewModel.error.description().localized
+        }
         btnAgain.setTitle("id_try_again".localized, for: .normal)
         btnSupport.setTitle("id_contact_support".localized, for: .normal)
+        btnOk.setTitle("id_ok".localized, for: .normal)
     }
 
     func setStyle() {
@@ -55,6 +61,9 @@ class SendFailureViewController: UIViewController {
         btnAgain.setStyle(.primary)
         btnSupport.setStyle(.outlined)
         btnAgain.isHidden = true
+        btnSupport.isHidden = viewModel.hideErrors
+        btnOk.isHidden = !viewModel.hideErrors
+        btnOk.setStyle(.primary)
     }
 
     @IBAction func btnDismiss(_ sender: Any) {
@@ -73,5 +82,9 @@ class SendFailureViewController: UIViewController {
         UIPasteboard.general.string = viewModel.error.description().localized
         DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
+
+    @IBAction func btnOk(_ sender: Any) {
+        viewModel.onOk()
     }
 }

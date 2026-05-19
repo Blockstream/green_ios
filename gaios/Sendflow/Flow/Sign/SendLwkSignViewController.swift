@@ -68,15 +68,15 @@ class SendLwkSignViewController: UIViewController {
     }
 
     func setContent() {
-        title = "id_review".localized
-        lblToAssetTitleFrom.text = "id_from".localized.capitalized
+        title = "id_confirm_transaction".localized
+        lblToAssetTitleFrom.text = "id_asset".localized.capitalized
         lblToAssetTitleTo.text = "id_to".localized.capitalized
         lblAmountFiat.text = ""
         lblAssetNameFrom.text = ""
         lblAccount1From.text = ""
         lblAssetNameTo.text = ""
         lblAccount1To.text = ""
-        lblAddressTitle.text = "id_send_to".localized.capitalized
+        lblAddressTitle.text = "id_recipient".localized.capitalized
         lblAmountTitle.text = "id_amount".localized.capitalized
         lblAmountValue.text = ""
         lblSumFeeKey.text = "Total fees".localized
@@ -85,7 +85,7 @@ class SendLwkSignViewController: UIViewController {
         lblSumAmountValue.text = ""
         lblSumTotalKey.text = "id_total_spent".localized
         lblSumTotalValue.text = ""
-        lblNoteTitle.text = "id_my_notes".localized
+        lblNoteTitle.text = "id_note".localized
         lblNoteTxt.text = ""
         squareSliderView.isHidden = false
         lblAmountSubtitle.isHidden = viewModel.isCrossChainSwap && !viewModel.usesLightningRail
@@ -130,7 +130,7 @@ class SendLwkSignViewController: UIViewController {
         addressCard.isHidden = false
         lblAddressTitle.isHidden = false
         lblAssetNameFrom.text = viewModel.assetFrom?.name ?? viewModel.assetIdFrom
-        lblAccount1From.text = viewModel.subaccountFrom.localizedName.uppercased()
+        lblAccount1From.text = "" // viewModel.subaccountFrom.localizedName.uppercased()
         iconAssetFrom.image = viewModel.assetImageFrom
         totalsView.isHidden = true
         lblConversion.isHidden = true

@@ -82,7 +82,7 @@ extension Error {
         }
         if let resolverError = self as? TransactionError {
             switch resolverError {
-            case .invalid(let txt):
+            case .invalid(let txt, _):
                 return txt
             case .failure(let txt, let paymentHash):
                 return "\(txt) \(paymentHash)"

@@ -2,7 +2,7 @@ import Foundation
 import lightning
 
 public enum TransactionError: Error {
-    case invalid(localizedDescription: String)
+    case invalid(localizedDescription: String, maxPayable: UInt64? = nil)
     case failure(localizedDescription: String, paymentHash: String)
 }
 

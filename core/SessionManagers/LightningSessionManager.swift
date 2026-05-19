@@ -167,7 +167,11 @@ public class LightningSessionManager: SessionManager {
             throw TransactionError.invalid(localizedDescription: "id_invoice_expired")
         }
         let amount = lightningInvoice?.amountMilliSatoshis()?.satoshi ?? UInt64(addressee.satoshi ?? 0)
-        if amount > tx.subaccount?.btc ?? 0 {
+        if let maxPayable = nodeState()?.maxPayableMsat.satoshi {
+            if amount > maxPayable {
+                throw TransactionError.invalid(localizedDescription: "id_insufficient_funds", maxPayable: maxPayable)
+            }
+        } else if amount > tx.subaccount?.btc ?? 0 {
             throw TransactionError.invalid(localizedDescription: "id_insufficient_funds")
         }
         return tx

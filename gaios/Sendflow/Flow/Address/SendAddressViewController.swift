@@ -153,9 +153,24 @@ class SendAddressViewController: KeyboardViewController {
         btnNext.setStyle(viewModel.canContinue ? .primary : .primaryGray)
         // show error message
         if let error = viewModel.error {
-            infoBg.backgroundColor = UIColor.gRedWarn()
+            infoBg.backgroundColor = UIColor.gRedSwapErr1()
             infoView.isHidden = false
-            lblInvalid.text = error.description().localized
+            if let txError = error as? TransactionError {
+                switch txError {
+                case .invalid(let message, let maxPayable):
+                    if let maxPayable,
+                       let dBalance = Balance.fromSatoshi(maxPayable, assetId: "btc")?.toDenom(),
+                       let fBalance = Balance.fromSatoshi(maxPayable, assetId: "btc")?.toFiat() {
+                        lblInvalid.text = "Amount is above the maximum payment limit of \(dBalance.0) \(dBalance.1) (\(fBalance.0) \(fBalance.1))"
+                    } else {
+                        lblInvalid.text = message.localized
+                    }
+                case .failure(let message, _):
+                    lblInvalid.text = message.localized
+                }
+            } else {
+                lblInvalid.text = error.description().localized
+            }
         } else {
             infoBg.backgroundColor = .clear
             infoView.isHidden = true

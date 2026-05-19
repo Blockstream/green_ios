@@ -98,13 +98,17 @@ class SendTxSuccessViewController: UIViewController {
     }
 
     @IBAction func btnDone(_ sender: Any) {
-        dismiss() {
+        dismiss {
             self.delegate?.onDone()
         }
     }
-
+    @IBAction func btnDismiss(_ sender: Any) {
+        dismiss {
+            self.delegate?.onDone()
+        }
+    }
     @IBAction func btnShare(_ sender: Any) {
-        dismiss() {
+        dismiss {
             self.delegate?.onShare()
         }
     }

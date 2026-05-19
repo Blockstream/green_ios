@@ -2,7 +2,6 @@ import Foundation
 import gdk
 import UIKit
 
-
 class SendSuccessViewController: UIViewController {
 
     @IBOutlet weak var bgLayer: UIView!
@@ -49,10 +48,10 @@ class SendSuccessViewController: UIViewController {
         if let message = viewModel.sendTransactionSuccess.message {
             lblAddress.text = message
             btnTxId.isHidden = true
-        } else if let paymentId = viewModel.sendTransactionSuccess.paymentId {
-            btnTxId.isHidden = false
-            btnTxId.setTitle("\("id_payment_hash".localized):", for: .normal)
-            lblAddress.text = paymentId
+        } else if viewModel.sendTransactionSuccess.paymentId != nil {
+            btnTxId.isHidden = true
+            btnShare.isHidden = true
+            lblAddress.isHidden = true
         } else {
             btnTxId.isHidden = false
             btnTxId.setTitle("\("id_transaction_id".localized):", for: .normal)
@@ -67,9 +66,9 @@ class SendSuccessViewController: UIViewController {
         lblAddress.setStyle(.txtBigger)
         btnDone.setStyle(.primary)
         btnShare.setStyle(.outlined)
-        lblHint.setStyle(.txt)
-        let hint = NSMutableAttributedString(string: "You have just transferred \(viewModel.total ?? "")")
-        hint.setColor(color: UIColor.gGrayTxt(), forText: "You have just transferred")
+        lblHint.setStyle(.txtCard)
+        let hint = NSMutableAttributedString(string: String(format: "You transferred %@".localized,
+                                                                viewModel.total ?? ""))
         lblHint.attributedText = hint
     }
 
@@ -88,7 +87,9 @@ class SendSuccessViewController: UIViewController {
     @IBAction func btnDone(_ sender: Any) {
         viewModel.onClose()
     }
-
+    @IBAction func btnDismiss(_ sender: Any) {
+        viewModel.onClose()
+    }
     @IBAction func btnShare(_ sender: Any) {
         viewModel.onShare()
     }

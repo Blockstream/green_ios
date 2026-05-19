@@ -63,7 +63,7 @@ extension UILabel {
             font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
         case .sectionTitle:
             textColor = UIColor.gGrayTxt()
-            font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+            font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
         case .fieldBigger:
             textColor = .white
             font = UIFont.systemFont(ofSize: 21.0, weight: .semibold)

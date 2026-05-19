@@ -473,7 +473,7 @@ class SendAmountViewControllerLegacy: KeyboardViewController {
             break
         case .failure(let err):
             switch err {
-            case TransactionError.invalid(let localizedDescription):
+            case TransactionError.invalid(let localizedDescription, _):
                 DropAlert().error(message: localizedDescription)
             case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
                 DropAlert().error(message: "id_you_are_not_connected".localized)
