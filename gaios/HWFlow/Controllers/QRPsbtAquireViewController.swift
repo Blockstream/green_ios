@@ -38,7 +38,7 @@ class QRPsbtAquireViewController: UIViewController {
         lblStep.text = "\("id_step".localized) 2".uppercased()
         lblTitle.text = "id_scan_qr_on_jade".localized
         lblHint.text = "id_import_signed_transaction".localized
-        btnImport.setTitle("id_import_from_file", for: .normal)
+        btnImport.setTitle("id_import_from_file".localized, for: .normal)
     }
 
     func setStyle() {
