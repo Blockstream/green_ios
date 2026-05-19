@@ -275,10 +275,15 @@ extension SendCoordinator {
             guard let subaccount = draft.subaccount else {
                 return .selectSubaccount(sendAccountAssetViewModel(draft: draft))
             }
+            if invoice.amountMilliSatoshis() == nil && draft.satoshi == nil {
+                return .enterAmount(makeEnterAmountViewModel(draft: draft, subaccount: subaccount))
+            }
             if subaccount.networkType.lightning {
                 return try await routeLightningInvoicePay(invoice, draft: draft, subaccount: subaccount)
-            } else {
+            } else if subaccount.networkType.liquid {
                 return try await routeLightningInvoiceSwap(invoice, draft: draft, subaccount: subaccount)
+            } else {
+                throw SendFlowError.wrongSubaccount
             }
         case .lightningOffer(let offer, let lightningPayment):
             guard let subaccount = draft.subaccount else {
@@ -293,8 +298,25 @@ extension SendCoordinator {
             guard let subaccount = draft.subaccount else {
                 return .selectSubaccount(sendAccountAssetViewModel(draft: draft))
             }
-            if subaccount.networkType.liquid {
-                return try await routeLnUrl(input, payment: payment, draft: draft, subaccount: subaccount)
+            guard let amount = draft.satoshi, amount > 0 else {
+                return .enterAmount(makeEnterAmountViewModel(draft: draft, subaccount: subaccount))
+            }
+            if subaccount.networkType.lightning {
+                return try await routeLnUrlPay(
+                    input,
+                    payment: payment,
+                    draft: draft,
+                    subaccount: subaccount,
+                    satoshi: amount
+                )
+            } else if subaccount.networkType.liquid {
+                return try await routeLnUrlSwap(
+                    input,
+                    payment: payment,
+                    draft: draft,
+                    subaccount: subaccount,
+                    satoshi: amount
+                )
             } else {
                 throw SendFlowError.wrongSubaccount
             }
@@ -368,16 +390,13 @@ extension SendCoordinator {
         draft: TransactionDraft,
         subaccount: WalletItem
     ) async throws -> SendRoute {
-            if invoice.amountMilliSatoshis() == nil && draft.satoshi == nil {
-                return .enterAmount(makeEnterAmountViewModel(draft: draft, subaccount: subaccount))
-            }
-            nav.topViewController?.startLoader(message: "")
-            let tx = try await TransactionBuilder.build(
-                from: subaccount,
-                invoice: invoice,
-                satoshi: draft.satoshi)
-            nav.topViewController?.stopLoader()
-            return .signAtomicSwap(makeSignViewModel(draft: draft, subaccount: subaccount, tx: tx))
+        nav.topViewController?.startLoader(message: "")
+        let tx = try await TransactionBuilder.build(
+            from: subaccount,
+            invoice: invoice,
+            satoshi: draft.satoshi)
+        nav.topViewController?.stopLoader()
+        return .signAtomicSwap(makeSignViewModel(draft: draft, subaccount: subaccount, tx: tx))
     }
 
     // BOLT12: Liquid-only submarine swap via LWK preparePay.
@@ -425,39 +444,40 @@ extension SendCoordinator {
         return .signAtomicSwap(makeSignViewModel(draft: preparedDraft, subaccount: subaccount, tx: tx))
     }
 
-    // LNURL: native Lightning resolves the invoice through the LN SDK; on
-    // Liquid it goes through the same LWK preparePay flow as BOLT12.
-    private func routeLnUrl(
+    // LNURL: native Lightning resolves the invoice through the LN SDK
+    private func routeLnUrlPay(
         _ input: String,
         payment: LiquidWalletKit.Payment,
         draft: TransactionDraft,
-        subaccount: WalletItem
+        subaccount: WalletItem,
+        satoshi: UInt64
     ) async throws -> SendRoute {
-        if subaccount.networkType.lightning {
-            guard let amount = draft.satoshi, amount > 0 else {
-                return .enterAmount(makeEnterAmountViewModel(draft: draft, subaccount: subaccount))
-            }
-            nav.topViewController?.startLoader(message: "")
-            let tx = try await TransactionBuilder.build(
-                from: subaccount,
-                lnurl: input,
-                payment: payment,
-                satoshi: amount)
-            nav.topViewController?.stopLoader()
-            return .signAtomicSwap(makeSignViewModel(draft: draft, subaccount: subaccount, tx: tx))
-        }
-        guard subaccount.networkType.liquid else {
-            throw SendFlowError.wrongSubaccount
-        }
-        guard let amount = draft.satoshi, amount > 0 else {
-            return .enterAmount(makeEnterAmountViewModel(draft: draft, subaccount: subaccount))
-        }
+        nav.topViewController?.startLoader(message: "")
+        let tx = try await TransactionBuilder.build(
+            from: subaccount,
+            lnurl: input,
+            payment: payment,
+            satoshi: satoshi)
+        nav.topViewController?.stopLoader()
+        return .signAtomicSwap(makeSignViewModel(draft: draft, subaccount: subaccount, tx: tx))
+    }
+    // Liquid it goes through the same LWK preparePay flow as BOLT12.
+    private func routeLnUrlSwap(
+        _ input: String,
+        payment: LiquidWalletKit.Payment,
+        draft: TransactionDraft,
+        subaccount: WalletItem,
+        satoshi: UInt64
+    ) async throws -> SendRoute {
         let lwk = await wallet.wallet.awaitLwkSession()
         guard let lwk, let xpub = AccountsRepository.shared.current?.xpubHashId else {
             throw SendFlowError.invalidSession
         }
         nav.topViewController?.startLoader(message: "")
-        let lightningPayment = try await TransactionBuilder.resolveLnurlPayment(payment, amount: amount)
+        let lightningPayment = try await TransactionBuilder.resolveLnurlPayment(
+            payment,
+            amount: satoshi
+        )
         let (swap, tx) = try await TransactionBuilder.buildSubmarineSwapTransaction(
             lightningPayment: lightningPayment,
             lwk: lwk,
@@ -501,8 +521,8 @@ extension SendCoordinator {
 
     private func updateTransactionDraft(swap: PreparePayResponse? = nil, satoshi: UInt64? = nil, on draft: TransactionDraft) -> TransactionDraft {
         var updated = draft
-        updated.swapPayResponse = swap
-        updated.satoshi = satoshi
+        updated.swapPayResponse = swap ?? draft.swapPayResponse
+        updated.satoshi = satoshi ?? draft.satoshi
         self.draft = updated
         return updated
     }
