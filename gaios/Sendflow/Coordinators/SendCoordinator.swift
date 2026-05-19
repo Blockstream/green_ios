@@ -424,7 +424,7 @@ extension SendCoordinator {
                 )
             }
         } else {
-            guard let satoshi = preparedDraft.satoshi, satoshi <= 0 else {
+            guard let satoshi = preparedDraft.satoshi, satoshi > 0 else {
                 return .enterAmount(makeEnterAmountViewModel(draft: preparedDraft, subaccount: subaccount))
             }
             try lightningPayment.setBolt12InvoiceAmount(amountSats: satoshi)
