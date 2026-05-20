@@ -60,12 +60,13 @@ class ReceiveViewController: KeyboardViewController {
 
         didSelectAccount(viewModel.account)
         // always nag even after dismiss
-        // BackupHelper.shared.cleanDismissedCache(walletId: viewModel.wm.account.id, position: .receive)
         // AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        BackupHelper.shared.cleanDismissedCache(walletId: viewModel.mainAccount.id, position: .receive)
+        viewModel.reloadBackupCards()
         reload()
         invoicePaidToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.InvoicePaid.rawValue), object: nil, queue: .main, using: invoicePaid)
         newAddressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, queue: .main, using: newAddress)
