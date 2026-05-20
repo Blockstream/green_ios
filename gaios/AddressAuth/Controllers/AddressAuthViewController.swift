@@ -14,7 +14,8 @@ class AddressAuthViewController: KeyboardViewController {
     @IBOutlet weak var searchCard: UIView!
     @IBOutlet weak var searchField: UITextField!
     @IBOutlet weak var tableView: UITableView!
-
+    @IBOutlet weak var pasteButton: UIButton!
+    
     var viewModel: AddressAuthViewModel!
     var isSearchActive = false
     var selectedAddress: String?
@@ -72,6 +73,7 @@ class AddressAuthViewController: KeyboardViewController {
 
     func setStyle() {
         searchCard.cornerRadius = 5.0
+        pasteButton.tintColor = UIColor.white
     }
 
     @objc func triggerTextChange() {
@@ -149,7 +151,14 @@ class AddressAuthViewController: KeyboardViewController {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.triggerTextChange), object: nil)
         perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0.5)
     }
-
+    
+    @IBAction func pasteAddress(_ sender: Any) {
+        if let text = UIPasteboard.general.string {
+            searchField.text = text
+            isSearchActive = true
+            triggerTextChange()
+        }
+    }
 }
 
 extension AddressAuthViewController: UITableViewDelegate, UITableViewDataSource {
