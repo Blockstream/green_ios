@@ -19,16 +19,18 @@ extension LwkError {
             return msg.replacingOccurrences(of: "BoltzApi(HTTP(\"\\\"", with: "").replacingOccurrences(of: "\\\"\"))", with: "")
         case .PoisonError(msg: let msg):
             return "Poison Error \(msg)"
-        case .MagicRoutingHint(_, _, _):
-            return "Magic Routing Hint"
-        case .SwapExpired(_, _):
-            return "Swap Expired"
+        case .MagicRoutingHint(address: let address, amount: let amount, uri: let uri):
+            return "Magic Routing Hint for \(uri): \(address) \(amount)"
+        case .SwapExpired(swapId: let swapId, status: let status):
+            return "Swap \(swapId) expired: \(status)"
         case .NoBoltzUpdate:
             return "No Boltz Update"
         case .ObjectConsumed:
             return "Object Consumed"
         case .BoltzBackendHttpError(status: let status, error: let error):
             return "Http error \(status): \(error ?? "")"
+        case .GenericWithSwapId(msg: let msg, swapId: let swapId):
+            return "Swap \(swapId) error: \(msg)"
         }
     }
 }

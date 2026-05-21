@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Support LNURL, BOLT12, and BIP-353 payment instructions in Send.
 
+### Changed
+- Bump LWK to version 0.17.2
+
 ## [5.4.1] - 2026-05-18
 
 ### Changed
