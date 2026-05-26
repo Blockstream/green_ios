@@ -219,9 +219,14 @@ class ConnectViewModel: NSObject {
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = HwPopupResolver()
         let credentials = try await getCredentials(method: method)
+        let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
         let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: account.keychain)
         updateState?(.login)
-        let res = try await wm.loginWatchonly(credentials: credentials, boltzCredentials: boltzCredentials, parentWalletId: account.walletIdentifier)
+        let res = try await wm.loginWatchonly(
+            credentials: credentials,
+            lightningCredentials: lightningCredentials,
+            boltzCredentials: boltzCredentials,
+            parentWalletId: account.walletIdentifier)
         AccountsRepository.shared.current = account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)

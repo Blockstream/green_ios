@@ -327,7 +327,7 @@ actor WalletDataModel {
             walletItems.removeAll(where: { $0 == .rename })
         }
         var accountItems: [SettingsItem] = []
-        if !wallet.isEphemeral && !(mainAccount.isHW && wallet.isWatchonly) {
+        if !wallet.isEphemeral && mainAccount.boardType != .v2c && !mainAccount.isWatchonly {
             accountItems += [.lightning]
         }
         accountItems += [.ampID]
@@ -335,7 +335,7 @@ actor WalletDataModel {
             accountItems += [.twoFactorAuthication, .pgpKey]
         }
         accountItems += [.watchOnly, .archievedAccounts, .createAccount]
-        if !wallet.isEphemeral && (mainAccount.isHW && mainAccount.boardType != .v2c) && !mainAccount.isWatchonly {
+        if !wallet.isEphemeral && mainAccount.boardType != .v2c && !mainAccount.isWatchonly {
             accountItems += [.swaps]
         }
         if !wallet.isEphemeral && !mainAccount.isWatchonly && mainAccount.hasBoltzKey {

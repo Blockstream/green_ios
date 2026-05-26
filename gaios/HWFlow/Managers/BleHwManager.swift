@@ -192,14 +192,14 @@ class BleHwManager {
         walletManager.popupResolver = await PopupResolver()
         walletManager.hwInterfaceResolver = HwPopupResolver()
         walletManager.hwProtocol = hwProtocol
-        let derivedCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
+        let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
         let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: account.keychain)
         do {
             if let masterXpub = try await getMasterXpub(chain: account.gdkNetwork.chain) {
                 let walletId = try walletManager.prominentSession?.walletIdentifier(masterXpub: masterXpub)
                 let res = try await walletManager.login(
                    credentials: nil,
-                   lightningCredentials: derivedCredentials,
+                   lightningCredentials: lightningCredentials,
                    boltzCredentials: boltzCredentials,
                    device: device,
                    masterXpub: masterXpub,

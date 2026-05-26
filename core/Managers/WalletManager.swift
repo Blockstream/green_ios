@@ -223,6 +223,14 @@ public class WalletManager {
         if let boltzCredentials, let lwkSession {
             loginUserResult = try await loginLWK(lwk: lwkSession, credentials: boltzCredentials, parentWalletId: parentWalletId)
         }
+        // login lightning
+        if let lightningCredentials, let lightningSession {
+            loginUserResult = try await loginLightning(
+                session: lightningSession,
+                credentials: lightningCredentials,
+                parentWalletId: parentWalletId
+            )
+        }
         if activeSessions.isEmpty {
             throw HWError.Disconnected("id_you_are_not_connected")
         }
