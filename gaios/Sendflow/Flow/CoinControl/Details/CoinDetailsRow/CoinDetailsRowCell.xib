@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="CoinDetailsRowCell" customModule="gaios" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IYm-AC-NnE">
+                        <rect key="frame" x="16" y="6" width="288" height="32"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="MaE-EJ-SGa">
+                                <rect key="frame" x="0.0" y="0.0" width="288" height="32"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RTK-4C-Og7">
+                                        <rect key="frame" x="0.0" y="0.0" width="72" height="32"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <color key="textColor" name="gGrayTxt"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KjC-I3-jxF">
+                                        <rect key="frame" x="96" y="0.0" width="192" height="32"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </view>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="MaE-EJ-SGa" firstAttribute="top" secondItem="IYm-AC-NnE" secondAttribute="top" id="4Vp-B1-322"/>
+                            <constraint firstAttribute="bottom" secondItem="MaE-EJ-SGa" secondAttribute="bottom" id="RhD-qs-YyF"/>
+                            <constraint firstAttribute="trailing" secondItem="MaE-EJ-SGa" secondAttribute="trailing" id="pCU-sm-NVH"/>
+                            <constraint firstItem="MaE-EJ-SGa" firstAttribute="leading" secondItem="IYm-AC-NnE" secondAttribute="leading" id="sd6-7h-SWm"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="IYm-AC-NnE" secondAttribute="bottom" constant="6" id="62f-Ci-mz8"/>
+                    <constraint firstItem="KjC-I3-jxF" firstAttribute="width" relation="lessThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="width" multiplier="0.6" id="Foz-w5-I4k"/>
+                    <constraint firstItem="IYm-AC-NnE" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="6" id="HDK-4o-SNl"/>
+                    <constraint firstAttribute="trailing" secondItem="IYm-AC-NnE" secondAttribute="trailing" constant="16" id="UTm-wh-MZy"/>
+                    <constraint firstItem="IYm-AC-NnE" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="xgt-cW-Xai"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <connections>
+                <outlet property="titleLabel" destination="RTK-4C-Og7" id="9ZU-mk-NEM"/>
+                <outlet property="valueView" destination="KjC-I3-jxF" id="R3T-WK-NpV"/>
+            </connections>
+            <point key="canvasLocation" x="-334.35114503816794" y="153.52112676056339"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <namedColor name="gGrayTxt">
+            <color red="0.62745098039215685" green="0.62745098039215685" blue="0.62745098039215685" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

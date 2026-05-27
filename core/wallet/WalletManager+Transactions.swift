@@ -56,6 +56,27 @@ extension WalletManager {
         }
         return transactions
     }
+
+    public func getTransaction(id: String, subaccount: Account) async throws -> Transaction? {
+        var offset = 0
+        let limit = 30
+        while true {
+            let params = GetTransactionsParams(subaccount: subaccount.pointer, first: offset, count: limit)
+            let pageTxs = try await accountBackend(subaccount)
+                .getTransactions(params: params)
+                .list
+                .map { Transaction($0.details, accountId: subaccount.id) }
+            
+            if let tx = pageTxs.first(where: { $0.hash == id }) {
+                return tx
+            }
+            if pageTxs.count < limit {
+                return nil
+            }
+            offset += limit
+        }
+    }
+    
     public func allTransactions(subaccounts: [Account]) async throws -> [Transaction] {
         var txs: [Transaction] = []
         for account in subaccounts {

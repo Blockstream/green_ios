@@ -9,7 +9,6 @@ public extension UIImage {
         )
         let targetSize = availableRect.size
         let format = UIGraphicsImageRendererFormat()
-        format.scale = 1
         let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
         let resized = renderer.image { _ in
             self.draw(in: CGRect(origin: .zero, size: targetSize))
@@ -18,15 +17,24 @@ public extension UIImage {
     }
 }
 extension UIImage {
-    func withBadge(iconColor: UIColor, badgeColor: UIColor = .red) -> UIImage {
+    func withBadge(iconColor: UIColor, badgeColor: UIColor = .red, borderColor: UIColor? = nil, borderWidth: CGFloat = 0, badgeOffset: CGPoint = .zero) -> UIImage {
         let render = UIGraphicsImageRenderer(size: size)
         return render.image { _ in
             let iconTintedImage = withRenderingMode(.alwaysTemplate)
             iconColor.setFill()
             iconTintedImage.draw(at: .zero)
+            
             let badgeSize = CGSize(width: 6, height: 6)
-            let badgeOrigin = CGPoint(x: size.width - badgeSize.width, y: 0)
+            let badgeOrigin = CGPoint(x: size.width - badgeSize.width + badgeOffset.x, y: badgeOffset.y)
             let badgeRect = CGRect(origin: badgeOrigin, size: badgeSize)
+            
+            if let borderColor = borderColor, borderWidth > 0 {
+                let borderRect = badgeRect.insetBy(dx: -borderWidth, dy: -borderWidth)
+                let borderPath = UIBezierPath(ovalIn: borderRect)
+                borderColor.setFill()
+                borderPath.fill()
+            }
+            
             let badgePath = UIBezierPath(ovalIn: badgeRect)
             badgeColor.setFill()
             badgePath.fill()

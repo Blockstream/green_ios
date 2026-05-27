@@ -43,4 +43,5 @@ struct CreateTx {
     var isBitcoin: Bool { !isLightning && (assetId == nil || assetId == "btc") }
     var txType: TxType
     var psbt: String?
+    var selectedUtxos: [UnspentOutput]?
 }

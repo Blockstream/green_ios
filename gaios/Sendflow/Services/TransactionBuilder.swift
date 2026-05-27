@@ -393,7 +393,7 @@ actor TransactionBuilder {
                 amount = Int64(bip21Amount)
             }
             return CreateTx(
-                addressee: Addressee.from(address: bip21.address().description, satoshi: amount, assetId: nil),
+                addressee: Addressee.from(address: bip21.address().description, satoshi: amount, assetId: nil, bip21: amount != nil),
                 subaccount: tx.subaccount,
                 txType: .transaction)
         case .bip321(_):
@@ -401,7 +401,7 @@ actor TransactionBuilder {
         case .liquidBip21(let bip21):
             let satoshi = bip21.satoshi == nil ? nil : Int64(bip21.satoshi ?? 0)
             return CreateTx(
-                addressee: Addressee.from(address: bip21.address.description, satoshi: satoshi, assetId: bip21.asset),
+                addressee: Addressee.from(address: bip21.address.description, satoshi: satoshi, assetId: bip21.asset, bip21: satoshi != nil),
                 subaccount: tx.subaccount,
                 txType: .transaction)
         case .psbt(let text):

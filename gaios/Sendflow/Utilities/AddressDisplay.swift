@@ -6,6 +6,7 @@ enum AddressDisplayStyle {
     case yellow
     case txDetails
     case amp
+    case coinDetails
 }
 
 enum AddressDisplayAppearance {
@@ -33,7 +34,7 @@ class AddressDisplay {
         var address = address
         var fontSize: CGFloat = 16.0
         var align: NSTextAlignment = .center
-        if style == .txDetails {
+        if style == .txDetails || style == .coinDetails {
             textView.textContainerInset = UIEdgeInsets(top: 1.0, left: 0.0, bottom: 0.0, right: 0.0)
             fontSize = 12.0
             align = .right
@@ -100,11 +101,17 @@ class AddressDisplay {
 
         let attrS = NSMutableAttributedString(string: visibleAddress)
         attrS.addAttribute(.paragraphStyle, value: paragraph, range: rangeA)
-        switch appearance {
-        case .light:
-            attrS.setColor(color: .black, forText: visibleAddress)
-        case .dark:
-            attrS.setColor(color: .white, forText: visibleAddress)
+        let isCoinDetails = style == .coinDetails
+        
+        if isCoinDetails {
+            attrS.setColor(color: .gGrayTxt(), forText: visibleAddress)
+        } else {
+            switch appearance {
+            case .light:
+                attrS.setColor(color: .black, forText: visibleAddress)
+            case .dark:
+                attrS.setColor(color: .white, forText: visibleAddress)
+            }
         }
         attrS.setFont(font: .monospacedSystemFont(ofSize: fontSize, weight: .regular), stringValue: visibleAddress)
 

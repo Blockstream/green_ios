@@ -61,13 +61,13 @@ public struct TxInputOutput: Codable {
     // Liquid Output
     public let blindingKey: String?
     public let isConfidential: Bool?
-    public let unconfidentialAddress: Bool?
+    public let unconfidentialAddress: String?
     // Others
     public let txHash: String?
     public let userPath: [UInt32]?
     public let ephPublicKey: String? // our ephemeral public key for [un]blinding
 
-    public init(address: String? = nil, addressee: String? = nil, addressType: String? = nil, isChange: Bool? = nil, satoshi: Int64? = nil, ptIdx: Int64? = nil, isRelevant: Bool? = nil, isInternal: Bool? = nil, isOutput: Bool? = nil, isSpent: Bool? = nil, pointer: Int? = nil, subaccount: Int? = nil, subtype: Int? = nil, assetId: String? = nil, assetTag: String? = nil, amountBlinder: String? = nil, assetBlinder: String? = nil, commitment: String? = nil, isBlinded: Bool? = nil, nonceCommitment: String? = nil, previdx: Int? = nil, prevtxhash: String? = nil, script: String? = nil, blindingKey: String? = nil, isConfidential: Bool? = nil, unconfidentialAddress: Bool? = nil, txHash: String? = nil, userPath: [UInt32]? = nil, ephPublicKey: String? = nil) {
+    public init(address: String? = nil, addressee: String? = nil, addressType: String? = nil, isChange: Bool? = nil, satoshi: Int64? = nil, ptIdx: Int64? = nil, isRelevant: Bool? = nil, isInternal: Bool? = nil, isOutput: Bool? = nil, isSpent: Bool? = nil, pointer: Int? = nil, subaccount: Int? = nil, subtype: Int? = nil, assetId: String? = nil, assetTag: String? = nil, amountBlinder: String? = nil, assetBlinder: String? = nil, commitment: String? = nil, isBlinded: Bool? = nil, nonceCommitment: String? = nil, previdx: Int? = nil, prevtxhash: String? = nil, script: String? = nil, blindingKey: String? = nil, isConfidential: Bool? = nil, unconfidentialAddress: String? = nil, txHash: String? = nil, userPath: [UInt32]? = nil, ephPublicKey: String? = nil) {
         self.address = address
         self.addressee = addressee
         self.addressType = addressType

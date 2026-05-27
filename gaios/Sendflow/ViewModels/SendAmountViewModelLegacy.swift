@@ -28,6 +28,7 @@ class SendAmountViewModelLegacy {
         }
         return nil
     }
+    var selectedUtxos: [UnspentOutput]? { createTx.selectedUtxos }
     var denominationType: DenominationType = .BTC
     var transaction: Transaction?
     var transactionPriority: TransactionPriority = .Medium
@@ -68,8 +69,10 @@ class SendAmountViewModelLegacy {
             return createTx.anyAmounts ?? false
         } else if createTx.txType == .redepositExpiredUtxos {
             return true
+        } else if createTx.bip21 {
+            return false
         } else {
-            return createTx.txType == .transaction && !createTx.sendAll
+            return createTx.txType == .transaction
         }
     }
 
@@ -222,24 +225,49 @@ class SendAmountViewModelLegacy {
     var feeFiatText: String? { fee?.toFiatText() == nil ? nil : "≈ \(fee?.toFiatText() ?? "")" }
     var totalWithoutFeeDenom: String? { totalWithoutFee?.toValue(denominationType).0 }
     var totalWithoutFeeFiat: String? { totalWithoutFee?.toFiat().0 }
+    var totalWithoutFeeDenomUnformatted: String? { totalWithoutFee?.toValue(denominationType, locale: false).0 }
+    var totalWithoutFeeFiatUnformatted: String? { totalWithoutFee?.toFiat(locale: false).0 }
     var totalWithoutFeeDenomText: String? { totalWithoutFee?.toText(denominationType) }
     var totalWithoutFeeFiatText: String? { totalWithoutFee?.toFiatText() }
 
     var walletBalanceText: String? { isFiat ? walletBalanceFiatText : walletBalanceDenomText }
 
-    var amountText: String? {
-        if createTx.txType == .sweep || (sendAll && createTx.txType != .redepositExpiredUtxos) {
-            return isFiat ? totalWithoutFeeFiat : totalWithoutFeeDenom
-        } else {
-            return isFiat ? amountFiatText : amountDenomText
+    private var fallbackAmountBalance: Balance? {
+        if let selected = createTx.selectedUtxos, !selected.isEmpty {
+            let satoshi = selected.compactMap { $0.satoshi }.reduce(0, +)
+            return Balance.fromSatoshi(satoshi, assetId: assetId)
         }
+        return walletBalance
     }
-    var subamountText: String? {
-        if createTx.txType == .sweep || (sendAll && createTx.txType != .redepositExpiredUtxos) {
-            return isFiat ? "\(totalWithoutFeeDenom ?? "") \(denomination ?? "")" : "≈ \(totalWithoutFeeFiat ?? "") \(fiatCurrency ?? "")"
-        } else {
-            return isFiat ? "\(subamountDenomText ?? "") \(denomination ?? "")" : "≈ \(subamountFiatText ?? "") \(fiatCurrency ?? "")"
+
+    private func getSendAllAmountText(isFiat: Bool, unformatted: Bool) -> String? {
+        let computedText = isFiat ? 
+            (unformatted ? totalWithoutFeeFiatUnformatted : totalWithoutFeeFiat) : 
+            (unformatted ? totalWithoutFeeDenomUnformatted : totalWithoutFeeDenom)
+            
+        if let text = computedText, !text.isEmpty {
+            return text
         }
+
+        let fallback = fallbackAmountBalance
+        return isFiat ? fallback?.toFiat(locale: !unformatted).0 : fallback?.toValue(denominationType, locale: !unformatted).0
+    }
+
+    var amountText: String? {
+        let isSendAll = createTx.txType == .sweep || (sendAll && createTx.txType != .redepositExpiredUtxos)
+        if isSendAll {
+            return getSendAllAmountText(isFiat: isFiat, unformatted: true)
+        }
+        return isFiat ? amountFiatText : amountDenomText
+    }
+    
+    var subamountText: String? {
+        let isSendAll = createTx.txType == .sweep || (sendAll && createTx.txType != .redepositExpiredUtxos)
+        if isSendAll {
+            let text = getSendAllAmountText(isFiat: !isFiat, unformatted: false) ?? ""
+            return !isFiat ? "≈ \(text) \(fiatCurrency ?? "")" : "\(text) \(denomination ?? "")"
+        }
+        return isFiat ? "\(subamountDenomText ?? "") \(denomination ?? "")" : "≈ \(subamountFiatText ?? "") \(fiatCurrency ?? "")"
     }
     var conversionText: String? {
         return isFiat ? "\(totalDenomText ?? "")" : "\(totalFiatText ?? "")"
@@ -294,11 +322,18 @@ class SendAmountViewModelLegacy {
     func validate() -> Task<Transaction?, Error>? {
         validateTask?.cancel()
         validateTask = Task {
-            if let tx = try await validateTransaction() {
-                self.transaction = tx
-                return tx
+            do {
+                if let tx = try await validateTransaction() {
+                    self.transaction = tx
+                    return tx
+                } else {
+                    self.transaction = nil
+                    return nil
+                }
+            } catch {
+                self.transaction = nil
+                throw error
             }
-            return nil
         }
         return validateTask
     }
@@ -375,10 +410,23 @@ class SendAmountViewModelLegacy {
             }
             return created
         }
-        if [TxType.transaction, TxType.bumpFee].contains(where: {$0 == createTx.txType }) && tx.utxos == nil {
+        if [TxType.transaction, TxType.bumpFee].contains(where: {$0 == createTx.txType }) {
             let session = (accountBackend as? GdkAccountBackend)?.session
-            let unspent = try await session?.getUnspentOutputs(GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 0))
-            tx.utxos = unspent ?? [:]
+
+            if let selected = createTx.selectedUtxos, !selected.isEmpty {
+                var utxosDict: [String: [Any]] = [:]
+                let defaultAssetId = createTx.assetId ?? session?.gdkNetwork.getFeeAsset() ?? "btc"
+                for utxo in selected {
+                    guard let dict = try? utxo.asDictionary() else { continue }
+                    let asset = utxo.assetId ?? defaultAssetId
+                    utxosDict[asset, default: []].append(dict)
+                }
+                tx.utxos = utxosDict
+            } else {
+                tx.utxos = nil
+                let unspent = try await session?.getUnspentOutputs(GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 0))
+                tx.utxos = unspent ?? [:]
+            }
         }
         self.transaction = tx
         if Task.isCancelled { return nil }
