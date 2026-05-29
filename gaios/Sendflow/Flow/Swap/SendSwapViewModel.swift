@@ -340,6 +340,14 @@ final class SendSwapViewModel {
             return "(~\(state.priority.time(isLiquid: network?.liquid ?? false)))"
         }
     }
+    func maxDecimals(for position: SwapPositionEnum) -> Int {
+        if state.isFiat { return 2 }
+        let assetId = position == .from ? state.from.assetId : state.to.assetId
+        if AssetInfo.baseIds.contains(assetId) {
+            return Int(state.denomination.digits)
+        }
+        return Int(wm.info(for: assetId).precision ?? 8)
+    }
     func selectAccount(for position: SwapPositionEnum) {
         Task {
             let model = dialogAccountsModel(position)

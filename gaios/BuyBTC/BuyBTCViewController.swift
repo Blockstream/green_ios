@@ -64,10 +64,9 @@ class BuyBTCViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setContent()
+        setAmountField()
         setStyle()
         loadNavigationBtns()
-        amountTextField.addTarget(self, action: #selector(BuyBTCViewController.textFieldDidChange(_:)),
-                                  for: .editingChanged)
         loadAddress()
         view.accessibilityIdentifier = AccessibilityIds.BuyBTCScreen.view
     }
@@ -145,6 +144,13 @@ class BuyBTCViewController: KeyboardViewController {
             bgBackup.isHidden = true
         }
     }
+    
+    func setAmountField() {
+        amountTextField.delegate = self
+        amountTextField.keyboardType = .decimalPad
+        amountTextField.addTarget(self, action: #selector(BuyBTCViewController.textFieldDidChange(_:)),for: .editingChanged)
+    }
+    
     func reload() {
         viewProvider.isHidden = viewModel.showNoQuotes
         viewNoQuotes.isHidden = !viewModel.showNoQuotes
@@ -199,7 +205,8 @@ class BuyBTCViewController: KeyboardViewController {
             $0?.backgroundColor = UIColor.gGrayPanel()
         }
         let color = UIColor.gWarnCardBgBlue()
-        if let amount = Double(amountTextField.text ?? "") {
+        let normalizedAmount = (amountTextField.text ?? "").replacingOccurrences(of: DecimalInputSanitizer.separator, with: ".")
+        if let amount = Double(normalizedAmount) {
             if amount == tiers.min {
                 btnTier1?.backgroundColor = color
             }
@@ -469,11 +476,29 @@ extension BuyBTCViewController {
     }
 }
 extension BuyBTCViewController: UITextFieldDelegate {
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.text?.count ?? 0 > 15 {
-            return false
+    func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
+        let currentText = textField.text ?? ""
+        guard let range = Range(range, in: currentText) else { return false }
+        
+        let proposedValue = currentText.replacingCharacters(in: range, with: string)
+        let sanitizedValue = DecimalInputSanitizer.sanitize(
+            text: proposedValue,
+            maxDecimals: viewModel.maxDecimals
+        )
+        
+        guard sanitizedValue != proposedValue else { return true }
+
+        if sanitizedValue != currentText {
+            textField.text = sanitizedValue
+            textField.sendActions(for: .editingChanged)
         }
-        return true
+        
+        return false
+
     }
 }
 extension BuyBTCViewController: SelectProviderViewControllerDelegate {

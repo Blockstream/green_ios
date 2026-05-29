@@ -91,6 +91,14 @@ final class SendAmountViewModel {
         }
         return true
     }
+    
+    var maxDecimals: Int {
+        if isFiat { return 2 }
+        if AssetInfo.baseIds.contains(assetId) {
+            return Int(denominationType.digits)
+        }
+        return Int(asset?.precision ?? 8)
+    }
 
     var amountText: String? {
         didSet {

@@ -195,6 +195,13 @@ struct ReceiveState {
     var lnMaxSatoshis: UInt64 {
         return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigLnMaxSatoshis) as? UInt64 ?? 400_000
     }
+    var maxDecimals: Int {
+        if isFiat { return 2 }
+        if !AssetInfo.baseIds.contains(anyOrAsset.assetId) {
+            return Int(assetInfo?.precision ?? 8)
+        }
+        return Int(inputDenomination.digits)
+    }
     func lnLimitsStr(satoshi: UInt64?, showFiat: Bool) -> String {
         var str = "N/A"
         if let satoshi = satoshi, let balance = Balance.fromSatoshi(satoshi, assetId: AssetInfo.btcId) {

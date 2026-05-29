@@ -66,13 +66,12 @@ class SendAmountViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setContent()
+        setAmountField()
         setStyle()
         reload()
         viewModel.onStateChanged = { [weak self] in
             self?.reload()
         }
-        amountField.addTarget(self, action: #selector(SendAmountViewController.textFieldDidChange(_:)),
-                              for: .editingChanged)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -171,6 +170,17 @@ class SendAmountViewController: KeyboardViewController {
             $0.cornerRadius = 4.0
         }
     }
+    
+    func setAmountField() {
+        amountField.delegate = self
+        amountField.keyboardType = .decimalPad
+        amountField.addTarget(
+            self,
+            action: #selector(SendAmountViewController.textFieldDidChange(_:)),
+            for: .editingChanged
+        )
+    }
+    
     @MainActor
     func reloadNavigationBar() {
         if let titleView = Bundle.main.loadNibNamed("SendTitleView", owner: self, options: nil)?.first as? SendTitleView {
@@ -306,9 +316,10 @@ extension SendAmountViewController: DialogInputDenominationViewControllerDelegat
         viewModel.denominationType = denomination
         viewModel.isFiat = false
         if let satoshi = viewModel.satoshi {
-            amountField.text = Balance
+            let rawAmount = Balance
                 .fromSatoshi(satoshi, assetId: viewModel.assetId)?
-                .toDenom(denomination, locale: false).0
+                .toDenom(denomination, locale: false).0 ?? ""
+            amountField.text = DecimalInputSanitizer.sanitize(text: rawAmount)
         }
         viewModel.triggerValidation()
     }
@@ -332,11 +343,28 @@ extension SendAmountViewController: SendDialogFeeViewControllerProtocol {
     }
 }
 extension SendAmountViewController: UITextFieldDelegate {
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.text?.count ?? 0 > 15 {
-            return false
+    func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
+        let currentText = textField.text ?? ""
+        guard let range = Range(range, in: currentText) else { return false }
+
+        let proposedValue = currentText.replacingCharacters(in: range, with: string)
+        let sanitizedValue = DecimalInputSanitizer.sanitize(
+            text: proposedValue,
+            maxDecimals: viewModel.maxDecimals
+        )
+
+        guard sanitizedValue != proposedValue else { return true }
+
+        if sanitizedValue != currentText {
+            textField.text = sanitizedValue
+            textField.sendActions(for: .editingChanged)
         }
-        return true
+        
+        return false
     }
 }
 extension SendAmountViewController: DialogLiquidAssetToFiatViewControllerDelegate {

@@ -847,6 +847,7 @@
 		C742272B2FC0991800BDE83E /* LTSettingsDialogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C742272A2FC0991800BDE83E /* LTSettingsDialogViewController.swift */; };
 		C74D3FB230373AE500E3737E /* PromoContainerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74D3FB030373AE500E3737E /* PromoContainerCell.swift */; };
 		C74D3FB330373AE500E3737E /* PromoContainerCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C74D3FB130373AE500E3737E /* PromoContainerCell.xib */; };
+		C744C0FB2FC98786000E5CF7 /* DecimalTextFieldSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C744C0FA2FC98786000E5CF7 /* DecimalTextFieldSanitizer.swift */; };
 		C78788722FB74648009F2907 /* lightning_success.riv in Resources */ = {isa = PBXBuildFile; fileRef = C78788712FB74648009F2907 /* lightning_success.riv */; };
 		C79C85A62FD9881A00501B33 /* LightningTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A52FD9881A00501B33 /* LightningTask.swift */; };
 		C79C85A82FD98CEE00501B33 /* NotificationDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A72FD98CEE00501B33 /* NotificationDeviceManager.swift */; };
@@ -1866,6 +1867,7 @@
 		C742272A2FC0991800BDE83E /* LTSettingsDialogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTSettingsDialogViewController.swift; sourceTree = "<group>"; };
 		C74D3FB030373AE500E3737E /* PromoContainerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoContainerCell.swift; sourceTree = "<group>"; };
 		C74D3FB130373AE500E3737E /* PromoContainerCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PromoContainerCell.xib; sourceTree = "<group>"; };
+		C744C0FA2FC98786000E5CF7 /* DecimalTextFieldSanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalTextFieldSanitizer.swift; sourceTree = "<group>"; };
 		C78788712FB74648009F2907 /* lightning_success.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = lightning_success.riv; sourceTree = "<group>"; };
 		C79C85A52FD9881A00501B33 /* LightningTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningTask.swift; sourceTree = "<group>"; };
 		C79C85A72FD98CEE00501B33 /* NotificationDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDeviceManager.swift; sourceTree = "<group>"; };
@@ -1996,6 +1998,7 @@
 				3457F4AA292394DD00EF33B5 /* CustomVisualEffectView.swift */,
 				34675B0929409D9900771D50 /* Common.swift */,
 				349693C52CFEF613000F308E /* JadeAsset.swift */,
+				C744C0FA2FC98786000E5CF7 /* DecimalTextFieldSanitizer.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -5862,6 +5865,7 @@
 				345607342DD336460070BCED /* TabSettingsVM.swift in Sources */,
 				34610C592B86442E005157C8 /* MasterKeyViewController.swift in Sources */,
 				816CAB5C2F19B4D7008887F7 /* SendAddressViewModel.swift in Sources */,
+				C744C0FB2FC98786000E5CF7 /* DecimalTextFieldSanitizer.swift in Sources */,
 				81E04A3B2AA63C6800867705 /* Country.swift in Sources */,
 				3484118C265E6113002D2202 /* Constants.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,

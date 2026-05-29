@@ -29,6 +29,8 @@ class DialogCustomFeeViewController: KeyboardViewController {
     var feeRate: UInt64?
     var minFeeRate: UInt64?
 
+    private let feeRateDecimals = 2
+
     lazy var blurredView: UIView = {
         let containerView = UIView()
         let blurEffect = UIBlurEffect(style: .dark)
@@ -72,6 +74,7 @@ class DialogCustomFeeViewController: KeyboardViewController {
             self.view.alpha = 1.0
             self.view.layoutIfNeeded()
         }
+        feeTextField.delegate = self
         feeTextField.becomeFirstResponder()
         feeTextField.keyboardType = .decimalPad
         feeTextField.attributedPlaceholder = NSAttributedString(string: String(Double(feeRate ?? 1000) / 1000),
@@ -137,7 +140,7 @@ class DialogCustomFeeViewController: KeyboardViewController {
             let feeRate = UInt64(1000 * number)
             if feeRate < minFeeRate ?? 0 {
                 let value = Double(minFeeRate ?? 0) / 1000
-                DropAlert().warning(message: String(format: "id_fee_rate_must_be_at_least_s".localized, String(format: "%.2f", value)))
+                DropAlert().warning(message: String(format: "id_fee_rate_must_be_at_least_s".localized, String(format: "%.\(feeRateDecimals)f", value)))
                 return
             }
             dismiss(.save, feeRate: feeRate)
@@ -179,5 +182,30 @@ class DialogCustomFeeViewController: KeyboardViewController {
 
     @IBAction func btnSave(_ sender: Any) {
         validate()
+    }
+}
+extension DialogCustomFeeViewController: UITextFieldDelegate {
+    func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
+        let currentText = textField.text ?? ""
+        guard let range = Range(range, in: currentText) else { return false }
+
+        let proposedValue = currentText.replacingCharacters(in: range, with: string)
+        let sanitizedValue = DecimalInputSanitizer.sanitize(
+            text: proposedValue,
+            maxDecimals: feeRateDecimals
+        )
+
+        guard sanitizedValue != proposedValue else { return true }
+
+        if sanitizedValue != currentText {
+            textField.text = sanitizedValue
+            textField.sendActions(for: .editingChanged)
+        }
+        
+        return false
     }
 }

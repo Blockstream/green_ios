@@ -89,6 +89,7 @@ class SendAmountViewControllerLegacy: KeyboardViewController {
         super.viewDidLoad()
 
         setContent()
+        setAmountField()
         setStyle()
 
         lblFeeTitle.text = "id_network_fee".localized
@@ -99,8 +100,6 @@ class SendAmountViewControllerLegacy: KeyboardViewController {
         lblSumTotalKey.text = "id_total_spent".localized
         lblSumTotalValue.text = ""
         lblError.text = ""
-        amountField.addTarget(self, action: #selector(SendAmountViewControllerLegacy.textFieldDidChange(_:)),
-                              for: .editingChanged)
 
         [withdrawHeader, withdrawPayStack, withdrawRangeStack].forEach {
             $0?.isHidden = true
@@ -190,6 +189,16 @@ class SendAmountViewControllerLegacy: KeyboardViewController {
         lblRedepositNoEdit.text = "id_the_amount_cant_be_changed".localized
         lblAvailable.text = "Available:".localized
         btnChangeSpeed.setTitle("id_change_speed".localized, for: .normal)
+    }
+    
+    func setAmountField() {
+        amountField.delegate = self
+        amountField.keyboardType = .decimalPad
+        amountField.addTarget(
+            self,
+            action: #selector(SendAmountViewControllerLegacy.textFieldDidChange(_:)),
+            for: .editingChanged
+        )
     }
 
     var btnNextEnabled: Bool = false {
@@ -484,7 +493,7 @@ class SendAmountViewControllerLegacy: KeyboardViewController {
     func reloadAmount() {
         amountField.isUserInteractionEnabled = viewModel.amountEditable
         btnSendAllBalance.isUserInteractionEnabled = viewModel.sendAllEnabled
-        amountField.text = viewModel.amountText ?? ""
+        amountField.text = DecimalInputSanitizer.sanitize(text: viewModel.amountText ?? "")
         lblFiat.text = "\(viewModel.subamountText ?? "")"
         lblConversion.text = "≈ \(viewModel?.conversionText ?? "")"
         
@@ -658,11 +667,28 @@ extension SendAmountViewControllerLegacy: SendDialogFeeViewControllerProtocol {
     }
 }
 extension SendAmountViewControllerLegacy: UITextFieldDelegate {
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.text?.count ?? 0 > 15 {
-            return false
+    func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
+        let currentText = textField.text ?? ""
+        guard let range = Range(range, in: currentText) else { return false }
+
+        let proposedValue = currentText.replacingCharacters(in: range, with: string)
+        let sanitizedValue = DecimalInputSanitizer.sanitize(
+            text: proposedValue,
+            maxDecimals: viewModel.maxDecimals
+        )
+        
+        guard sanitizedValue != proposedValue else { return true }
+
+        if sanitizedValue != currentText {
+            textField.text = sanitizedValue
+            textField.sendActions(for: .editingChanged)
         }
-        return true
+        
+        return false
     }
 }
 extension SendAmountViewControllerLegacy: DialogLiquidAssetToFiatViewControllerDelegate {

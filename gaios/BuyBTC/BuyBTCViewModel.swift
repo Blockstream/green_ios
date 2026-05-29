@@ -39,6 +39,7 @@ class BuyBTCViewModel {
     var showNoQuotes: Bool {
         false
     }
+    var maxDecimals: Int { 2 }
     var showAccountSwitch: Bool {
         getAccounts().count > 1
     }

@@ -260,8 +260,9 @@ class SendSwapViewController: UIViewController {
     }
     func setBindings() {
         [fieldFrom, fieldTo].forEach {
-            $0.addTarget(self, action: #selector(SendSwapViewController.textFieldDidChange(_:)),
-                         for: .editingChanged)
+            $0.delegate = self
+            $0.keyboardType = .decimalPad
+            $0.addTarget(self, action: #selector(SendSwapViewController.textFieldDidChange(_:)), for: .editingChanged)
         }
     }
     
@@ -365,18 +366,34 @@ extension SendSwapViewController: SendFlowErrorDisplayable {
 }
 extension SendSwapViewController: DialogInputDenominationViewControllerDelegate {
     func didSelectFiat() {
-        fieldFrom.text = viewModel.newFiatText(position: .from)
-        fieldTo.text = viewModel.newFiatText(position: .to)
-        
+        guard let position = viewModel.selectedPosition else { return }
+        switch position {
+        case .from:
+            fieldFrom.text = DecimalInputSanitizer.sanitize(
+                text: viewModel.newFiatText(position: position)
+            )
+        case .to:
+            fieldTo.text = DecimalInputSanitizer.sanitize(
+                text: viewModel.newFiatText(position: position)
+            )
+        }
         viewModel.updateIsFiat(true)
         let number = editingField ?? fieldFrom
         viewModel.updateAmountFromText(number?.text ?? "", for: viewModel.lastEditedPosition)
         resumeEditing()
     }
     func didSelectInput(denomination: DenominationType) {
-        fieldFrom.text = viewModel.newText(position: .from, newDenom: denomination)
-        fieldTo.text = viewModel.newText(position: .to, newDenom: denomination)
-        
+        guard let position = viewModel.selectedPosition else { return }
+        switch position {
+        case .from:
+            fieldFrom.text = DecimalInputSanitizer.sanitize(
+                text: viewModel.newText(position: position, newDenom: denomination)
+            )
+        case .to:
+            fieldTo.text = DecimalInputSanitizer.sanitize(
+                text: viewModel.newText(position: position, newDenom: denomination)
+            )
+        }
         viewModel.updateIsFiat(false)
         viewModel.updateDenomination(denomination)
         let number = editingField ?? fieldFrom
@@ -402,5 +419,31 @@ extension SendSwapViewController: SendSwapAssetSelectorViewControllerDelegate {
     }
     func didCancel(_ selector: SwapAssetSelectorViewController) {
         resumeEditing()
+    }
+}
+extension SendSwapViewController: UITextFieldDelegate {
+    func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
+        let currentText = textField.text ?? ""
+        guard let range = Range(range, in: currentText) else { return false }
+
+        let position: SwapPositionEnum = textField == fieldFrom ? .from : .to
+        let proposedValue = currentText.replacingCharacters(in: range, with: string)
+        let sanitizedValue = DecimalInputSanitizer.sanitize(
+            text: proposedValue,
+            maxDecimals: viewModel.maxDecimals(for: position)
+        )
+
+        guard sanitizedValue != proposedValue else { return true }
+
+        if sanitizedValue != currentText {
+            textField.text = sanitizedValue
+            textField.sendActions(for: .editingChanged)
+        }
+        
+        return false
     }
 }
