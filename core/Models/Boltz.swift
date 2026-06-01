@@ -17,6 +17,7 @@ public struct BoltzSubmarineSwapInfoLBTC: Codable {
 public struct BoltzSwapInfoLimits: Codable {
     public let maximal: Int64
     public let minimal: Int64
+    public let minimalBatched: Int64?
 }
 
 public struct BoltzReverseSwapInfoFees: Codable {

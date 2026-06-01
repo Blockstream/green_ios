@@ -6,7 +6,7 @@ import LiquidWalletKit
 import greenaddress
 
 @MainActor
-final class SendAmountViewModel: Sendable {
+final class SendAmountViewModel {
 
     let wallet: WalletDataModel
     let mainAccount: Account
@@ -20,6 +20,7 @@ final class SendAmountViewModel: Sendable {
     // UI state
     var error: Error?
     var paymentTarget: PaymentTarget?
+    private var submarineSwapInfo: BoltzSubmarineSwapInfoLBTC?
 
     // Callback for UI updates
     var onStateChanged: (() -> Void)?
@@ -33,6 +34,9 @@ final class SendAmountViewModel: Sendable {
     }
     var usesSubmarineAmountUi: Bool {
         draft.paymentTarget?.usesSubmarineAmountUi ?? false
+    }
+    var usesSubmarineSwap: Bool {
+        usesSubmarineAmountUi && !usesLightningRail
     }
     // Lightning rail caps the payment by node capacity; Liquid rail caps it
     // by subaccount balance, so the user-facing label differs.
@@ -132,6 +136,29 @@ final class SendAmountViewModel: Sendable {
         if satoshi > maxSendAmount ?? 0 {
             throw SendFlowError.insufficientFunds
         }
+        if usesSubmarineSwap, let limits = await submarineSwapLimits() {
+            let minimum = UInt64(limits.minimalBatched ?? limits.minimal)
+            if satoshi < minimum {
+                let minAmount = convertToDenom(minimum) ?? "\(minimum) sats"
+                throw SendFlowError.invalidAmount(
+                    "Min limit: \(minAmount.removingTrailingZeros())"
+                )
+            }
+            let maximum = UInt64(limits.maximal)
+            if satoshi > maximum {
+                let maxAmount = convertToDenom(maximum) ?? "\(maximum) sats"
+                throw SendFlowError.invalidAmount(
+                    "Max limit: \(maxAmount.removingTrailingZeros())"
+                )
+            }
+        }
+    }
+
+    private func submarineSwapLimits() async -> BoltzSwapInfoLimits? {
+        if submarineSwapInfo == nil {
+            submarineSwapInfo = try? await wallet.wallet.awaitLwkSession()?.fetchSubmarineSwapsInfo()
+        }
+        return submarineSwapInfo?.limits
     }
 /*
     func loadFees() async {

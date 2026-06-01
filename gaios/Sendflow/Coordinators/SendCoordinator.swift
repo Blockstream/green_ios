@@ -365,6 +365,20 @@ extension SendCoordinator {
         guard let amount = invoice.amountMilliSatoshis()?.satoshi else {
             throw SendFlowError.generic("Invoice without amount not supported. Paste an invoice with an amount")
         }
+        if let limits = try? await lwk.fetchSubmarineSwapsInfo()?.limits {
+            let minimum = UInt64(limits.minimalBatched ?? limits.minimal)
+            if amount < minimum {
+                throw SendFlowError.invalidAmount(
+                    "Min limit: \(minimum) sats"
+                )
+            }
+            let maximum = UInt64(limits.maximal)
+            if amount > maximum {
+                throw SendFlowError.invalidAmount(
+                    "Max limit: \(maximum) sats"
+                )
+            }
+        }
         if amount > subaccount.btc ?? 0 {
             throw SendFlowError.insufficientFunds
         }
