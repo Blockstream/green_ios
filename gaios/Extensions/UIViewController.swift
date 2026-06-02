@@ -67,12 +67,15 @@ extension UIViewController {
     }
     @MainActor
     func addObserverUserDidTakeScreenshot() {
-        NotificationCenter.default.addObserver(forName: UIApplication.userDidTakeScreenshotNotification, object: nil, queue: OperationQueue.main) { [weak self] _ in
-            self?.notifyScreenshotNotAllowed()
-        }
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(notifyScreenshotNotAllowed),
+            name: UIApplication.userDidTakeScreenshotNotification,
+            object: nil
+        )
     }
 
-    func notifyScreenshotNotAllowed() {
+    @objc func notifyScreenshotNotAllowed() {
         let alert = UIAlertController(title: "id_warning".localized, message: "Do not take photos or screenshots. Write the words on paper and keep them in a safe place.".localized, preferredStyle: .alert)
 
         let ok = UIAlertAction(title: "id_ok".localized, style: .default, handler: { _ in })
@@ -84,7 +87,11 @@ extension UIViewController {
     }
     @MainActor
     func removeObserverUserDidTakeScreenshot() {
-        NotificationCenter.default.removeObserver(UIApplication.userDidTakeScreenshotNotification)
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.userDidTakeScreenshotNotification,
+            object: nil
+        )
     }
 }
 @nonobjc extension UIViewController {

@@ -40,28 +40,22 @@ class PhraseNoteDownViewController: UIViewController {
         loadWords()
         pageControl.numberOfPages = mnemonicSize / Constants.wordsPerPage
 
+        videoCaptureDump.install(on: self)
         addObserverUserDidTakeScreenshot()
-    }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // Protect ScreenShot
-        ScreenShield.shared.protect(view: self.wordsStack)
-        // ScreenShield.shared.protectFromScreenRecording()
-    }
-    public override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        removeObserverUserDidTakeScreenshot()
+        setScreenshotProtector()
     }
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
-        videoCaptureDump.install(on: self)
-        pageCounter = 0
-        loadWords()
+       super.viewWillAppear(animated)
+       pageCounter = 0
+       loadWords()
     }
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        videoCaptureDump.uninstall()
+       super.viewWillDisappear(animated)
+       removeObserverUserDidTakeScreenshot()
     }
+
+    deinit { videoCaptureDump.uninstall() }
+       
     func customBack() {
         let view = UIView()
         let button = UIButton(type: .system)
@@ -103,6 +97,21 @@ class PhraseNoteDownViewController: UIViewController {
 
     func setStyle() {
         btnNext.setStyle(.primary)
+    }
+    
+    func setScreenshotProtector() {
+        let protectedView = ScreenshotProtectingView()
+        protectedView.translatesAutoresizingMaskIntoConstraints = false
+
+        wordsStack.superview?.insertSubview(protectedView, aboveSubview: wordsStack)
+        protectedView.setup(contentView: wordsStack)
+
+        NSLayoutConstraint.activate([
+            protectedView.topAnchor.constraint(equalTo: wordsStack.topAnchor),
+            protectedView.bottomAnchor.constraint(equalTo: wordsStack.bottomAnchor),
+            protectedView.leadingAnchor.constraint(equalTo: wordsStack.leadingAnchor),
+            protectedView.trailingAnchor.constraint(equalTo: wordsStack.trailingAnchor)
+        ])
     }
 
     func loadWords() {
