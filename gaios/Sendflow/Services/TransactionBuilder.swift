@@ -342,10 +342,9 @@ actor TransactionBuilder {
 
     static func build(from lightningSubaccount: WalletItem, invoice: Bolt11Invoice, satoshi: UInt64?) async throws -> gdk.Transaction {
         return try await Task.detached(priority: .userInitiated) {
-            guard let fallbackSession = lightningSubaccount.session else {
+            guard let lightningSession = lightningSubaccount.lightningSession else {
                 throw GaError.GenericError("No lightning subaccount session")
             }
-            let lightningSession = WalletManager.current?.lightningSession ?? fallbackSession
             let satoshi = invoice.amountMilliSatoshis()?.satoshi ?? satoshi
             let addressee = Addressee.from(
                 address: invoice.description,

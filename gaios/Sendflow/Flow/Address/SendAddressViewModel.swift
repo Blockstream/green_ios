@@ -87,12 +87,18 @@ final class SendAddressViewModel: Sendable {
 
     func fundedSubaccounts() -> [WalletItem] {
         guard let paymentTarget else { return [] }
+        let amount: UInt64? = {
+            if case .lightningInvoice(let invoice) = paymentTarget {
+                return invoice.amountMilliSatoshis()?.satoshi
+            }
+            return nil
+        }()
         return paymentTarget
             .eligibleRails()
-            .flatMap { subaccounts(for: $0, wallet: wm) }
+            .flatMap { subaccounts(for: $0, wallet: wm, amount: amount) }
     }
 
-    private func subaccounts(for rail: PaymentRail, wallet: WalletManager) -> [WalletItem] {
+    private func subaccounts(for rail: PaymentRail, wallet: WalletManager, amount: UInt64?) -> [WalletItem] {
         switch rail {
         case .bitcoin:
             return wallet.bitcoinSubaccountsWithFunds
@@ -100,7 +106,13 @@ final class SendAddressViewModel: Sendable {
             return wallet.liquidSubaccountsWithFunds
         case .lightning:
             if let subaccount = wallet.lightningSubaccount {
-                return [subaccount]
+                let maxPayable = subaccount.lightningSession?.nodeState()?.maxPayableMsat.satoshi ?? 0
+                if maxPayable > 0 {
+                    if let amount = amount, maxPayable < amount {
+                        return []
+                    }
+                    return [subaccount]
+                }
             }
             return []
         }

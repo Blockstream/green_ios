@@ -150,7 +150,7 @@ class SendAddressViewController: KeyboardViewController {
     private func reload() {
         // enable continuation
         btnNext.isEnabled = viewModel.canContinue
-        btnNext.setStyle(viewModel.canContinue ? .primary : .primaryGray)
+        btnNext.setStyle(viewModel.canContinue ? .primary : .primaryDisabled)
         // show error message
         if let error = viewModel.error {
             infoBg.backgroundColor = UIColor.gRedSwapErr1()

@@ -172,7 +172,7 @@ final class SendCoordinator {
     }
 }
 extension SendCoordinator {
-    private func subaccounts(for rail: PaymentRail, wallet: WalletManager) -> [WalletItem] {
+    private func subaccounts(for rail: PaymentRail, wallet: WalletManager, amount: UInt64?) -> [WalletItem] {
         switch rail {
         case .bitcoin:
             return wallet.bitcoinSubaccountsWithFunds
@@ -180,7 +180,13 @@ extension SendCoordinator {
             return wallet.liquidSubaccountsWithFunds
         case .lightning:
             if let subaccount = wallet.lightningSubaccount {
-                return [subaccount]
+                let maxPayable = subaccount.lightningSession?.nodeState()?.maxPayableMsat.satoshi ?? 0
+                if maxPayable > 0 {
+                    if let amount = amount, maxPayable < amount {
+                        return []
+                    }
+                    return [subaccount]
+                }
             }
             return []
         }
@@ -201,9 +207,15 @@ extension SendCoordinator {
 
     func resolveSubaccounts(paymentTarget: PaymentTarget) -> [WalletItem] {
         guard let wallet = WalletManager.current else { return [] }
+        let amount: UInt64? = {
+            if case .lightningInvoice(let invoice) = paymentTarget {
+                return invoice.amountMilliSatoshis()?.satoshi
+            }
+            return nil
+        }()
         return paymentTarget
             .eligibleRails()
-            .flatMap { subaccounts(for: $0, wallet: wallet) }
+            .flatMap { subaccounts(for: $0, wallet: wallet, amount: amount) }
     }
 
     func navigate(to route: SendRoute) async {
@@ -379,9 +391,6 @@ extension SendCoordinator {
                 )
             }
         }
-        if amount > subaccount.btc ?? 0 {
-            throw SendFlowError.insufficientFunds
-        }
         let lightningPayment = LightningPayment.fromBolt11Invoice(invoice: invoice)
         let (swap, tx) = try await withRouteLoader(message: "Preparing Payment") {
             try await TransactionBuilder.buildSubmarineSwapTransaction(
@@ -390,6 +399,12 @@ extension SendCoordinator {
                 subaccount: subaccount,
                 xpub: xpub
             )
+        }
+        if let error = tx.error {
+            if error == "id_insufficient_funds" {
+                throw SendFlowError.insufficientFunds
+            }
+            throw SendFlowError.gdkError(error)
         }
         let preparedDraft = updateTransactionDraft(swap: swap, on: draft)
         return .signAtomicSwap(makeSignViewModel(draft: preparedDraft, subaccount: subaccount, tx: tx))
@@ -405,6 +420,12 @@ extension SendCoordinator {
                 from: subaccount,
                 invoice: invoice,
                 satoshi: draft.satoshi)
+        }
+        if let error = tx.error {
+            if error == "id_insufficient_funds" {
+                throw SendFlowError.insufficientFunds
+            }
+            throw SendFlowError.gdkError(error)
         }
         return .signAtomicSwap(makeSignViewModel(draft: draft, subaccount: subaccount, tx: tx))
     }
@@ -451,6 +472,12 @@ extension SendCoordinator {
                 xpub: xpub
             )
         }
+        if let error = tx.error {
+            if error == "id_insufficient_funds" {
+                throw SendFlowError.insufficientFunds
+            }
+            throw SendFlowError.gdkError(error)
+        }
         return .signAtomicSwap(makeSignViewModel(draft: preparedDraft, subaccount: subaccount, tx: tx))
     }
 
@@ -468,6 +495,12 @@ extension SendCoordinator {
                 lnurl: input,
                 payment: payment,
                 satoshi: satoshi)
+        }
+        if let error = tx.error {
+            if error == "id_insufficient_funds" {
+                throw SendFlowError.insufficientFunds
+            }
+            throw SendFlowError.gdkError(error)
         }
         return .signAtomicSwap(makeSignViewModel(draft: draft, subaccount: subaccount, tx: tx))
     }
@@ -494,6 +527,12 @@ extension SendCoordinator {
                 subaccount: subaccount,
                 xpub: xpub
             )
+        }
+        if let error = tx.error {
+            if error == "id_insufficient_funds" {
+                throw SendFlowError.insufficientFunds
+            }
+            throw SendFlowError.gdkError(error)
         }
         let preparedDraft = updateTransactionDraft(
             swap: swap,
