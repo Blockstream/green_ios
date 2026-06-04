@@ -40,7 +40,10 @@ enum SendFlowError: Error, Sendable, Equatable {
         case .invalidAmount(let msg):
             return msg.localized
         case .lwkError(let lwkError):
-            return lwkError.description().localized
+            if case .Generic(let msg) = lwkError, msg.hasPrefix("Invalid payment category:") {
+                return "id_invalid_address"
+            }
+            return lwkError.description()
         case .unsupportedInJadeCore:
             return "Swaps are not enabled for this wallet".localized
         }
