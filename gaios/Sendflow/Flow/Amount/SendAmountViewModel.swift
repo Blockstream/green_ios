@@ -133,9 +133,6 @@ final class SendAmountViewModel {
 
     func validate() async throws {
         guard let satoshi else { return }
-        if satoshi > maxSendAmount ?? 0 {
-            throw SendFlowError.insufficientFunds
-        }
         if usesSubmarineSwap, let limits = await submarineSwapLimits() {
             let minimum = UInt64(limits.minimalBatched ?? limits.minimal)
             if satoshi < minimum {
@@ -151,6 +148,9 @@ final class SendAmountViewModel {
                     "Max limit: \(maxAmount.removingTrailingZeros())"
                 )
             }
+        }
+        if satoshi > maxSendAmount ?? 0 {
+            throw SendFlowError.insufficientFunds
         }
     }
 
