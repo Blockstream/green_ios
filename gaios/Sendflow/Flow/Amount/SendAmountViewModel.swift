@@ -21,6 +21,7 @@ final class SendAmountViewModel {
     var error: Error?
     var paymentTarget: PaymentTarget?
     private var submarineSwapInfo: BoltzSubmarineSwapInfoLBTC?
+    private var submarineQuoteBuilder: QuoteBuilder?
 
     // Callback for UI updates
     var onStateChanged: (() -> Void)?
@@ -149,7 +150,15 @@ final class SendAmountViewModel {
                 )
             }
         }
-        if satoshi > maxSendAmount ?? 0 {
+        let sendAmount: UInt64
+        // Submarine swaps spend LBTC to fund the Lightning payment amount plus swap fees.
+        if usesSubmarineSwap,
+           let quote = try await submarineSwapQuote(receiveAmount: satoshi) {
+            sendAmount = quote.sendAmount
+        } else {
+            sendAmount = satoshi
+        }
+        if sendAmount > (maxSendAmount ?? 0) {
             throw SendFlowError.insufficientFunds
         }
     }
@@ -159,6 +168,20 @@ final class SendAmountViewModel {
             submarineSwapInfo = try? await wallet.wallet.awaitLwkSession()?.fetchSubmarineSwapsInfo()
         }
         return submarineSwapInfo?.limits
+    }
+
+    private func submarineSwapQuote(receiveAmount: UInt64) async throws -> Quote? {
+        if submarineQuoteBuilder == nil {
+            guard let boltzSession = await wallet.wallet.awaitLwkSession()?.boltzSession else {
+                return nil
+            }
+            submarineQuoteBuilder = QuoteBuilder(boltzSession: boltzSession)
+        }
+        return try await submarineQuoteBuilder?.quote(
+            amount: receiveAmount,
+            mode: .to,
+            from: .liquid,
+            to: .lightning)
     }
 /*
     func loadFees() async {
