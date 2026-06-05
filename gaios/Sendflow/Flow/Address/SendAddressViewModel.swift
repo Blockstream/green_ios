@@ -69,6 +69,49 @@ final class SendAddressViewModel: Sendable {
                     onStateChanged?()
                     return
                 }
+            case .lnUrl(_, let payment):
+                if isJadeCore() {
+                    delegate?.sendAddressViewModel(self, didFailWith: SendFlowError.unsupportedInJadeCore)
+                    onStateChanged?()
+                    return
+                }
+                guard triggerNavigation else { break }
+                do {
+                    _ = try await Task.detached(priority: .userInitiated) {
+                        try payment.resolveLnurlInfo()
+                    }.value
+                } catch {
+                    self.handleError(SendFlowError.invalidPaymentTarget)
+                    return
+                }
+            case .bip353(_, let payment):
+                guard triggerNavigation else { break }
+                do {
+                    let resolved = try await Task.detached(priority: .userInitiated) {
+                        try payment.resolveBip353()
+                    }.value
+                    if resolved.kind() == .bip353 {
+                        throw SendFlowError.invalidPaymentTarget
+                    }
+                    if resolved.kind() == .lightningInvoice && isJadeCore() {
+                        delegate?.sendAddressViewModel(self, didFailWith: SendFlowError.unsupportedInJadeCore)
+                        onStateChanged?()
+                        return
+                    }
+                    if resolved.kind() == .lnUrl {
+                        if isJadeCore() {
+                            delegate?.sendAddressViewModel(self, didFailWith: SendFlowError.unsupportedInJadeCore)
+                            onStateChanged?()
+                            return
+                        }
+                        _ = try await Task.detached(priority: .userInitiated) {
+                            try resolved.resolveLnurlInfo()
+                        }.value
+                    }
+                } catch {
+                    self.handleError(SendFlowError.invalidPaymentTarget)
+                    return
+                }
             default:
                 break
             }
