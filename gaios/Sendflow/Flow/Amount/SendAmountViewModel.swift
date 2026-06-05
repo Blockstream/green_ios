@@ -31,7 +31,7 @@ final class SendAmountViewModel {
     var usesLightningRail: Bool { subaccount.networkType == .lightning }
     var isRedepositExpired2FA: Bool { false }
     var canContinue: Bool {
-        error == nil && satoshi != nil
+        error == nil && satoshi ?? 0 > 0
     }
     var usesSubmarineAmountUi: Bool {
         draft.paymentTarget?.usesSubmarineAmountUi ?? false
