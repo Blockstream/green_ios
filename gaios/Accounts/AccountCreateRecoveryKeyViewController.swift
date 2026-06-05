@@ -91,12 +91,13 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
         case .hw:
             DropAlert().warning(message: "id_this_feature_is_coming_soon".localized, delay: 3)
         case .newPhrase:
+            let model = ManualBackupViewModel(.addSubaccount)
             let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "ManualBackupViewController") as? ManualBackupViewController {
-                navigationController?.pushViewController(vc, animated: true)
-                vc.viewModel = ManualBackupViewModel(.addSubaccount)
-                vc.subAccountCreateDelegate = delegate
+            let vc = storyboard.instantiateViewController(identifier: "ManualBackupViewController") { coder in
+                ManualBackupViewController(coder: coder, viewModel: model)
             }
+            vc.subAccountCreateDelegate = delegate
+            navigationController?.pushViewController(vc, animated: true)
         case .existingPhrase:
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {

@@ -104,11 +104,12 @@ class AccountNavigator {
     }
     @MainActor
     static func backupIntro(_ type: BackupFlowType) -> ManualBackupViewController? {
-        if let vc: ManualBackupViewController = instantiateViewController(storyboard: "WalletTab", identifier: "ManualBackupViewController") {
-            vc.viewModel = ManualBackupViewModel(type)
-            return vc
+        let model = ManualBackupViewModel(type)
+        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: "ManualBackupViewController") { coder in
+            ManualBackupViewController(coder: coder, viewModel: model)
         }
-        return nil
+        return vc
     }
     @MainActor
     static func navLogged(accountId: String, isCreated: Bool = false, isRestored: Bool = false) {

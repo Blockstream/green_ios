@@ -15,11 +15,18 @@ class AddressAuthViewController: KeyboardViewController {
     @IBOutlet weak var searchField: UITextField!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var pasteButton: UIButton!
-    
+
     var viewModel: AddressAuthViewModel!
     var isSearchActive = false
     var selectedAddress: String?
 
+    init?(coder: NSCoder, viewModel: AddressAuthViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
 

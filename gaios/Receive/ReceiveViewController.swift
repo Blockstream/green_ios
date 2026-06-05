@@ -1,266 +1,379 @@
 import Foundation
 import UIKit
-import LinkPresentation
 import gdk
-import hw
-import Combine
+import greenaddress
 import core
-import LiquidWalletKit
-
-public enum TransactionBaseType: UInt32 {
-    case BTC = 0
-    case FIAT = 1
-}
-
-enum ReceiveSection: Int, CaseIterable {
-    case backup
-    case asset
-    case account
-    case amount
-    case address
-    case infoReceiveAmount
-    case infoExpiredIn
-    case infoLwkSwap
-    case note
-    case segmented
-}
+import lightning
+import hw
 
 class ReceiveViewController: KeyboardViewController {
 
-    @IBOutlet weak var tableView: UITableView!
+    /// scroll + stackview
+    // Backup
+    @IBOutlet weak var viewBackup: UIView!
+    @IBOutlet weak var bgBackup: UIView!
+    @IBOutlet weak var lblTitleBackup: UILabel!
+    @IBOutlet weak var lblHintBackup: UILabel!
+    @IBOutlet weak var btnRightBackup: UIButton!
+    @IBOutlet weak var btnLeftBackup: UIButton!
+    @IBOutlet weak var btnsContainerBackup: UIStackView!
+    @IBOutlet weak var iconWarnBackup: UIImageView!
+    @IBOutlet weak var btnDismissBackup: UIButton!
+    // Asset
+    @IBOutlet weak var viewAsset: UIView!
+    @IBOutlet weak var bgAsset: UIView!
+    @IBOutlet weak var imgViewAsset: UIImageView!
+    @IBOutlet weak var lblAssetSection: UILabel!
+    @IBOutlet weak var lblAssetAsset: UILabel!
+    @IBOutlet weak var iconDiscloseAsset: UIImageView!
+    @IBOutlet weak var viewLightReadyAsset: UIView!
+    @IBOutlet weak var iconLightReadyAsset: UIImageView!
+    @IBOutlet weak var lblLightReadyAsset: UILabel!
+    // Account
+    @IBOutlet weak var viewAccount: UIView!
+    @IBOutlet weak var bgAccount: UIView!
+    @IBOutlet weak var lblAccountAccount: UILabel!
+    @IBOutlet weak var lblNameAccount: UILabel!
+    @IBOutlet weak var iconDiscloseAccount: UIImageView!
+    // Segmented
+    @IBOutlet weak var viewSegmented: UIView!
+    @IBOutlet weak var lblSegmentedSection: UILabel!
+    @IBOutlet weak var segmented: UISegmentedControl!
+    // Amount
+    @IBOutlet weak var viewAmount: UIView!
+    @IBOutlet weak var lblAmountSection: UILabel!
+    @IBOutlet weak var bgAmount: UIView!
+    @IBOutlet weak var textFieldAmount: UITextField!
+    @IBOutlet weak var lblAssetAmount: UILabel!
+    @IBOutlet weak var lblAmountAmount: UILabel!
+    @IBOutlet weak var lblInfoAmount: UILabel!
+    @IBOutlet weak var infoPanelAmount: UIView!
+    @IBOutlet weak var lblConversionAmount: UILabel!
+    @IBOutlet weak var lblMoreInfoAmount: UILabel!
+    @IBOutlet weak var btnCancelAmount: UIButton!
+    @IBOutlet weak var btnSwitchAmount: UIButton!
+    @IBOutlet weak var btnFeeInfoAmount: UIButton!
+    @IBOutlet weak var lblToReceiveTitleAmount: UILabel!
+    @IBOutlet weak var lblToReceiveHintAmount: UILabel!
+    @IBOutlet weak var bottomStackPadAmount: NSLayoutConstraint!
+    @IBOutlet weak var moreInfoViewAmount: UIView!
+    // Address
+    @IBOutlet weak var viewAddress: UIView!
+    @IBOutlet weak var lblAddressSection: UILabel!
+    @IBOutlet weak var bgCardAddress: UIView!
+    @IBOutlet weak var bgCardQRAddress: UIView!
+    @IBOutlet weak var envelopeViewAddress: UIView!
+    @IBOutlet weak var envelopeBorderViewAddress: UIView!
+    @IBOutlet weak var btnQRCodeAddress: UIButton!
+    @IBOutlet weak var qrFrameAddress: QRCodeView!
+    @IBOutlet weak var lnBannerBoxAddress: UIView!
+    @IBOutlet weak var lnBannerAddress: UIView!
+    @IBOutlet weak var lblInfoAddress: UILabel!
+    @IBOutlet weak var btnRefreshAddress: UIButton!
+    @IBOutlet weak var btnMagnifyAddress: UIButton!
+    @IBOutlet weak var btnCopyAddress: UIButton!
+    @IBOutlet weak var plainTxtAddress: UILabel!
+    @IBOutlet weak var groupedTxtAddress: UITextView!
+
+    /// bottom static section
+    @IBOutlet weak var footerLabel: UILabel!
     @IBOutlet weak var btnShare: UIButton!
     @IBOutlet weak var btnVerify: UIButton!
     @IBOutlet weak var btnConfirm: UIButton!
     @IBOutlet weak var stackBottom: NSLayoutConstraint!
-    @IBOutlet weak var accountStack: UIStackView!
-    @IBOutlet weak var lblAccount: UILabel!
-    @IBOutlet weak var btnAccount: UIButton!
-    @IBOutlet weak var footerLabel: UILabel!
-    private var selectedType = TransactionBaseType.BTC
-    private var lightningAmountEditing = true
-    private var newAddressToken, invoicePaidToken: NSObjectProtocol?
-    private var headerH: CGFloat = 36.0
-    private var loading = true
-    private var keyboardVisible = false
-    private var activeSendCoordinator: SendCoordinator?
-    var viewModel: ReceiveViewModel!
+
     weak var verifyOnDeviceViewController: HWDialogVerifyOnDeviceViewController?
-    var selectedSegment: Int = 0
+    private let vm: ReceiveViewModel
+    var onFinish: (() -> Void)?
+    private var didNotifyFinish = false
 
-    var showVerify: Bool {
-        AccountsRepository.shared.current?.isJade ?? false && !viewModel.account.isLightning && viewModel.type == .address
+    init?(coder: NSCoder, viewModel: ReceiveViewModel) {
+        self.vm = viewModel
+        super.init(coder: coder)
     }
-
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        register()
-        setContent()
-        setStyle()
-
-        didSelectAccount(viewModel.account)
-        // always nag even after dismiss
-        // AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
+        configureUI()
+        bind()
+        requestNewAddress()
     }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        BackupHelper.shared.cleanDismissedCache(walletId: viewModel.mainAccount.id, position: .receive)
-        viewModel.reloadBackupCards()
-        reload()
-        invoicePaidToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.InvoicePaid.rawValue), object: nil, queue: .main, using: invoicePaid)
-        newAddressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, queue: .main, using: newAddress)
+        BackupHelper.shared.cleanDismissedCache(walletId: vm.mainAccount.id, position: .receive)
+        onUpdate()
     }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if let token = newAddressToken {
-            NotificationCenter.default.removeObserver(token)
-        }
-        if let token = invoicePaidToken {
-            NotificationCenter.default.removeObserver(token)
-        }
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        reloadSections([.backup], animated: false)
+        if vm.state.showAmountView {
+            self.textFieldAmount.becomeFirstResponder()
+        }
     }
-
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        let didFinishFlow = isMovingFromParent || isBeingDismissed || navigationController?.isBeingDismissed == true
+        guard didFinishFlow, !didNotifyFinish else { return }
+        didNotifyFinish = true
+        onFinish?()
+    }
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-        let inset = (UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 0) - 5
-        keyboardVisible = true
+        let inset = (view.window?.safeAreaInsets.bottom ?? view.safeAreaInsets.bottom) - 5
         stackBottom.constant = keyboardFrame.height - inset
     }
 
     override func keyboardWillHide(notification: Notification) {
         super.keyboardWillHide(notification: notification)
-        keyboardVisible = false
         stackBottom.constant = 0.0
     }
-
-    func register() {
-        ["AlertCardCell", "ReceiveAddressCell", "AmountCell", "LTInfoCell", "LTNoteCell", "ReceiveAssetCell", "ChangeAccountCell", "SegmentedCell"].forEach {
-            tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
-        }
-    }
-
-    func setContent() {
-        title = "id_receive".localized
-        btnShare.setTitle("id_share".localized, for: .normal)
-        btnVerify.setTitle("id_verify_on_device".localized, for: .normal)
-        switch viewModel.type {
-        case .address:
-            btnConfirm.setTitle("id_confirm".localized, for: .normal)
-        case .bolt11, .lwkSwap:
-            btnConfirm.setTitle("id_create_invoice".localized, for: .normal)
-        }
-        
-        footerLabel.text = "You will receive Liquid bitcoin via Lightning invoice.".localized
-    }
-
-    func setStyle() {
-        btnShare.setStyle(!showVerify ? .primary : .outlined)
-        btnVerify.setStyle(.primary)
-        footerLabel.setStyle(.txt)
-        stateDidChange(.disabled)
-    }
-
-    var sections: [ReceiveSection] {
-        if viewModel.anyOrAsset.assetId == AssetInfo.lbtcId {
-            switch viewModel.type {
-            case .lwkSwap:
-                if lightningAmountEditing {
-                    return [.backup, .asset, .account, .segmented, .amount]
-                } else {
-                    return [.backup, .asset, .account, .segmented, .amount, .address, .infoLwkSwap]
-                }
-            default:
-                if viewModel.wm.lwkSession?.logged ?? false {
-                    switch viewModel.anyOrAsset {
-                    case .anyLiquid, .anyAmp:
-                        return [.backup, .asset, .account, .address]
-                    default:
-                        return [.backup, .asset, .account, .segmented, .address]
-                    }
-                } else {
-                    return [.backup, .asset, .account, .address]
-                }
-            }
-        }
-        switch viewModel.type {
-        case .bolt11:
-            if lightningAmountEditing {
-                return [.backup, .asset, .account, .amount]
+    func onUpdate(_ feature: RefreshReceiveFeature? = nil) {
+        switch feature {
+        case .denomination:
+            textFieldAmount.text = vm.state.amountText
+        case .segmented:
+            textFieldAmount.text = vm.state.amountText
+            if vm.state.showAmountView {
+                self.textFieldAmount.becomeFirstResponder()
             } else {
-                return [.backup, .asset, .account, .amount, .address, .infoReceiveAmount, .infoExpiredIn, .note]
+                view.endEditing(true)
+                requestNewAddress()
             }
         case .address:
-            return [.backup, .asset, .account, .address]
-        default:
-            return []
+            resetQR()
+            plainTxtAddress.isHidden = true
+            groupedTxtAddress.isHidden = true
+            bgCardAddress.borderWidth = 1.0
+            bgCardAddress.borderColor = UIColor.gGrayCardBorder()
+            if !vm.state.isBip21 && !vm.state.isLightning {
+                groupedTxtAddress.isHidden = false
+                AddressDisplay.configure(
+                    address: vm.state.text ?? "",
+                    textView: groupedTxtAddress,
+                    style: .default,
+                    truncate: true)
+            } else {
+                plainTxtAddress.isHidden = false
+                plainTxtAddress.text = vm.state.text
+            }
+            qrFrameAddress.backgroundColor = .clear
+            qrFrameAddress.cornerRadius = 10.0
+            if let uri = vm.state.text, !uri.isEmpty {
+                qrFrameAddress.isHidden = false
+                qrFrameAddress.configure(frames: [uri])
+            } else {
+                qrFrameAddress.stopAnimation()
+                qrFrameAddress.isHidden = true
+            }
+            lnBannerBoxAddress.isHidden = true
+        case .paymentReady:
+            // enter LNInvoiceScreen
+            btnConfirm.setStyle(.primary)
+            showLightningInvoice()
+        case .error(let errStr):
+            btnConfirm.setStyle(.primary)
+            error(errStr)
+        case .none:
+            break
         }
-    }
-
-    @MainActor
-    func reload() {
-        let network = viewModel.account.gdkNetwork
-        btnConfirm.isHidden = !(lightningAmountEditing && (network.lightning || viewModel.type == .lwkSwap))
-        btnShare.isHidden = lightningAmountEditing && (network.lightning || viewModel.type == .lwkSwap)
-        btnVerify.isHidden = !showVerify
-        accountStack.isHidden = true
-        footerLabel.isHidden = viewModel.type != .lwkSwap
+        stopLoader()
         reloadNavigationBtns()
-        viewModel.reloadBackupCards()
-        tableView.reloadData { [weak self] in
-            if self?.viewModel.type == .lwkSwap {
-                if let cells = self?.tableView?.visibleCells {
-                    for cell in cells {
-                        if let c = cell as? AmountCell {
-                            c.responderOn()
-                        }
-                    }
-                }
+        // Backup
+        viewBackup.isHidden = !vm.showBackup
+        // Account
+        viewAccount.isHidden = !vm.showAccount
+        // Amount
+        viewAmount.isHidden = !vm.state.showAmountView
+        lblAssetAmount.attributedText = vm.state.denomUnderlineText
+        btnCancelAmount.isHidden = !(textFieldAmount.text?.count ?? 0 > 0)
+        lblAmountAmount.isHidden = true
+        lblConversionAmount.text = vm.state.conversionText()
+        [lblInfoAmount, lblMoreInfoAmount].forEach {
+            $0.setStyle(.txt)
+        }
+        lblInfoAmount.isHidden = true
+        infoPanelAmount.borderWidth = 1
+        infoPanelAmount.borderColor = .clear
+        switch vm.fieldState {
+        case .valid:
+            disableState()
+            if vm.state.scope == .reverseSwap {
+                moreInfoViewAmount.isHidden = true
+                lblToReceiveHintAmount.isHidden = vm.state.hideSubamount || vm.state.isFiat
+                lblToReceiveHintAmount.text = vm.state.subamountText
             }
+        case .tooLow:
+            let amount = Int64(vm.state.minAmountOpening)
+            let text = String(format: "id_amount_must_be_at_least_s".localized, vm.state.toBtcText(amount) ?? "")
+            errorState(text: text)
+        case .disabled:
+            disableState()
+        case .invalidReverseSwap:
+            moreInfoViewAmount.isHidden = false
+            lblInfoAmount.text = vm.state.message(.invalidReverseSwap) ?? ""
+            lblInfoAmount.isHidden = false
+            lblToReceiveHintAmount.text = vm.state.subamountText
+            bgAmount.borderColor = UIColor.gRedWarn()
+            infoPanelAmount.backgroundColor = UIColor.gRedWarn()
+            lblToReceiveHintAmount.isHidden = true
+        case .lnBelowMin:
+            moreInfoViewAmount.isHidden = false
+            lblInfoAmount.text = vm.state.lnMessage(vm.fieldState)
+            lblInfoAmount.isHidden = false
+            bgAmount.borderColor = UIColor.gRedWarn()
+            infoPanelAmount.backgroundColor = UIColor.gRedSwapErr1()
+            infoPanelAmount.borderColor = UIColor.gRedWarn()
+        case .lnAboveMax:
+            moreInfoViewAmount.isHidden = false
+            lblInfoAmount.text = vm.state.lnMessage(vm.fieldState)
+            lblInfoAmount.isHidden = false
+            bgAmount.borderColor = UIColor.gRedWarn()
+            infoPanelAmount.backgroundColor = UIColor.gRedSwapErr1()
+            infoPanelAmount.borderColor = UIColor.gRedWarn()
+        case .lnRecommend:
+            moreInfoViewAmount.isHidden = false
+            lblInfoAmount.text = vm.state.lnMessage(vm.fieldState)
+            lblInfoAmount.isHidden = false
+            bgAmount.borderColor = UIColor.gRedWarn()
+            infoPanelAmount.backgroundColor = UIColor.gWarnCardBg()
+            addAttributedString(vm.state.lnMessage(vm.fieldState))
+            infoPanelAmount.borderColor = UIColor.gRedWarn()
+        case .lnShowFunding:
+            moreInfoViewAmount.isHidden = false
+            lblInfoAmount.isHidden = false
+            bgAmount.borderColor = UIColor.gWarnCardBgBlue()
+            infoPanelAmount.backgroundColor = UIColor.gWarnCardBgBlue()
+            infoPanelAmount.borderColor = UIColor.gWarnCardBgBlue()
+            addAttributedString(vm.state.lnMessage(vm.fieldState))
+        }
+        // Address
+        viewAddress.isHidden = !vm.state.showAddressView
+
+        // page
+        let network = vm.state.subaccount.gdkNetwork
+        btnConfirm.isHidden = !(network.lightning || vm.state.type == .lwkSwap)
+        btnShare.isHidden = network.lightning || vm.state.type == .lwkSwap
+        btnConfirm.isEnabled = vm.isConfirmEnabled
+        btnConfirm.setStyle( btnConfirm.isEnabled ? .primary : .primaryDisabled)
+        footerLabel.isHidden = vm.state.type != .lwkSwap
+    }
+    func addAttributedString(_ str: String) {
+        let strLearnWhy = "Learn why".localized
+        let pStyle = NSMutableParagraphStyle()
+        pStyle.lineSpacing = 2.0
+        let bAttr: [NSAttributedString.Key: Any] = [
+            NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 14.0),
+            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        let attrStr = NSMutableAttributedString(string: str)
+        attrStr.addAttribute (
+            NSAttributedString.Key.paragraphStyle,
+            value: pStyle,
+            range: NSRange(location: 0, length: attrStr.length))
+        attrStr.setAttributes(bAttr, for: strLearnWhy)
+        lblInfoAmount.attributedText = attrStr
+    }
+    func errorState(text: String) {
+        bgAmount.borderColor = UIColor.gRedWarn()
+        infoPanelAmount.backgroundColor = UIColor.gRedWarn()
+        lblInfoAmount.text = text
+        lblInfoAmount.isHidden = false
+        lblAmountAmount.isHidden = true
+        toReceiveAmount(show: false)
+    }
+    func disableState() {
+        bgAmount.borderColor = UIColor.gBlackBg()
+        infoPanelAmount.backgroundColor = UIColor.clear
+        // lblInfo.isHidden = true
+        lblInfoAmount.text = " "
+        lblAmountAmount.isHidden = false
+        toReceiveAmount(show: false)
+    }
+    func toReceiveAmount(show: Bool) {
+        [lblToReceiveTitleAmount, lblToReceiveHintAmount].forEach {
+            $0?.isHidden = !show
+        }
+    }
+    func resetQR() {
+        qrFrameAddress.reset()
+        qrFrameAddress.isHidden = true
+        plainTxtAddress.isHidden = true
+        groupedTxtAddress.isHidden = true
+        lnBannerBoxAddress.isHidden = true
+    }
+    func requestNewAddress() {
+        vm.newAddress()
+    }
+    func requestNewPayment() {
+        vm.newPayment()
+    }
+    func showLightningInvoice() {
+        vm.onShowInvoice()
+    }
+    func imgToShare() async -> UIImage {
+        guard let text = vm.state.text else { return UIImage() }
+        let frame = CGRect(x: 0.0, y: 0.0, width: 256, height: 256)
+        return await QRGenerator()
+            .generateStatic(text: text, size: frame.size, padding: 16, screenScale: UIScreen.main.scale) ?? UIImage()
+    }
+    func optRequestAmount() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAmountViewController") as? DialogAmountViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            vc.wallet = vm.state.subaccount
+            vc.prefill = vm.state.satoshi
+            present(vc, animated: false, completion: nil)
         }
     }
 
-    func reloadNavigationBtns() {
-        let helpButton = UIButton(type: .system)
-        helpButton.setImage(UIImage(named: "ic_help"), for: .normal)
-        helpButton.addTarget(self, action: #selector(helpButtonTapped), for: .touchUpInside)
-        if viewModel.account.networkType.lightning {
-            let btnNote = UIButton(type: .system)
-            btnNote.setStyle(.inline)
-            btnNote.setTitle(Common.noteActionName(viewModel.description ?? ""), for: .normal)
-            btnNote.addTarget(self, action: #selector(editNoteBtnTapped), for: .touchUpInside)
-            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: btnNote)
-        } else {
-            let optBtn = UIButton(type: .system)
-            optBtn.setImage(UIImage(named: "ic_dots_three"), for: .normal)
-            optBtn.addTarget(self, action: #selector(optBtnTap), for: .touchUpInside)
-            navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: optBtn), UIBarButtonItem(customView: helpButton)]
+    func optSweep() {
+        vm.onSend()
+    }
+    func optAddressAuth() {
+        vm.onAddressAuth()
+    }
+    @objc func onFundingFeeInfo(_ sender: UITapGestureRecognizer) {
+        vm.onFundingFee()
+    }
+    @objc func textFieldDidChange(_ textField: UITextField) {
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.triggerTextChange), object: nil)
+        perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0)
+    }
+    @objc func triggerTextChange() {
+        if let txt = textFieldAmount.text {
+            vm.onAmountFieldChange(txt)
         }
     }
-    @objc func helpButtonTapped(_ sender: Any) {
-        SafeNavigationManager.shared.navigate(ExternalUrls.receiveHelp)
+    @objc func copyToClipboard(_ sender: Any? = nil) {
+        guard let text = vm.state.text else { return }
+        let data = AnalyticsManager.ReceiveAddressData(type: vm.isBipAddress(text) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
+                                                       media: AnalyticsManager.ReceiveAddressMedia.text,
+                                                       method: AnalyticsManager.ReceiveAddressMethod.copy)
+        AnalyticsManager.shared.receiveAddress(account: AccountsRepository.shared.current,
+                                               walletItem: vm.state.subaccount,
+                                               data: data)
+        UIPasteboard.general.string = text
+        DropAlert().info(message: "id_address_copied_to_clipboard".localized, delay: 1.0)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
-    func invoicePaid(_ notification: Notification? = nil) {
-        Task {
-            // TODO:
-            //if let invoice = notification?.object as? InvoicePaidDetails {
-            //    if let vm = try await viewModel.ltSuccessViewModel(amount: invoice) {
-            //        presentLTSuccessViewController(model: vm)
-            //    }
-            //}
+    func onMagnify() {
+        let stb = UIStoryboard(name: "Qrcode", bundle: nil)
+        if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
+            vc.qrTxt = vm.state.text
+            vc.textNoURI = vm.state.text
+            vc.showTxt = true
+            vc.showBtn = true
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
         }
     }
-
-    func newAddress(_ notification: Notification? = nil) {
-         Task { [weak self] in
-            await self?.newAddressAsync()
-        }
-    }
-
     @MainActor
-    func scrollToBottom() {
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {[weak self] in
-            let indexPath = IndexPath(row: 0, section: (self?.sections.count ?? 1) - 1)
-            self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-        }
-    }
-    func newAddressAsync() async {
-        loading = true
-        reload()
-        let task = Task.detached(priority: .background) { [weak self] in
-            try await self?.viewModel?.newAddress()
-        }
-        switch await task.result {
-        case .success:
-            loading = false
-            reload()
-            // waiting for paid invoice
-            switch viewModel.type {
-            case .lwkSwap:
-                Task {
-                    guard let invoice = viewModel.lwkInvoice else { return }
-                    if let persistentId = try? await BoltzController.shared.fetchID(byId: invoice.swapId()) {
-                        await self.viewModel.wm.swapMonitor?.monitorSwap(id: persistentId)
-                    }
-                }
-            default:
-                break
-            }
-        case .failure(let err):
-            error(err)
-        }
-    }
-
-    @MainActor
-    func error(_ err: Error) {
-        var msg = err.description()
+    func error(_ err: String) {
+        var msg = err
         if msg.contains("Swap in progress") {
             msg = "id_there_is_already_a_swap_in"
         }
@@ -269,32 +382,19 @@ class ReceiveViewController: KeyboardViewController {
             message: msg.localized,
             preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "id_contact_support".localized, style: .default) { _ in
-            self.presentDialogErrorViewController(error: err)
+            self.presentDialogErrorViewController(errStr: msg)
         })
         alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in })
         self.present(alert, animated: true, completion: nil)
     }
-
     @MainActor
-    func presentDialogErrorViewController(error: Error) {
+    func presentDialogErrorViewController(errStr: String) {
         let request = ZendeskErrorRequest(
-            error: error.description().localized,
-            network: viewModel.account.networkType,
+            error: errStr,
+            network: vm.state.subaccount.networkType,
             paymentHash: nil,
             screenName: "Receive")
         presentContactUsViewController(request: request)
-    }
-
-    @MainActor
-    func accountsScreen() {
-        let model = viewModel.dialogAccountsModel()
-        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        let vc = storyboard.instantiateViewController(identifier: "DialogAccountsViewController") { coder in
-            DialogAccountsViewController(coder: coder, viewModel: model)
-        }
-        vc.delegate = self
-        vc.modalPresentationStyle = .overFullScreen
-        present(vc, animated: true)
     }
     @MainActor
     func presentConnectViewController() {
@@ -305,175 +405,40 @@ class ReceiveViewController: KeyboardViewController {
             present(vc, animated: false, completion: nil)
         }
     }
-
-    @MainActor
-    func presentVerifyOnDeviceViewController(viewModel: HWDialogVerifyOnDeviceViewModel) {
-        let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "HWDialogVerifyOnDeviceViewController") as? HWDialogVerifyOnDeviceViewController {
-            vc.viewModel = viewModel
-            verifyOnDeviceViewController = vc
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-        }
+    @IBAction func btnDismissBackup(_ sender: Any) {
+        vm.dismissBackupCard()
     }
-
-    func isBipAddress(_ addr: String) -> Bool {
-        return viewModel?.isBipAddress(addr) ?? false
+    @IBAction func btnLeftBackup(_ sender: Any) {
+        vm.onManualBackup()
     }
-
-    @objc func copyToClipboard(_ sender: Any? = nil) {
-        guard let text = viewModel.text else { return }
-        let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(text) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
-                                                       media: AnalyticsManager.ReceiveAddressMedia.text,
-                                                       method: AnalyticsManager.ReceiveAddressMethod.copy)
-        AnalyticsManager.shared.receiveAddress(account: AccountsRepository.shared.current,
-                                               walletItem: viewModel.account,
-                                               data: data)
-        UIPasteboard.general.string = text
-        DropAlert().info(message: "id_address_copied_to_clipboard".localized, delay: 1.0)
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
-    }
-
-    func imgToShare() async -> UIImage {
-        guard let text = viewModel.text else { return UIImage() }
-        let frame = CGRect(x: 0.0, y: 0.0, width: 256, height: 256)
-        return await QRGenerator()
-            .generateStatic(text: text, size: frame.size, padding: 16, screenScale: UIScreen.main.scale) ?? UIImage()
-    }
-
-    @objc func helpBtnTap() {
-        SafeNavigationManager.shared.navigate(ExternalUrls.receiveTransactionHelp)
-    }
-
-    func optRequestAmount() {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAmountViewController") as? DialogAmountViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.delegate = self
-            vc.wallet = viewModel.account
-            vc.prefill = self.viewModel.satoshi
-            present(vc, animated: false, completion: nil)
-        }
-    }
-
-    func optSweep() {
-        sendScreen()
-    }
-
-    func sendScreen() {
-        if let nav = navigationController {
-            activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self, weak nav] in
-                nav?.popToRootViewController(animated: true)
-                self?.activeSendCoordinator = nil
-            }
-            activeSendCoordinator?.start(input: nil, subaccount: viewModel.account, assetId: viewModel.anyOrAsset.assetId)
-        }
-    }
-
-    func optAddressAuth() {
-        let storyboard = UIStoryboard(name: "AddressAuth", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AddressAuthViewController") as? AddressAuthViewController {
-            // add required model info
-            vc.viewModel = AddressAuthViewModel(wallet: viewModel.account)
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
-    func didSelectAssetRow() {
-        AnalyticsManager.shared.changeAsset(account: AccountsRepository.shared.current)
-        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-            vc.viewModel = viewModel.getAssetSelectViewModel()
-            vc.delegate = self
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
-    func onRefreshClick() {
-        if self.viewModel.type == .bolt11 || self.viewModel.type == .lwkSwap {
-            self.viewModel.bolt11 = nil
-        }
-        newAddress()
-    }
-
-    func magnifyQR() {
-        let stb = UIStoryboard(name: "Qrcode", bundle: nil)
-        if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
-            vc.qrTxt = viewModel.text
-            vc.textNoURI = viewModel.text
-            vc.showTxt = true
-            vc.showBtn = true
-            vc.modalPresentationStyle = .overFullScreen
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: false, completion: nil)
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
-        }
-    }
-
-    @MainActor
-    func presentLTSuccessViewController(model: LTSuccessViewModel) {
-        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "LTSuccessViewController") as? LTSuccessViewController {
-            vc.viewModel = model
-            vc.delegate = self
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: false, completion: nil)
-        }
-    }
-
-    @objc func editNoteBtnTapped() {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogEditViewController") as? DialogEditViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.prefill = viewModel.description ?? ""
-            vc.delegate = self
-            present(vc, animated: false, completion: nil)
-        }
-    }
-
-    func showLightningFeeInfo() {
-        SafeNavigationManager.shared.navigate( ExternalUrls.helpReceiveFees )
-    }
-
-    func showDialogInputDenominations() {
-        let model = viewModel.dialogInputDenominationViewModel()
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogInputDenominationViewController") as? DialogInputDenominationViewController {
-            vc.viewModel = model
-            vc.delegate = self
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-        }
-    }
-
-    @objc func optBtnTap() {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
-            vc.delegate = self
-            let options = MoreOptPrefs.getItems(account: viewModel.account, assetId: viewModel.anyOrAsset.assetId)
-            vc.viewModel = DialogListViewModel(
-                title: "id_more_options".localized,
-                type: .moreOptPrefs,
-                items: options)
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-        }
-    }
-
-    @MainActor
-    func reloadSections(_ sections: [ReceiveSection], animated: Bool) {
-        if animated {
-            tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .fade)
+    @IBAction func onSegmentedTap(_ sender: Any) {
+        if segmented.selectedSegmentIndex == 0 {
+            vm.selectAddressMode()
         } else {
-            UIView.performWithoutAnimation {
-                tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
-            }
+            vm.selectReverseSwapMode()
+            AnalyticsManager.shared.swapToggle(account: AccountsRepository.shared.current,
+                                               from: SwapChainName.lightning.rawValue,
+                                               to: SwapChainName.liquid.rawValue)
         }
     }
-    func backupAlertDismiss() {
-        BackupHelper.shared.addToDismissed(walletId: viewModel.mainAccount.id, position: .receive)
-        viewModel.reloadBackupCards()
-        reloadSections([.backup], animated: true)
+    @IBAction func btnCancelAmount(_ sender: Any) {
+        textFieldAmount.text = ""
+        triggerTextChange()
+    }
+    @IBAction func btnInputDenomination(_ sender: Any) {
+        vm.onInputDenomination()
+    }
+    @IBAction func btnRefreshAddress(_ sender: Any) {
+        requestNewAddress()
+    }
+    @IBAction func btnMagnifyAddress(_ sender: Any) {
+        onMagnify()
+    }
+    @IBAction func btnCopyAddress(_ sender: Any) {
+        copyToClipboard()
+    }
+    @IBAction func btnQRCodeAddress(_ sender: Any) {
+        copyToClipboard()
     }
     @IBAction func btnShare(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
@@ -486,145 +451,225 @@ class ReceiveViewController: KeyboardViewController {
             present(vc, animated: false, completion: nil)
         }
     }
-
-    @IBAction func btnEdit(_ sender: Any) {
-        optRequestAmount()
-    }
-
-    @IBAction func btnOptions(_ sender: Any) {
-        optBtnTap()
-    }
-
     @IBAction func btnVerify(_ sender: Any) {
         presentConnectViewController()
     }
+    @IBAction func btnConfirm(_ sender: Any) {
+        if vm.state.type == .bolt11 || vm.state.type == .lwkSwap {
+            startLoader()
+            requestNewPayment()
+            btnConfirm.setStyle(.primaryDisabled)
+            AnalyticsManager.shared.swapReceive(account: AccountsRepository.shared.current,
+                                                from: SwapChainName.lightning.rawValue,
+                                                to: SwapChainName.liquid.rawValue)
+        }
+    }
+}
+extension ReceiveViewController {
+    func bind() {
+        vm.onUpdate = { [weak self] feature in
+            self?.onUpdate(feature)
+        }
+    }
+    func configureUI() {
+        /// scroll + stackview
+        // Backup
+        bgBackup.layer.cornerRadius = 5.0
+        [btnLeftBackup, btnRightBackup].forEach { $0?.setStyle(.outlinedWhite) }
+        btnLeftBackup.backgroundColor = .white
+        btnLeftBackup.setTitleColor(UIColor.gBlackBg(), for: .normal)
+        bgBackup.borderWidth = 1
+        lblTitleBackup.setStyle(.txtBigger)
+        lblHintBackup.setStyle(.txtCard)
+        lblTitleBackup.text = "id_back_up_your_wallet_now".localized
+        lblHintBackup.text = "id_dont_lose_access_to_your_funds".localized
+        btnLeftBackup.setTitle("id_back_up_now".localized, for: .normal)
+        btnRightBackup.isHidden = true
+        iconWarnBackup.image = UIImage(named: "ic_card_warn")
+        bgBackup.backgroundColor = UIColor.gWarnCardBg()
+        bgBackup.borderColor = UIColor.gWarnCardBorder()
+        // Asset
+        bgAsset.setStyle(CardStyle.defaultStyle)
+        lblAssetSection.setStyle(.txtSectionHeader)
+        lblAssetSection.text = "id_asset".localized
+        lblAssetAsset.text = vm.state.assetName
+        imgViewAsset?.image = vm.state.assetIcon
+        // self.onTap = onTap
+        iconDiscloseAsset.isHidden = true // onTap == nil
+        if vm.state.isLBTC() && vm.hasLwkSession {
+            configureLightningReady()
+        } else {
+            viewLightReadyAsset.isHidden = true
+        }
+        // Account
+        [lblAccountAccount, lblNameAccount].forEach {
+            $0.setStyle(.sectionTitle)
+        }
+        lblAccountAccount.text = "\("id_account".localized): \(vm.state.subaccount.localizedName)"
+        // Segmented
+        lblSegmentedSection.setStyle(.txtSectionHeader)
+        lblSegmentedSection.text = "Payer Sends".localized
+        segmented.setTitle("Liquid", forSegmentAt: 0)
+        segmented.setTitle("Lightning", forSegmentAt: 1)
+        segmented.selectedSegmentIndex = vm.state.selectedSegment
+        viewSegmented.isHidden = !vm.showSegmented
+        // Amount
+        textFieldAmount.text = vm.state.amountText
+        lblAmountSection.setStyle(.txtSectionHeader)
+        lblAmountSection.text = "Receive Amount".localized
+        bgAmount.cornerRadius = 5.0
+        bgAmount.borderWidth = 1.0
+        bgAmount.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        lblAmountAmount.setStyle(.txtCard)
+        lblAssetAmount.setStyle(.txtBigger)
+        [lblToReceiveTitleAmount, lblToReceiveHintAmount].forEach {
+            $0?.setStyle(.sectionTitle)
+            $0?.text = ""
+        }
+        lblToReceiveTitleAmount.text = "id_amount_to_receive".localized
+        lblMoreInfoAmount.text = "id_for_more_information".localized
+        btnFeeInfoAmount.setStyle(.underline(txt: "id_read_more".localized, color: .white))
+        lblToReceiveHintAmount.text = ""
+        lblInfoAmount.text = ""
+        lblAmountAmount.text = ""
+        lblMoreInfoAmount.isHidden = true
+        btnFeeInfoAmount.isHidden = true
+        lblToReceiveTitleAmount.isHidden = true
+        lblToReceiveHintAmount.isHidden = true
+        btnCancelAmount.setImage(UIImage(named: "ic_cancel")?.maskWithColor(color: UIColor.gGrayTxt()), for: .normal)
+        lblConversionAmount.text = ""
+        lblConversionAmount.setStyle(.txtCard)
+        textFieldAmount.accessibilityIdentifier = AccessibilityIds.ReceiveScreen.textFieldAmount
+        textFieldAmount.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
+        lblInfoAmount.isUserInteractionEnabled = true
+        lblInfoAmount.lineBreakMode = .byWordWrapping
+        lblInfoAmount.textAlignment = .left
+        let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(onFundingFeeInfo(_:)))
+        tapGesture.numberOfTouchesRequired = 1
+        lblInfoAmount.addGestureRecognizer(tapGesture)
+        // Address
+        viewAddress.isHidden = !vm.state.showAddressView
+        lblAddressSection.setStyle(.txtSectionHeader)
+        lblAddressSection.text = "Address".localized
+        bgCardAddress.setStyle(CardStyle.defaultStyle)
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressAction))
+        qrFrameAddress.addGestureRecognizer(longPressRecognizer)
+        btnQRCodeAddress.accessibilityIdentifier = AccessibilityIds.ReceiveScreen.btnQRCode
+        lnBannerAddress.backgroundColor = UIColor.gAccent()
+        lnBannerAddress.cornerRadius = 5.0
+        lblInfoAddress.setStyle(.txtCard)
+        lblInfoAddress.textColor = .black
+        lnBannerBoxAddress.isHidden = true
+        envelopeBorderViewAddress.backgroundColor = .clear
+        envelopeBorderViewAddress.borderWidth = 5.0
+        envelopeBorderViewAddress.borderColor = UIColor.gAccent()
+        envelopeBorderViewAddress.cornerRadius = 20.0
+        btnMagnifyAddress.setTitle("id_increase_qr_size".localized, for: .normal)
+        btnCopyAddress.setTitle("id_copy_address".localized, for: .normal)
+        [btnMagnifyAddress, btnCopyAddress].forEach {
+            $0.setStyle(.blackWithImg)
+        }
+        plainTxtAddress.lineBreakMode = .byTruncatingTail
+        resetQR()
 
+        /// page
+        title = "id_receive".localized
+        btnShare.setTitle("id_share".localized, for: .normal)
+        btnVerify.setTitle("id_verify_on_device".localized, for: .normal)
+        switch vm.state.type {
+        case .address:
+            btnConfirm.setTitle("id_confirm".localized, for: .normal)
+        case .bolt11, .lwkSwap:
+            btnConfirm.setTitle("id_create_invoice".localized, for: .normal)
+        }
+        footerLabel.text = "You will receive Liquid bitcoin via Lightning invoice.".localized
+        footerLabel.isHidden = vm.state.type != .lwkSwap
+        btnShare.setStyle(!vm.state.showVerify ? .primary : .outlined)
+        btnVerify.setStyle(.primary)
+        btnVerify.isHidden = !vm.state.showVerify
+        footerLabel.setStyle(.txt)
+    }
+    func reloadNavigationBtns() {
+        let helpButton = UIButton(type: .system)
+        helpButton.setImage(UIImage(named: "ic_help"), for: .normal)
+        helpButton.addTarget(self, action: #selector(helpButtonTapped), for: .touchUpInside)
+        if vm.state.subaccount.networkType.lightning {
+            let btnNote = UIButton(type: .system)
+            btnNote.setStyle(.inline)
+            btnNote.setTitle(Common.noteActionName(vm.state.description ?? ""), for: .normal)
+            btnNote.addTarget(self, action: #selector(editNoteBtnTapped), for: .touchUpInside)
+            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: btnNote)
+        } else {
+            let optBtn = UIButton(type: .system)
+            optBtn.setImage(UIImage(named: "ic_dots_three"), for: .normal)
+            optBtn.addTarget(self, action: #selector(optBtnTap), for: .touchUpInside)
+            navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: optBtn), UIBarButtonItem(customView: helpButton)]
+        }
+    }
     func verifyAddress() async {
-        AnalyticsManager.shared.verifyAddressJade(account: AccountsRepository.shared.current, walletItem: viewModel.account)
-        if let vm = viewModel.receiveVerifyOnDeviceViewModel() {
+        AnalyticsManager.shared.verifyAddressJade(account: AccountsRepository.shared.current, walletItem: vm.state.subaccount)
+        if let vm = vm.receiveVerifyOnDeviceViewModel() {
             presentVerifyOnDeviceViewController(viewModel: vm)
         }
-        let task = Task.detached { [weak self] in
-            try await self?.viewModel.validateHW()
-        }
-        switch await task.result {
-        case .success(let success):
+        do {
+            let success = try await vm.validateHW()
             verifyOnDeviceViewController?.dismiss()
             switch success {
-            case .some(true):
+            case true:
                 DropAlert().success(message: "id_the_address_is_valid".localized)
-            case .none:
-                DropAlert().error(message: "id_operation_failure".localized)
-            case .some(false):
+            case false:
                 DropAlert().error(message: "id_the_addresses_dont_match".localized)
             }
-        case .failure(let error):
+        } catch {
             verifyOnDeviceViewController?.dismiss()
             DropAlert().error(message: error.description().localized)
         }
     }
-    func onAccountChange() {
-        accountsScreen()
-    }
-    func dialogFundingFee() {
-        let storyboard = UIStoryboard(name: "ReceiveFlow", bundle: nil)
-        let vc = storyboard.instantiateViewController(identifier: "DialogFundingFeeViewController") { coder in
-            DialogFundingFeeViewController(coder: coder)
+    @MainActor
+    func presentVerifyOnDeviceViewController(viewModel: HWDialogVerifyOnDeviceViewModel) {
+        let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "HWDialogVerifyOnDeviceViewController") as? HWDialogVerifyOnDeviceViewController {
+            vc.viewModel = viewModel
+            verifyOnDeviceViewController = vc
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
-        // vc.delegate = self
-        vc.modalPresentationStyle = .overFullScreen
-        present(vc, animated: false, completion: nil)
     }
-    func showLightningInvoice() {
-
-        let model = LNInvoiceViewModel(satoshi: viewModel.satoshi ?? 0,
-                                       description: viewModel.description ?? "",
-                                       account: viewModel.account,
-                                       walletDataModel: viewModel.walletDataModel,
-                                       type: viewModel.type,
-                                       inputDenomination: viewModel.inputDenomination)
-        let storyboard = UIStoryboard(name: "ReceiveFlow", bundle: nil)
-        let vc = storyboard.instantiateViewController(identifier: "LNInvoiceViewController") { coder in
-            LNInvoiceViewController(coder: coder, viewModel: model)
-        }
-        // vc.delegate = self
-        self.navigationController?.pushViewController(vc, animated: true)
-
+    @objc func helpButtonTapped(_ sender: Any) {
+        SafeNavigationManager.shared.navigate(ExternalUrls.receiveHelp)
     }
-    @IBAction func btnConfirm(_ sender: Any) {
-        if viewModel.type == .bolt11 || viewModel.type == .lwkSwap {
-            AnalyticsManager.shared.swapReceive(account: AccountsRepository.shared.current,
-                                                from: SwapChainName.lightning.rawValue,
-                                                to: SwapChainName.liquid.rawValue)
-            showLightningInvoice()
-            return
+    @objc func editNoteBtnTapped() {
+        vm.editNote()
+    }
+    @objc func optBtnTap() {
+        // vm.dialogOptions()
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            vc.delegate = self
+            let options = MoreOptPrefs.getItems(account: vm.state.subaccount, assetId: vm.state.anyOrAsset.assetId)
+            let model = DialogListViewModel(
+                title: "id_more_options".localized,
+                type: .moreOptPrefs,
+                items: options)
+            vc.viewModel = model
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
+    }
+    func configureLightningReady() {
+        viewLightReadyAsset.isHidden = false
+        iconLightReadyAsset.image = UIImage(named: "ic_shortcut_light")!.maskWithColor(color: .gLightning())
+        lblLightReadyAsset.text = "Lightning Ready".localized
+        viewLightReadyAsset.borderWidth = 1.0
+        viewLightReadyAsset.borderColor = .gLightning()
+        viewLightReadyAsset.cornerRadius = 5.0
+        lblLightReadyAsset.setStyle(.txtSmaller)
+        lblLightReadyAsset.textColor = .gLightning()
+    }
+    @objc func longPressAction(_ sender: UILongPressGestureRecognizer) {
+        onMagnify()
     }
 }
-
-extension ReceiveViewController: AssetSelectViewControllerDelegate {
-    func didSelectAnyOrAsset(_ ref: AnyOrAsset) {
-        switch ref {
-        case .anyLiquid:
-            viewModel.anyOrAsset = ref
-            if !viewModel.account.networkType.liquid {
-                if let account = viewModel.getAccounts().first {
-                    viewModel.account = account
-                } else {
-                    DropAlert().warning(message: "Create an account".localized)
-                    return
-                }
-            }
-        case .anyAmp:
-            viewModel.anyOrAsset = ref
-            if viewModel.account.type != .amp {
-                if let account = viewModel.getAccounts().first {
-                    viewModel.account = account
-                } else {
-                    DropAlert().warning(message: "Create an Amp account to receive Amp asset".localized)
-                    return
-                }
-            }
-        case .asset(let assetId):
-            let info = WalletManager.current?.info(for: assetId)
-            if info?.amp ?? false && !viewModel.hasSubaccountAmp() {
-                DropAlert().warning(message: "Create an Amp account to receive Amp asset".localized)
-                return
-            }
-            viewModel.anyOrAsset = ref
-            if assetId == AssetInfo.lightningId {
-                viewModel.type = .bolt11
-                lightningAmountEditing = true
-            } else {
-                selectedSegment = 0
-                viewModel.type = .address
-            }
-        }
-        reload()
-        newAddress()
-    }
-    func prepareReverseSwap() {
-        Task { [weak self] in
-            do {
-                if self?.viewModel.reverseSwapInfo == nil {
-                    self?.viewModel.reverseSwapInfo = try? await self?.viewModel.wm.lwkSession?.fetchReverseSwapsInfo()
-                }
-                self?.viewModel.type = .lwkSwap
-                self?.selectedSegment = 1
-                self?.reload()
-            }
-        }
-    }
-}
-extension ReceiveViewController: DialogAmountViewControllerDelegate {
-    func didConfirm(satoshi: Int64?) {
-        self.viewModel.satoshi = satoshi
-        reload()
-    }
-
-    func didCancel() { }
-}
-
 extension ReceiveViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
 
@@ -632,7 +677,7 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
         switch type {
         case .moreOptPrefs:
 
-            if let item = MoreOptPrefs.getPrefs(account: viewModel.account, assetId: viewModel.anyOrAsset.assetId)[safe: index] {
+            if let item = MoreOptPrefs.getPrefs(account: vm.state.subaccount, assetId: vm.state.anyOrAsset.assetId)[safe: index] {
                 switch item {
                 case .requestAmount:
                     optRequestAmount()
@@ -648,27 +693,27 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
             case .none:
                 return
             case .address:
-                let uri = viewModel.text
+                let uri = vm.state.text
                 let activityViewController = UIActivityViewController(activityItems: [uri ?? ""], applicationActivities: nil)
                 activityViewController.popoverPresentationController?.sourceView = self.view
                 self.present(activityViewController, animated: true, completion: nil)
                 let data = AnalyticsManager.ReceiveAddressData(
-                    type: self.isBipAddress(uri ?? "") ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
+                    type: vm.isBipAddress(uri ?? "") ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
                     media: AnalyticsManager.ReceiveAddressMedia.text,
                     method: AnalyticsManager.ReceiveAddressMethod.share)
                 AnalyticsManager.shared.receiveAddress(
                     account: AccountsRepository.shared.current,
-                    walletItem: viewModel.account,
+                    walletItem: vm.state.subaccount,
                     data: data)
             case .qr:
-                let uri = viewModel.text
+                let uri = vm.state.text
                 let data = AnalyticsManager.ReceiveAddressData(
-                    type: self.isBipAddress(uri ?? "") ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
+                    type: vm.isBipAddress(uri ?? "") ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
                     media: AnalyticsManager.ReceiveAddressMedia.image,
                     method: AnalyticsManager.ReceiveAddressMethod.share)
                 AnalyticsManager.shared.receiveAddress(
                     account: AccountsRepository.shared.current,
-                    walletItem: viewModel.account,
+                    walletItem: vm.state.subaccount,
                     data: data)
                 Task {
                     let image = await imgToShare()
@@ -692,307 +737,14 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
         }
     }
 }
-extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
-
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return sections.count
+extension ReceiveViewController: DialogAmountViewControllerDelegate {
+    func didConfirm(satoshi: Int64?) {
+        vm.setAmount(satoshi, feature: .address)
     }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch sections[section] {
-        case ReceiveSection.backup:
-            return viewModel.backupCardCellModel.count
-        case ReceiveSection.asset:
-            return 1
-        case ReceiveSection.account:
-            return viewModel.getAccounts().count <= 1 ? 0 : 1
-        case ReceiveSection.address:
-            return 1
-        case ReceiveSection.amount:
-            return 1
-        case ReceiveSection.infoReceiveAmount:
-            return 1
-        case ReceiveSection.infoExpiredIn:
-            return 1
-        case ReceiveSection.infoLwkSwap:
-            return 1
-        case ReceiveSection.note:
-            return 1
-        case ReceiveSection.segmented:
-            return 1
-        }
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch sections[indexPath.section] {
-        case ReceiveSection.backup:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell {
-                let alertCard = viewModel.backupCardCellModel[indexPath.row]
-                switch alertCard.type {
-                case .backup:
-                    cell.configure(alertCard,
-                                   onLeft: {[weak self] in
-                        if let vc = AccountNavigator.backupIntro(.quiz) {
-                            self?.navigationController?.pushViewController(vc, animated: true)
-                        }
-                    },
-                                   onRight: nil,
-                                   onDismiss: { [weak self] in
-                        self?.backupAlertDismiss()
-                    })
-                default:
-                    break
-                }
-                cell.selectionStyle = .none
-                return cell
-            }
-        case ReceiveSection.asset:
-            let action: (() -> Void)? = viewModel.allowChange ? { [weak self] in self?.didSelectAssetRow() } : nil
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "ReceiveAssetCell") as? ReceiveAssetCell {
-                cell.configure(model: viewModel.receiveAssetCellModel,
-                               hasLwkSession: viewModel.hasLwkSession,
-                               onTap: action)
-                cell.selectionStyle = .none
-                return cell
-            }
-        case ReceiveSection.account:
-            let action: (() -> Void)? = viewModel.allowChange ? { [weak self] in self?.onAccountChange() } : nil
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "ChangeAccountCell") as? ChangeAccountCell {
-                cell.configure(name: viewModel.account.localizedName,
-                               type: viewModel.account.type.path.uppercased(),
-                               onTap: action)
-                cell.selectionStyle = .none
-                return cell
-            }
-        case ReceiveSection.amount:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "AmountCell") as? AmountCell {
-                let model = viewModel.amountCellModel
-                cell.configure(model: model, delegate: self, enabled: lightningAmountEditing)
-                cell.selectionStyle = .none
-                return cell
-            }
-        case ReceiveSection.address:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "ReceiveAddressCell") as? ReceiveAddressCell {
-                let model = viewModel.addressCellModel
-                cell.reset()
-                cell.configure(model: model, isAnimating: loading) { [weak self] in self?.copyToClipboard()
-                } onRefreshClick: { [weak self] in
-                    self?.onRefreshClick()
-                } onLongpress: { [weak self] in
-                    self?.magnifyQR()
-                }
-                cell.selectionStyle = .none
-                return cell
-            }
-        case ReceiveSection.infoReceiveAmount:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "LTInfoCell") as? LTInfoCell {
-                cell.configure(model: viewModel.infoReceivedAmountCellModel)
-                cell.selectionStyle = .none
-                return cell
-            }
-        case ReceiveSection.infoExpiredIn:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "LTInfoCell") as? LTInfoCell {
-                cell.configure(model: viewModel.infoExpiredInCellModel)
-                cell.selectionStyle = .none
-                return cell
-            }
-        case ReceiveSection.infoLwkSwap:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "LTInfoCell") as? LTInfoCell {
-                cell.configure(model: viewModel.infoLwkSwapCellModel)
-                cell.selectionStyle = .none
-                return cell
-            }
-        case ReceiveSection.note:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "LTNoteCell") as? LTNoteCell {
-                cell.configure(model: viewModel.noteCellModel) { [weak self] in
-                    self?.editNoteBtnTapped()
-                }
-                cell.selectionStyle = .none
-                return cell
-            }
-        case ReceiveSection.segmented:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "SegmentedCell") as? SegmentedCell {
-                cell.configure(
-                    selected: selectedSegment,
-                    onLeftTap: { [weak self] in
-                        self?.viewModel.type = .address
-                        self?.viewModel.satoshi = nil
-                        self?.selectedSegment = 0
-                        self?.reload()
-                    },
-                    onRightTap: { [weak self] in
-                        self?.viewModel.satoshi = nil
-                        self?.prepareReverseSwap()
-                        AnalyticsManager.shared.swapToggle(account: AccountsRepository.shared.current,
-                                                           from: SwapChainName.lightning.rawValue,
-                                                           to: SwapChainName.liquid.rawValue)
-                    })
-                cell.selectionStyle = .none
-                return cell
-            }
-        }
-
-        return UITableViewCell()
-    }
-
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch sections[section] {
-        case ReceiveSection.asset:
-            return headerH
-        case ReceiveSection.account:
-            return 0.1
-        case ReceiveSection.address:
-            return headerH
-        case ReceiveSection.amount:
-            return headerH
-        case ReceiveSection.note:
-            return headerH
-        case ReceiveSection.segmented:
-            return headerH
-        default:
-            return 0.1
-        }
-    }
-
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 0.1
-    }
-
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
-    }
-
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        switch sections[section] {
-        case ReceiveSection.backup:
-            return nil
-        case ReceiveSection.asset:
-            return headerView("id_asset".localized)
-        case ReceiveSection.account:
-            return nil
-        case ReceiveSection.address:
-            switch viewModel.type {
-            case .address:
-                return headerView("id_address".localized)
-            case .bolt11:
-                return headerView("id_lightning_invoice".localized)
-            case .lwkSwap:
-                return headerView("id_invoice".localized)
-            }
-        case ReceiveSection.amount:
-            return headerView("Receive Amount".localized)
-        case ReceiveSection.note:
-            return headerView("id_note".localized)
-        case ReceiveSection.segmented:
-            return headerView("Payer Sends".localized)
-        case .infoReceiveAmount:
-            return nil
-        case .infoExpiredIn:
-            return nil
-        case .infoLwkSwap:
-            return nil
-        }
-    }
-
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return nil
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    }
-}
-
-extension ReceiveViewController {
-    func headerView(_ txt: String) -> UIView {
-        let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
-        section.backgroundColor = UIColor.gBlackBg()
-        let title = UILabel(frame: .zero)
-        title.setStyle(.txtSectionHeader)
-        title.text = txt
-        title.numberOfLines = 0
-        title.translatesAutoresizingMaskIntoConstraints = false
-        section.addSubview(title)
-        NSLayoutConstraint.activate([
-            title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
-            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 25),
-            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -25)
-        ])
-        return section
-    }
-}
-
-extension ReceiveViewController: DialogEditViewControllerDelegate {
-
-    func didSave(_ note: String) {
-        viewModel.description = note
-        newAddress()
-    }
-
-    func didClose() { }
-}
-
-extension ReceiveViewController: LTSuccessViewControllerDelegate {
-    func onDone() {
-        print("Done")
-    }
-}
-
-extension ReceiveViewController: AmountCellDelegate {
-
-    func onInputDenomination() {
-        showDialogInputDenominations()
-    }
-
-    func onFeeInfo() {
-        showLightningFeeInfo()
-    }
-    func onFundingFeeInfo() {
-        dialogFundingFee()
-    }
-    func textFieldEnabled() {
-        if self.viewModel.type == .bolt11 || self.viewModel.type == .lwkSwap {
-            viewModel.bolt11 = nil
-            lightningAmountEditing = true
-        }
-        reload()
-    }
-
-    func textFieldDidChange(_ satoshi: Int64?, isFiat: Bool) {
-        viewModel.satoshi = satoshi
-        viewModel.isFiat = isFiat
-        tableView.beginUpdates()
-        tableView.endUpdates()
-    }
-    var isConfirmEnabled: Bool {
-        if viewModel.satoshi == 0 {
-            return false
-        } else {
-            return viewModel.state == .valid || viewModel.state == .lnRecommend || viewModel.state == .lnShowFunding
-        }
-    }
-    func stateDidChange(_ state: AmountCellState) {
-        viewModel.state = state
-        btnConfirm.isEnabled = isConfirmEnabled
-        btnConfirm.setStyle( btnConfirm.isEnabled ? .primary : .primaryDisabled)
-    }
-}
-
-extension ReceiveViewController: DialogInputDenominationViewControllerDelegate {
-
-    func didSelectFiat() {
-        viewModel.isFiat = true
-        tableView.reloadData()
-    }
-
-    func didSelectInput(denomination: gdk.DenominationType) {
-        viewModel.isFiat = false
-        viewModel?.inputDenomination = denomination
-        tableView.reloadData()
-    }
+    func didCancel() { }
 }
 extension ReceiveViewController: HWDialogConnectViewControllerDelegate {
-    func connected() {
-    }
+    func connected() {}
 
     func logged() {
         Task { [weak self] in
@@ -1001,20 +753,10 @@ extension ReceiveViewController: HWDialogConnectViewControllerDelegate {
     }
 
     func cancel() {
-        error(HWError.Abort("id_cancel"))
+        error(HWError.Abort("id_cancel").description())
     }
 
     func failure(err: Error) {
-        error(err)
-    }
-}
-extension ReceiveViewController: DialogAccountsViewControllerDelegate {
-    func didSelectAccount(_ walletItem: gdk.WalletItem?) {
-        if let account = walletItem {
-            viewModel.account = account
-            viewModel.type = account.gdkNetwork.lightning ? .bolt11 : .address
-            reload()
-            newAddress()
-        }
+        error(err.description())
     }
 }

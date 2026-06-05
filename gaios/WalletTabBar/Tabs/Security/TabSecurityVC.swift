@@ -91,11 +91,12 @@ class TabSecurityVC: TabViewController {
         case .fwUpdate:
             onFwUpdate()
         case .recoveryPhrase:
+            let model = ManualBackupViewModel(.phrase)
             let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "ManualBackupViewController") as? ManualBackupViewController {
-                vc.viewModel = ManualBackupViewModel(.phrase)
-                navigationController?.pushViewController(vc, animated: true)
+            let vc = storyboard.instantiateViewController(identifier: "ManualBackupViewController") { coder in
+                ManualBackupViewController(coder: coder, viewModel: model)
             }
+            navigationController?.pushViewController(vc, animated: true)
         case .header:
             return
         }

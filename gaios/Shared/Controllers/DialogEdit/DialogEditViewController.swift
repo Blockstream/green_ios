@@ -29,6 +29,14 @@ class DialogEditViewController: KeyboardViewController {
 
     var prefill: String = ""
 
+    init?(coder: NSCoder, prefill: String) {
+        self.prefill = prefill
+        super.init(coder: coder)
+    }
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+
     lazy var blurredView: UIView = {
         let containerView = UIView()
         let blurEffect = UIBlurEffect(style: .dark)

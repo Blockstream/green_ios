@@ -14,6 +14,7 @@ class ManageAssetViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView?
     private var activeSendCoordinator: SendCoordinator?
+    private var activeReceiveCoordinator: ReceiveCoordinator?
     let viewModel: ManageAssetViewModel
 
     init?(coder: NSCoder, viewModel: ManageAssetViewModel) {
@@ -542,14 +543,12 @@ extension ManageAssetViewController {
         }
     }
     func receiveScreen() {
-        let storyboard = UIStoryboard(name: "ReceiveFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController, let account = viewModel.selectedSubaccount {
-            vc.viewModel = ReceiveViewModel(
-                mainAccount: viewModel.mainAccount,
-                walletDataModel: viewModel.walletDataModel,
-                wallet: account,
-                anyOrAsset: .asset(viewModel.assetId))
-            navigationController?.pushViewController(vc, animated: true)
+        if let nav = navigationController, let account = viewModel.selectedSubaccount {
+            activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self, weak nav] in
+                // nav?.popToRootViewController(animated: true)
+                self?.activeReceiveCoordinator = nil
+            }
+            activeReceiveCoordinator?.start(account: account, anyOrAsset: .asset(viewModel.assetId))
         }
     }
     func accountsScreen(model: DialogAccountsViewModel) {

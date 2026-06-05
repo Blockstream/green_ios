@@ -221,12 +221,12 @@ class SendSwapViewController: UIViewController {
     func changeDenom(for position: SwapPositionEnum) {
         guard let vm = viewModel.dialogInputDenominationViewModel(for: position) else { return }
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogInputDenominationViewController") as? DialogInputDenominationViewController {
-            vc.viewModel = vm
-            vc.delegate = self
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
+        let vc = storyboard.instantiateViewController(identifier: "DialogInputDenominationViewController") { coder in
+            DialogInputDenominationViewController(coder: coder, model: vm)
         }
+        vc.delegate = self
+        vc.modalPresentationStyle = .overFullScreen
+        present(vc, animated: false, completion: nil)
     }
 
     @IBAction func btnSwap(_ sender: Any) {

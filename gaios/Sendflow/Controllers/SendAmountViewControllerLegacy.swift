@@ -380,13 +380,14 @@ class SendAmountViewControllerLegacy: KeyboardViewController {
 //            return
 //        }
         if AssetInfo.baseIds.contains(viewModel.assetId) {
+            guard let model = viewModel.dialogInputDenominationViewModel() else {return}
             let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogInputDenominationViewController") as? DialogInputDenominationViewController {
-                vc.viewModel = viewModel.dialogInputDenominationViewModel()
-                vc.delegate = self
-                vc.modalPresentationStyle = .overFullScreen
-                present(vc, animated: false, completion: nil)
+            let vc = storyboard.instantiateViewController(identifier: "DialogInputDenominationViewController") { coder in
+                DialogInputDenominationViewController(coder: coder, model: model)
             }
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         } else {
             let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogLiquidAssetToFiatViewController") as? DialogLiquidAssetToFiatViewController {

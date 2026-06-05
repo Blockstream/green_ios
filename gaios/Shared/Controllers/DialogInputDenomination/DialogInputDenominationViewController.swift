@@ -23,6 +23,14 @@ class DialogInputDenominationViewController: UIViewController {
     var obs: NSKeyValueObservation?
     weak var delegate: DialogInputDenominationViewControllerDelegate?
 
+    init?(coder: NSCoder, model: DialogInputDenominationViewModel) {
+        self.viewModel = model
+        super.init(coder: coder)
+    }
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+
     lazy var blurredView: UIView = {
         let containerView = UIView()
         let blurEffect = UIBlurEffect(style: .dark)

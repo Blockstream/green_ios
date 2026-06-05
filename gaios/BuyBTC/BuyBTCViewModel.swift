@@ -26,10 +26,9 @@ class BuyBTCViewModel {
     var asset: String
     var satoshi: Int64?
     var isFiat: Bool = true
-    var account: WalletItem { didSet { ReceiveViewModel.defaultAccount = account }}
+    var account: WalletItem
     var mainAccount: Account? { AccountsRepository.shared.current }
     var inputDenomination: gdk.DenominationType = .Sats
-    var state: AmountCellState = .invalidBuy
     var meld: Meld
     var wm: WalletManager { WalletManager.current! }
     var backupCardCellModel = [AlertCardCellModel]()

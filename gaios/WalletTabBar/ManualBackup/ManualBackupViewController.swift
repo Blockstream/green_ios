@@ -16,6 +16,14 @@ class ManualBackupViewController: UIViewController {
     weak var subAccountCreateDelegate: AccountCreateRecoveryKeyDelegate?
     var viewModel: ManualBackupViewModel!
 
+    init?(coder: NSCoder, viewModel: ManualBackupViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+
     var wm: WalletManager { WalletManager.current! }
 
     override func viewDidLoad() {

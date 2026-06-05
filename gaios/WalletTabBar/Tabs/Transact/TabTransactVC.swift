@@ -3,7 +3,7 @@ import gdk
 import core
 
 class TabTransactVC: TabViewController {
-
+    private var activeReceiveCoordinator: ReceiveCoordinator?
     @IBOutlet weak var tableView: UITableView?
 
     var anyOrAsset: AnyOrAsset?
@@ -444,14 +444,12 @@ extension TabTransactVC: AssetSelectViewControllerDelegate {
 }
 extension TabTransactVC: DialogAccountsViewControllerDelegate {
     func didSelectAccount(_ walletItem: gdk.WalletItem?) {
-        let storyboard = UIStoryboard(name: "ReceiveFlow", bundle: nil)
-        if let walletItem, let anyOrAsset, let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
-            vc.viewModel = ReceiveViewModel(
-                mainAccount: viewModel.mainAccount,
-                walletDataModel: viewModel.walletDataModel,
-                wallet: walletItem,
-                anyOrAsset: anyOrAsset)
-            navigationController?.pushViewController(vc, animated: true)
+        if let nav = navigationController, let account = walletItem, let anyOrAsset {
+            activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self, weak nav] in
+                //nav?.popToRootViewController(animated: true)
+                self?.activeReceiveCoordinator = nil
+            }
+            activeReceiveCoordinator?.start(account: account, anyOrAsset: anyOrAsset)
         }
     }
 }

@@ -119,12 +119,12 @@ class TxDetailsViewController: UIViewController {
     func editNote() {
         if isWatchonly && !isSinglesig { return }
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogEditViewController") as? DialogEditViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.prefill = vm.transaction.memo ?? ""
-            vc.delegate = self
-            present(vc, animated: false, completion: nil)
+        let vc = storyboard.instantiateViewController(identifier: "DialogEditViewController") { coder in
+            DialogEditViewController(coder: coder, prefill: self.vm.transaction.memo ?? "")
         }
+        vc.modalPresentationStyle = .overFullScreen
+        vc.delegate = self
+        present(vc, animated: false, completion: nil)
     }
 
     func share() {

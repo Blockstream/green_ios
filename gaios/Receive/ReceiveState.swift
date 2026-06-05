@@ -1,29 +1,118 @@
 import Foundation
 import UIKit
-import gdk
-import lightning
 import core
+import gdk
+import LiquidWalletKit
+import greenaddress
+import lightning
 
-enum AmountCellScope {
+enum AmountFieldScope {
     case ltReceive
     case reverseSwap
 }
-enum AmountCellColorType {
-    case error
-    case warning
-    case ready
-}
-struct AmountCellModel {
-    var satoshi: Int64?
-    var hasActiveChannel: Bool
-    var minAmountOpening: UInt64?
-    var maxLimit: UInt64?
-    var isFiat: Bool
-    var inputDenomination: gdk.DenominationType
-    var gdkNetwork: gdk.GdkNetwork?
-    var scope: AmountCellScope
-    var reverseSwapInfo: BoltzReverseSwapInfoLBTC?
 
+enum AmountFieldState: Int {
+    case valid
+    case tooLow
+    case disabled
+    case invalidReverseSwap
+    case lnBelowMin
+    case lnAboveMax
+    case lnRecommend
+    case lnShowFunding
+}
+
+struct ReceiveState {
+    var subaccount: WalletItem
+    var type: ReceiveType
+    var anyOrAsset: AnyOrAsset
+    var satoshi: Int64?
+    var selectedSegment: Int = 0
+    var reverseSwapInfo: BoltzReverseSwapInfoLBTC?
+    var inputDenomination: gdk.DenominationType
+    // liquid / bitcoin address
+    var address: gdk.Address?
+    // lwk lightning invoice response
+    var lwkInvoice: InvoiceResponse?
+    // greenlight lightning invoice response
+    var lightningReceivePayment: LightningReceivePayment?
+    var isFiat: Bool = false
+    var bolt11: String?
+    var isLightning: Bool {
+        subaccount.gdkNetwork.lightning
+    }
+    var description: String?
+    var showVerify: Bool {
+        AccountsRepository.shared.current?.isJade ?? false && !subaccount.isLightning && type == .address
+    }
+    var assetInfo: AssetInfo? {
+        if case .asset(let assetId) = anyOrAsset {
+            return WalletManager.current?.info(for: assetId)
+        }
+        return nil
+    }
+    var assetIcon: UIImage? {
+        switch anyOrAsset {
+        case .anyLiquid:
+            return UIImage(named: "default_asset_liquid_icon")!
+        case .anyAmp:
+            return UIImage(named: "default_asset_amp_icon")!
+        case .asset(let assetId):
+            return WalletManager.current?.image(for: assetId)
+        }
+    }
+    var assetName: String {
+        switch anyOrAsset {
+        case .anyLiquid:
+            return "id_receive_any_liquid_asset".localized
+        case .anyAmp:
+            return "id_receive_any_amp_asset".localized
+        case .asset(let assetId):
+            return assetInfo?.name ?? assetId
+        }
+    }
+    func isLBTC() -> Bool {
+        return assetInfo?.assetId == AssetInfo.lbtcId
+    }
+    var showAmountView: Bool {
+        if anyOrAsset.assetId == AssetInfo.lbtcId {
+            switch type {
+            case .lwkSwap:
+                return true
+            default:
+                return false
+            }
+        }
+        switch type {
+        case .bolt11:
+            return true
+        default:
+            return false
+        }
+    }
+    var showAddressView: Bool {
+        if anyOrAsset.assetId == AssetInfo.lbtcId {
+            switch type {
+            case .lwkSwap:
+                return false
+            default:
+                return true
+            }
+        }
+        switch type {
+        case .address:
+            return true
+        default:
+            return false
+        }
+    }
+    let minAmountOpening: UInt64 = 25000
+    var gdkNetwork: gdk.GdkNetwork? {
+        subaccount.session?.gdkNetwork
+    }
+    var scope: AmountFieldScope {
+        type == .lwkSwap ? .reverseSwap : .ltReceive
+    }
     var network: NetworkSecurityCase?
     var amount: String? { isFiat ? fiat : btc }
     var subamountText: String? { isFiat ? "≈ \(btc ?? "") \(denominationHint ?? "")" : "≈ \(fiat ?? "") \(currency ?? "")" }
@@ -44,14 +133,14 @@ struct AmountCellModel {
         let balance = Balance.fromSatoshi(max, assetId: AssetInfo.btcId)
         return isFiat ? balance?.toFiatText() : balance?.toText(inputDenomination)
     }
-    func message(_ state: AmountCellState) -> String? {
+    func message(_ state: AmountFieldState) -> String? {
         if state == .invalidReverseSwap {
             if let minReverseSwapText, let maxReverseSwapText {
                 return "Type an amount between \(minReverseSwapText) and \(maxReverseSwapText)."
             }
-            return "Invalid amount"
+            return "Invalid amount".localized
         } else if state == .tooLow {
-            let amount = Int64(minAmountOpening ?? 0)
+            let amount = Int64(minAmountOpening)
             return String(format: "id_amount_must_be_at_least_s".localized, toBtcText(amount) ?? "")
         }
         return nil
@@ -94,7 +183,7 @@ struct AmountCellModel {
                 nil // [.underlineStyle: NSUnderlineStyle.single.rawValue]
         )
     }
-    var lnReccomendedSatoshis: UInt64 {
+    var lnRecommendedSatoshis: UInt64 {
         return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigLnRecommendedSatoshis) as? UInt64 ?? 85_000
     }
     var lnMinSatoshis: UInt64 {
@@ -116,7 +205,7 @@ struct AmountCellModel {
         }
         return str
     }
-    func lnMessage(_ state: AmountCellState) -> String {
+    func lnMessage(_ state: AmountFieldState) -> String {
         switch state {
         case .lnBelowMin:
             return String(format: "Minimum is %@".localized, lnLimitsStr(satoshi: lnMinSatoshis, showFiat: true))
@@ -124,7 +213,7 @@ struct AmountCellModel {
             return String(format: "Maximum is %@".localized, lnLimitsStr(satoshi: lnMaxSatoshis, showFiat: true))
         case .lnRecommend:
             return String(format: "Recommended amount is at least %@ to avoid high funding fees. Learn why.".localized,
-                          lnLimitsStr(satoshi: lnReccomendedSatoshis, showFiat: false))
+                          lnLimitsStr(satoshi: lnRecommendedSatoshis, showFiat: false))
         case .lnShowFunding:
             return "Requires a funding fee. Learn why.".localized
         default:
@@ -162,48 +251,6 @@ struct AmountCellModel {
         }
         return nil
     }
-
-    var maxLimitAmount: String? {
-        if let maxLimit = maxLimit {
-            let balance = Balance.fromSatoshi(UInt64(maxLimit), assetId: AssetInfo.btcId)
-            return isFiat ? balance?.toFiat().0 : balance?.toDenom(inputDenomination).0
-        }
-        return nil
-    }
-
-    var state: AmountCellState {
-        guard let satoshi = satoshi else { return .disabled }
-        switch scope {
-        case .ltReceive:
-            if satoshi > lnMaxSatoshis {
-                return .lnAboveMax
-            }
-            if hasActiveChannel && satoshi > maxLimit ?? 0 {
-                // amount above inbound liquidity
-                if satoshi < lnReccomendedSatoshis {
-                    return .lnRecommend
-                } else {
-                    return .lnShowFunding
-                }
-            }
-            if !hasActiveChannel {
-                if satoshi < lnMinSatoshis {
-                    return .lnBelowMin
-                } else if satoshi >= lnMinSatoshis && satoshi < lnReccomendedSatoshis {
-                    return .lnRecommend
-                } else if satoshi >= lnReccomendedSatoshis && satoshi < lnMaxSatoshis {
-                    return .lnShowFunding
-                }
-            }
-            return .valid
-        case .reverseSwap:
-            if satoshi < reverseSwapLimits?.0 ?? 0 || satoshi > reverseSwapLimits?.1 ?? 0 {
-                return .invalidReverseSwap
-            } else {
-                return .valid
-            }
-        }
-    }
     var defaultCurrency: String? = {
         return Balance.fromSatoshi(Int64(0), assetId: AssetInfo.btcId)?.toFiat().1
     }()
@@ -222,5 +269,59 @@ struct AmountCellModel {
             return Balance.fromSatoshi(amount, assetId: AssetInfo.btcId)?.toText(inputDenomination)
         }
         return nil
+    }
+    func getSatoshi(_ value: String) -> Int64? {
+        if isFiat {
+            let balance = Balance.fromFiat(value, assetId: AssetInfo.btcId)
+            return balance?.satoshi
+        } else {
+            let balance = Balance.from(value, assetId: AssetInfo.btcId, denomination: inputDenomination)
+            return balance?.satoshi
+        }
+    }
+    var isBip21: Bool {
+        return text?.hasPrefix("bitcoin:") ?? false ||
+            text?.hasPrefix("lightning:") ?? false ||
+            text?.hasPrefix("liquidnetwork:") ?? false
+    }
+
+    var text: String? {
+        switch type {
+        case .bolt11:
+            return bolt11
+        case .lwkSwap:
+            return bolt11
+        case .address:
+            if let address = address?.address {
+                if !AssetInfo.baseIds.contains(where: { $0 == anyOrAsset.assetId }) {
+                    return addressToUri(address: address, satoshi: satoshi ?? 0, assetId: anyOrAsset.assetId)
+                } else if satoshi != nil {
+                    return addressToUri(address: address, satoshi: satoshi ?? 0, assetId: anyOrAsset.assetId)
+                } else {
+                    return address
+                }
+            }
+            return nil
+        }
+    }
+    func addressToUri(address: String, satoshi: Int64?, assetId: String?) -> String {
+        var params = [String]()
+        if let satoshi = satoshi, satoshi > 0 {
+            let amount = String(format: "%.8f", toBTC(satoshi))
+            params += ["amount=\(amount)"]
+        }
+        if let assetId = assetId {
+            if subaccount.gdkNetwork.liquid && satoshi ?? 0 > 0 {
+                params += ["assetid=\(assetId)"]
+            } else if !AssetInfo.baseIds.contains(assetId) {
+                params += ["assetid=\(assetId)"]
+            }
+        }
+        let bip21Prefix = subaccount.gdkNetwork.bip21Prefix ?? ""
+        let queryString = params.isEmpty ? "" : "?\(params.joined(separator: "&"))"
+        return "\(bip21Prefix):\(address)\(queryString)"
+    }
+    func toBTC(_ satoshi: Int64) -> Double {
+        return Double(satoshi) / 100000000
     }
 }

@@ -335,12 +335,12 @@ class SendTxConfirmViewController: UIViewController {
 
     func presentDialogEditViewController() {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogEditViewController") as? DialogEditViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.prefill = viewModel.transaction?.memo ?? ""
-            vc.delegate = self
-            present(vc, animated: false, completion: nil)
+        let vc = storyboard.instantiateViewController(identifier: "DialogEditViewController") { coder in
+            DialogEditViewController(coder: coder, prefill: self.viewModel.transaction?.memo ?? "")
         }
+        vc.modalPresentationStyle = .overFullScreen
+        vc.delegate = self
+        present(vc, animated: false, completion: nil)
     }
 
     @MainActor

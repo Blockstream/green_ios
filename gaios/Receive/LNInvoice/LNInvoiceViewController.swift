@@ -52,12 +52,6 @@ class LNInvoiceViewController: UIViewController {
 
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
         qrFrame.addGestureRecognizer(longPressRecognizer)
-        Task {
-            await self.generateInvoice()
-        }
-        [lblNoteTitle, noteView].forEach {
-            $0?.isHidden = true
-        }
         viewModel.onInvoicePaid = {
             DropAlert().success(message: "id_payment_received".localized)
         }
@@ -79,6 +73,53 @@ class LNInvoiceViewController: UIViewController {
         lblFundFeeKey.text = "Funding Fee".localized
         lblAmountKey.text = "Amount to Receive".localized
         totalsStack.isHidden = true
+
+        groupedTxt.isHidden = false
+        AddressDisplay.configure(
+            address: viewModel.bolt11 ?? "",
+            textView: groupedTxt,
+            style: .yellow,
+            truncate: true)
+        qrFrame.backgroundColor = .clear
+        qrFrame.cornerRadius = 12.0
+        btnShare.isHidden = false
+        if let uri = viewModel.bolt11, !uri.isEmpty {
+            qrFrame.isHidden = false
+            qrFrame.configure(frames: [uri])
+        } else {
+            qrFrame.stopAnimation()
+            qrFrame.isHidden = true
+        }
+        [btnShare, btnMagnify, btnCopyAddress, btnQRCode].forEach {
+            $0.isHidden = false
+        }
+        totalsStack.isHidden = false
+        lblExpire.isHidden = false
+        lblExpire.text = viewModel.expiryText()
+        totalsStack.isHidden = false
+        fundView.isHidden = viewModel.fundingFee == 0
+        lblFundFeeValue.text = viewModel.fundingFeeText
+        lblFundFeeFiat.text = viewModel.fundingFeeFiatText
+        let amountAndFeeText = viewModel.amountAndFeeText
+        lblAmountValue.text = amountAndFeeText.0
+        lblAmountFiat.text = amountAndFeeText.1
+        if !viewModel.description.isEmpty {
+            [lblNoteTitle, noteView].forEach {
+                $0?.isHidden = false
+            }
+            lblNoteTitle.text = "id_note".localized
+            lblNoteValue.text = viewModel.description
+        } else {
+            [lblNoteTitle, noteView].forEach {
+                $0?.isHidden = true
+            }
+        }
+        switch viewModel.type {
+        case .lwkSwap:
+            viewModel.startMonitoring()
+        default:
+            break
+        }
     }
     func setStyle() {
         envelopeBorderView.backgroundColor = .clear
@@ -111,62 +152,6 @@ class LNInvoiceViewController: UIViewController {
         }
         noteView.setStyle(CardStyle.defaultStyle)
     }
-
-    func generateInvoice() async {
-        let task = Task.detached(priority: .background) { [weak self] in
-            try await self?.viewModel?.newAddress()
-        }
-        switch await task.result {
-        case .success:
-            groupedTxt.isHidden = false
-            AddressDisplay.configure(
-                address: viewModel.bolt11 ?? "",
-                textView: groupedTxt,
-                style: .yellow,
-                truncate: true)
-            qrFrame.backgroundColor = .clear
-            qrFrame.cornerRadius = 12.0
-            btnShare.isHidden = false
-            if let uri = viewModel.bolt11, !uri.isEmpty {
-                qrFrame.isHidden = false
-                qrFrame.configure(frames: [uri])
-            } else {
-                qrFrame.stopAnimation()
-                qrFrame.isHidden = true
-            }
-            [btnShare, btnMagnify, btnCopyAddress, btnQRCode].forEach {
-                $0.isHidden = false
-            }
-            totalsStack.isHidden = false
-            lblExpire.isHidden = false
-            lblExpire.text = viewModel.expiryText()
-            totalsStack.isHidden = false
-            fundView.isHidden = viewModel.fundingFee == 0
-            lblFundFeeValue.text = viewModel.fundingFeeText
-            lblFundFeeFiat.text = viewModel.fundingFeeFiatText
-            let amountAndFeeText = viewModel.amountAndFeeText
-            lblAmountValue.text = amountAndFeeText.0
-            lblAmountFiat.text = amountAndFeeText.1
-            if !viewModel.description.isEmpty {
-                [lblNoteTitle, noteView].forEach {
-                    $0?.isHidden = false
-                }
-                lblNoteTitle.text = "id_note".localized
-                lblNoteValue.text = viewModel.description
-            }
-            switch viewModel.type {
-            case .lwkSwap:
-                viewModel.startMonitoring()
-            default:
-                break
-            }
-        case .failure(let err):
-            activityIndicator.stopAnimating()
-            showAlert(title: "", message: "\(err.localizedDescription)") { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
-            }
-        }
-    }
     func imgToShare() async -> UIImage {
         guard let text = viewModel.bolt11 else { return UIImage() }
         let frame = CGRect(x: 0.0, y: 0.0, width: 256, height: 256)
@@ -175,12 +160,12 @@ class LNInvoiceViewController: UIViewController {
     }
     @objc func copyToClipboard(_ sender: Any? = nil) {
         guard let text = viewModel.bolt11 else { return }
-//        let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(text) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
-//                                                       media: AnalyticsManager.ReceiveAddressMedia.text,
-//                                                       method: AnalyticsManager.ReceiveAddressMethod.copy)
-//        AnalyticsManager.shared.receiveAddress(account: AccountsRepository.shared.current,
-//                                               walletItem: viewModel.account,
-//                                               data: data)
+        let data = AnalyticsManager.ReceiveAddressData(type: AnalyticsManager.ReceiveAddressType.address,
+                                                       media: AnalyticsManager.ReceiveAddressMedia.text,
+                                                       method: AnalyticsManager.ReceiveAddressMethod.copy)
+        AnalyticsManager.shared.receiveAddress(account: AccountsRepository.shared.current,
+                                               walletItem: viewModel.account,
+                                               data: data)
         UIPasteboard.general.string = text
         switch viewModel.type {
         case .bolt11, .lwkSwap:
@@ -257,24 +242,24 @@ extension LNInvoiceViewController: DialogListViewControllerDelegate {
                 let activityViewController = UIActivityViewController(activityItems: [uri ?? ""], applicationActivities: nil)
                 activityViewController.popoverPresentationController?.sourceView = self.view
                 self.present(activityViewController, animated: true, completion: nil)
-//                let data = AnalyticsManager.ReceiveAddressData(
-//                    type: self.isBipAddress(uri ?? "") ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
-//                    media: AnalyticsManager.ReceiveAddressMedia.text,
-//                    method: AnalyticsManager.ReceiveAddressMethod.share)
-//                AnalyticsManager.shared.receiveAddress(
-//                    account: AccountsRepository.shared.current,
-//                    walletItem: viewModel.account,
-//                    data: data)
+                let data = AnalyticsManager.ReceiveAddressData(
+                    type: AnalyticsManager.ReceiveAddressType.address,
+                    media: AnalyticsManager.ReceiveAddressMedia.text,
+                    method: AnalyticsManager.ReceiveAddressMethod.share)
+                AnalyticsManager.shared.receiveAddress(
+                    account: AccountsRepository.shared.current,
+                    walletItem: viewModel.account,
+                    data: data)
             case .qr:
-//                let uri = viewModel.bolt11
-//                let data = AnalyticsManager.ReceiveAddressData(
-//                    type: self.isBipAddress(uri ?? "") ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
-//                    media: AnalyticsManager.ReceiveAddressMedia.image,
-//                    method: AnalyticsManager.ReceiveAddressMethod.share)
-//                AnalyticsManager.shared.receiveAddress(
-//                    account: AccountsRepository.shared.current,
-//                    walletItem: viewModel.account,
-//                    data: data)
+                let uri = viewModel.bolt11
+                let data = AnalyticsManager.ReceiveAddressData(
+                    type: AnalyticsManager.ReceiveAddressType.address,
+                    media: AnalyticsManager.ReceiveAddressMedia.image,
+                    method: AnalyticsManager.ReceiveAddressMethod.share)
+                AnalyticsManager.shared.receiveAddress(
+                    account: AccountsRepository.shared.current,
+                    walletItem: viewModel.account,
+                    data: data)
                 Task {
                     let image = await imgToShare()
                     await MainActor.run { [weak self] in

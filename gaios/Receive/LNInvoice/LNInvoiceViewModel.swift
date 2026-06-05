@@ -25,13 +25,20 @@ class LNInvoiceViewModel: ObservableObject {
          account: WalletItem,
          walletDataModel: WalletDataModel,
          type: ReceiveType,
-         inputDenomination: DenominationType) {
+         inputDenomination: DenominationType,
+         lightningReceivePayment: LightningReceivePayment?,
+         lwkInvoice: InvoiceResponse?,
+         bolt11: String
+    ) {
         self.satoshi = satoshi
         self.description = description
         self.account = account
         self.walletDataModel = walletDataModel
         self.type = type
         self.inputDenomination = inputDenomination
+        self.lightningReceivePayment = lightningReceivePayment
+        self.lwkInvoice = lwkInvoice
+        self.bolt11 = bolt11
     }
 
     deinit {
@@ -72,27 +79,6 @@ class LNInvoiceViewModel: ObservableObject {
         let df = DateFormatter()
         df.dateFormat = "d MMMM yyyy 'at' h:mm a"
         return "\("Expires".localized) \(df.string(from: date))"
-    }
-    func newAddress() async throws {
-        switch type {
-        case .bolt11:
-            lightningReceivePayment = try await wm.lightningSession?.createInvoice(satoshi: UInt64(satoshi), description: description)
-            bolt11 = lightningReceivePayment?.invoice.bolt11
-        case .lwkSwap:
-            logger.info("BOLTZ getReceiveAddress")
-            let address = try await account.session?.getReceiveAddress(subaccount: account.pointer)
-            guard let address = address?.address else {
-                throw GaError.GenericError("Invalid address")
-            }
-            logger.info("BOLTZ invoice")
-            let claimAddress = try LiquidWalletKit.Address(s: address)
-            let invoice = try await wm.awaitLwkSession()?.invoice(amount: UInt64(satoshi), description: description, claimAddress: claimAddress)
-            self.lwkInvoice = invoice
-            self.bolt11 = try invoice?.bolt11Invoice().description
-            logger.info("BOLTZ invoiced")
-        case .address:
-            break
-        }
     }
     var fundingFee: UInt64 {
         if let lightningReceivePayment {

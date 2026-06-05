@@ -12,7 +12,10 @@ enum DialogAmountAction {
     case confirm
     case cancel
 }
-
+public enum TransactionBaseType: UInt32 {
+    case BTC = 0
+    case FIAT = 1
+}
 class DialogAmountViewController: KeyboardViewController {
 
     @IBOutlet weak var tappableBg: UIView!
@@ -175,7 +178,6 @@ class DialogAmountViewController: KeyboardViewController {
         lblHint.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
         lblHint.textColor = .white.withAlphaComponent(0.4)
         bgField.layer.cornerRadius = 5.0
-        amountTextField.backgroundColor = UIColor.gGrayElement()
     }
 
     func getSatoshi() -> Int64? {
