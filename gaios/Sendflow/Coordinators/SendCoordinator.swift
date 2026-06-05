@@ -575,6 +575,7 @@ extension SendCoordinator {
         tx: gdk.Transaction
     ) -> SendLwkSignViewModel {
         SendLwkSignViewModel(
+            mainAccount: mainAccount,
             transactionDraft: draft,
             denominationType: selectedDenomination,
             isFiat: selectedFiat,
@@ -866,9 +867,12 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
         }
     }
     func handleSend(vm: SendLwkSignViewModel, transaction: gdk.Transaction) async -> SendRoute {
-        nav.topViewController?.startLoader(message: "id_sending".localized)
+        let isHW = mainAccount.isHW
+        let xpubHashId = mainAccount.xpubHashId
+        let isLightning = transaction.subaccount?.isLightning ?? false
         gdkTransaction = transaction
-        if await wallet.mainAccount.isHW {
+        nav.topViewController?.startLoader(message: "id_sending".localized)
+        if isHW && !isLightning {
             let model = SendHWViewModel(
                 tx: transaction,
                 draft: draft,
@@ -879,13 +883,11 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             let vc = sendHWViewController(model: model)
             await nav.presentAsync(vc, animated: true)
         }
-        let isJade = mainAccount.isJade
-        let xpubHashId = mainAccount.xpubHashId
         let task = Task.detached {
             guard let subaccount = transaction.subaccount, var session = subaccount.session else {
                 throw TransactionError.invalid(localizedDescription: "No subaccount selected")
             }
-            if isJade {
+            if isHW && !isLightning {
                 if let wm = BleHwManager.shared.walletManager, BleHwManager.shared.isConnected() && BleHwManager.shared.isLogged() {
                     session = wm.getSession(for: subaccount) ?? session
                 }
@@ -947,6 +949,7 @@ extension SendCoordinator: SendSwapViewModelDelegate {
             return
         }
         let model = SendLwkSignViewModel(
+            mainAccount: mainAccount,
             transactionDraft: draft,
             denominationType: selectedDenomination,
             isFiat: selectedFiat,

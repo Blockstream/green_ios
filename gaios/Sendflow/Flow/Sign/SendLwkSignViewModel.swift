@@ -7,6 +7,7 @@ import LiquidWalletKit
 
 class SendLwkSignViewModel {
     // Input
+    let mainAccount: Account
     let draft: TransactionDraft
     let denominationType: DenominationType
     let isFiat: Bool
@@ -204,6 +205,7 @@ class SendLwkSignViewModel {
     var assetImageTo: UIImage? { WalletManager.current?.image(for: assetIdTo) }
     // Functions
     init(
+        mainAccount: Account,
         transactionDraft: TransactionDraft,
         denominationType: DenominationType,
         isFiat: Bool = false,
@@ -211,6 +213,7 @@ class SendLwkSignViewModel {
         delegate: SendLwkSignViewModelDelegate?,
         tx: gdk.Transaction
     ) {
+        self.mainAccount = mainAccount
         self.draft = transactionDraft
         self.denominationType = denominationType
         self.isFiat = isFiat
