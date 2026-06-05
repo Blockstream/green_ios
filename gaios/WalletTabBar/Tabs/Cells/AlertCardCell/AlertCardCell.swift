@@ -218,8 +218,8 @@ class AlertCardCell: UITableViewCell {
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
         case .lightningOnJade:
-            lblTitle.text = "Generates a New Private Key".localized
-            lblHint.text = "Lightning on Jade requires a new private key to authorize transactions from the Blockstream app.".localized
+            lblTitle.text = "Lightning On Jade".localized
+            lblHint.text = "Jade will generate a new key for the Blockstream app to authorize Lightning transactions.".localized
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
