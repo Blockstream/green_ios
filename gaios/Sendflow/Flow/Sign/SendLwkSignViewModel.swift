@@ -96,9 +96,21 @@ class SendLwkSignViewModel {
         } else if let swap = draft.swapPosition {
             return swap.to.amount
         } else {
-            return txSatoshi
+            switch draft.paymentTarget {
+            case .lightningInvoice(let bolt11Invoice):
+                return bolt11Invoice
+                    .amountMilliSatoshis()?.satoshi ?? draft.satoshi
+            case .lightningOffer(_, let lightningPayment):
+                return (try? lightningPayment.bolt12InvoiceAmount()) ?? draft.satoshi
+            case .lnUrl(_, _):
+                return draft.satoshi
+            default:
+                return txSatoshi
+            }
         }
     }
+
+    
     var txFee: UInt64? { tx.fee }
     var totalFee: UInt64? { (providerFee ?? 0) + (claimNetworkFee ?? 0) + (tx.fee ?? 0) }
     var txSatoshi: UInt64? {

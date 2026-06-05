@@ -478,6 +478,10 @@ extension SendCoordinator {
             }
             throw SendFlowError.gdkError(error)
         }
+        preparedDraft = updateTransactionDraft(
+            swap: swap,
+            on: preparedDraft
+        )
         return .signAtomicSwap(makeSignViewModel(draft: preparedDraft, subaccount: subaccount, tx: tx))
     }
 
