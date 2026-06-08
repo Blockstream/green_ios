@@ -109,8 +109,8 @@ public class LightningSessionManager: SessionManager {
     public override func reconnect() async { }
     public override func networkConnect() async { }
     public override func networkDisconnect() async { }
-    public override func changeSettings(settings: Settings) async throws -> Settings? {
-        return nil
+    public override func changeSettings(settings: Settings) async throws {
+        throw GreenlightSDK.Error.Other("Not implemented")
     }
 
     public override func getBalance(subaccount: UInt32, numConfs: Int) async throws -> [String: Int64] {

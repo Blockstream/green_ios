@@ -54,7 +54,7 @@ class DenominationExchangeViewModel {
 
     func updateSettings(_ settings: Settings) async throws {
         for session in wm.activeSessions.values {
-            _ = try? await session.changeSettings(settings: settings)
+            try? await session.changeSettings(settings: settings)
         }
     }
 }

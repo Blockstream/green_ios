@@ -18,56 +18,55 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="793"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q9c-4s-21O">
-                                <rect key="frame" x="20" y="739" width="353" height="54"/>
-                                <color key="backgroundColor" name="customMatrixGreen"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="54" id="h2e-sF-jpD"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <state key="normal" title="save">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                            </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="eir-ZF-6fI">
-                                <rect key="frame" x="25" y="107.33333333333331" width="343" height="615.66666666666674"/>
-                                <color key="backgroundColor" name="gGrayPanel"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
-                            </textView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="subtitle" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hxk-Se-acE">
                                 <rect key="frame" x="20" y="67" width="353" height="20.333333333333329"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="eir-ZF-6fI">
+                                <rect key="frame" x="20" y="99.333333333333314" width="353" height="605.66666666666674"/>
+                                <color key="backgroundColor" name="gGrayPanel"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
+                            </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="z2P-vG-0Is">
+                                <rect key="frame" x="20" y="717" width="353" height="56"/>
+                                <color key="backgroundColor" name="gAccent"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="56" id="E40-ob-dha"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="Save"/>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="7Qw-ve-cNa"/>
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
-                            <constraint firstItem="q9c-4s-21O" firstAttribute="leading" secondItem="7Qw-ve-cNa" secondAttribute="leading" constant="20" id="7ti-ps-mHJ"/>
                             <constraint firstItem="7Qw-ve-cNa" firstAttribute="trailing" secondItem="Hxk-Se-acE" secondAttribute="trailing" constant="20" id="Dgd-rb-NsW"/>
                             <constraint firstItem="Hxk-Se-acE" firstAttribute="top" secondItem="7Qw-ve-cNa" secondAttribute="top" constant="8" id="MUP-bq-89e"/>
-                            <constraint firstItem="7Qw-ve-cNa" firstAttribute="trailing" secondItem="q9c-4s-21O" secondAttribute="trailing" constant="20" id="Y4Z-oc-4sV"/>
+                            <constraint firstItem="z2P-vG-0Is" firstAttribute="leading" secondItem="7Qw-ve-cNa" secondAttribute="leading" constant="20" id="RZ0-8J-mDO"/>
+                            <constraint firstItem="7Qw-ve-cNa" firstAttribute="bottom" secondItem="z2P-vG-0Is" secondAttribute="bottom" constant="20" id="anv-jk-zga"/>
+                            <constraint firstItem="7Qw-ve-cNa" firstAttribute="trailing" secondItem="z2P-vG-0Is" secondAttribute="trailing" constant="20" id="ctX-X7-4hA"/>
                             <constraint firstItem="Hxk-Se-acE" firstAttribute="leading" secondItem="7Qw-ve-cNa" secondAttribute="leading" constant="20" id="dv4-Tn-cml"/>
-                            <constraint firstItem="q9c-4s-21O" firstAttribute="top" secondItem="eir-ZF-6fI" secondAttribute="bottom" constant="16" id="fqF-7J-UnK"/>
-                            <constraint firstItem="7Qw-ve-cNa" firstAttribute="trailing" secondItem="eir-ZF-6fI" secondAttribute="trailing" constant="25" id="gyP-41-B3f"/>
-                            <constraint firstItem="eir-ZF-6fI" firstAttribute="top" secondItem="Hxk-Se-acE" secondAttribute="bottom" constant="20" id="st1-CQ-Xg8"/>
-                            <constraint firstItem="eir-ZF-6fI" firstAttribute="leading" secondItem="7Qw-ve-cNa" secondAttribute="leading" constant="25" id="weR-kz-vHA"/>
-                            <constraint firstItem="7Qw-ve-cNa" firstAttribute="bottom" secondItem="q9c-4s-21O" secondAttribute="bottom" id="zR1-i6-7E0"/>
+                            <constraint firstItem="7Qw-ve-cNa" firstAttribute="trailing" secondItem="eir-ZF-6fI" secondAttribute="trailing" constant="20" id="gyP-41-B3f"/>
+                            <constraint firstItem="z2P-vG-0Is" firstAttribute="top" secondItem="eir-ZF-6fI" secondAttribute="bottom" constant="12" id="sFb-HT-owZ"/>
+                            <constraint firstItem="eir-ZF-6fI" firstAttribute="top" secondItem="Hxk-Se-acE" secondAttribute="bottom" constant="12" id="st1-CQ-Xg8"/>
+                            <constraint firstItem="eir-ZF-6fI" firstAttribute="leading" secondItem="7Qw-ve-cNa" secondAttribute="leading" constant="20" id="weR-kz-vHA"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Hiw-Ih-6Gt"/>
                     <connections>
-                        <outlet property="btnSave" destination="q9c-4s-21O" id="DaM-l5-tqU"/>
+                        <outlet property="btnSave" destination="z2P-vG-0Is" id="uR3-zQ-fbX"/>
                         <outlet property="subtitle" destination="Hxk-Se-acE" id="02S-BS-kaz"/>
                         <outlet property="textarea" destination="eir-ZF-6fI" id="3B8-2L-04V"/>
+                        <outlet property="textareaBottomConstraint" destination="sFb-HT-owZ" id="9bi-nR-9Rf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xJp-Ag-rP8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1761" y="736"/>
+            <point key="canvasLocation" x="1759.5419847328244" y="735.91549295774655"/>
         </scene>
         <!--Show Mnemonic-->
         <scene sceneID="6GW-vR-VIy">

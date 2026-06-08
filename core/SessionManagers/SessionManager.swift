@@ -462,8 +462,14 @@ public class SessionManager {
         _ = try await wrap(fun: self.session?.updateSubaccount, params: params.toDict() ?? [:])
     }
 
-    public func changeSettings(settings: Settings) async throws -> Settings? {
-        return try await wrapper(fun: self.session?.changeSettings, params: settings)
+    public func changeSettings(settings: Settings) async throws {
+        if let details = settings.toDict(),
+            let res = try self.session?.changeSettings(
+            details: details
+            ) {
+            _ = try await resolve(res, bcurResolver: nil)
+            self.settings = settings
+        }
     }
 
     public func getUnspentOutputsForPrivateKey(_ params: UnspentOutputsForPrivateKeyParams) async throws -> [String: Any]? {
