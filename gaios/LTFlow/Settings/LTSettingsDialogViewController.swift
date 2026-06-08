@@ -67,7 +67,7 @@ class LTSettingsDialogViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "id_account_settings".localized
+        lblTitle.text = "id_node_info".localized
         lblDetails.text = "id_details".localized
         btnMnemonic.setTitle("id_show_recovery_phrase".localized, for: .normal)
         btnDiagnostic.setTitle("Generate Diagnostic Data".localized, for: .normal)
@@ -173,6 +173,12 @@ class LTSettingsDialogViewController: UIViewController {
             }
         }
     }
+    
+    private func copyToClipboard(value: String) {
+        UIPasteboard.general.string = value
+        DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 1.0)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
 }
 
 extension LTSettingsDialogViewController: UITableViewDelegate, UITableViewDataSource {
@@ -200,10 +206,6 @@ extension LTSettingsDialogViewController: UITableViewDelegate, UITableViewDataSo
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cellType = nodeCellTypes[indexPath.row]
-        if case .id = cellType {
-            UIPasteboard.general.string = viewModel.id
-            DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 1.0)
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
-        }
+        copyToClipboard(value: viewModel.copyValueByType(for: cellType))
     }
 }

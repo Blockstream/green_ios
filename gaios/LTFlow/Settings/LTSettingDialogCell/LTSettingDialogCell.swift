@@ -19,6 +19,7 @@ class LTSettingDialogCell: UITableViewCell {
         lblTitle.setStyle(.txt)
         lblHint.setStyle(.txtCard)
         lblState.setStyle(.txtCard)
+        lblState.textColor = UIColor.gGrayTxt()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -30,6 +31,5 @@ class LTSettingDialogCell: UITableViewCell {
         self.lblTitle.text = model.title
         self.lblHint.text = model.subtitle
         self.lblState.text = model.value
-        self.lblState.textColor = UIColor.gGrayTxt()
     }
 }
