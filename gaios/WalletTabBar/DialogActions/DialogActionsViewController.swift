@@ -80,12 +80,22 @@ class DialogActionsViewController: UIViewController {
     
 
     func setStyle() {
-        lblTitle.setStyle(.txtBigger)
-        lblDescription.setStyle(.txt)
+        cardView.setStyle(.bottomsheet)
+        handle.cornerRadius = 1.5
+        lblTitle.setStyle(.subTitle)
+        lblDescription.setStyle(.txtCard)
         btnActionConfirm.isHidden = viewModel.confirm == nil
         btnLink.isHidden = viewModel.link == nil
         btnActionConfirm.setStyle(.primary)
+        if viewModel.isCopyIconShown {
+            btnActionConfirm.setImage(btnActionConfirm.image(for: .normal)?.withRenderingMode(.alwaysTemplate), for: .normal)
+            btnActionConfirm.tintColor = UIColor.gBlackBg()
+        } else {
+            btnActionConfirm.setImage(nil, for: .normal)
+        }
         btnLink.setStyle(.underline(txt: viewModel.link ?? "", color: UIColor.gAccent()))
+        btnLink.setImage(btnLink.image(for: .normal)?.withRenderingMode(.alwaysTemplate), for: .normal)
+        btnLink.tintColor = UIColor.gAccent()
     }
 
     override func viewDidAppear(_ animated: Bool) {

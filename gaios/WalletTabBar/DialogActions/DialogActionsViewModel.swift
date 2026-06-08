@@ -4,4 +4,5 @@ struct DialogActionsViewModel {
     let description: String
     let confirm: String?
     let link: String?
+    var isCopyIconShown: Bool = false
 }

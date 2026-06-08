@@ -281,7 +281,8 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
                 title: subaccount.name,
                 description: "id_your_amp_account_is_set_up_and".localized,
                 confirm: "id_copy_amp_id".localized,
-                link: "id_learn_more".localized)
+                link: "id_learn_more".localized,
+                isCopyIconShown: true)
             vc.delegate = { action in
                 switch action {
                 case .confirm:
