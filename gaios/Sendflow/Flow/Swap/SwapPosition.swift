@@ -92,7 +92,7 @@ extension SwapPositionState {
 
 struct SwapPosition: Sendable {
     var side: SwapPositionEnum
-    var account: WalletItem?
+    var account: Account?
     var assetId: String
     var amount: UInt64?
 }
@@ -154,7 +154,7 @@ extension SwapPosition {
     var available: Int64? {
         return account?.satoshi?[assetId]
     }
-    init(position: SwapPositionEnum, account: WalletItem?, assetId: String) {
+    init(position: SwapPositionEnum, account: Account?, assetId: String) {
         self.side = position
         self.account = account
         self.assetId = assetId

@@ -11,7 +11,7 @@ class SendLwkSignViewModel {
     let draft: TransactionDraft
     let denominationType: DenominationType
     let isFiat: Bool
-    let subaccount: WalletItem
+    let subaccount: Account
     let delegate: SendLwkSignViewModelDelegate?
     var tx: core.Transaction
     // Variables
@@ -175,13 +175,13 @@ class SendLwkSignViewModel {
     var isSwapTransaction: Bool {
         isCrossChainSwap || isSubmarineSwap || swapId != nil
     }
-    var subaccountFrom: WalletItem {
+    var subaccountFrom: Account {
         if let swap = draft.swapPosition {
             return swap.from.account ?? subaccount
         }
         return draft.subaccount ?? subaccount
     }
-    var subaccountTo: WalletItem? {
+    var subaccountTo: Account? {
         if let swap = draft.swapPosition {
             return swap.to.account
         }
@@ -209,7 +209,7 @@ class SendLwkSignViewModel {
         transactionDraft: TransactionDraft,
         denominationType: DenominationType,
         isFiat: Bool = false,
-        subaccount: WalletItem,
+        subaccount: Account,
         delegate: SendLwkSignViewModelDelegate?,
         tx: core.Transaction
     ) {

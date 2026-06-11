@@ -5,13 +5,13 @@ import core
 
 class AccountAssetCellModel: Comparable {
 
-    var account: WalletItem
+    var account: Account
     var asset: AssetInfo
     var assetIcon: UIImage?
     var balance: Int64
     var showBalance: Bool
 
-    init(account: WalletItem, asset: AssetInfo, assetIcon: UIImage?,  balance: Int64, showBalance: Bool) {
+    init(account: Account, asset: AssetInfo, assetIcon: UIImage?,  balance: Int64, showBalance: Bool) {
         self.account = account
         self.asset = asset
         self.assetIcon = assetIcon

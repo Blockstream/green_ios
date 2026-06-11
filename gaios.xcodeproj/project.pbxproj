@@ -738,7 +738,7 @@
 		81D1F9F02FDAE06E00ADF015 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8124524125D6B0DD00537238 /* Address.swift */; };
 		81D1F9F12FDAE06E00ADF015 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81683F8F26BC022C0058982E /* Transaction.swift */; };
 		81D1F9F22FDAE06E00ADF015 /* Transactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81683F9126BC02960058982E /* Transactions.swift */; };
-		81D1F9F32FDAE06E00ADF015 /* WalletItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81683F9326BC088E0058982E /* WalletItem.swift */; };
+		81D1F9F32FDAE06E00ADF015 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81683F9326BC088E0058982E /* Account.swift */; };
 		81D1F9F42FDAE06E00ADF015 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671EE26C80D3400682508 /* EventType.swift */; };
 		81D1F9F52FDAE06E00ADF015 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671F026C80D4E00682508 /* Connection.swift */; };
 		81D1F9F62FDAE06E00ADF015 /* PinData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815D4A9F28638A56004DC015 /* PinData.swift */; };
@@ -1569,7 +1569,7 @@
 		816685D92BEE50EF00B03B02 /* SendTxConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendTxConfirmViewModel.swift; sourceTree = "<group>"; };
 		81683F8F26BC022C0058982E /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		81683F9126BC02960058982E /* Transactions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transactions.swift; sourceTree = "<group>"; };
-		81683F9326BC088E0058982E /* WalletItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletItem.swift; sourceTree = "<group>"; };
+		81683F9326BC088E0058982E /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogJadeCheckViewController.swift; sourceTree = "<group>"; };
 		816CAB5B2F19B4CA008887F7 /* SendAddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendAddressViewModel.swift; sourceTree = "<group>"; };
 		816CAB5D2F19C2CF008887F7 /* SendAddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendAddressViewController.swift; sourceTree = "<group>"; };
@@ -4345,7 +4345,7 @@
 				8124524125D6B0DD00537238 /* Address.swift */,
 				81683F8F26BC022C0058982E /* Transaction.swift */,
 				81683F9126BC02960058982E /* Transactions.swift */,
-				81683F9326BC088E0058982E /* WalletItem.swift */,
+				81683F9326BC088E0058982E /* Account.swift */,
 				81D671EE26C80D3400682508 /* EventType.swift */,
 				81D671F026C80D4E00682508 /* Connection.swift */,
 				815D4A9F28638A56004DC015 /* PinData.swift */,
@@ -5696,7 +5696,7 @@
 				81D1F9F02FDAE06E00ADF015 /* Address.swift in Sources */,
 				81D1F9F12FDAE06E00ADF015 /* Transaction.swift in Sources */,
 				81D1F9F22FDAE06E00ADF015 /* Transactions.swift in Sources */,
-				81D1F9F32FDAE06E00ADF015 /* WalletItem.swift in Sources */,
+				81D1F9F32FDAE06E00ADF015 /* Account.swift in Sources */,
 				81D1F9F42FDAE06E00ADF015 /* EventType.swift in Sources */,
 				81D1F9F52FDAE06E00ADF015 /* Connection.swift in Sources */,
 				81D1F9F62FDAE06E00ADF015 /* PinData.swift in Sources */,

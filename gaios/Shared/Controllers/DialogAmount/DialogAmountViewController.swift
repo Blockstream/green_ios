@@ -37,7 +37,7 @@ class DialogAmountViewController: KeyboardViewController {
 
     var selectedType = TransactionBaseType.BTC
     var prefill: Int64?
-    var wallet: WalletItem?
+    var wallet: Account?
 
     weak var delegate: DialogAmountViewControllerDelegate?
 

@@ -7,13 +7,13 @@ import greenaddress
 @MainActor
 class SendAccountAssetViewModel {
 
-    let subaccounts: [WalletItem]
+    let subaccounts: [Account]
     let draft: TransactionDraft
     var cellModels: [AccountAssetCellModel] = []
     let wallet: WalletManager
     let delegate: SendAccountAssetViewModelDelegate?
 
-    init(subaccounts: [WalletItem], draft: TransactionDraft, wallet: WalletManager, delegate: SendAccountAssetViewModelDelegate) {
+    init(subaccounts: [Account], draft: TransactionDraft, wallet: WalletManager, delegate: SendAccountAssetViewModelDelegate) {
         self.draft = draft
         self.subaccounts = subaccounts
         self.wallet = wallet
@@ -40,7 +40,7 @@ class SendAccountAssetViewModel {
             .sorted()
     }
 
-    private func filter(for assetId: String, subaccount: WalletItem) -> Bool {
+    private func filter(for assetId: String, subaccount: Account) -> Bool {
         switch draft.paymentTarget {
         case .liquidBip21(let liquidBip21):
             return liquidBip21.asset == assetId

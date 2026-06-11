@@ -11,7 +11,7 @@ final class SendAddressViewModel: Sendable {
     let mainWallet: Wallet
     let text: String?
     let sweepPrivateKey: Bool
-    let subaccount: WalletItem?
+    let subaccount: Account?
     let assetId: String?
     let delegate: SendAddressViewModelDelegate?
 
@@ -30,7 +30,7 @@ final class SendAddressViewModel: Sendable {
         mainWallet: Wallet,
         wallet: WalletDataModel,
         text: String?,
-        subaccount: WalletItem?,
+        subaccount: Account?,
         assetId: String?,
         sweepPrivateKey: Bool = false,
         delegate: SendAddressViewModelDelegate
@@ -128,7 +128,7 @@ final class SendAddressViewModel: Sendable {
         onStateChanged?()
     }
 
-    func fundedSubaccounts() -> [WalletItem] {
+    func fundedSubaccounts() -> [Account] {
         guard let paymentTarget else { return [] }
         let amount: UInt64? = {
             if case .lightningInvoice(let invoice) = paymentTarget {
@@ -141,7 +141,7 @@ final class SendAddressViewModel: Sendable {
             .flatMap { subaccounts(for: $0, wallet: wm, amount: amount) }
     }
 
-    private func subaccounts(for rail: PaymentRail, wallet: WalletManager, amount: UInt64?) -> [WalletItem] {
+    private func subaccounts(for rail: PaymentRail, wallet: WalletManager, amount: UInt64?) -> [Account] {
         switch rail {
         case .bitcoin:
             return wallet.bitcoinSubaccountsWithFunds

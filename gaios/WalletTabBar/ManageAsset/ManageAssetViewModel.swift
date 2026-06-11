@@ -12,7 +12,7 @@ class ManageAssetViewModel {
     let wallet: WalletManager
     var mainWallet: Wallet
     var assetId: String
-    var selectedSubaccount: WalletItem?
+    var selectedSubaccount: Account?
 
     var state = WalletState()
     var onUpdate: ((RefreshFeature?) -> Void)?
@@ -20,7 +20,7 @@ class ManageAssetViewModel {
     var isBTCAsset: Bool {
         "BTC" == assetId.uppercased()
     }
-    var subaccounts: [WalletItem] {
+    var subaccounts: [Account] {
         if assetId == AssetInfo.lightningId {
             return state.subaccounts.filter { $0.networkType.lightning }
         } else if assetId == AssetInfo.btcId || assetId == AssetInfo.testId {
@@ -68,7 +68,7 @@ class ManageAssetViewModel {
         return []
     }
 
-    init(walletDataModel: WalletDataModel, wallet: WalletManager, mainWallet: Wallet, assetId: String, selectedSubaccount: WalletItem?) {
+    init(walletDataModel: WalletDataModel, wallet: WalletManager, mainWallet: Wallet, assetId: String, selectedSubaccount: Account?) {
         self.walletDataModel = walletDataModel
         self.wallet = wallet
         self.mainWallet = mainWallet

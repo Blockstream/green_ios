@@ -105,7 +105,7 @@ public struct GetSubaccountsResult: Codable {
     enum CodingKeys: String, CodingKey {
         case subaccounts
     }
-    public let subaccounts: [WalletItem]
+    public let subaccounts: [Account]
 }
 
 public struct GetSubaccountParams: Codable {

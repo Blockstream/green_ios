@@ -218,7 +218,7 @@ class TxDetailsStatusCell: UITableViewCell {
         stateIcon.rotate()
     }
 
-    func subaccount(tx: Transaction) -> WalletItem? {
+    func subaccount(tx: Transaction) -> Account? {
         return WalletManager.current?.subaccounts.filter { $0.id == tx.subaccountId }.first
     }
 }

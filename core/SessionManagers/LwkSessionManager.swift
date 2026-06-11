@@ -36,10 +36,10 @@ public class LwkSessionManager: SessionManager {
     public override func changeSettings(settings: Settings) async throws {
         throw LwkError.Generic(msg: "Not implemented")
     }
-    public override func subaccount(_ pointer: UInt32) async throws -> WalletItem? {
+    public override func subaccount(_ pointer: UInt32) async throws -> Account? {
         return nil
     }
-    public override func subaccounts(_ refresh: Bool = false) async throws -> [WalletItem] {
+    public override func subaccounts(_ refresh: Bool = false) async throws -> [Account] {
         return []
     }
     public override func transactions(subaccount: UInt32, first: Int = 0, count: Int = 30) async throws -> Transactions {

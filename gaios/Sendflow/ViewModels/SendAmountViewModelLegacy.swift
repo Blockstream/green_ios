@@ -12,7 +12,7 @@ enum Redeposit2faType {
 class SendAmountViewModelLegacy {
 
     var createTx: CreateTx
-    var subaccount: WalletItem? { createTx.subaccount }
+    var subaccount: Account? { createTx.subaccount }
     var assetId: String { createTx.assetId ?? subaccount?.gdkNetwork.getFeeAsset() ?? "btc" }
     var wm: WalletManager? { WalletManager.current }
     var session: SessionManager? { createTx.subaccount?.session }

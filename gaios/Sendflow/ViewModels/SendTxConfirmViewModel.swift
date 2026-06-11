@@ -14,7 +14,7 @@ enum VerifyAddressState {
 class SendTxConfirmViewModel {
 
     var transaction: core.Transaction?
-    var subaccount: WalletItem?
+    var subaccount: Account?
     var wm: WalletManager? { WalletManager.current }
     var mainWallet: Wallet? { WalletsStorage.shared.current }
     var denominationType: DenominationType
@@ -41,7 +41,7 @@ class SendTxConfirmViewModel {
     }
     var pay: PreparePayResponse?
 
-    internal init(transaction: core.Transaction?, subaccount: WalletItem?, denominationType: DenominationType, isFiat: Bool, txType: TxType, unsignedPsbt: String?, signedPsbt: String?) {
+    internal init(transaction: core.Transaction?, subaccount: Account?, denominationType: DenominationType, isFiat: Bool, txType: TxType, unsignedPsbt: String?, signedPsbt: String?) {
         self.transaction = transaction
         self.subaccount = subaccount
         self.denominationType = denominationType

@@ -76,7 +76,7 @@ class JadeBoltzExportViewModel {
         try await wm.swapMonitor?.start()
     }
 
-    nonisolated func getAddress(subaccount: WalletItem?) async -> String? {
+    nonisolated func getAddress(subaccount: Account?) async -> String? {
         guard let subaccount else { return nil }
         let session = wm.getSession(for: subaccount)
         let address = try? await session?.getReceiveAddress(subaccount: subaccount.pointer)

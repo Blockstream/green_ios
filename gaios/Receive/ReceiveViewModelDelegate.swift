@@ -15,5 +15,5 @@ protocol ReceiveViewModelDelegate: AnyObject {
     @MainActor
     func manualBackup(_ model: ManualBackupViewModel)
     @MainActor
-    func send(subaccount: WalletItem, anyOrAsset: AnyOrAsset)
+    func send(subaccount: Account, anyOrAsset: AnyOrAsset)
 }

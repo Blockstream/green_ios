@@ -5,7 +5,7 @@ import core
 
 struct DialogSignViewModel {
 
-    var subaccount: WalletItem
+    var subaccount: Account
     var address: String
     var isHW: Bool { WalletsStorage.shared.current?.isHW ?? false }
     

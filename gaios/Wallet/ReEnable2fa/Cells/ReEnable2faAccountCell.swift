@@ -38,7 +38,7 @@ class ReEnable2faAccountCell: UITableViewCell {
 
     }
 
-    func configure(subaccount: WalletItem) {
+    func configure(subaccount: Account) {
         lblType.text = subaccount.type.path.uppercased()
         lblName.text = subaccount.name
         lblHint.text = "id_redeposit_expired_2fa_coins".localized

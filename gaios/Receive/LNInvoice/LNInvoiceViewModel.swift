@@ -14,7 +14,7 @@ class LNInvoiceViewModel: ObservableObject {
     var satoshi: Int64
     var description: String
     var lwkInvoice: InvoiceResponse?
-    var account: WalletItem
+    var account: Account
     var type: ReceiveType
     var inputDenomination: DenominationType = .Sats
     var listeningTask: Task<Void, Never>?
@@ -22,7 +22,7 @@ class LNInvoiceViewModel: ObservableObject {
 
     init(satoshi: Int64,
          description: String = "",
-         account: WalletItem,
+         account: Account,
          walletDataModel: WalletDataModel,
          type: ReceiveType,
          inputDenomination: DenominationType,

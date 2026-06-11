@@ -6,7 +6,7 @@ import greenaddress
 
 actor ReceiveService {
     struct AddressRequest: Sendable {
-        let subaccount: WalletItem
+        let subaccount: Account
         let walletManager: WalletManager
     }
 
@@ -34,7 +34,7 @@ actor ReceiveService {
     }
 
     struct ReverseSwapInvoiceRequest: Sendable {
-        let subaccount: WalletItem
+        let subaccount: Account
         let walletManager: WalletManager
         let satoshi: UInt64
         let description: String

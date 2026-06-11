@@ -10,7 +10,7 @@ class TabTransactVM: TabViewModel {
     var hideBalance: Bool {
         state.hideBalance
     }
-    var subaccounts: [WalletItem]? {
+    var subaccounts: [Account]? {
         state.subaccounts
     }
     var balances: [String: Int64]? {
@@ -53,7 +53,7 @@ class TabTransactVM: TabViewModel {
     func existBoltzKey() -> Bool {
         (try? getBoltzKey()) != nil
     }
-    public func selectableAssets(subaccounts: [WalletItem]) -> [String]? {
+    public func selectableAssets(subaccounts: [Account]) -> [String]? {
         let hasSubaccountAmp = !subaccounts.filter({ $0.type == .amp }).isEmpty
         let hasLightning = !subaccounts.filter({ $0.networkType.lightning }).isEmpty
         let hasLiquid = !subaccounts.filter({ $0.networkType.liquid }).isEmpty
@@ -67,7 +67,7 @@ class TabTransactVM: TabViewModel {
         return assetIds
     }
 
-    func assetSelectViewModel(subaccounts: [WalletItem]) -> AssetSelectViewModel {
+    func assetSelectViewModel(subaccounts: [Account]) -> AssetSelectViewModel {
         let hasSubaccountAmp = !subaccounts.filter({ $0.type == .amp }).isEmpty
         let hasLiquid = !subaccounts.filter({ $0.networkType.liquid }).isEmpty
         let assetIds = selectableAssets(subaccounts: subaccounts)
@@ -78,7 +78,7 @@ class TabTransactVM: TabViewModel {
             enableAnyAmpAsset: hasSubaccountAmp)
     }
 
-    func dialogAccountsViewModel(assetId: String, subaccounts: [WalletItem], hideBalance: Bool = false) -> DialogAccountsViewModel {
+    func dialogAccountsViewModel(assetId: String, subaccounts: [Account], hideBalance: Bool = false) -> DialogAccountsViewModel {
         return DialogAccountsViewModel(
             title: "id_account_selector".localized,
             hint: "id_choose_which_account_you_want".localized,

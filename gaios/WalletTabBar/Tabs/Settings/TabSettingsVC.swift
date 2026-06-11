@@ -274,7 +274,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
         }
     }
     @MainActor
-    func presentDialogAmpId(_ subaccount: WalletItem) {
+    func presentDialogAmpId(_ subaccount: Account) {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogActionsViewController") as? DialogActionsViewController {
             vc.viewModel = DialogActionsViewModel(
@@ -302,7 +302,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     @MainActor
-    func copyAmpId(_ subaccount: WalletItem) {
+    func copyAmpId(_ subaccount: Account) {
         UIPasteboard.general.string = subaccount.receivingId
         DropAlert().info(message: "id_copied_to_clipboard".localized)
     }
@@ -486,7 +486,7 @@ extension TabSettingsVC: AccountArchiveViewControllerDelegate {
 }
 
 extension TabSettingsVC: DialogAccountsViewControllerDelegate {
-    func didSelectAccount(_ walletItem: WalletItem?) {
+    func didSelectAccount(_ walletItem: Account?) {
         if let walletItem = walletItem {
             presentDialogAmpId(walletItem)
         }

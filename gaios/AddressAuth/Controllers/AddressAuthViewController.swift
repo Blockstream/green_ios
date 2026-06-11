@@ -145,7 +145,7 @@ class AddressAuthViewController: KeyboardViewController {
     }
 
     @MainActor
-    func presentDialogSignViewController(wallet: WalletItem, address: String) {
+    func presentDialogSignViewController(wallet: Account, address: String) {
         let storyboard = UIStoryboard(name: "AddressAuth", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogSignViewController") as? DialogSignViewController {
             vc.modalPresentationStyle = .overFullScreen

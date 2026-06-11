@@ -4,7 +4,7 @@ import core
 
 
 class TabHomeVM: TabViewModel {
-    var subaccounts: [WalletItem]? {
+    var subaccounts: [Account]? {
         state.subaccounts
     }
     var balances: [String: Int64]? {
@@ -59,7 +59,7 @@ class TabHomeVM: TabViewModel {
             parentWalletId: walletIdentifier)
         _ = try await wallet.subaccounts()
     }
-    func getExpiredSubaccounts() async -> [WalletItem]? {
+    func getExpiredSubaccounts() async -> [Account]? {
         let expired = try? await wallet.getExpiredSubaccounts()
         if let expired = expired, !expired.isEmpty && !mainWallet.isWatchonly {
             return expired

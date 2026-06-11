@@ -13,7 +13,7 @@ class ReEnable2faViewController: UIViewController {
     var obs: NSKeyValueObservation?
 
     var vm: ReEnable2faViewModel!
-    private var selectedSubaccount: WalletItem?
+    private var selectedSubaccount: Account?
     private var verifyOnDeviceViewController: HWDialogVerifyOnDeviceViewController?
 
     override func viewDidLoad() {

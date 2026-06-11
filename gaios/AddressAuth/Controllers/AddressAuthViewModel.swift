@@ -11,9 +11,9 @@ class AddressAuthViewModel {
     var lastPointer: Int?
     var isLoading = false
 
-    var wallet: WalletItem
+    var wallet: Account
 
-    init(wallet: WalletItem) {
+    init(wallet: Account) {
         self.wallet = wallet
     }
 

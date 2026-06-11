@@ -9,7 +9,7 @@ class SendDialogFeeViewModel {
     var transaction: Transaction
     var feeEstimator: FeeEstimator?
     var denominationType: DenominationType?
-    var subaccount: WalletItem?
+    var subaccount: Account?
 
     var fastFeeTx: Transaction?
     var mediumFeeTx: Transaction?
@@ -22,7 +22,7 @@ class SendDialogFeeViewModel {
 
     var isLiquid: Bool { transaction.isLiquid }
 
-    init(transaction: Transaction?, feeEstimator: FeeEstimator?, denominationType: DenominationType?, subaccount: WalletItem?) {
+    init(transaction: Transaction?, feeEstimator: FeeEstimator?, denominationType: DenominationType?, subaccount: Account?) {
         self.transaction = transaction ?? Transaction([:])
         self.feeEstimator = feeEstimator
         self.denominationType = denominationType

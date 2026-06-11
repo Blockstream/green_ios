@@ -4,7 +4,7 @@ import CoreData
 @preconcurrency 
 
 struct TransactionDraft: Sendable {
-    var subaccount: WalletItem?
+    var subaccount: Account?
     let address: String?
     var satoshi: UInt64?
     let assetId: String?

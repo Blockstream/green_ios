@@ -28,7 +28,7 @@ enum MoreOptPrefs: Int, CaseIterable {
         }
     }
 
-    static func getPrefs(account: WalletItem, assetId: String) -> [MoreOptPrefs] {
+    static func getPrefs(account: Account, assetId: String) -> [MoreOptPrefs] {
 
         let hideSweep = account.gdkNetwork.liquid || account.gdkNetwork.lightning
         let hideSign = account.gdkNetwork.lightning
@@ -47,7 +47,7 @@ enum MoreOptPrefs: Int, CaseIterable {
         return prefs
     }
 
-    static func getItems(account: WalletItem, assetId: String) -> [DialogListCellModel] {
+    static func getItems(account: Account, assetId: String) -> [DialogListCellModel] {
         return MoreOptPrefs.getPrefs(account: account, assetId: assetId)
             .map {
                 DialogListCellModel(

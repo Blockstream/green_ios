@@ -48,7 +48,7 @@ class TabViewController: UIViewController {
     func getCountlyRemoteConfigEnableBuyIosUk() -> Bool {
         return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigEnableBuyIosUk) as? Bool ?? false
     }
-    func getBitcoinSubaccounts() -> [WalletItem] {
+    func getBitcoinSubaccounts() -> [Account] {
         WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
     func buyScreen(currency: String, hideBalance: Bool) {

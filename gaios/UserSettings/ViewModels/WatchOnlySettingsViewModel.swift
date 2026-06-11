@@ -76,9 +76,9 @@ class WatchOnlySettingsViewModel {
             network: session.gdkNetwork.network)
     }
 
-    func readSubaccounts(_ session: SessionManager) async throws -> [WalletItem] {
+    func readSubaccounts(_ session: SessionManager) async throws -> [Account] {
         let allSubaccounts = try? await session.subaccounts().filter { !$0.hidden }
-        var subaccounts = [WalletItem]()
+        var subaccounts = [Account]()
         for subaccount in allSubaccounts ?? [] {
             if let account = try? await session.subaccount(subaccount.pointer) {
                 subaccounts += [account]

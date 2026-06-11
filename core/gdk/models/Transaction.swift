@@ -503,7 +503,7 @@ public struct Transaction: Comparable {
         return lhs.createdAtTs < rhs.createdAtTs
     }
 
-    public var subaccount: WalletItem? {
+    public var subaccount: Account? {
         get { WalletManager.current?.subaccounts.filter({ $0.id == subaccountId }).first }
         set { subaccountId = newValue?.id }
     }

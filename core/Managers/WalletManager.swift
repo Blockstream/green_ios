@@ -45,8 +45,8 @@ public class WalletManager {
     public let prominentNetwork: NetworkSecurityCase
 
     // Cached list of subaccounts
-    public var subaccounts = [WalletItem]()
-    public var visibleSubaccounts: [WalletItem] { subaccounts.filter { !$0.hidden } }
+    public var subaccounts = [Account]()
+    public var visibleSubaccounts: [Account] { subaccounts.filter { !$0.hidden } }
 
     // Registry asset manager
     public var registry: AssetsManager
@@ -142,7 +142,7 @@ public class WalletManager {
         sessions[network.network]
     }
 
-    public func getSession(for subaccount: WalletItem) -> SessionManager? {
+    public func getSession(for subaccount: Account) -> SessionManager? {
         getSession(for: subaccount.networkType)
     }
 
@@ -162,7 +162,7 @@ public class WalletManager {
         return lwkSession
     }
 
-    public var lightningSubaccount: WalletItem? {
+    public var lightningSubaccount: Account? {
         return subaccounts.filter {$0.gdkNetwork.lightning }.first
     }
 
@@ -493,24 +493,24 @@ public class WalletManager {
     public var activeBitcoinMultisig: Bool { sessions[bitcoinMultisigNetwork.rawValue]?.logged ?? false }
     public var activeLiquidMultisig: Bool { sessions[liquidMultisigNetwork.rawValue]?.logged ?? false }
 
-    public var bitcoinSubaccounts: [WalletItem] {
+    public var bitcoinSubaccounts: [Account] {
         subaccounts.filter { !$0.hidden }
             .filter { bitcoinNetworks.contains($0.networkType) }
     }
-    public var liquidSubaccounts: [WalletItem] {
+    public var liquidSubaccounts: [Account] {
         subaccounts.filter { !$0.hidden }
             .filter { liquidNetworks.contains($0.networkType) }
     }
-    public var liquidAmpSubaccounts: [WalletItem] {
+    public var liquidAmpSubaccounts: [Account] {
         liquidSubaccounts.filter { $0.type == .amp }
     }
-    public var bitcoinSubaccountsWithFunds: [WalletItem] {
+    public var bitcoinSubaccountsWithFunds: [Account] {
         bitcoinSubaccounts.filter { $0.satoshi?.compactMap{ $0.value }.reduce(0, +) ?? 0 > 0 }
     }
-    public var liquidSubaccountsWithFunds: [WalletItem] {
+    public var liquidSubaccountsWithFunds: [Account] {
         liquidSubaccounts.filter { $0.satoshi?.compactMap{ $0.value }.reduce(0, +) ?? 0 > 0 }
     }
-    public func liquidSubaccountsWithAssetIdFunds(assetId: String) -> [WalletItem] {
+    public func liquidSubaccountsWithAssetIdFunds(assetId: String) -> [Account] {
         liquidSubaccounts.filter { $0.satoshi?.filter{ $0.key == assetId }.compactMap{ $0.value }.reduce(0, +) ?? 0 > 0 }
     }
 
@@ -544,16 +544,16 @@ public class WalletManager {
         }
     }
 
-    public func visibleSubaccounts(_ refresh: Bool = false) async throws -> [WalletItem] {
+    public func visibleSubaccounts(_ refresh: Bool = false) async throws -> [Account] {
         return try await subaccounts(refresh).filter { !$0.hidden }
     }
 
-    public func subaccounts(_ refresh: Bool = false) async throws -> [WalletItem] {
-        let subaccounts = try await withThrowingTaskGroup(of: [WalletItem].self, returning: [WalletItem].self) { [weak self] group in
+    public func subaccounts(_ refresh: Bool = false) async throws -> [Account] {
+        let subaccounts = try await withThrowingTaskGroup(of: [Account].self, returning: [Account].self) { [weak self] group in
             for session in (self?.activeSessions ?? [String: SessionManager]()).values {
                 group.addTask { try await session.subaccounts(refresh) }
             }
-            let subaccounts = try await group.reduce(into: [WalletItem]()) { partial, result in
+            let subaccounts = try await group.reduce(into: [Account]()) { partial, result in
                 partial += result
             }.sorted()
             for subaccount in subaccounts {
@@ -567,14 +567,14 @@ public class WalletManager {
         return subaccounts
     }
 
-    public func subaccount(account: WalletItem) async throws -> WalletItem? {
+    public func subaccount(account: Account) async throws -> Account? {
         let res = try await account.session?.subaccount(account.pointer)
         if let res = res, let row = self.subaccounts.firstIndex(where: {$0.pointer == account.pointer && $0.gdkNetwork == account.gdkNetwork}) {
             self.subaccounts[row] = res
         }
         return res
     }
-    public func subaccountUpdate(account: WalletItem) async throws -> WalletItem? {
+    public func subaccountUpdate(account: Account) async throws -> Account? {
         let res = try await account.session?.subaccount(account.pointer)
         if let res = res, let row = self.subaccounts.firstIndex(where: {$0.pointer == account.pointer && $0.gdkNetwork == account.gdkNetwork}) {
             res.satoshi = account.satoshi
@@ -584,7 +584,7 @@ public class WalletManager {
         return res
     }
 
-    public func balances(subaccounts: [WalletItem]) async throws -> [String: [String: Int64]] {
+    public func balances(subaccounts: [Account]) async throws -> [String: [String: Int64]] {
         return try await withThrowingTaskGroup(of: (String, [String: Int64]).self, returning: [String: [String: Int64]].self) { group in
             for account in subaccounts.enumerated() {
                 group.addTask {
@@ -604,7 +604,7 @@ public class WalletManager {
         }
     }
 
-    public func transactions(subaccounts: [WalletItem], first: Int = 0, count: Int? = nil) async throws -> [Transaction] {
+    public func transactions(subaccounts: [Account], first: Int = 0, count: Int? = nil) async throws -> [Transaction] {
         return try await withThrowingTaskGroup(of: [Transaction].self, returning: [Transaction].self) { group in
             for subaccount in subaccounts {
                 group.addTask {
@@ -619,7 +619,7 @@ public class WalletManager {
         }
     }
 
-    public func pagedTransactions(subaccounts: [WalletItem], of page: Int = 0) async throws -> [String: Transactions] {
+    public func pagedTransactions(subaccounts: [Account], of page: Int = 0) async throws -> [String: Transactions] {
         return try await withThrowingTaskGroup(of: (String, Transactions).self, returning: [String: Transactions].self) { group in
             for subaccount in subaccounts {
                 group.addTask {
@@ -633,7 +633,7 @@ public class WalletManager {
             }
         }
     }
-    public func allTransactions(subaccounts: [WalletItem]) async throws -> [Transaction] {
+    public func allTransactions(subaccounts: [Account]) async throws -> [Transaction] {
         return try await withThrowingTaskGroup(of: [Transaction].self, returning: [Transaction].self) { group in
             for subaccount in subaccounts {
                 group.addTask {
@@ -646,7 +646,7 @@ public class WalletManager {
             }.sorted(by: { $0 > $1 })
         }
     }
-    func allBySubaccount(_ subaccount: WalletItem) async throws -> [Transaction] {
+    func allBySubaccount(_ subaccount: Account) async throws -> [Transaction] {
         let offset = 30
         var page = 0
         var end: Bool = false
@@ -725,8 +725,8 @@ public class WalletManager {
             bip39Passphrase: credentials.bip39Passphrase)
     }
 
-    public func getExpiredSubaccounts() async throws -> [WalletItem] {
-        var expiredSubaccounts = [WalletItem]()
+    public func getExpiredSubaccounts() async throws -> [Account] {
+        var expiredSubaccounts = [Account]()
         for subaccount in subaccounts.filter({$0.type == .standard}) {
             if let session = subaccount.session {
                 let params = GetUnspentOutputsParams(subaccount: subaccount.pointer, numConfs: 1, expiredAt: UInt64(session.blockHeight))

@@ -571,7 +571,7 @@ extension ManageAssetViewController {
         return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigEnableBuyIosUk) as? Bool ?? false
     }
 
-    func getBitcoinSubaccounts() -> [WalletItem] {
+    func getBitcoinSubaccounts() -> [Account] {
         WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
     func openWatchOnly(session: SessionManager) {

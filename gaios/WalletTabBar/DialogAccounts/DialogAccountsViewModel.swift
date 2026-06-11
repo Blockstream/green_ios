@@ -9,14 +9,14 @@ class DialogAccountsViewModel {
     var hint: String
     var isSelectable: Bool
     var assetId: String?
-    var accounts: [WalletItem]
+    var accounts: [Account]
     var hideBalance: Bool
 
     init(title: String,
          hint: String,
          isSelectable: Bool,
          assetId: String?,
-         accounts: [WalletItem],
+         accounts: [Account],
          hideBalance: Bool) {
         self.title = title
         self.hint = hint

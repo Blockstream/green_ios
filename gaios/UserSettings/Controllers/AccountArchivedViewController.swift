@@ -22,7 +22,7 @@ class AccountArchivedViewController: UIViewController {
 
     var wm: WalletManager { WalletManager.current! }
 
-    var subaccounts: [WalletItem] {
+    var subaccounts: [Account] {
         wm.subaccounts.filter { $0.hidden }
     }
 

@@ -24,7 +24,7 @@ actor TransactionBuilder {
     }
 
 
-    static func buildTransactionDraft(paymentTarget: PaymentTarget, subaccount: WalletItem?, assetId: String?, lockupResponse: LockupResponse? = nil, swapPayResponse: PreparePayResponse? = nil, swapPosition: SwapPositionState? = nil) -> TransactionDraft {
+    static func buildTransactionDraft(paymentTarget: PaymentTarget, subaccount: Account?, assetId: String?, lockupResponse: LockupResponse? = nil, swapPayResponse: PreparePayResponse? = nil, swapPosition: SwapPositionState? = nil) -> TransactionDraft {
         switch paymentTarget {
         case .lightningInvoice(let bolt11):
             let satoshi: UInt64? = {
@@ -100,7 +100,7 @@ actor TransactionBuilder {
                 swapPayResponse: swapPayResponse)
         }
     }
-    static func buildGdkTransaction(uri: String, satoshi: Int64, session: SessionManager, subaccount: WalletItem) async throws -> core.Transaction {
+    static func buildGdkTransaction(uri: String, satoshi: Int64, session: SessionManager, subaccount: Account) async throws -> core.Transaction {
         return try await Task.detached(priority: .userInitiated) {
             var tx = Transaction([:], subaccountId: subaccount.id)
             tx.feeRate = try await session.getFeeEstimates()?.first ?? session.gdkNetwork.defaultFee
@@ -134,7 +134,7 @@ actor TransactionBuilder {
     // bolt11 invoice has been resolved). The DB dedup is keyed on the resolved
     // bolt11 invoice; for BOLT12 offers that don't expose a resolvable invoice
     // yet, dedup is skipped (we still proceed with a fresh preparePay).
-    static func buildSwap(lightningPayment: LightningPayment, lwk: LwkSessionManager, subaccount: WalletItem, xpub: String) async throws -> PreparePayResponse {
+    static func buildSwap(lightningPayment: LightningPayment, lwk: LwkSessionManager, subaccount: Account, xpub: String) async throws -> PreparePayResponse {
         return try await Task.detached(priority: .userInitiated) {
             if let invoice = try lightningPayment.bolt11Invoice()?.description {
                 let swapIdsByInvoice = try await BoltzController.shared.fetchSwaps(xpubHashId: xpub, invoice: invoice, swapType: .Submarine)
@@ -157,7 +157,7 @@ actor TransactionBuilder {
         }.value
     }
 
-    static func buildSubmarineSwapTransaction(lightningPayment: LightningPayment, lwk: LwkSessionManager, subaccount: WalletItem, xpub: String) async throws -> (PreparePayResponse?, core.Transaction) {
+    static func buildSubmarineSwapTransaction(lightningPayment: LightningPayment, lwk: LwkSessionManager, subaccount: Account, xpub: String) async throws -> (PreparePayResponse?, core.Transaction) {
         return try await Task.detached(priority: .userInitiated) {
             guard let session = subaccount.session else {
                 throw TransactionError.invalid(localizedDescription: "No Lwk session")
@@ -190,7 +190,7 @@ actor TransactionBuilder {
             }
         }.value
     }
-    static func buildCrossChainSwap(from: WalletItem, to: WalletItem, amount: UInt64, lwk: LwkSessionManager, xpub: String) async throws -> LockupResponse {
+    static func buildCrossChainSwap(from: Account, to: Account, amount: UInt64, lwk: LwkSessionManager, xpub: String) async throws -> LockupResponse {
         if from.networkType.bitcoin && to.networkType.liquid {
             return try await buildBtcToLbtcSwap(from: from, to: to, amount: amount, lwk: lwk, xpub: xpub)
         } else if from.networkType.liquid && to.networkType.bitcoin {
@@ -199,7 +199,7 @@ actor TransactionBuilder {
             throw SendFlowError.failedToBuildTransaction
         }
     }
-    static func buildGdkTransaction(lockupResponse: LockupResponse, subaccount: WalletItem, feeRate: UInt64? = nil) async throws ->
+    static func buildGdkTransaction(lockupResponse: LockupResponse, subaccount: Account, feeRate: UInt64? = nil) async throws ->
     core.Transaction {
 
         return try await Task.detached(priority: .userInitiated) {
@@ -223,7 +223,7 @@ actor TransactionBuilder {
         }.value
     }
 
-    static func buildLbtcToBtcSwap(from: WalletItem, to: WalletItem, amount: UInt64, lwk: LwkSessionManager, xpub: String) async throws -> LockupResponse {
+    static func buildLbtcToBtcSwap(from: Account, to: Account, amount: UInt64, lwk: LwkSessionManager, xpub: String) async throws -> LockupResponse {
         return try await Task.detached(priority: .userInitiated) {
             // Get a Liquid refund address
             guard let refundAddress = try await from.session?.getReceiveAddress(subaccount: from.pointer).address else {
@@ -237,7 +237,7 @@ actor TransactionBuilder {
             return try await lwk.lbtcToBtc(amount: amount, refundAddress: refundAddress, claimAddress: claimAddress, xpubHashId: xpub)
         }.value
     }
-    static func buildBtcToLbtcSwap(from: WalletItem, to: WalletItem, amount: UInt64, lwk: LwkSessionManager, xpub: String) async throws -> LockupResponse {
+    static func buildBtcToLbtcSwap(from: Account, to: Account, amount: UInt64, lwk: LwkSessionManager, xpub: String) async throws -> LockupResponse {
         return try await Task.detached(priority: .userInitiated) {
             // Get a Bitcoin refund address
             guard let refundAddress = try await from.session?.getReceiveAddress(subaccount: from.pointer).address else {
@@ -252,7 +252,7 @@ actor TransactionBuilder {
         }.value
     }
 
-    func buildGdkTransaction(psbt: String, subaccount: WalletItem) async throws -> core.Transaction {
+    func buildGdkTransaction(psbt: String, subaccount: Account) async throws -> core.Transaction {
         return try await Task.detached(priority: .userInitiated) {
             let wallyPsbt = try Wally.psbtFromBase64(psbt)
             let isFinalized = try Wally.psbtIsFinalized(wallyPsbt)
@@ -340,7 +340,7 @@ actor TransactionBuilder {
         }
     }
 
-    static func build(from lightningSubaccount: WalletItem, invoice: Bolt11Invoice, satoshi: UInt64?) async throws -> core.Transaction {
+    static func build(from lightningSubaccount: Account, invoice: Bolt11Invoice, satoshi: UInt64?) async throws -> core.Transaction {
         return try await Task.detached(priority: .userInitiated) {
             guard let lightningSession = lightningSubaccount.lightningSession else {
                 throw GaError.GenericError("No lightning subaccount session")
@@ -365,7 +365,7 @@ actor TransactionBuilder {
         }.value
     }
 
-    static func build(from lightningSubaccount: WalletItem, lnurl: String, payment: LiquidWalletKit.Payment, satoshi: UInt64) async throws -> core.Transaction {
+    static func build(from lightningSubaccount: Account, lnurl: String, payment: LiquidWalletKit.Payment, satoshi: UInt64) async throws -> core.Transaction {
         return try await Task.detached(priority: .userInitiated) {
             guard payment.kind() == .lnUrl else {
                 throw TransactionError.invalid(localizedDescription: "Invalid LNURL")

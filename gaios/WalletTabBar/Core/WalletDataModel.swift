@@ -237,13 +237,13 @@ actor WalletDataModel {
         }
     }
 
-    func fetchGdkAllTransactions(subaccounts: [WalletItem]) async throws -> [Transaction] {
+    func fetchGdkAllTransactions(subaccounts: [Account]) async throws -> [Transaction] {
         // get gdk/lightning transactions
         let txs = try await wallet.allTransactions(subaccounts: subaccounts)
         return txs
     }
 
-    func fetchGdkTransactions(subaccounts: [WalletItem], page: Int, reset: Bool, previous: [String: [Transactions]]) async throws -> [String: [Transactions]] {
+    func fetchGdkTransactions(subaccounts: [Account], page: Int, reset: Bool, previous: [String: [Transactions]]) async throws -> [String: [Transactions]] {
         // get gdk/lightning transactions
                 let txs = try await wallet.pagedTransactions(subaccounts: subaccounts, of: reset ? 0 : page)
                 var cache = reset ? [:] : previous
@@ -253,7 +253,7 @@ actor WalletDataModel {
         return cache
     }
 
-    func fetchMeldTransactions(_ subaccount: WalletItem?) async throws -> [Transaction]? {
+    func fetchMeldTransactions(_ subaccount: Account?) async throws -> [Transaction]? {
         guard let subaccount, let xpubHashId = mainWallet.xpubHashId else {
             return nil
         }

@@ -11,7 +11,7 @@ enum UseValidate {
     case satoshi(Int64)
 }
 protocol AccountAssetViewControllerDelegate: AnyObject {
-    func didSelectAccountAsset(account: WalletItem, asset: AssetInfo)
+    func didSelectAccountAsset(account: Account, asset: AssetInfo)
 }
 
 class SendAccountAssetViewController: UIViewController {

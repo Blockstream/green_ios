@@ -12,7 +12,7 @@ enum TxDetailsAction {
 
 class TxDetailsViewModel {
 
-    var wallet: WalletItem
+    var wallet: Account
     var transaction: Transaction
     var assetAmountList: AssetAmountList
     var swapId: String?
@@ -23,7 +23,7 @@ class TxDetailsViewModel {
         return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
     }
 
-    init(wallet: WalletItem, transaction: Transaction) {
+    init(wallet: Account, transaction: Transaction) {
         self.wallet = wallet
         self.transaction = transaction
         self.assetAmountList = AssetAmountList(transaction.amountsWithoutFees)

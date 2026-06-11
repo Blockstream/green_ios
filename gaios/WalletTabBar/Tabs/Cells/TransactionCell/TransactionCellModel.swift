@@ -15,7 +15,7 @@ class TransactionCellModel {
     var status: String?
     var date: String
     var icon = UIImage()
-    var subaccount: WalletItem?
+    var subaccount: Account?
     var amounts = [String: Int64]()
 
     private let wm = WalletManager.current
@@ -102,7 +102,7 @@ class TransactionCellModel {
                                      progress: nil)
     }
 
-    func amounts(_ tx: Transaction, _ subaccount: WalletItem) -> [String: Int64] {
+    func amounts(_ tx: Transaction, _ subaccount: Account) -> [String: Int64] {
         let feeAsset = subaccount.gdkNetwork.getFeeAsset()
         if tx.type == .redeposit {
             return [feeAsset: -1 * Int64(tx.fee ?? 0)]

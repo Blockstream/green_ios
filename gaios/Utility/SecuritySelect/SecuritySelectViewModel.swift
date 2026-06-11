@@ -168,7 +168,7 @@ class SecuritySelectViewModel {
         _ = try await wm.subaccounts()
     }
 
-    func isUsedDefaultAccount(for session: SessionManager, account: WalletItem?) async throws -> Bool {
+    func isUsedDefaultAccount(for session: SessionManager, account: Account?) async throws -> Bool {
         guard let account = account else {
             throw GaError.GenericError("No subaccount found")
         }

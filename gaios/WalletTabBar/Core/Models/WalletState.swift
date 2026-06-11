@@ -4,7 +4,7 @@ import greenaddress
 @preconcurrency 
 
 struct WalletState: Sendable {
-    var subaccounts: [WalletItem] = WalletManager.current?.visibleSubaccounts ?? []
+    var subaccounts: [Account] = WalletManager.current?.visibleSubaccounts ?? []
     var balancesForSubaccount: [String: [String: Int64]]?
     var balances: [String: Int64]?
     var totals: (String, Int64)?

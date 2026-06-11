@@ -3,7 +3,7 @@ import UIKit
 import core
 
 struct AccountDescriptorCellModel {
-    var account: WalletItem
+    var account: Account
     var descriptor: String {
         account.coreDescriptors?.joined(separator: "\n") ?? ""
     }

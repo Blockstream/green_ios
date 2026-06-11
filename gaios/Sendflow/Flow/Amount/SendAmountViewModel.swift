@@ -12,7 +12,7 @@ final class SendAmountViewModel {
     var draft: TransactionDraft
     var denominationType: DenominationType
     var isFiat: Bool
-    let subaccount: WalletItem
+    let subaccount: Account
     let tx: core.Transaction?
     let delegate: SendAmountViewModelDelegate?
 
@@ -63,7 +63,7 @@ final class SendAmountViewModel {
         wallet: WalletDataModel,
         draft: TransactionDraft,
         tx: core.Transaction?,
-        subaccount: WalletItem,
+        subaccount: Account,
         denominationType: DenominationType,
         isFiat: Bool,
         delegate: SendAmountViewModelDelegate

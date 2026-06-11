@@ -8,10 +8,10 @@ class AccountArchiveViewModel {
     var wm: WalletManager { WalletManager.current! }
 
     /// load visible subaccounts
-    var subaccounts: [WalletItem] {
+    var subaccounts: [Account] {
         wm.subaccounts.filter { $0.hidden }
     }
-    var list: [WalletItem] = []
+    var list: [Account] = []
     /// cell models
     var accountCellModels = [AccountArchiveCellModel]()
 
@@ -20,7 +20,7 @@ class AccountArchiveViewModel {
         _ = try? await wm.balances(subaccounts: subaccounts)
         self.accountCellModels = subaccounts.map { AccountArchiveCellModel(account: $0, satoshi: $0.btc) }
     }
-    func unarchiveSubaccount(_ subaccount: WalletItem) async throws {
+    func unarchiveSubaccount(_ subaccount: Account) async throws {
         guard let session = WalletManager.current?.sessions[subaccount.gdkNetwork.network] else { return }
         let params = UpdateSubaccountParams(subaccount: subaccount.pointer, hidden: false)
         try? await session.updateSubaccount(params)

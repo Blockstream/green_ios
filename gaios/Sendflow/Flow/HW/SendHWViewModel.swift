@@ -9,7 +9,7 @@ struct SendHWViewModel {
     let tx: Transaction
     let draft: TransactionDraft?
     let denomination: DenominationType
-    let subaccount: WalletItem?
+    let subaccount: Account?
     let isMultiAddressees: Bool
     let isQRMode: Bool
 

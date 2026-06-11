@@ -19,7 +19,7 @@ final class SendSwapViewModel {
     var liquidFeeEstimator: FeeEstimator?
     var gdkTransaction: core.Transaction?
 
-    init(wallet: WalletManager, subaccount: WalletItem?, assetId: String?, delegate: SendSwapViewModelDelegate?) {
+    init(wallet: WalletManager, subaccount: Account?, assetId: String?, delegate: SendSwapViewModelDelegate?) {
         self.wm = wallet
         if let boltzSession = wm.lwkSession?.boltzSession {
             self.quoteBuilder = QuoteBuilder(boltzSession: boltzSession)
@@ -72,7 +72,7 @@ final class SendSwapViewModel {
     func currentState() -> SwapPositionState {
         state
     }
-    static func getDefaultTo(_ assetIdFrom: String) -> (WalletItem?, String) {
+    static func getDefaultTo(_ assetIdFrom: String) -> (Account?, String) {
         if assetIdFrom == AssetInfo.btcId { // inverted is correct
             return (getLiquidSubaccounts().first, AssetInfo.lbtcId)
         } else if assetIdFrom == AssetInfo.lbtcId { // inverted is correct
@@ -81,16 +81,16 @@ final class SendSwapViewModel {
             return (nil, "")
         }
     }
-    static func getBitcoinSubaccounts() -> [WalletItem] {
+    static func getBitcoinSubaccounts() -> [Account] {
         WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
-    static func getLiquidSubaccounts() -> [WalletItem] {
+    static func getLiquidSubaccounts() -> [Account] {
         WalletManager.current?.liquidSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
     func dialogAccountsModel(_ position: SwapPositionEnum) -> DialogAccountsViewModel {
         self.selectedPosition = position
         let assetId = position == .from ? state.from.assetId : state.to.assetId
-        var accounts: [WalletItem] = []
+        var accounts: [Account] = []
         if assetId == AssetInfo.btcId {
             accounts = SendSwapViewModel.getBitcoinSubaccounts()
         } else if assetId == AssetInfo.lbtcId {
@@ -120,7 +120,7 @@ final class SendSwapViewModel {
         publish()
     }
 
-    func updateAccount(account: WalletItem, for position: SwapPositionEnum) {
+    func updateAccount(account: Account, for position: SwapPositionEnum) {
         switch position {
         case .from:
             state.from.account = account

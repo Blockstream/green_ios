@@ -129,7 +129,7 @@ class BleJadeManager: JadeManager {
         return updated
     }
 
-    func validateAddress(account: WalletItem, addr: Address) async throws -> Bool {
+    func validateAddress(account: Account, addr: Address) async throws -> Bool {
         let network = account.gdkNetwork
         let address = try await jade.newReceiveAddress(chain: network.chain,
                                            mainnet: network.mainnet,

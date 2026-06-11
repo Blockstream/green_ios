@@ -27,7 +27,6 @@ final class ReceiveViewModel: Sendable {
     weak var delegate: ReceiveViewModelDelegate?
     private let receiveService: ReceiveService
 
-
     // Tasks
     private var addressTask: Task<Void, Never>?
     private var paymentTask: Task<Void, Never>?
@@ -40,7 +39,7 @@ final class ReceiveViewModel: Sendable {
     init(
         mainAccount: Wallet,
         walletDataModel: WalletDataModel,
-        subaccount: WalletItem,
+        subaccount: Account,
         anyOrAsset: AnyOrAsset,
         delegate: ReceiveViewModelDelegate? = nil,
         receiveService: ReceiveService = ReceiveService(),
@@ -49,7 +48,6 @@ final class ReceiveViewModel: Sendable {
         self.mainAccount = mainAccount
         self.delegate = delegate
         self.receiveService = receiveService
-
         self.walletDataModel = walletDataModel
 
         let type: ReceiveType = anyOrAsset.assetId == AssetInfo.lightningId ? .bolt11 : .address
@@ -252,23 +250,23 @@ final class ReceiveViewModel: Sendable {
         let session = wm.sessions[state.subaccount.gdkNetwork.network]
         return session?.validBip21Uri(uri: addr) ?? false
     }
-    func getLightningSubaccounts() -> [WalletItem] {
+    func getLightningSubaccounts() -> [Account] {
         if let subaccount = WalletManager.current?.lightningSubaccount {
             return [subaccount]
         } else {
             return []
         }
     }
-    func getBitcoinSubaccounts() -> [WalletItem] {
+    func getBitcoinSubaccounts() -> [Account] {
         WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
-    func getLiquidSubaccounts() -> [WalletItem] {
+    func getLiquidSubaccounts() -> [Account] {
         WalletManager.current?.liquidSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
-    func getLiquidAmpSubaccounts() -> [WalletItem] {
+    func getLiquidAmpSubaccounts() -> [Account] {
         WalletManager.current?.liquidAmpSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
-    func getAccounts() -> [WalletItem] {
+    func getAccounts() -> [Account] {
         switch state.anyOrAsset {
         case .anyLiquid:
             return getLiquidSubaccounts()

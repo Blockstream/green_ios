@@ -53,7 +53,7 @@ public extension AnalyticsManager {
         return [server, liquid, mainnet].compactMap { $0 }.joined(separator: "-")
     }
 
-    func subAccSeg(_ account: Wallet?, walletItem: WalletItem?) -> Sgmt {
+    func subAccSeg(_ account: Wallet?, walletItem: Account?) -> Sgmt {
         var s = sessSgmt(account)
         if let walletItem = walletItem {
             s[AnalyticsManager.strAccountType] = walletItem.type.rawValue
@@ -62,7 +62,7 @@ public extension AnalyticsManager {
         return s
     }
 
-    func twoFacSgmt(_ account: Wallet?, walletItem: WalletItem?, twoFactorType: TwoFactorType?) -> Sgmt {
+    func twoFacSgmt(_ account: Wallet?, walletItem: Account?, twoFactorType: TwoFactorType?) -> Sgmt {
         var s = subAccSeg(account, walletItem: walletItem)
         if let twoFactorType = twoFactorType, let walletItem = walletItem {
             s[AnalyticsManager.str2fa] = twoFactorType.rawValue

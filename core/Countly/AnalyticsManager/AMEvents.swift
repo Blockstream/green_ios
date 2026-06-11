@@ -126,7 +126,7 @@ extension AnalyticsManager {
         recordEvent(.deleteWallet)
     }
 
-    public func renameAccount(account: Wallet?, walletItem: WalletItem?) {
+    public func renameAccount(account: Wallet?, walletItem: Account?) {
         let s = subAccSeg(account, walletItem: walletItem)
         recordEvent(.renameAccount, sgmt: s)
     }
@@ -137,7 +137,7 @@ extension AnalyticsManager {
         startEvent(.sendTransaction)
     }
 
-    public func endSendTransaction(account: Wallet?, walletItem: WalletItem?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool) {
+    public func endSendTransaction(account: Wallet?, walletItem: Account?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool) {
         endTrace(.sendTransaction)
         var s = subAccSeg(account, walletItem: walletItem)
         switch transactionSgmt.transactionType {
@@ -168,12 +168,12 @@ extension AnalyticsManager {
         recordEvent(.walletImport, sgmt: s)
     }
 
-    public func createAccount(account: Wallet?, walletItem: WalletItem?) {
+    public func createAccount(account: Wallet?, walletItem: Account?) {
         let s = subAccSeg(account, walletItem: walletItem)
         recordEvent(.createAccount, sgmt: s)
     }
 
-    public func receiveAddress(account: Wallet?, walletItem: WalletItem?, data: ReceiveAddressData) {
+    public func receiveAddress(account: Wallet?, walletItem: Account?, data: ReceiveAddressData) {
         var s = subAccSeg(account, walletItem: walletItem)
         s[AnalyticsManager.strType] = data.type.rawValue
         s[AnalyticsManager.strMedia] = data.media.rawValue
@@ -206,7 +206,7 @@ extension AnalyticsManager {
 
     public func failedTransaction(
         account: Wallet?,
-        walletItem: WalletItem?,
+        walletItem: Account?,
         transactionSgmt: AnalyticsManager.TransactionSegmentation,
         withMemo: Bool,
         prettyError: String?,
@@ -241,7 +241,7 @@ extension AnalyticsManager {
         recordEvent(.failedRecoveryPhraseCheck, sgmt: sgmt)
     }
 
-    public func appReview(account: Wallet?, walletItem: WalletItem?) {
+    public func appReview(account: Wallet?, walletItem: Account?) {
         let s = subAccSeg(account, walletItem: walletItem)
         recordEvent(.appReview, sgmt: s)
     }
@@ -286,7 +286,7 @@ extension AnalyticsManager {
         recordEvent(.assetSelect, sgmt: s)
     }
 
-    public func selectAccount(account: Wallet?, walletItem: WalletItem?) {
+    public func selectAccount(account: Wallet?, walletItem: Account?) {
         let s = subAccSeg(account, walletItem: walletItem)
         recordEvent(.accountSelect, sgmt: s)
     }
@@ -325,7 +325,7 @@ extension AnalyticsManager {
         recordEvent(.jadeInitialize, sgmt: s)
     }
 
-    public func verifyAddressJade(account: Wallet?, walletItem: WalletItem?) {
+    public func verifyAddressJade(account: Wallet?, walletItem: Account?) {
         let s = subAccSeg(account, walletItem: walletItem)
         recordEvent(.jadeVerifyAddress, sgmt: s)
     }
@@ -370,7 +370,7 @@ extension AnalyticsManager {
         }
     }
 
-    public func accountEmptied(account: Wallet?, walletItem: WalletItem, walletData: WalletData) {
+    public func accountEmptied(account: Wallet?, walletItem: Account, walletData: WalletData) {
         var s = sessSgmt(account)
         s[AnalyticsManager.strWalletFunded] = walletData.walletFunded ? "true" : "false"
         s[AnalyticsManager.strAccountsFunded] = "\(walletData.accountsFunded)"

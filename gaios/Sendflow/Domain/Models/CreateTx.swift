@@ -7,7 +7,7 @@ import lightning
 struct CreateTx {
     var addressee = Addressee.from(address: "", satoshi: nil, assetId: nil, isGreedy: false, bip21: false, txType: .transaction)
     var feeRate: UInt64?
-    var subaccount: WalletItem?
+    var subaccount: Account?
     var error: String?
     var privateKey: String?
     var previousTransaction: [String: Any]?

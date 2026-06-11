@@ -120,11 +120,11 @@ public class LightningSessionManager: SessionManager {
         return balance
     }
 
-    public override func subaccount(_ pointer: UInt32) async throws -> WalletItem {
-        return WalletItem(name: "", pointer: 0, receivingId: "", type: .lightning, hidden: false, network: NetworkSecurityCase.lightning.network)
+    public override func subaccount(_ pointer: UInt32) async throws -> Account {
+        return Account(name: "", pointer: 0, receivingId: "", type: .lightning, hidden: false, network: NetworkSecurityCase.lightning.network)
     }
 
-    public override func subaccounts(_ refresh: Bool = false) async throws -> [WalletItem] {
+    public override func subaccounts(_ refresh: Bool = false) async throws -> [Account] {
         let subaccount = try await subaccount(0)
         return [subaccount]
     }

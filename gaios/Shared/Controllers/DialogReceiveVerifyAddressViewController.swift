@@ -16,7 +16,7 @@ class DialogReceiveVerifyAddressViewController: UIViewController {
 
     var isLedger = false
     var address = ""
-    var walletItem: WalletItem?
+    var walletItem: Account?
 
     override func viewDidLoad() {
         super.viewDidLoad()

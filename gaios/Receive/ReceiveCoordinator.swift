@@ -10,7 +10,7 @@ enum ReceiveRoute {
     case invoice(LNInvoiceViewModel)
     case addressAuth(AddressAuthViewModel)
     case manualBackup(ManualBackupViewModel)
-    case send(subaccount: WalletItem, anyOrAsset: AnyOrAsset)
+    case send(subaccount: Account, anyOrAsset: AnyOrAsset)
 }
 
 @MainActor
@@ -28,7 +28,7 @@ final class ReceiveCoordinator {
         self.mainAccount = mainAccount
         self.onFinish = onFinish
     }
-    func start(account: WalletItem, anyOrAsset: AnyOrAsset) {
+    func start(account: Account, anyOrAsset: AnyOrAsset) {
         let model = ReceiveViewModel(mainAccount: mainAccount,
                                        walletDataModel: wallet,
                                        subaccount: account,
@@ -168,7 +168,7 @@ extension ReceiveCoordinator: ReceiveViewModelDelegate {
             await navigate(to: .manualBackup(model))
         }
     }
-    func send(subaccount: core.WalletItem, anyOrAsset: AnyOrAsset) {
+    func send(subaccount: Account, anyOrAsset: AnyOrAsset) {
         Task { @MainActor in
             await navigate(to: .send(subaccount: subaccount, anyOrAsset: anyOrAsset))
         }

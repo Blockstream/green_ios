@@ -5,7 +5,7 @@ import lightning
 
 struct LTRedeemViewModel {
 
-    var wallet: WalletItem?
+    var wallet: Account?
     var onChainAddress: String?
     var amount: UInt64?
     var txid: String?

@@ -26,7 +26,7 @@ class BuyBTCViewModel {
     var asset: String
     var satoshi: Int64?
     var isFiat: Bool = true
-    var account: WalletItem
+    var account: Account
     var mainWallet: Wallet? { WalletsStorage.shared.current }
     var inputDenomination: DenominationType = .Sats
     var meld: Meld
@@ -41,7 +41,7 @@ class BuyBTCViewModel {
     var showAccountSwitch: Bool {
         getAccounts().count > 1
     }
-    static func getBitcoinSubaccounts() -> [WalletItem] {
+    static func getBitcoinSubaccounts() -> [Account] {
         WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
     var address: Address?
@@ -57,7 +57,7 @@ class BuyBTCViewModel {
     }
     var allowChange = true
 
-    init(account: WalletItem? = nil,
+    init(account: Account? = nil,
          currency: String?,
          hideBalance: Bool = false) {
         if let account {
@@ -184,7 +184,7 @@ class BuyBTCViewModel {
         return "\(WalletsStorage.shared.current?.id ?? "")_buy_subaccount"
     }
 
-    static var defaultAccount: WalletItem? {
+    static var defaultAccount: Account? {
         get {
             guard let label = defaultAccountLabel else { return nil }
             let accountId = UserDefaults.standard.string(forKey: label)
@@ -195,10 +195,10 @@ class BuyBTCViewModel {
             UserDefaults.standard.set(newValue?.id, forKey: label)
         }
     }
-    func getBitcoinSubaccounts() -> [WalletItem] {
+    func getBitcoinSubaccounts() -> [Account] {
         wm.subaccounts.filter { !$0.hidden && !$0.networkType.liquid && !$0.networkType.lightning }.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 })
     }
-    func getAccounts() -> [WalletItem] {
+    func getAccounts() -> [Account] {
         return getBitcoinSubaccounts()
     }
 }

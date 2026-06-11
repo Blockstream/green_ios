@@ -4,14 +4,14 @@ import core
 
 
 class AccountDescriptorViewModel {
-    var account: WalletItem
+    var account: Account
     var cardCellModels: [AlertCardCellModel] {
         return [AlertCardCellModel(type: AlertCardType.descriptorInfo)]
     }
     var descriptorCellModels: [AccountDescriptorCellModel] {
         return [AccountDescriptorCellModel(account: account)]
     }
-    init(account: WalletItem) {
+    init(account: Account) {
         self.account = account
     }
 }

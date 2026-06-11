@@ -193,16 +193,16 @@ public class SessionManager {
         return Transactions(list: list ?? [])
     }
 
-    public func subaccount(_ pointer: UInt32) async throws -> WalletItem? {
+    public func subaccount(_ pointer: UInt32) async throws -> Account? {
         let subaccount = try self.session?.getSubaccount(subaccount: pointer)
         let res = try await resolve(subaccount)
         let result = res?["result"] as? [String: Any]
-        let wallet = WalletItem.from(result ?? [:]) as? WalletItem
+        let wallet = Account.from(result ?? [:]) as? Account
         wallet?.network = self.gdkNetwork.network
         return wallet
     }
 
-    public func subaccounts(_ refresh: Bool = false) async throws -> [WalletItem] {
+    public func subaccounts(_ refresh: Bool = false) async throws -> [Account] {
         let params = GetSubaccountsParams(refresh: refresh)
         let res: GetSubaccountsResult = try await wrapper(fun: self.session?.getSubaccounts, params: params)
         let wallets = res.subaccounts
@@ -235,7 +235,7 @@ public class SessionManager {
     }
 
     // create a default segwit account if doesn't exist on singlesig
-    public func createDefaultSubaccount(wallets: [WalletItem]) async throws {
+    public func createDefaultSubaccount(wallets: [Account]) async throws {
         let notFound = !wallets.contains(where: {$0.type == AccountType.segWit })
         if gdkNetwork.electrum && notFound {
             _ = try await wrap(fun: self.session?.createSubaccount, params: ["name": "", "type": AccountType.segWit.rawValue])
@@ -452,8 +452,8 @@ public class SessionManager {
         _ = try await wrap(fun: self.session?.updateSubaccount, params: params.toDict() ?? [:])
     }
 
-    public func createSubaccount(_ details: CreateSubaccountParams) async throws -> WalletItem {
-        let wallet: WalletItem = try await wrapper(fun: self.session?.createSubaccount, params: details)
+    public func createSubaccount(_ details: CreateSubaccountParams) async throws -> Account {
+        let wallet: Account = try await wrapper(fun: self.session?.createSubaccount, params: details)
         wallet.network = self.gdkNetwork.network
         return wallet
     }

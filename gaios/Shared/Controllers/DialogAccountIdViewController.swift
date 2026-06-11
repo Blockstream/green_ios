@@ -15,7 +15,7 @@ class DialogAccountIdViewController: UIViewController {
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
 
-    var wallet: WalletItem?
+    var wallet: Account?
     var buttonConstraint: NSLayoutConstraint?
 
     override func viewDidLoad() {

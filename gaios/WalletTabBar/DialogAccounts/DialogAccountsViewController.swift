@@ -4,7 +4,7 @@ import core
 
 protocol DialogAccountsViewControllerDelegate: AnyObject {
     @MainActor
-    func didSelectAccount(_ walletItem: WalletItem?)
+    func didSelectAccount(_ walletItem: Account?)
 }
 
 class DialogAccountsViewController: UIViewController {
@@ -115,7 +115,7 @@ class DialogAccountsViewController: UIViewController {
         }
     }
 
-    func dismiss(_ walletItem: WalletItem? = nil) {
+    func dismiss(_ walletItem: Account? = nil) {
         anchorBottom.constant = -cardView.frame.size.height
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0

@@ -446,7 +446,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    @MainActor func manageAssetViewController(assetId: String, subaccounts: [WalletItem]) -> ManageAssetViewController {
+    @MainActor func manageAssetViewController(assetId: String, subaccounts: [Account]) -> ManageAssetViewController {
         let storyboard = UIStoryboard(name: "ManageAsset", bundle: nil)
         let viewModel = ManageAssetViewModel(
             walletDataModel: viewModel.walletDataModel,

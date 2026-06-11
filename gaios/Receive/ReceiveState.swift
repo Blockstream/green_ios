@@ -23,7 +23,7 @@ enum AmountFieldState: Int {
 }
 
 struct ReceiveState {
-    var subaccount: WalletItem
+    var subaccount: Account
     var type: ReceiveType
     var anyOrAsset: AnyOrAsset
     var satoshi: Int64?

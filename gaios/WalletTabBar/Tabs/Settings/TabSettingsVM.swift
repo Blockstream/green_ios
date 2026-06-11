@@ -146,7 +146,7 @@ class TabSettingsVM: TabViewModel {
         !getSubaccountsAmp().isEmpty
     }
 
-    func getSubaccountsAmp() -> [WalletItem] {
+    func getSubaccountsAmp() -> [Account] {
         wallet.subaccounts.filter({ $0.type == .amp })
     }
 
@@ -210,7 +210,7 @@ class TabSettingsVM: TabViewModel {
         try await wallet.swapMonitor?.start()
     }
 
-    func getAddress(subaccount: WalletItem?) async -> String? {
+    func getAddress(subaccount: Account?) async -> String? {
         guard let subaccount else { return nil }
         let session = wallet.getSession(for: subaccount)
         let address = try? await session?.getReceiveAddress(subaccount: subaccount.pointer)

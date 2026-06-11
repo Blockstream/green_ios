@@ -228,7 +228,7 @@ class BleHwManager {
         return (account, walletManager)
     }
 
-    func validateAddress(account: WalletItem, address: Address) async throws -> Bool {
+    func validateAddress(account: Account, address: Address) async throws -> Bool {
         if !isConnected() {
             try await connect()
             _ = try await authenticating()

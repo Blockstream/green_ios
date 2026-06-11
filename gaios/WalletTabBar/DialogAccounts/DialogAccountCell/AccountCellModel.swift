@@ -3,7 +3,7 @@ import UIKit
 import core
 
 struct AccountCellModel {
-    var account: WalletItem
+    var account: Account
     var satoshi: Int64
     var assetId: String?
     var name: String { account.localizedName }

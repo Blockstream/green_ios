@@ -30,7 +30,7 @@ class DialogSendHWSummaryViewController: UIViewController {
     @IBOutlet weak var lblChangeHint: UILabel!
 
     var transaction: Transaction?
-    var account: WalletItem!
+    var account: Account!
     var isLedger = false
 
     override func viewDidLoad() {

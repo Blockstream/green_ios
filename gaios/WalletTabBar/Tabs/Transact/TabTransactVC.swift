@@ -82,7 +82,7 @@ class TabTransactVC: TabViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    func accountsScreen(assetId: String, subaccounts: [WalletItem]) {
+    func accountsScreen(assetId: String, subaccounts: [Account]) {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
         let model = viewModel.dialogAccountsViewModel(assetId: assetId, subaccounts: subaccounts, hideBalance: viewModel.hideBalance)
         let vc = storyboard.instantiateViewController(identifier: "DialogAccountsViewController") { coder in
@@ -373,20 +373,20 @@ extension TabTransactVC: UITableViewDataSourcePrefetching {
             viewModel.refresh(features: [.txs(reset: false)])
         }
     }
-    func getLiquidSubaccounts() -> [WalletItem] {
+    func getLiquidSubaccounts() -> [Account] {
         WalletManager.current?.liquidSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
-    func getLiquidAmpSubaccounts() -> [WalletItem] {
+    func getLiquidAmpSubaccounts() -> [Account] {
         WalletManager.current?.liquidAmpSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
-    func getLightningSubaccounts() -> [WalletItem] {
+    func getLightningSubaccounts() -> [Account] {
         if let subaccount = WalletManager.current?.lightningSubaccount {
             return [subaccount]
         } else {
             return []
         }
     }
-    func getAccounts(_ ref: AnyOrAsset) -> [WalletItem] {
+    func getAccounts(_ ref: AnyOrAsset) -> [Account] {
         switch ref {
         case .anyLiquid:
             return getLiquidSubaccounts()
@@ -443,7 +443,7 @@ extension TabTransactVC: AssetSelectViewControllerDelegate {
     }
 }
 extension TabTransactVC: DialogAccountsViewControllerDelegate {
-    func didSelectAccount(_ walletItem: WalletItem?) {
+    func didSelectAccount(_ walletItem: Account?) {
         if let nav = navigationController, let account = walletItem, let anyOrAsset {
             activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainWallet) { [
                 weak self,

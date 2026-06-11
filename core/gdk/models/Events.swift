@@ -24,5 +24,5 @@ public struct SubaccountEvent: Codable {
 
 public protocol EventProtocol {
     func title() -> String
-    func description(wallets: [WalletItem], twoFactorConfig: TwoFactorConfig?) -> String
+    func description(wallets: [Account], twoFactorConfig: TwoFactorConfig?) -> String
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-public class WalletItem: Codable, Equatable, Comparable {
+public class Account: Codable, Equatable, Comparable {
 
     enum CodingKeys: String, CodingKey {
         case name
@@ -75,7 +75,7 @@ public class WalletItem: Codable, Equatable, Comparable {
         type == .lightning
     }
 
-    public static func == (lhs: WalletItem, rhs: WalletItem) -> Bool {
+    public static func == (lhs: Account, rhs: Account) -> Bool {
         return lhs.network == rhs.network &&
             lhs.name == rhs.name &&
             lhs.pointer == rhs.pointer &&
@@ -83,7 +83,7 @@ public class WalletItem: Codable, Equatable, Comparable {
             lhs.type == rhs.type
     }
 
-    public static func < (lhs: WalletItem, rhs: WalletItem) -> Bool {
+    public static func < (lhs: Account, rhs: Account) -> Bool {
         let lhsNetwork = lhs.gdkNetwork
         let rhsNetwork = rhs.gdkNetwork
         if lhsNetwork == rhsNetwork {

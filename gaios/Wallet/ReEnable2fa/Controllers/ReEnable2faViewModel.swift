@@ -5,10 +5,10 @@ import core
 
 class ReEnable2faViewModel {
 
-    let expiredSubaccounts: [WalletItem]
-    var subaccount: WalletItem?
+    let expiredSubaccounts: [Account]
+    var subaccount: Account?
 
-    internal init(expiredSubaccounts: [WalletItem]) {
+    internal init(expiredSubaccounts: [Account]) {
         self.expiredSubaccounts = expiredSubaccounts
     }
 

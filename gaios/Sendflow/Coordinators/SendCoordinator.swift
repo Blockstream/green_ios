@@ -42,14 +42,14 @@ final class SendCoordinator {
         self.onFinish = onFinish
     }
 
-    func start(input: String?, subaccount: WalletItem?, assetId: String?) {
+    func start(input: String?, subaccount: Account?, assetId: String?) {
         selectedDenomination = wallet.wallet.prominentSession?.settings?.denomination ?? .Sats
         let model = SendAddressViewModel(mainWallet: mainWallet, wallet: wallet, text: input, subaccount: subaccount, assetId: assetId, delegate: self)
         let vc = sendAddressViewController(model: model)
         nav.pushViewController(vc, animated: true)
     }
 
-    func startSwap(subaccount: WalletItem?, assetId: String?) {
+    func startSwap(subaccount: Account?, assetId: String?) {
         selectedDenomination = wallet.wallet.prominentSession?.settings?.denomination ?? .Sats
         let model = SendSwapViewModel(wallet: wallet.wallet, subaccount: subaccount, assetId: assetId, delegate: self)
         let vc = sendSwapViewController(model: model)
@@ -171,7 +171,7 @@ final class SendCoordinator {
     }
 }
 extension SendCoordinator {
-    private func subaccounts(for rail: PaymentRail, wallet: WalletManager, amount: UInt64?) -> [WalletItem] {
+    private func subaccounts(for rail: PaymentRail, wallet: WalletManager, amount: UInt64?) -> [Account] {
         switch rail {
         case .bitcoin:
             return wallet.bitcoinSubaccountsWithFunds
@@ -191,7 +191,7 @@ extension SendCoordinator {
         }
     }
 
-    private func rail(for subaccount: WalletItem) -> PaymentRail? {
+    private func rail(for subaccount: Account) -> PaymentRail? {
         if subaccount.networkType.liquid {
             return .liquid
         }
@@ -204,7 +204,7 @@ extension SendCoordinator {
         return nil
     }
 
-    func resolveSubaccounts(paymentTarget: PaymentTarget) -> [WalletItem] {
+    func resolveSubaccounts(paymentTarget: PaymentTarget) -> [Account] {
         guard let wallet = WalletManager.current else { return [] }
         let amount: UInt64? = {
             if case .lightningInvoice(let invoice) = paymentTarget {
@@ -363,7 +363,7 @@ extension SendCoordinator {
     private func routeLightningInvoiceSwap(
         _ invoice: Bolt11Invoice,
         draft: TransactionDraft,
-        subaccount: WalletItem
+        subaccount: Account
     ) async throws -> SendRoute {
         let xpub = WalletsStorage.shared.current?.xpubHashId
         let lwk = await wallet.wallet.awaitLwkSession()
@@ -412,7 +412,7 @@ extension SendCoordinator {
     private func routeLightningInvoicePay(
         _ invoice: Bolt11Invoice,
         draft: TransactionDraft,
-        subaccount: WalletItem
+        subaccount: Account
     ) async throws -> SendRoute {
         let tx = try await withRouteLoader(message: "Preparing Payment") {
             try await TransactionBuilder.build(
@@ -435,7 +435,7 @@ extension SendCoordinator {
         _ offer: String,
         lightningPayment: LightningPayment,
         draft: TransactionDraft,
-        subaccount: WalletItem
+        subaccount: Account
     ) async throws -> SendRoute {
         guard subaccount.networkType.liquid else {
             throw SendFlowError.wrongSubaccount
@@ -489,7 +489,7 @@ extension SendCoordinator {
         _ input: String,
         payment: LiquidWalletKit.Payment,
         draft: TransactionDraft,
-        subaccount: WalletItem,
+        subaccount: Account,
         satoshi: UInt64
     ) async throws -> SendRoute {
         let tx = try await withRouteLoader(message: "Fetching Invoice..") {
@@ -512,7 +512,7 @@ extension SendCoordinator {
         _ input: String,
         payment: LiquidWalletKit.Payment,
         draft: TransactionDraft,
-        subaccount: WalletItem,
+        subaccount: Account,
         satoshi: UInt64
     ) async throws -> SendRoute {
         let lwk = await wallet.wallet.awaitLwkSession()
@@ -555,7 +555,7 @@ extension SendCoordinator {
         return try await operation()
     }
 
-    private func makeEnterAmountViewModel(draft: TransactionDraft, subaccount: WalletItem) -> SendAmountViewModel {
+    private func makeEnterAmountViewModel(draft: TransactionDraft, subaccount: Account) -> SendAmountViewModel {
         SendAmountViewModel(
             mainWallet: mainWallet,
             wallet: wallet,
@@ -570,7 +570,7 @@ extension SendCoordinator {
 
     private func makeSignViewModel(
         draft: TransactionDraft,
-        subaccount: WalletItem,
+        subaccount: Account,
         tx: core.Transaction
     ) -> SendLwkSignViewModel {
         SendLwkSignViewModel(
@@ -627,7 +627,7 @@ extension SendCoordinator: SendAddressViewModelDelegate {
     func sendAddressViewModel(_ vm: SendAddressViewModel, didFailWith error: Error) {
         forwardError(error)
     }
-    func subaccountChain(_ subaccount: WalletItem) -> NetworkChainType {
+    func subaccountChain(_ subaccount: Account) -> NetworkChainType {
         if subaccount.networkType.liquid {
             return NetworkChainType.liquid
         } else if subaccount.networkType.lightning {
@@ -639,9 +639,9 @@ extension SendCoordinator: SendAddressViewModelDelegate {
     func sendAddressViewModel(
         _ vm: SendAddressViewModel,
         paymentTarget: PaymentTarget,
-        subaccount: WalletItem?,
+        subaccount: Account?,
         assetId: String?) {
-        var subaccountToUse: WalletItem? = subaccount
+        var subaccountToUse: Account? = subaccount
         var assetIdToUse: AssetId? = assetId
         if !paymentTarget.eligibleRails().isEmpty &&
             resolveSubaccounts(paymentTarget: paymentTarget).isEmpty {
@@ -725,7 +725,7 @@ extension SendCoordinator: SendAccountAssetViewModelDelegate {
         forwardError(error)
     }
 
-    func didSelectAccountAsset(_ vm: SendAccountAssetViewModel, subaccount: WalletItem, assetId: String?) {
+    func didSelectAccountAsset(_ vm: SendAccountAssetViewModel, subaccount: Account, assetId: String?) {
         let updatedDraft = TransactionDraft.init(
             subaccount: subaccount,
             address: nil,
@@ -962,7 +962,7 @@ extension SendCoordinator: SendSwapViewModelDelegate {
     }
 }
 extension SendCoordinator: DialogAccountsViewControllerDelegate {
-    func didSelectAccount(_ walletItem: WalletItem?) {
+    func didSelectAccount(_ walletItem: Account?) {
         if let subaccount = walletItem, let position = sendSwapViewModel?.selectedPosition {
             sendSwapViewModel?.updateAccount(account: subaccount, for: position)
         }

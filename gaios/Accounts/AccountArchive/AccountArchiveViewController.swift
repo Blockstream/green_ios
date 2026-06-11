@@ -73,7 +73,7 @@ class AccountArchiveViewController: UIViewController {
             }
         }
     }
-    func updateList(_ item: WalletItem) {
+    func updateList(_ item: Account) {
         if viewModel.list.contains(item) {
             viewModel.list.remove(at: viewModel.list.firstIndex(of: item)!)
         } else {
