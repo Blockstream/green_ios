@@ -92,10 +92,10 @@ public class AssetsManager {
         }
     }
 
-    public func getAssetsFromCountly() async throws -> [EnrichedAsset] {
+    public func getAssetsFromCountly() async throws -> [CountlyEnrichedAsset] {
         let assets = AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigAssets) as? [[String: Any]]
         let json = try? JSONSerialization.data(withJSONObject: assets ?? [], options: [])
-        let res = try? JSONDecoder().decode([EnrichedAsset].self, from: json ?? Data())
+        let res = try? JSONDecoder().decode([CountlyEnrichedAsset].self, from: json ?? Data())
         return res ?? []
     }
 

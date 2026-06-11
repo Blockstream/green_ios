@@ -1,6 +1,6 @@
 import Foundation
 
-public struct EnrichedAsset: Codable {
+public struct CountlyEnrichedAsset: Codable {
     enum CodingKeys: String, CodingKey {
         case id
         case amp
