@@ -546,7 +546,7 @@ extension SendTxConfirmViewController: SendTxSuccessViewControllerDelegate, ReEn
             .shared
             .request(
                 isSendAll: viewModel.sendAll,
-                account: AccountsRepository.shared.current,
+                account: WalletsStorage.shared.current,
                 walletItem: viewModel.subaccount)
         navigationController?.popToViewController(ofClass: WalletTabBarViewController.self)
     }

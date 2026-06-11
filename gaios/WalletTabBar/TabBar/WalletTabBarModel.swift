@@ -12,21 +12,21 @@ enum SecurityState {
 class WalletTabBarModel {
 
     var wallet: WalletManager
-    var mainAccount: Account
+    var mainWallet: Wallet
     var isCreated: Bool
     var isRestored: Bool
     var securityState = SecurityState.alerted
     var walletDataModel: WalletDataModel
     private var analyticsDone = false
 
-    init(wallet: WalletManager, mainAccount: Account, isCreated: Bool, isRestored: Bool) {
+    init(wallet: WalletManager, mainWallet: Wallet, isCreated: Bool, isRestored: Bool) {
         self.wallet = wallet
-        self.mainAccount = mainAccount
+        self.mainWallet = mainWallet
         self.isCreated = isCreated
         self.isRestored = isRestored
-        self.walletDataModel = WalletDataModel(wallet: wallet, mainAccount: mainAccount)
+        self.walletDataModel = WalletDataModel(wallet: wallet, mainWallet: mainWallet)
         if let lwkSession = wallet.lwkSession {
-            self.wallet.swapMonitor = SwapMonitor(xpubHashId: mainAccount.xpubHashId ?? "", lwkSession: lwkSession)
+            self.wallet.swapMonitor = SwapMonitor(xpubHashId: mainWallet.xpubHashId ?? "", lwkSession: lwkSession)
         }
     }
 
@@ -38,28 +38,28 @@ class WalletTabBarModel {
 
     @MainActor func tabTransactVC() -> TabTransactVC {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        let viewModel = TabTransactVM(walletDataModel: walletDataModel, wallet: wallet, mainAccount: mainAccount)
+        let viewModel = TabTransactVM(walletDataModel: walletDataModel, wallet: wallet, mainWallet: mainWallet)
         return storyboard.instantiateViewController(identifier: "TabTransactVC") { coder in
             TabTransactVC(coder: coder, viewModel: viewModel)
         }
     }
     @MainActor func tabSecurityVC() -> TabSecurityVC {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        let viewModel = TabSecurityVM(walletDataModel: walletDataModel, wallet: wallet, mainAccount: mainAccount)
+        let viewModel = TabSecurityVM(walletDataModel: walletDataModel, wallet: wallet, mainWallet: mainWallet)
         return storyboard.instantiateViewController(identifier: "TabSecurityVC") { coder in
             TabSecurityVC(coder: coder, viewModel: viewModel)
         }
     }
     @MainActor func tabSettingsVC() -> TabSettingsVC {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        let viewModel = TabSettingsVM(walletDataModel: walletDataModel, wallet: wallet, mainAccount: mainAccount)
+        let viewModel = TabSettingsVM(walletDataModel: walletDataModel, wallet: wallet, mainWallet: mainWallet)
         return storyboard.instantiateViewController(identifier: "TabSettingsVC") { coder in
             TabSettingsVC(coder: coder, viewModel: viewModel)
         }
     }
     @MainActor func tabHomeVC() -> TabHomeVC {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        let viewModel = TabHomeVM(walletDataModel: walletDataModel, wallet: wallet, mainAccount: mainAccount)
+        let viewModel = TabHomeVM(walletDataModel: walletDataModel, wallet: wallet, mainWallet: mainWallet)
         return storyboard.instantiateViewController(identifier: "TabHomeVC") { coder in
             TabHomeVC(coder: coder, viewModel: viewModel)
         }
@@ -68,7 +68,7 @@ class WalletTabBarModel {
         guard let token = UserDefaults(suiteName: Bundle.main.appGroup)?.string(forKey: "token") else {
             throw GaError.GenericError("No token")
         }
-        guard let xpubHashId = mainAccount.xpubHashId else {
+        guard let xpubHashId = mainWallet.xpubHashId else {
             throw GaError.GenericError("No xpub")
         }
         /// Register notification token for meld and lwk on sanbox
@@ -109,7 +109,7 @@ class WalletTabBarModel {
             .filter({ $0.satoshi?.values.reduce(0, +) ?? 0 > 0 })
         let accountsTypes: String = Array(Set(fundedSubaccounts.map { $0.type.rawValue })).sorted().joined(separator: ",")
         AnalyticsManager.shared.activeWalletEnd(
-            account: mainAccount,
+            account: mainWallet,
             walletData: AnalyticsManager.WalletData(
                 walletFunded: fundedSubaccounts.count > 0,
                 accountsFunded: fundedSubaccounts.count,
@@ -120,7 +120,7 @@ class WalletTabBarModel {
     func startup() {
         Task {
             if isCreated && !wallet.isHW && !wallet.isWatchonly {
-                BackupHelper.shared.addToBackupList(mainAccount.id)
+                BackupHelper.shared.addToBackupList(mainWallet.id)
             }
             await walletDataModel.triggerRefresh(features: [.subaccounts])
             await walletDataModel.triggerRefresh(features: [

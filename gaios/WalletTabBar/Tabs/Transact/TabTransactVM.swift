@@ -48,7 +48,7 @@ class TabTransactVM: TabViewModel {
         try? await walletDataModel.rotateBalanceDisplayMode()
     }
     func getBoltzKey() throws -> Credentials {
-        try AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: mainAccount.keychain)
+        try AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: mainWallet.keychain)
     }
     func existBoltzKey() -> Bool {
         (try? getBoltzKey()) != nil
@@ -92,7 +92,7 @@ class TabTransactVM: TabViewModel {
         try await walletDataModel.hideBalance(value)
     }
     func canSwap() -> Bool {
-        if mainAccount.isWatchonly || (mainAccount.isHW && mainAccount.boardType == .v2c) {
+        if mainWallet.isWatchonly || (mainWallet.isHW && mainWallet.boardType == .v2c) {
             return false
         }
         return true

@@ -75,9 +75,13 @@ class QRUnlockJadePinInfoViewController: UIViewController {
     }
 }
 extension QRUnlockJadePinInfoViewController: QRUnlockJadeViewControllerDelegate {
-    func login(credentials: gdk.Credentials, wallet: WalletManager, account: Account) {
-        AccountsRepository.shared.current = account
-        AccountNavigator.navLogged(accountId: account.id)
+    func unlock() {
+        // nothing
+    }
+
+    func login(credentials: gdk.Credentials, wallet: WalletManager, account: Wallet) {
+        WalletsStorage.shared.current = account
+        AccountNavigator.navLogged(walletId: account.id)
     }
 
     func abort() {

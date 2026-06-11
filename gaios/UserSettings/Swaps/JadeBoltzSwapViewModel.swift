@@ -7,15 +7,15 @@ import hw
 struct JadeBoltzSwapViewModel {
 
     let wm: WalletManager
-    let mainAccount: Account
+    let mainWallet: Wallet
 
-    init(wallet: WalletManager, mainAccount: Account) {
+    init(wallet: WalletManager, mainWallet: Wallet) {
         self.wm = wallet
-        self.mainAccount = mainAccount
+        self.mainWallet = mainWallet
     }
 
     func getBoltzKey() throws -> Credentials {
-        try AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: mainAccount.keychain)
+        try AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: mainWallet.keychain)
     }
 
     func existBoltzKey() -> Bool {
@@ -23,12 +23,12 @@ struct JadeBoltzSwapViewModel {
     }
 
     func removeBoltzKey() throws {
-        if AuthenticationTypeHandler.removeAuth(method: .AuthKeyBoltz, for: mainAccount.keychain) == false {
+        if AuthenticationTypeHandler.removeAuth(method: .AuthKeyBoltz, for: mainWallet.keychain) == false {
             throw HWError.Abort("id_operation_failure".localized)
         }
     }
     func existPendingSwap() async -> Bool {
-        let swaps = try? await BoltzController.shared.fetchPendingSwaps(xpubHashId: mainAccount.xpubHashId ?? "")
+        let swaps = try? await BoltzController.shared.fetchPendingSwaps(xpubHashId: mainWallet.xpubHashId ?? "")
         return swaps?.count ?? 0 > 0
     }
     func disconnectBoltz() async throws {

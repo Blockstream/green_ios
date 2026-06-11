@@ -96,7 +96,7 @@ extension TabHomeVC { // navigation
         viewModel.refresh(features: [.promos])
     }
     func backupAlertDismiss() {
-        BackupHelper.shared.addToDismissed(walletId: viewModel.mainAccount.id, position: .homeTab)
+        BackupHelper.shared.addToDismissed(walletId: viewModel.mainWallet.id, position: .homeTab)
         viewModel.refresh(features: [.alertCards])
     }
     func presentReEnable2fa() async {
@@ -155,7 +155,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch TabHomeSection(rawValue: indexPath.section) {
         case .header:
-            let headerIcon = UIImage(named: viewModel.mainAccount.gdkNetwork.mainnet ? "ic_wallet" : "ic_wallet_testnet")?.maskWithColor(color: .white)
+            let headerIcon = UIImage(named: viewModel.mainWallet.gdkNetwork.mainnet ? "ic_wallet" : "ic_wallet_testnet")?.maskWithColor(color: .white)
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell, let headerIcon {
                 cell.configure(title: "id_home".localized, icon: headerIcon, tab: .home, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
@@ -451,7 +451,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
         let viewModel = ManageAssetViewModel(
             walletDataModel: viewModel.walletDataModel,
             wallet: viewModel.wallet,
-            mainAccount: viewModel.mainAccount,
+            mainWallet: viewModel.mainWallet,
             assetId: assetId,
             selectedSubaccount: subaccounts.count == 1 ? subaccounts.first : nil)
         return storyboard.instantiateViewController(identifier: "ManageAssetViewController") { coder in

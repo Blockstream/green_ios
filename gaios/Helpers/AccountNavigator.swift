@@ -31,48 +31,48 @@ class AccountNavigator {
     }
 
     @MainActor
-    static func login(accountId: String, autologin: Bool) -> UIViewController? {
-        let account = AccountsRepository.shared.get(for: accountId)!
+    static func login(walletId: String, autologin: Bool) -> UIViewController? {
+        let wallet = WalletsStorage.shared.get(for: walletId)!
         let vcLogin: LoginViewController? = instantiateViewController(storyboard: "Home", identifier: "LoginViewController")
         let vcBiometricLogin: BiometricLoginViewController? = instantiateViewController(storyboard: "Home", identifier: "BiometricLoginViewController")
         let vcConnect: ConnectViewController? = instantiateViewController(storyboard: "HWFlow", identifier: "ConnectViewController")
         let vcWatch: WOLoginViewController? = instantiateViewController(storyboard: "WOFlow", identifier: "WOLoginViewController")
-        if account.isHW {
+        if wallet.isHW {
             vcConnect?.viewModel = ConnectViewModel(
-                account: account,
+                account: wallet,
                 firstConnection: false,
                 storeConnection: true,
                 autologin: autologin)
             return vcConnect
-        } else if account.isWatchonly {
-            vcWatch?.viewModel = WOViewModel(account: account)
+        } else if wallet.isWatchonly {
+            vcWatch?.viewModel = WOViewModel(wallet: wallet)
             vcWatch?.autologin = autologin
             return vcWatch
-        } else if account.hasBioPin || account.hasWoCredentials {
-            vcBiometricLogin?.viewModel = LoginViewModel(account: account, autologin: autologin)
+        } else if wallet.hasBioPin || wallet.hasWoCredentials {
+            vcBiometricLogin?.viewModel = LoginViewModel(account: wallet, autologin: autologin)
             return vcBiometricLogin
         } else {
-            vcLogin?.viewModel = LoginViewModel(account: account, autologin: autologin)
+            vcLogin?.viewModel = LoginViewModel(account: wallet, autologin: autologin)
             return vcLogin
         }
     }
 
     @MainActor
-    static func logged(accountId: String, isCreated: Bool = false, isRestored: Bool) -> WalletTabBarViewController {
-        return walletTabBarViewController(accountId: accountId, isCreated: isCreated, isRestored: isRestored)
+    static func logged(walletId: String, isCreated: Bool = false, isRestored: Bool) -> WalletTabBarViewController {
+        return walletTabBarViewController(walletId: walletId, isCreated: isCreated, isRestored: isRestored)
     }
 
     @MainActor
-    static func walletTabBarViewController(accountId: String, isCreated: Bool, isRestored: Bool) -> WalletTabBarViewController {
+    static func walletTabBarViewController(walletId: String, isCreated: Bool, isRestored: Bool) -> WalletTabBarViewController {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        let account = AccountsRepository.shared.get(for: accountId)!
+        let account = WalletsStorage.shared.get(for: walletId)!
         let wallet = WalletsRepository.shared.getOrAdd(for: account)
         let walletTabBarModel = WalletTabBarModel(
             wallet: wallet,
-            mainAccount: account,
+            mainWallet: account,
             isCreated: isCreated,
             isRestored: isRestored)
-        AccountsRepository.shared.current = account
+        WalletsStorage.shared.current = account
         return storyboard.instantiateViewController(identifier: "WalletTabBarViewController") { coder in
             WalletTabBarViewController(coder: coder, walletTabBarModel: walletTabBarModel)
         }
@@ -112,8 +112,8 @@ class AccountNavigator {
         return vc
     }
     @MainActor
-    static func navLogged(accountId: String, isCreated: Bool = false, isRestored: Bool = false) {
-        let vc = logged(accountId: accountId, isCreated: isCreated, isRestored: isRestored)
+    static func navLogged(walletId: String, isCreated: Bool = false, isRestored: Bool = false) {
+        let vc = logged(walletId: walletId, isCreated: isCreated, isRestored: isRestored)
         let nv = UINavigationController()
         nv.setViewControllers([vc], animated: true)
         changeRoot(root: nv)
@@ -129,9 +129,9 @@ class AccountNavigator {
     }
 
     @MainActor
-    static func navLogin(accountId: String, autologin: Bool = true) {
+    static func navLogin(walletId: String, autologin: Bool = true) {
         if let vcHome = home(),
-        let vcLogin = login(accountId: accountId, autologin: autologin) {
+        let vcLogin = login(walletId: walletId, autologin: autologin) {
             let nv = UINavigationController()
             nv.setViewControllers([vcHome, vcLogin], animated: true)
             changeRoot(root: nv)
@@ -139,17 +139,17 @@ class AccountNavigator {
     }
 
     @MainActor
-    static func navLogout(accountId: String?) {
+    static func navLogout(walletId: String?) {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             appDelegate.resolve2faOff()
             appDelegate.window?.endEditing(true)
         }
-        let wallets = AccountsRepository.shared.accounts
+        let wallets = WalletsStorage.shared.wallets
         if wallets.isEmpty {
             // if there are no wallets
             navStarted()
-        } else if wallets.count == 1, let accountId = accountId {
-            navLogin(accountId: accountId, autologin: false)
+        } else if wallets.count == 1, let accountId = walletId {
+            navLogin(walletId: accountId, autologin: false)
         } else {
             navHome()
         }
@@ -167,7 +167,7 @@ class AccountNavigator {
 
     @MainActor
     static func navFirstPage() {
-        let wallets = AccountsRepository.shared.accounts
+        let wallets = WalletsStorage.shared.wallets
         let showV5UpgradeScreen = justInitialized && !v5Triggered
         v5Triggered = true
         justInitialized = true
@@ -179,7 +179,7 @@ class AccountNavigator {
             navV5()
         } else {
             if wallets.count == 1, let walletId = wallets.first?.id {
-                navLogin(accountId: walletId)
+                navLogin(walletId: walletId)
             } else {
                 navHome()
             }

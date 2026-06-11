@@ -277,7 +277,7 @@ class SendLwkSignViewController: UIViewController {
     }
 
     func send() {
-        if viewModel.mainAccount.isHW && viewModel.draft.subaccount?.isLightning == false {
+        if viewModel.mainWallet.isHW && viewModel.draft.subaccount?.isLightning == false {
             if !BleHwManager.shared.isConnected() || !BleHwManager.shared.isLogged() {
                 let vc = hWDialogConnectViewController()
                 present(vc, animated: true)

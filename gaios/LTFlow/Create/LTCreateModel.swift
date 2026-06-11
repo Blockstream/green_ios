@@ -4,13 +4,13 @@ import core
 import greenaddress
 
 struct LTCreateViewModel {
-    var mainAccount: Account
+    var mainWallet: Wallet
     var wallet: WalletDataModel
-    var isHW: Bool { mainAccount.isHW }
+    var isHW: Bool { mainWallet.isHW }
 
-    init(mainAccount: Account, wallet: WalletDataModel) {
+    init(mainWallet: Wallet, wallet: WalletDataModel) {
         self.wallet = wallet
-        self.mainAccount = mainAccount
+        self.mainWallet = mainWallet
     }
 
     func enableLightning() async throws {
@@ -32,7 +32,7 @@ struct LTCreateViewModel {
             .setCredentials(
                 method: .AuthKeyLightning,
                 credentials: lightningCredentials,
-                for: mainAccount.keychainLightning
+                for: mainWallet.keychainLightning
             )
         
         // Register device to receive notifications

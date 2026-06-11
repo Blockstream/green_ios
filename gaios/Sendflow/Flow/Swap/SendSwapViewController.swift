@@ -58,7 +58,7 @@ class SendSwapViewController: UIViewController {
             btnNext.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -16),
             btnNext.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
-        AnalyticsManager.shared.recordView(.sendSwap, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+        AnalyticsManager.shared.recordView(.sendSwap, sgmt: AnalyticsManager.shared.sessSgmt(WalletsStorage.shared.current))
     }
 
     override func viewIsAppearing(_ animated: Bool) {
@@ -234,7 +234,7 @@ class SendSwapViewController: UIViewController {
     }
     @MainActor
     @IBAction func btnNext(_ sender: Any) {
-        AnalyticsManager.shared.swapInitiate(account: AccountsRepository.shared.current,
+        AnalyticsManager.shared.swapInitiate(account: WalletsStorage.shared.current,
                                              from: viewModel.currentState().from.chain,
                                              to: viewModel.currentState().to.chain)
         Task { [weak viewModel] in

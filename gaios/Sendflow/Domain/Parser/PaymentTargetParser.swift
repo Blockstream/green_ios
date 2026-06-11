@@ -6,7 +6,7 @@ import greenaddress
 import GreenlightSDK
 
 struct PaymentTargetParser: Sendable {
-    public let mainAccount: Account
+    public let mainWallet: Wallet
 
     nonisolated func parse(_ text: String) async throws -> PaymentTarget {
         do {
@@ -98,7 +98,7 @@ struct PaymentTargetParser: Sendable {
                         throw SendFlowError.generic("Invoice already paid")
                     }
                 }
-                let swapIdsByInvoice = try await BoltzController.shared.fetchSwaps(xpubHashId: mainAccount.xpubHashId ?? "", invoice: lightningInvoice.description, swapType: .Submarine)
+                let swapIdsByInvoice = try await BoltzController.shared.fetchSwaps(xpubHashId: mainWallet.xpubHashId ?? "", invoice: lightningInvoice.description, swapType: .Submarine)
                 let swapsByInvoice = try await BoltzController.shared.gets(with: swapIdsByInvoice)
                 if !swapsByInvoice.filter({ $0.txHash != nil }).isEmpty {
                     throw SendFlowError.generic("Invoice already paid")

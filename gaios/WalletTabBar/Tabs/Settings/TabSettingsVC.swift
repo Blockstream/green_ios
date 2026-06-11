@@ -71,7 +71,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch viewModel.settings[indexPath.section].section {
         case .header:
-            let headerIcon = UIImage(named: viewModel.mainAccount.gdkNetwork.mainnet ? "ic_wallet" : "ic_wallet_testnet")?.maskWithColor(color: .white)
+            let headerIcon = UIImage(named: viewModel.mainWallet.gdkNetwork.mainnet ? "ic_wallet" : "ic_wallet_testnet")?.maskWithColor(color: .white)
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell, let headerIcon {
                 cell.configure(title: "id_settings".localized, icon: headerIcon, tab: .settings, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
@@ -227,7 +227,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
     @MainActor
     func pushJadeBoltzSwapViewController() {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        let viewModel = JadeBoltzSwapViewModel(wallet: viewModel.wallet, mainAccount: viewModel.mainAccount)
+        let viewModel = JadeBoltzSwapViewModel(wallet: viewModel.wallet, mainWallet: viewModel.mainWallet)
         let vc = storyboard.instantiateViewController(identifier: "JadeBoltzSwapViewController") { coder in
             JadeBoltzSwapViewController(coder: coder, viewModel: viewModel)
         }
@@ -452,7 +452,7 @@ extension TabSettingsVC {
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRenameViewController") as? DialogRenameViewController {
             vc.delegate = self
             vc.index = nil
-            vc.prefill = viewModel.mainAccount.name
+            vc.prefill = viewModel.mainWallet.name
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -501,8 +501,8 @@ extension TabSettingsVC: TFAViewControllerDelegate {
 extension TabSettingsVC: DialogRenameViewControllerDelegate {
 
     func didRename(name: String, index: String?) {
-        viewModel.mainAccount.name = name
-        AccountsRepository.shared.upsert(viewModel.mainAccount)
+        viewModel.mainWallet.name = name
+        WalletsStorage.shared.upsert(viewModel.mainWallet)
         viewModel.refresh(features: [.subaccounts])
         viewModel.refresh(features: [.settings, .balance, .txs(reset: true)])
     }

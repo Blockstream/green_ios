@@ -42,7 +42,7 @@ class SecuritySelectViewController: UIViewController {
         setContent()
         setStyle()
 
-        let account = AccountsRepository.shared.current
+        let account = WalletsStorage.shared.current
         AnalyticsManager.shared.recordView(.addAccountChooseType, sgmt: AnalyticsManager.shared.sessSgmt(account))
     }
 
@@ -246,7 +246,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
 
     @MainActor
     func createSubaccount(policy: PolicyCellType, params: CreateSubaccountParams) async {
-        let isHW = AccountsRepository.shared.current?.isHW ?? false
+        let isHW = WalletsStorage.shared.current?.isHW ?? false
         if isHW {
             showHWCheckDialog()
         } else {

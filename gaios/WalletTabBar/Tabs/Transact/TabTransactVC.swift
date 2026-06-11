@@ -101,8 +101,8 @@ class TabTransactVC: TabViewController {
     }
 
     func swapScreen() {
-        AnalyticsManager.shared.swapEntry(account: AccountsRepository.shared.current)
-        if viewModel.mainAccount.isJade && !viewModel.existBoltzKey() {
+        AnalyticsManager.shared.swapEntry(account: WalletsStorage.shared.current)
+        if viewModel.mainWallet.isJade && !viewModel.existBoltzKey() {
             let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
             let vc = storyboard.instantiateViewController(identifier: "DialogSwapJadeViewController") { coder in
                 DialogSwapJadeViewController(coder: coder)
@@ -112,7 +112,7 @@ class TabTransactVC: TabViewController {
             present(vc, animated: false, completion: nil)
         } else {
             if let nav = navigationController {
-                activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self,weak nav] in
+                activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainWallet: viewModel.mainWallet) { [weak self,weak nav] in
                     nav?.popToRootViewController(animated: true)
                     self?.activeSendCoordinator = nil
                 }
@@ -123,7 +123,7 @@ class TabTransactVC: TabViewController {
     @MainActor
     func pushJadeBoltzExportViewController() {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        let viewModel = JadeBoltzExportViewModel(wallet: viewModel.wallet, mainAccount: viewModel.mainAccount)
+        let viewModel = JadeBoltzExportViewModel(wallet: viewModel.wallet, mainWallet: viewModel.mainWallet)
         let vc = storyboard.instantiateViewController(identifier: "JadeBoltzExportViewController") { coder in
             JadeBoltzExportViewController(coder: coder, viewModel: viewModel)
         }
@@ -192,7 +192,7 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case .header:
-            let headerIcon = UIImage(named: viewModel.mainAccount.gdkNetwork.mainnet ? "ic_wallet" : "ic_wallet_testnet")?.maskWithColor(color: .white)
+            let headerIcon = UIImage(named: viewModel.mainWallet.gdkNetwork.mainnet ? "ic_wallet" : "ic_wallet_testnet")?.maskWithColor(color: .white)
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell, let headerIcon {
                 cell.configure(title: "id_transact".localized, icon: headerIcon, tab: .transact, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
@@ -445,7 +445,10 @@ extension TabTransactVC: AssetSelectViewControllerDelegate {
 extension TabTransactVC: DialogAccountsViewControllerDelegate {
     func didSelectAccount(_ walletItem: gdk.WalletItem?) {
         if let nav = navigationController, let account = walletItem, let anyOrAsset {
-            activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self, weak nav] in
+            activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainWallet) { [
+                weak self,
+                weak nav
+            ] in
                 //nav?.popToRootViewController(animated: true)
                 self?.activeReceiveCoordinator = nil
             }

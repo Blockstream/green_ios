@@ -5,10 +5,10 @@ import core
 
 class LoginViewModel {
 
-    var account: Account
+    var account: Wallet
     var autologin: Bool = true
 
-    init(account: Account, autologin: Bool = true) {
+    init(account: Wallet, autologin: Bool = true) {
         self.account = account
         self.autologin = autologin
     }
@@ -83,13 +83,13 @@ class LoginViewModel {
             parentWalletId: walletIdentifier)
         account.xpubHashId = res?.xpubHashId
         account.walletHashId = res?.walletHashId
-        AccountsRepository.shared.current = account
+        WalletsStorage.shared.current = account
         return wm
     }
 
-    fileprivate func updateEphemeralAccount(from credentials: Credentials) -> Account {
+    fileprivate func updateEphemeralAccount(from credentials: Credentials) -> Wallet {
         let networkType = account.networkType.testnet ? NetworkSecurityCase.testnetSS : NetworkSecurityCase.bitcoinSS
-        var newAccount = Account(name: account.name, network: networkType, keychain: account.keychain)
+        var newAccount = Wallet(name: account.name, network: networkType, keychain: account.keychain)
         newAccount.isEphemeral = true
         newAccount.askEphemeral = true
         newAccount.attempts = account.attempts
@@ -99,17 +99,17 @@ class LoginViewModel {
 
     func updateAccountName(_ name: String) {
         account.name = name
-        AccountsRepository.shared.upsert(account)
+        WalletsStorage.shared.upsert(account)
         AnalyticsManager.shared.renameWallet()
     }
 
     func updateAccountAskEphemeral(_ enabled: Bool) {
         account.askEphemeral = enabled
-        AccountsRepository.shared.upsert(account)
+        WalletsStorage.shared.upsert(account)
     }
 
     func updateAccountAttempts(_ value: Int) {
         account.attempts = value
-        AccountsRepository.shared.upsert(account)
+        WalletsStorage.shared.upsert(account)
     }
 }

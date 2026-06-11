@@ -42,7 +42,7 @@ class HWDialogConnectViewController: UIViewController {
         setContent()
         setStyle()
         view.alpha = 0.0
-        if let account = AccountsRepository.shared.current {
+        if let account = WalletsStorage.shared.current {
             viewModel = ConnectViewModel(
                 account: account,
                 firstConnection: false,
@@ -79,7 +79,7 @@ class HWDialogConnectViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = AccountsRepository.shared.current?.name
+        lblTitle.text = WalletsStorage.shared.current?.name
         lblSubtitle.text = ""
     }
 

@@ -26,7 +26,7 @@ class AccountCreatePublicKeyViewController: UIViewController {
         setStyle()
         textViewKey.delegate = self
 
-        AnalyticsManager.shared.recordView(.addAccountPublicKey, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+        AnalyticsManager.shared.recordView(.addAccountPublicKey, sgmt: AnalyticsManager.shared.sessSgmt(WalletsStorage.shared.current))
     }
 
     func setContent() {
@@ -99,7 +99,7 @@ class AccountCreatePublicKeyViewController: UIViewController {
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: false, completion: nil)
         AnalyticsManager.shared.scanQr(
-            account: AccountsRepository.shared.current,
+            account: WalletsStorage.shared.current,
             screen: .addAccountPK)
     }
 

@@ -7,7 +7,7 @@ struct DialogSignViewModel {
 
     var subaccount: WalletItem
     var address: String
-    var isHW: Bool { AccountsRepository.shared.current?.isHW ?? false }
+    var isHW: Bool { WalletsStorage.shared.current?.isHW ?? false }
     
     var session: SessionManager? {
         if isHW && BleHwManager.shared.walletManager != nil {

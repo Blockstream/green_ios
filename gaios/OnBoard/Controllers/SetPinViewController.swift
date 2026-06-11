@@ -53,7 +53,7 @@ class SetPinViewController: UIViewController {
             case .restore:
                 AnalyticsManager.shared.recordView(.onBoardPin, sgmt: AnalyticsManager.shared.onBoardSgmtUnified(flow: AnalyticsManager.OnBoardFlow.strRestore))
             default:
-                AnalyticsManager.shared.recordView(.walletSettingsChangePIN, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+                AnalyticsManager.shared.recordView(.walletSettingsChangePIN, sgmt: AnalyticsManager.shared.sessSgmt(WalletsStorage.shared.current))
             }
         }
     }
@@ -208,7 +208,7 @@ class SetPinViewController: UIViewController {
                 guard let credentials = try await WalletManager.current?.prominentSession?.getCredentials(password: "") else {
                     throw LoginError.failed("")
                 }
-                guard let wm = WalletManager.current, let account = AccountsRepository.shared.current else {
+                guard let wm = WalletManager.current, let account = WalletsStorage.shared.current else {
                     throw LoginError.failed("")
                 }
                 return try await self?.viewModel.setupPinWallet(credentials: credentials, pin: pin, account: account, wm: wm)
@@ -231,15 +231,15 @@ class SetPinViewController: UIViewController {
                 navigationController?.popToRootViewController(animated: true)
             case .restore:
                 if let account = accountWallet?.0 {
-                    AccountsRepository.shared.current = account
+                    WalletsStorage.shared.current = account
                     AnalyticsManager.shared.activeWalletStart()
-                    AccountNavigator.navLogged(accountId: account.id, isCreated: false, isRestored: true)
+                    AccountNavigator.navLogged(walletId: account.id, isCreated: false, isRestored: true)
                 }
             case .create:
                 if let account = accountWallet?.0 {
-                    AccountsRepository.shared.current = account
+                    WalletsStorage.shared.current = account
                     AnalyticsManager.shared.activeWalletStart()
-                    AccountNavigator.navLogged(accountId: account.id, isCreated: true, isRestored: false)
+                    AccountNavigator.navLogged(walletId: account.id, isCreated: true, isRestored: false)
                 }
             case .backup:
                 let storyboard = UIStoryboard(name: "Recovery", bundle: nil)

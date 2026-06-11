@@ -151,7 +151,7 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        AnalyticsManager.shared.selectAsset(account: AccountsRepository.shared.current)
+        AnalyticsManager.shared.selectAsset(account: WalletsStorage.shared.current)
         let cnt = viewModel?.assetSelectCellModelsFilter.count ?? 0
 
         if indexPath.row < cnt {

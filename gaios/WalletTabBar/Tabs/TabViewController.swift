@@ -52,7 +52,7 @@ class TabViewController: UIViewController {
         WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
     func buyScreen(currency: String, hideBalance: Bool) {
-        AnalyticsManager.shared.buyInitiate(account: AccountsRepository.shared.current)
+        AnalyticsManager.shared.buyInitiate(account: WalletsStorage.shared.current)
         if !getCountlyRemoteConfigEnableBuyIosUk() && checkUKRegion() {
             showAlert(title: "id_buy_btc".localized, message: "id_feature_unavailable_in_the_uk".localized)
             return
@@ -72,7 +72,7 @@ class TabViewController: UIViewController {
     private var activeSendCoordinator: SendCoordinator?
     func sendScreen(walletDataModel: WalletDataModel, input: String?) {
         if let nav = navigationController {
-            activeSendCoordinator = SendCoordinator(nav: nav, wallet: walletDataModel, mainAccount: walletTab.mainAccount) { [weak self, weak nav] in
+            activeSendCoordinator = SendCoordinator(nav: nav, wallet: walletDataModel, mainWallet: walletTab.mainWallet) { [weak self, weak nav] in
                 nav?.popToRootViewController(animated: true)
                 self?.activeSendCoordinator = nil
             }

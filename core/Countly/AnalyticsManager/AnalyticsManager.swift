@@ -279,7 +279,7 @@ public class AnalyticsManager {
         GdkSettings.read()?.tor ?? false ? hostOnion : host
     }
 
-    private func getSessionConfiguration(session: Session?) -> URLSessionConfiguration {
+    private func getSessionConfiguration(session: GDKSession?) -> URLSessionConfiguration {
         let configuration = URLSessionConfiguration.ephemeral
         let settings = GdkSettings.read()
         // set explicit proxy
@@ -306,7 +306,7 @@ public class AnalyticsManager {
     }
 
     private func updateUserProperties() {
-        let accounts = AccountsRepository.shared.swAccounts
+        let accounts = WalletsStorage.shared.sws
 
         let bitcoin_wallets = accounts.filter { !$0.gdkNetwork.liquid }
         let liquid_wallets = accounts.filter { $0.gdkNetwork.liquid }

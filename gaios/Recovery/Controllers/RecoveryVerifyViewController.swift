@@ -111,7 +111,7 @@ class RecoveryVerifyViewController: UIViewController {
             subAccountCreateDelegate?.didNewRecoveryPhrase(mnemonic)
             return
         }
-        guard let account = AccountsRepository.shared.current else {
+        guard let account = WalletsStorage.shared.current else {
             return
         }
         BackupHelper.shared.removeFromBackupList(account.id)

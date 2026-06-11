@@ -358,7 +358,7 @@ class ReceiveViewController: KeyboardViewController {
         let data = AnalyticsManager.ReceiveAddressData(type: vm.isBipAddress(text) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
                                                        media: AnalyticsManager.ReceiveAddressMedia.text,
                                                        method: AnalyticsManager.ReceiveAddressMethod.copy)
-        AnalyticsManager.shared.receiveAddress(account: AccountsRepository.shared.current,
+        AnalyticsManager.shared.receiveAddress(account: WalletsStorage.shared.current,
                                                walletItem: vm.state.subaccount,
                                                data: data)
         UIPasteboard.general.string = text
@@ -423,7 +423,7 @@ class ReceiveViewController: KeyboardViewController {
             vm.selectAddressMode()
         } else {
             vm.selectReverseSwapMode()
-            AnalyticsManager.shared.swapToggle(account: AccountsRepository.shared.current,
+            AnalyticsManager.shared.swapToggle(account: WalletsStorage.shared.current,
                                                from: SwapChainName.lightning.rawValue,
                                                to: SwapChainName.liquid.rawValue)
         }
@@ -466,7 +466,8 @@ class ReceiveViewController: KeyboardViewController {
             startLoader()
             requestNewPayment()
             btnConfirm.setStyle(.primaryDisabled)
-            AnalyticsManager.shared.swapReceive(account: AccountsRepository.shared.current,
+            AnalyticsManager.shared
+                .swapReceive(account: WalletsStorage.shared.current,
                                                 from: SwapChainName.lightning.rawValue,
                                                 to: SwapChainName.liquid.rawValue)
         }
@@ -617,7 +618,7 @@ extension ReceiveViewController {
         }
     }
     func verifyAddress() async {
-        AnalyticsManager.shared.verifyAddressJade(account: AccountsRepository.shared.current, walletItem: vm.state.subaccount)
+        AnalyticsManager.shared.verifyAddressJade(account: WalletsStorage.shared.current, walletItem: vm.state.subaccount)
         if let vm = vm.receiveVerifyOnDeviceViewModel() {
             presentVerifyOnDeviceViewController(viewModel: vm)
         }
@@ -712,7 +713,7 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
                     media: AnalyticsManager.ReceiveAddressMedia.text,
                     method: AnalyticsManager.ReceiveAddressMethod.share)
                 AnalyticsManager.shared.receiveAddress(
-                    account: AccountsRepository.shared.current,
+                    account: WalletsStorage.shared.current,
                     walletItem: vm.state.subaccount,
                     data: data)
             case .qr:
@@ -722,7 +723,7 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
                     media: AnalyticsManager.ReceiveAddressMedia.image,
                     method: AnalyticsManager.ReceiveAddressMethod.share)
                 AnalyticsManager.shared.receiveAddress(
-                    account: AccountsRepository.shared.current,
+                    account: WalletsStorage.shared.current,
                     walletItem: vm.state.subaccount,
                     data: data)
                 Task {

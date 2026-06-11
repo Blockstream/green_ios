@@ -78,7 +78,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         #if DEBUG
         // parse externally injected wallet
-        AccountsRepository.shared.injectWalletFromEnvironment()
+        WalletsStorage.shared.injectWalletFromEnvironment()
         #endif
       
         

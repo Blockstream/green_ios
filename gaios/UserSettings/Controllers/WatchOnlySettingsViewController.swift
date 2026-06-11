@@ -13,7 +13,7 @@ class WatchOnlySettingsViewController: UIViewController {
         super.viewDidLoad()
 
         title = "id_watchonly".localized
-        AnalyticsManager.shared.recordView(.walletSettings, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+        AnalyticsManager.shared.recordView(.walletSettings, sgmt: AnalyticsManager.shared.sessSgmt(WalletsStorage.shared.current))
     }
 
     override func viewWillAppear(_ animated: Bool) {

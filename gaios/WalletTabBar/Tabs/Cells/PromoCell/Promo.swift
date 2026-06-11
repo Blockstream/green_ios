@@ -43,23 +43,23 @@ class Promo: Decodable {
         overline_large = overline_large?.htmlDecoded
     }
     func isVisible() -> Bool {
-        let hwVisibleWallets = AccountsRepository.shared.hwVisibleAccounts
+        let hwsVisible = WalletsStorage.shared.hwsVisible
         if let target {
             // jade plus users only
             if target == "jadeplus_user" {
-                let v_2s = hwVisibleWallets.filter { ($0.boardType == .v2) }.count
+                let v_2s = hwsVisible.filter { ($0.boardType == .v2) }.count
                 if v_2s == 0 {
                     return false
                 }
             } else if target == "only_sww" {
                 // if user has hw, don't show
-                if hwVisibleWallets.count > 0 {
+                if hwsVisible.count > 0 {
                     return false
                 }
             } else if target == "jade_user" {
                 // if user has v1 but not v2 dont' show
-                let v_1s = hwVisibleWallets.filter { ($0.boardType == .v1 || $0.boardType == .v1_1) }.count
-                let v_2s = hwVisibleWallets.filter { ($0.boardType == .v2) }.count
+                let v_1s = hwsVisible.filter { ($0.boardType == .v1 || $0.boardType == .v1_1) }.count
+                let v_2s = hwsVisible.filter { ($0.boardType == .v2) }.count
                 if v_1s > 0 && v_2s == 0 {
                 } else {
                     return false

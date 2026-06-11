@@ -24,7 +24,7 @@ struct ZendeskErrorRequest {
     var type: ZendeskErrorRequestType = .incident
 
     var hw: String? {
-        let account = AccountsRepository.shared.current
+        let account = WalletsStorage.shared.current
         if account?.isLedger ?? false {
             return "ledger_nano_x"
         } else if account?.isJade ?? false {

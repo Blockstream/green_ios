@@ -31,7 +31,7 @@ class BackupSuccessViewController: UIViewController {
         btnNext.setStyle(.primary)
     }
     @IBAction func btnNext(_ sender: Any) {
-        AnalyticsManager.shared.backupManual(account: AccountsRepository.shared.current)
+        AnalyticsManager.shared.backupManual(account: WalletsStorage.shared.current)
         let originReceive = navigationController?.viewControllers.filter { $0 is ReceiveViewController }.first
         let originBuy = navigationController?.viewControllers.filter { $0 is BuyBTCViewController }.first
         if originReceive != nil {

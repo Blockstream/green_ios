@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-import gdk
 import greenaddress
 import core
 import UniformTypeIdentifiers
@@ -186,7 +185,11 @@ extension QRPsbtShowViewController: QRUnlockSignDialogViewControllerDelegate {
     }
 }
 extension QRPsbtShowViewController: QRUnlockJadeViewControllerDelegate {
-    func login(credentials: gdk.Credentials, wallet: core.WalletManager, account: Account) {
+    func unlock() {
+        // nothing
+    }
+
+    func login(credentials: gdk.Credentials, wallet: core.WalletManager, account: Wallet) {
         print("login")
     }
     func abort() {

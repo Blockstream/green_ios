@@ -15,7 +15,7 @@ class QRUnlockJadeViewModel {
     var scope: QRUnlockScope
     var oracle: String?
     var testnet: Bool
-    var account: Account
+    var account: Wallet
     var jade: QRJadeManager
     var askXpub: Bool
 
@@ -23,7 +23,7 @@ class QRUnlockJadeViewModel {
         self.scope = scope
         self.testnet = testnet
         self.askXpub = askXpub
-        self.account = Account(name: "Jade", network: testnet ? .testnetSS : .bitcoinSS, isJade: true, watchonly: true)
+        self.account = Wallet(name: "Jade", network: testnet ? .testnetSS : .bitcoinSS, isJade: true, watchonly: true)
         jade = QRJadeManager(network: testnet ? .testnetSS : .bitcoinSS)
     }
 

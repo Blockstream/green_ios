@@ -15,7 +15,7 @@ class ShowMnemonicsViewController: UIViewController {
 
     var prefilledCredentials: Credentials?
     var showBip85: Bool = false
-    private var isHW: Bool { AccountsRepository.shared.current?.isHW ?? false }
+    private var isHW: Bool { WalletsStorage.shared.current?.isHW ?? false }
     private var items: [String] = []
     private var bip39Passphrase: String?
     private let videoCaptureDump = VideoCaptureDump()
@@ -61,7 +61,7 @@ class ShowMnemonicsViewController: UIViewController {
     }
 
     func getLightningCredentials() -> Credentials? {
-        guard let account = AccountsRepository.shared.current else {
+        guard let account = WalletsStorage.shared.current else {
             return nil
         }
         return try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)

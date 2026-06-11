@@ -104,7 +104,7 @@ class JadeBoltzSwapViewController: UIViewController {
 
     func jadeBoltzExportViewController() -> JadeBoltzExportViewController {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        let viewModel = JadeBoltzExportViewModel(wallet: viewModel.wm, mainAccount: viewModel.mainAccount)
+        let viewModel = JadeBoltzExportViewModel(wallet: viewModel.wm, mainWallet: viewModel.mainWallet)
         let vc = storyboard.instantiateViewController(identifier: "JadeBoltzExportViewController") { coder in
             JadeBoltzExportViewController(coder: coder, viewModel: viewModel)
         }
@@ -121,7 +121,7 @@ class JadeBoltzSwapViewController: UIViewController {
             return
         }
         // on enable: send to export key
-        AnalyticsManager.shared.swapSetup(account: AccountsRepository.shared.current)
+        AnalyticsManager.shared.swapSetup(account: WalletsStorage.shared.current)
         let vc = jadeBoltzExportViewController()
         navigationController?.pushViewController(vc, animated: true)
     }

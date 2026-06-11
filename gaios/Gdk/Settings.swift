@@ -5,7 +5,7 @@ import core
 extension Settings {
 
     func getScreenLock() -> ScreenLockType {
-        let account = AccountsRepository.shared.current
+        let account = WalletsStorage.shared.current
         if account?.hasBioPin ?? false && account?.hasManualPin ?? false {
             return .All
         } else if account?.hasBioPin ?? false {

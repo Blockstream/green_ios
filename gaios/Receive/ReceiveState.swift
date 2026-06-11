@@ -43,7 +43,7 @@ struct ReceiveState {
     }
     var description: String?
     var showVerify: Bool {
-        AccountsRepository.shared.current?.isJade ?? false && !subaccount.isLightning && type == .address
+        WalletsStorage.shared.current?.isJade ?? false && !subaccount.isLightning && type == .address
     }
     var assetInfo: AssetInfo? {
         if case .asset(let assetId) = anyOrAsset {

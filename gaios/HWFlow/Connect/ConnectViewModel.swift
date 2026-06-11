@@ -13,7 +13,7 @@ protocol ConnectViewModelDelegate: AnyObject {
 
 class ConnectViewModel: NSObject {
 
-    var account: Account
+    var account: Wallet
     var firstConnection: Bool = false
     var storeConnection: Bool = true
     var autologin: Bool = true
@@ -37,7 +37,7 @@ class ConnectViewModel: NSObject {
     }
 
     internal init(
-        account: Account,
+        account: Wallet,
         firstConnection: Bool,
         storeConnection: Bool,
         state: ConnectionState = .none,
@@ -151,7 +151,7 @@ class ConnectViewModel: NSObject {
         updateState?(.login)
         let (account, wm) = try await bleHwManager.login(account: account, fullRestore: firstConnection)
         self.account = account
-        AccountsRepository.shared.current = account
+        WalletsStorage.shared.current = account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)
         }
@@ -188,7 +188,7 @@ class ConnectViewModel: NSObject {
         let (account, wm) = try await bleHwManager.login(account: account, fullRestore: firstConnection)
         // use updated account
         self.account = account
-        AccountsRepository.shared.current = account
+        WalletsStorage.shared.current = account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)
         }
@@ -227,7 +227,7 @@ class ConnectViewModel: NSObject {
             lightningCredentials: lightningCredentials,
             boltzCredentials: boltzCredentials,
             parentWalletId: account.walletIdentifier)
-        AccountsRepository.shared.current = account
+        WalletsStorage.shared.current = account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)
         }

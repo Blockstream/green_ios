@@ -15,15 +15,15 @@ enum LTSettingsDialogCellType: CaseIterable {
 }
 
 class LTSettingsDialogViewModel {
-    var mainAccount: Account
+    var mainWallet: Wallet
     var wallet: WalletDataModel
     var lightningSession: LightningSessionManager
     var nodeInfo: NodeState?
 
-    init(mainAccount: Account,
+    init(mainWallet: Wallet,
          wallet: WalletDataModel,
          lightningSession: LightningSessionManager) {
-        self.mainAccount = mainAccount
+        self.mainWallet = mainWallet
         self.wallet = wallet
         self.lightningSession = lightningSession
         self.nodeInfo = lightningSession.nodeState()
@@ -210,7 +210,7 @@ class LTSettingsDialogViewModel {
 
     func disableLightning() async {
         await lightningSession.disconnect()
-        mainAccount.removeAuthentication(.AuthKeyLightning)
+        mainWallet.removeAuthentication(.AuthKeyLightning)
         // Update subaccounts and UI
         await wallet.triggerRefresh(
             features: [.subaccounts]

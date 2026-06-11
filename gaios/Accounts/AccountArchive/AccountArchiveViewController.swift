@@ -22,7 +22,7 @@ class AccountArchiveViewController: UIViewController {
         title = "id_archived_accounts".localized
         register()
         setContent()
-        AnalyticsManager.shared.recordView(.archivedAccounts, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+        AnalyticsManager.shared.recordView(.archivedAccounts, sgmt: AnalyticsManager.shared.sessSgmt(WalletsStorage.shared.current))
         loadNavigationBtns()
     }
     func register() {

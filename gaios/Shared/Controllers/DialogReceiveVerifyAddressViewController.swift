@@ -34,7 +34,7 @@ class DialogReceiveVerifyAddressViewController: UIViewController {
         lblAddress.text = address
 
         if let walletItem = walletItem {
-            AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: walletItem))
+            AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.subAccSeg(WalletsStorage.shared.current, walletItem: walletItem))
         }
     }
 

@@ -126,7 +126,7 @@ class AddressAuthViewController: KeyboardViewController {
 
     func onSign(_ row: Int) {
         guard let model = viewModel?.listCellModelsFilter[safe: row] else { return }
-        if let wm = WalletManager.current, let account = AccountsRepository.shared.current, account.isHW && wm.isWatchonly {
+        if let wm = WalletManager.current, let account = WalletsStorage.shared.current, account.isHW && wm.isWatchonly {
             selectedAddress = model.address
             presentConnectViewController()
         } else {
@@ -158,7 +158,7 @@ class AddressAuthViewController: KeyboardViewController {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.triggerTextChange), object: nil)
         perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0.5)
     }
-    
+
     @IBAction func pasteAddress(_ sender: Any) {
         if let text = UIPasteboard.general.string {
             searchField.text = text

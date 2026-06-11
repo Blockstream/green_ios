@@ -58,7 +58,7 @@ class DialogSwapJadeEnabledViewController: UIViewController {
         })
     }
     @IBAction func btnDone(_ sender: Any) {
-        AnalyticsManager.shared.swapEnable(account: AccountsRepository.shared.current)
+        AnalyticsManager.shared.swapEnable(account: WalletsStorage.shared.current)
         self.dismiss()
     }
 }

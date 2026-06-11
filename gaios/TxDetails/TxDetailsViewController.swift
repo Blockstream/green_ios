@@ -65,7 +65,7 @@ class TxDetailsViewController: UIViewController {
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
         navBarSetup()
 
-        AnalyticsManager.shared.recordView(.transactionDetails, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+        AnalyticsManager.shared.recordView(.transactionDetails, sgmt: AnalyticsManager.shared.sessSgmt(WalletsStorage.shared.current))
         Task { [weak self] in
             if let swap = try? await self?.vm.getSwap() {
                 await MainActor.run {
@@ -129,7 +129,7 @@ class TxDetailsViewController: UIViewController {
 
     func share() {
 
-        AnalyticsManager.shared.shareTransaction(account: AccountsRepository.shared.current, isShare: true)
+        AnalyticsManager.shared.shareTransaction(account: WalletsStorage.shared.current, isShare: true)
         // We have more options in liquid for confidential txs
         if vm.transaction.isLiquid {
             let storyboard = UIStoryboard(name: "Shared", bundle: nil)
@@ -248,7 +248,7 @@ class TxDetailsViewController: UIViewController {
 
     func copyToClipboard(_ value: String) {
 
-        AnalyticsManager.shared.shareTransaction(account: AccountsRepository.shared.current, isShare: false)
+        AnalyticsManager.shared.shareTransaction(account: WalletsStorage.shared.current, isShare: false)
 
         UIPasteboard.general.string = value
         DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 1.0)

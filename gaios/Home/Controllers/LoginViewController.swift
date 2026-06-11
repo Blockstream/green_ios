@@ -33,7 +33,7 @@ class LoginViewController: UIViewController {
     let menuButton = UIButton(type: .system)
     var viewModel: LoginViewModel!
     
-    private var account: Account { viewModel.account }
+    private var account: Wallet { viewModel.account }
     private var remoteAlert: RemoteAlert?
     private var pinCode = ""
     private let MAXATTEMPTS = 3
@@ -100,7 +100,7 @@ class LoginViewController: UIViewController {
         setStyle()
         setNavigation()
         setRemoteAlert()
-        AnalyticsManager.shared.recordView(.login, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+        AnalyticsManager.shared.recordView(.login, sgmt: AnalyticsManager.shared.sessSgmt(WalletsStorage.shared.current))
     }
     
     func setNavigation() {
@@ -300,8 +300,8 @@ class LoginViewController: UIViewController {
                                                loginType: withPIN ? .pin : .biometrics)
         AnalyticsManager.shared.activeWalletStart()
         BackupHelper.shared.cleanDismissedCache(walletId: account.id)
-        AccountsRepository.shared.current = viewModel.account
-        AccountNavigator.navLogged(accountId: account.id)
+        WalletsStorage.shared.current = viewModel.account
+        AccountNavigator.navLogged(walletId: account.id)
     }
     
     @MainActor
@@ -529,7 +529,7 @@ extension LoginViewController: DialogRenameViewControllerDelegate, DialogDeleteV
     func didDelete(_ index: String?) {
         Task {
             self.startLoader(message: "id_removing_wallet".localized)
-            await AccountsRepository.shared.remove(account)
+            await WalletsStorage.shared.remove(account)
             await MainActor.run {
                 self.stopLoader()
                 navigationController?.popViewController(animated: true)

@@ -13,7 +13,7 @@ class BiometricLoginViewController: UIViewController {
     @IBOutlet weak var pinButton: UIButton!
 
     var viewModel: LoginViewModel!
-    private var account: Account { viewModel.account }
+    private var account: Wallet { viewModel.account }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -123,7 +123,7 @@ class BiometricLoginViewController: UIViewController {
         AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .biometrics)
         AnalyticsManager.shared.activeWalletStart()
         BackupHelper.shared.cleanDismissedCache(walletId: account.id)
-        AccountNavigator.navLogged(accountId: account.id)
+        AccountNavigator.navLogged(walletId: account.id)
     }
 
     func failureAuthError(error: AuthenticationTypeHandler.AuthError) {

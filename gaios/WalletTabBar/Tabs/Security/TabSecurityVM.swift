@@ -7,8 +7,8 @@ class TabSecurityVM: TabViewModel {
     }
     func fetchBackupCards() -> [AlertCardType] {
         var cards: [AlertCardType] = []
-        if BackupHelper.shared.needsBackup(walletId: mainAccount.id) &&
-            BackupHelper.shared.isDismissed(walletId: mainAccount.id, position: .securityTab) == false {
+        if BackupHelper.shared.needsBackup(walletId: mainWallet.id) &&
+            BackupHelper.shared.isDismissed(walletId: mainWallet.id, position: .securityTab) == false {
             cards.append(.backup)
         }
         return cards

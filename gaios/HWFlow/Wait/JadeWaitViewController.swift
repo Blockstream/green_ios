@@ -275,9 +275,13 @@ extension JadeWaitViewController: QRUnlockInfoAlertViewControllerDelegate {
 }
 
 extension JadeWaitViewController: QRUnlockJadeViewControllerDelegate {
-    func login(credentials: gdk.Credentials, wallet: core.WalletManager, account: Account) {
-        AccountsRepository.shared.current = account
-        AccountNavigator.navLogged(accountId: account.id)
+    func unlock() {
+        // nothing
+    }
+
+    func login(credentials: gdk.Credentials, wallet: core.WalletManager, account: Wallet) {
+        WalletsStorage.shared.current = account
+        AccountNavigator.navLogged(walletId: account.id)
     }
 
     func abort() {

@@ -8,37 +8,37 @@ public class WalletsRepository {
     // Store all the Wallet available for each account id
     public var wallets = [String: WalletManager]()
 
-    public func add(for account: Account, wm: WalletManager? = nil) {
+    public func add(for wallet: Wallet, wm: WalletManager? = nil) {
         if let wm = wm {
-            wallets[account.id] = wm
+            wallets[wallet.id] = wm
             return
         }
-        let wm = WalletManager(prominentNetwork: account.networkType)
-        wallets[account.id] = wm
+        let wm = WalletManager(prominentNetwork: wallet.networkType)
+        wallets[wallet.id] = wm
     }
 
-    public func get(for accountId: String) -> WalletManager? {
-        return wallets[accountId]
+    public func get(for walletId: String) -> WalletManager? {
+        return wallets[walletId]
     }
 
-    public func get(for account: Account) -> WalletManager? {
-        get(for: account.id)
+    public func get(for wallet: Wallet) -> WalletManager? {
+        get(for: wallet.id)
     }
 
-    public func getOrAdd(for account: Account) -> WalletManager {
-        if !wallets.keys.contains(account.id) {
-            add(for: account)
+    public func getOrAdd(for wallet: Wallet) -> WalletManager {
+        if !wallets.keys.contains(wallet.id) {
+            add(for: wallet)
         }
-        return get(for: account)!
+        return get(for: wallet)!
     }
 
-    public func delete(for accountId: String) {
-        wallets.removeValue(forKey: accountId)
+    public func delete(for walletId: String) {
+        wallets.removeValue(forKey: walletId)
     }
 
-    public func delete(for account: Account?) {
-        if let account = account {
-            delete(for: account.id)
+    public func delete(for wallet: Wallet?) {
+        if let wallet = wallet {
+            delete(for: wallet.id)
         }
     }
 

@@ -9,7 +9,7 @@ actor WalletDataModel {
 
     // Singleton
     let wallet: WalletManager
-    var mainAccount: Account
+    var mainWallet: Wallet
 
     // Private
     private var state = WalletState()
@@ -20,9 +20,9 @@ actor WalletDataModel {
     private var subscribers: [UUID: AsyncStream<SubscriberUpdate>.Continuation] = [:]
     private var eventSubscribers: [UUID: AsyncStream<EventNotificationTypes>.Continuation] = [:]
 
-    init(wallet: WalletManager, mainAccount: Account) {
+    init(wallet: WalletManager, mainWallet: Wallet) {
         self.wallet = wallet
-        self.mainAccount = mainAccount
+        self.mainWallet = mainWallet
         wallet.newNotificationDelegate = self
     }
 
@@ -254,7 +254,7 @@ actor WalletDataModel {
     }
 
     func fetchMeldTransactions(_ subaccount: WalletItem?) async throws -> [Transaction]? {
-        guard let subaccount, let xpubHashId = mainAccount.xpubHashId else {
+        guard let subaccount, let xpubHashId = mainWallet.xpubHashId else {
             return nil
         }
         if !Meld.needFetchingTxs(xpub: xpubHashId) {
@@ -268,11 +268,11 @@ actor WalletDataModel {
 
     func fetchAlertCards() async -> ([AlertCardType], [RemoteAlert]?) {
         var cards: [AlertCardType] = []
-        if mainAccount.isEphemeral {
+        if mainWallet.isEphemeral {
             // Bip39 ephemeral wallet
             cards.append(.ephemeralWallet)
         }
-        if mainAccount.gdkNetwork.mainnet == false {
+        if mainWallet.gdkNetwork.mainnet == false {
             // Testnet wallet
             cards.append(AlertCardType.testnetNoValue)
         }
@@ -295,7 +295,7 @@ actor WalletDataModel {
                 }
             }.map { AlertCardType.login($0.key, $0.value) }
         // Load dispute on not wo session
-        if !mainAccount.isWatchonly {
+        if !mainWallet.isWatchonly {
             wallet.sessions.values.forEach { session in
                 if session.logged && session.isResetActive ?? false,
                    let twoFaReset = session.twoFactorConfig?.twofactorReset {
@@ -321,7 +321,7 @@ actor WalletDataModel {
         }
         // Load expired 2fa utxos
         let expired = try? await wallet.getExpiredSubaccounts()
-        if let expired = expired, !expired.isEmpty && !mainAccount.isWatchonly {
+        if let expired = expired, !expired.isEmpty && !mainWallet.isWatchonly {
             cards.append(.reEnable2fa)
         }
         return (cards, remoteAlerts)
@@ -334,7 +334,7 @@ actor WalletDataModel {
         return state.subaccounts.count == 0 ? [] : PromoManager.shared.promoCellModels(.homeTab)
     }
     func fetchSettings() async -> [SettingSection] {
-        if mainAccount.isWatchonly {
+        if mainWallet.isWatchonly {
             return [
                 .init(section: .header, items: [.header]),
                 .init(section: .wallet, items: [.rename, .unifiedDenominationExchange, .autoLogout, .logout]),
@@ -346,7 +346,7 @@ actor WalletDataModel {
             walletItems.removeAll(where: { $0 == .rename })
         }
         var accountItems: [SettingsItem] = []
-        if !wallet.isEphemeral && mainAccount.boardType != .v2c && !mainAccount.isWatchonly {
+        if !wallet.isEphemeral && mainWallet.boardType != .v2c && !mainWallet.isWatchonly {
             accountItems += [.lightning]
         }
         accountItems += [.ampID]
@@ -354,10 +354,10 @@ actor WalletDataModel {
             accountItems += [.twoFactorAuthication, .pgpKey]
         }
         accountItems += [.watchOnly, .archievedAccounts, .createAccount]
-        if !wallet.isEphemeral && mainAccount.boardType != .v2c && !mainAccount.isWatchonly {
+        if !wallet.isEphemeral && mainWallet.boardType != .v2c && !mainWallet.isWatchonly {
             accountItems += [.swaps]
         }
-        if !wallet.isEphemeral && !mainAccount.isWatchonly && mainAccount.hasBoltzKey {
+        if !wallet.isEphemeral && !mainWallet.isWatchonly && mainWallet.hasBoltzKey {
             accountItems += [.rescanSwaps]
         }
         return [
@@ -369,22 +369,22 @@ actor WalletDataModel {
     }
 
     func fetchSecurity() async -> [SecuritySection] {
-        let isWatchonly = mainAccount.isWatchonly
-        let isHW = mainAccount.isHW
+        let isWatchonly = mainWallet.isWatchonly
+        let isHW = mainWallet.isHW
         var security: [SecuritySection] = [.init(section: .header, items: [.header])]
         if !isWatchonly {
             security += [.init(section: .level, items: [.header])]
         } else {
             security += [.init(section: .watchonly, items: [.header])]
         }
-        if BackupHelper.shared.needsBackup(walletId: mainAccount.id) && BackupHelper.shared.isDismissed(walletId: mainAccount.id, position: .securityTab) == false {
+        if BackupHelper.shared.needsBackup(walletId: mainWallet.id) && BackupHelper.shared.isDismissed(walletId: mainWallet.id, position: .securityTab) == false {
             security += [.init(section: .backup, items: [.header])]
         }
         if !isWatchonly && !isHW {
             security += [.init(section: .unlock, items: [.bio, .pin])]
         }
-        if mainAccount.isHW {
-            let boardType = mainAccount.boardType ?? BleHwManager.shared.jade?.version?.boardType
+        if mainWallet.isHW {
+            let boardType = mainWallet.boardType ?? BleHwManager.shared.jade?.version?.boardType
             switch boardType {
             case .some(.v2):
                 security += [.init(section: .jade, items: [.genuineCheck, .fwUpdate])]

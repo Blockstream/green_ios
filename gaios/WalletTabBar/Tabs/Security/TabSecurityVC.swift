@@ -79,7 +79,7 @@ class TabSecurityVC: TabViewController {
     func onPreferenceCell(_ model: PreferenceCellModel) {
         switch model.type {
         case .bio:
-            if viewModel.mainAccount.isHW {
+            if viewModel.mainWallet.isHW {
                 DropAlert().error(message: "Toggle is not supported with Hardware Wallet")
             } else {
                 editProtection(type: model.hasTouchID ? .touchID : .faceID, action: model.state == .on ? .disable : .enable)
@@ -248,7 +248,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch viewModel.security[indexPath.section].section {
         case .header:
-            let headerIcon = UIImage(named: viewModel.mainAccount.gdkNetwork.mainnet ? "ic_wallet" : "ic_wallet_testnet")?.maskWithColor(color: .white)
+            let headerIcon = UIImage(named: viewModel.mainWallet.gdkNetwork.mainnet ? "ic_wallet" : "ic_wallet_testnet")?.maskWithColor(color: .white)
             if let cell = tableView.dequeueReusableCell(withIdentifier: TabHeaderCell.identifier, for: indexPath) as? TabHeaderCell, let headerIcon {
                 cell.configure(title: "id_security".localized, icon: headerIcon, tab: .security, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
@@ -258,7 +258,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
             }
         case .level:
             if let cell = tableView.dequeueReusableCell(withIdentifier: SecurityLevelCell.identifier, for: indexPath) as? SecurityLevelCell {
-                cell.configure(isHW: viewModel.mainAccount.isHW == true, onCompare: {[weak self] in
+                cell.configure(isHW: viewModel.mainWallet.isHW == true, onCompare: {[weak self] in
                     self?.onCompare()
                 })
                 cell.selectionStyle = .none
@@ -306,11 +306,11 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
                 let type = viewModel.security[indexPath.section].items[indexPath.row]
                 switch type {
                 case .bio:
-                    let hasBiometricUnlock = viewModel.mainAccount.hasBioPin || viewModel.mainAccount.hasWoBioCredentials
+                    let hasBiometricUnlock = viewModel.mainWallet.hasBioPin || viewModel.mainWallet.hasWoBioCredentials
                     let bio = PreferenceCellModel(preferenceType: .bio, state: hasBiometricUnlock ? .on : .off)
                     cell.configure(model: bio, onTap: {[weak self] in self?.onPreferenceCell(bio) })
                 case .pin:
-                    let hasManualPin = viewModel.mainAccount.hasManualPin
+                    let hasManualPin = viewModel.mainWallet.hasManualPin
                     let pin = PreferenceCellModel(preferenceType: .pin, state: hasManualPin ? .on : .off)
                     cell.configure(model: pin, onTap: {[weak self] in self?.onPreferenceCell(pin) })
                 default:

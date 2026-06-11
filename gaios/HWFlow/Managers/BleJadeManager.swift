@@ -97,11 +97,11 @@ class BleJadeManager: JadeManager {
         return .defaultJade(fmwVersion: version.jadeVersion)
     }
 
-    func defaultAccount() async throws -> Account {
+    func defaultAccount() async throws -> Wallet {
         let version = try await version()
         let device: HWDevice = .defaultJade(fmwVersion: version.jadeVersion)
         let network = try await defaultNetwork()
-        return Account(name: name ?? device.name,
+        return Wallet(name: name ?? device.name,
                        network: network,
                        isJade: device.isJade,
                        isLedger: device.isLedger,

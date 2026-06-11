@@ -146,12 +146,12 @@ class BalanceCell: UITableViewCell {
         }
     }
     @IBAction func onBalanceTap(_ sender: Any) {
-        AnalyticsManager.shared.convertBalance(account: AccountsRepository.shared.current)
+        AnalyticsManager.shared.convertBalance(account: WalletsStorage.shared.current)
         onConvert?()
     }
 
     @IBAction func btnEye(_ sender: Any) {
-        if !hideBalance { AnalyticsManager.shared.hideAmount(account: AccountsRepository.shared.current) }
+        if !hideBalance { AnalyticsManager.shared.hideAmount(account: WalletsStorage.shared.current) }
         hideBalance = !hideBalance
         onHide?(hideBalance)
         refreshVisibility()

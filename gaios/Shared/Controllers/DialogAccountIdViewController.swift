@@ -28,7 +28,7 @@ class DialogAccountIdViewController: UIViewController {
 
         lblAccountId.text = wallet?.receivingId ?? ""
 
-        AnalyticsManager.shared.recordView(.accountID, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: wallet))
+        AnalyticsManager.shared.recordView(.accountID, sgmt: AnalyticsManager.shared.subAccSeg(WalletsStorage.shared.current, walletItem: wallet))
     }
 
     override func viewDidAppear(_ animated: Bool) {

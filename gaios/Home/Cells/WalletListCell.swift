@@ -13,7 +13,7 @@ class WalletListCell: UITableViewCell {
     var onTap: ((IndexPath) -> Void)?
     var indexPath: IndexPath?
 
-    var account: Account?
+    var account: Wallet?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -23,7 +23,7 @@ class WalletListCell: UITableViewCell {
         lblTitle.text = ""
         lblHint.text = ""
     }
-    func configure(item: Account,
+    func configure(item: Wallet,
                    indexPath: IndexPath,
                    onTap: ((IndexPath) -> Void)? = nil
     ) {

@@ -5,7 +5,7 @@ import gdk
 
 class JadeBoltzExportViewModel {
     let wm: WalletManager
-    let mainAccount: Account
+    let mainWallet: Wallet
 
     var onReload: (() -> Void)?
     var onError: ((Error) -> Void)?
@@ -15,9 +15,9 @@ class JadeBoltzExportViewModel {
     var privateKey: Data?
     var credentials: Credentials?
 
-    init(wallet: WalletManager, mainAccount: Account) {
+    init(wallet: WalletManager, mainWallet: Wallet) {
         self.wm = wallet
-        self.mainAccount = mainAccount
+        self.mainWallet = mainWallet
     }
 
     func performRequest() async {
@@ -53,14 +53,14 @@ class JadeBoltzExportViewModel {
         guard let credentials = credentials else {
             throw HWError.Abort("No credentials found")
         }
-        try AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: credentials, for: mainAccount.keychain)
+        try AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: credentials, for: mainWallet.keychain)
     }
 
     func loginBoltz() async throws {
         guard let credentials, let lwkSession = wm.lwkSession else {
             throw HWError.Abort("No credentials found")
         }
-        _ = try await wm.loginLWK(lwk: lwkSession, credentials: credentials, parentWalletId: mainAccount.walletIdentifier)
+        _ = try await wm.loginLWK(lwk: lwkSession, credentials: credentials, parentWalletId: mainWallet.walletIdentifier)
     }
 
     nonisolated func request(session: SessionManager) async throws -> (Data?, BcurEncodedData?) {

@@ -133,39 +133,39 @@ class WODetailsCompactViewController: KeyboardViewController {
         }
         let credentials = Credentials(coreDescriptors: isListOfPubKeys ? nil : keys, slip132ExtendedPubkeys: isListOfPubKeys ? keys : nil)
         let network = isListOfPubKeys ? keys.compactMap { Wally.getNetwork(xpub: $0) }.first : keys.compactMap { Wally.getNetwork(descriptor: $0) }.first
-        var account = WOViewModel.newAccountSinglesig(for: (network ?? NetworkSecurityCase.bitcoinSS).gdkNetwork)
-        let viewModel = WOViewModel(account: account)
+        var wallet = WOViewModel.newAccountSinglesig(for: (network ?? NetworkSecurityCase.bitcoinSS).gdkNetwork)
+        let viewModel = WOViewModel(wallet: wallet)
         let task = Task {
-            let wm = WalletsRepository.shared.getOrAdd(for: account)
+            let wm = WalletsRepository.shared.getOrAdd(for: wallet)
             try? await wm.getSession(for: network ?? .bitcoinSS)?.connect()
             let loginUserResult = try await wm.getSession(for: network ?? .bitcoinSS)?.loginUser(credentials)
             _ = try await wm.subaccounts()
             wm.isWatchonly = true
-            account.xpubHashId = loginUserResult?.xpubHashId
+            wallet.xpubHashId = loginUserResult?.xpubHashId
             try await viewModel.setupSinglesig(credentials: credentials)
-            AccountsRepository.shared.current = account
+            WalletsStorage.shared.current = wallet
         }
         switch await task.result {
         case .success:
-            logger.info("--> SUCCESS: \(network.debugDescription) \(account.name)")
+            logger.info("--> SUCCESS: \(network.debugDescription) \(wallet.name)")
             stopLoader()
-            success(account: account)
+            success(wallet: wallet)
         case .failure(let err):
-            logger.error("--> ERROR: \(network.debugDescription) \(account.name)")
+            logger.error("--> ERROR: \(network.debugDescription) \(wallet.name)")
             stopLoader()
             DropAlert().error(message: err.description().localized)
         }
     }
 
     @MainActor
-    func success(account: Account) {
+    func success(wallet: Wallet) {
         stopLoader()
-        AccountNavigator.navLogged(accountId: account.id)
-        AnalyticsManager.shared.importWallet(account: account)
+        AccountNavigator.navLogged(walletId: wallet.id)
+        AnalyticsManager.shared.importWallet(account: wallet)
     }
 
     @MainActor
-    func failure(_ error: Error, account: Account) {
+    func failure(_ error: Error, account: Wallet) {
         var prettyError = "id_login_failed"
         switch error {
         case TwoFactorCallError.failure(let localizedDescription):

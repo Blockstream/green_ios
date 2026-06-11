@@ -40,7 +40,7 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
         setStyle()
         setActions()
 
-        AnalyticsManager.shared.recordView(.addAccountChooseRecovery, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+        AnalyticsManager.shared.recordView(.addAccountChooseRecovery, sgmt: AnalyticsManager.shared.sessSgmt(WalletsStorage.shared.current))
     }
 
     func setContent() {

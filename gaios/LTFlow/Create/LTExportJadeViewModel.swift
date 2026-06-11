@@ -5,7 +5,7 @@ import gdk
 
 class LTExportJadeViewModel {
     private var wm: WalletManager? { WalletManager.current }
-    private var mainAccount: Account? { AccountsRepository.shared.current }
+    private var mainWallet: Wallet? { WalletsStorage.shared.current }
     private var privateKey: Data?
     private var wallet: WalletDataModel
     
@@ -40,7 +40,7 @@ class LTExportJadeViewModel {
     func enableLightning(credentials: Credentials) async throws {
         // Get lightning session
         guard let session = wm?.lightningSession,
-            let account = mainAccount else {
+            let account = mainWallet else {
             throw HWError.Abort("Invalid lightning session")
         }
         // remove previous lightning data

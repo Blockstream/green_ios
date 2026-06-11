@@ -18,12 +18,12 @@ enum ReceiveRoute {
 final class ReceiveCoordinator {
     private let nav: UINavigationController
     private let wallet: WalletDataModel
-    private let mainAccount: Account
+    private let mainAccount: Wallet
     private let onFinish: (() -> Void)?
     private var receiveViewModel: ReceiveViewModel?
     private var activeSendCoordinator: SendCoordinator?
 
-    init(nav: UINavigationController, wallet: WalletDataModel, mainAccount: Account, onFinish: (() -> Void)?) {
+    init(nav: UINavigationController, wallet: WalletDataModel, mainAccount: Wallet, onFinish: (() -> Void)?) {
         self.nav = nav
         self.wallet = wallet
         self.mainAccount = mainAccount
@@ -63,7 +63,10 @@ final class ReceiveCoordinator {
             let vc = manualBackupController(model: model)
             nav.pushViewController(vc, animated: true)
         case .send(let subaccount, let anyOrAsset):
-            activeSendCoordinator = SendCoordinator(nav: nav, wallet: wallet, mainAccount: mainAccount) { [weak self, weak nav] in
+            activeSendCoordinator = SendCoordinator(nav: nav, wallet: wallet, mainWallet: mainAccount) { [
+                weak self,
+                weak nav
+            ] in
                 nav?.popToRootViewController(animated: true)
                 self?.activeSendCoordinator = nil
             }

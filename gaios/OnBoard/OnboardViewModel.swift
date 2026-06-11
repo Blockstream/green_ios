@@ -38,11 +38,11 @@ class OnboardViewModel {
         return walletId?.xpubHashId
     }
 
-    func checkWalletsJustRestored(account: Account, credentials: Credentials) async throws {
+    func checkWalletsJustRestored(account: Wallet, credentials: Credentials) async throws {
         // Avoid to restore an existing wallets
         let session = SessionManager(account.networkType, newNotificationDelegate: nil)
         let xpub = try await getXpubHashId(session: session, credentials: credentials)
-        let prevAccounts = AccountsRepository.shared.find(xpubHashId: xpub ?? "")?
+        let prevAccounts = WalletsStorage.shared.find(xpubHashId: xpub ?? "")?
             .filter {
                 $0.networkType == account.networkType &&
                 !$0.isHW && !$0.isWatchonly &&
@@ -56,7 +56,7 @@ class OnboardViewModel {
         }
     }
 
-    func addPinData(wallet: WalletManager, account: Account, credentials: Credentials, pin: String) async throws -> Credentials {
+    func addPinData(wallet: WalletManager, account: Wallet, credentials: Credentials, pin: String) async throws -> Credentials {
         guard let session = wallet.prominentSession else {
             throw LoginError.connectionFailed("Invalid session")
         }
@@ -69,14 +69,14 @@ class OnboardViewModel {
         return try await session.decryptWithPin(decryptParams)
     }
 
-    func addBiometricData(wallet: WalletManager, account: Account, credentials: Credentials) async throws -> Credentials {
+    func addBiometricData(wallet: WalletManager, account: Wallet, credentials: Credentials) async throws -> Credentials {
         var pinData = PinData(encryptedData: "", pinIdentifier: UUID().uuidString, salt: "", encryptedBiometric: nil, plaintextBiometric: nil)
         try AuthenticationTypeHandler.setPinData(method: .AuthKeyBiometric, pinData: pinData, extraData: credentials.mnemonic, for: account.keychain)
         pinData = try AuthenticationTypeHandler.getPinData(method: .AuthKeyBiometric, for: account.keychain)
         return Credentials(mnemonic: pinData.plaintextBiometric, pinData: pinData)
     }
 
-    func restoreWallet(credentials: Credentials, pin: String?) async throws -> (Account, WalletManager) {
+    func restoreWallet(credentials: Credentials, pin: String?) async throws -> (Wallet, WalletManager) {
         var credentials = credentials
         try await self.validateMnemonic(credentials.mnemonic ?? "")
         var account = try await createAccount()
@@ -115,9 +115,9 @@ class OnboardViewModel {
         }
         // cleanup previous restored account
         if let restoreAccountId = OnboardViewModel.restoreAccountId {
-            if let restoredAccount = AccountsRepository.shared.get(for: restoreAccountId) {
+            if let restoredAccount = WalletsStorage.shared.get(for: restoreAccountId) {
                 account.name = restoredAccount.name
-                await AccountsRepository.shared.remove(restoredAccount)
+                await WalletsStorage.shared.remove(restoredAccount)
             }
         }
         // notify analytics
@@ -125,7 +125,7 @@ class OnboardViewModel {
         return (account, wallet)
     }
 
-    func createWallet(pin: String?) async throws -> (Account, WalletManager) {
+    func createWallet(pin: String?) async throws -> (Wallet, WalletManager) {
         var account = try await createAccount()
         let mnemonic = try generateMnemonic12()
         var credentials = Credentials(mnemonic: mnemonic)
@@ -152,21 +152,21 @@ class OnboardViewModel {
         return (account, wallet)
     }
 
-    func createAccount() async throws -> Account {
+    func createAccount() async throws -> Wallet {
         let testnet = OnboardViewModel.chainType == .testnet ? true : false
-        let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
+        let name = WalletsStorage.shared.getUniqueAccountName(testnet: testnet)
         let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
-        return Account(name: name, network: mainNetwork)
+        return Wallet(name: name, network: mainNetwork)
     }
 
-    func setupPinWallet(credentials: Credentials, pin: String, account: Account, wm: WalletManager) async throws -> (Account, WalletManager) {
+    func setupPinWallet(credentials: Credentials, pin: String, account: Wallet, wm: WalletManager) async throws -> (Wallet, WalletManager) {
         guard let session = wm.prominentSession
         else { throw LoginError.failed() }
         try await session.connect()
         try await account.addPin(session: session, pin: pin, credentials: credentials)
         var account = account
         account.attempts = 0
-        AccountsRepository.shared.upsert(account)
+        WalletsStorage.shared.upsert(account)
         return (account, wm)
     }
 }

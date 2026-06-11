@@ -80,7 +80,7 @@ class DialogAmountViewController: KeyboardViewController {
         let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTap))
             tappableBg.addGestureRecognizer(tapToClose)
 
-        AnalyticsManager.shared.recordView(.requestAmount, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: wallet))
+        AnalyticsManager.shared.recordView(.requestAmount, sgmt: AnalyticsManager.shared.subAccSeg(WalletsStorage.shared.current, walletItem: wallet))
     }
 
     deinit {
@@ -135,7 +135,7 @@ class DialogAmountViewController: KeyboardViewController {
             let string = settings.denomination.string(for: wallet.gdkNetwork)
             lblDenom.text = string
         } else {
-            let isMainnet = AccountsRepository.shared.current?.gdkNetwork.mainnet ?? true
+            let isMainnet = WalletsStorage.shared.current?.gdkNetwork.mainnet ?? true
             lblDenom.text = isMainnet ? settings.getCurrency() : "FIAT"
         }
     }

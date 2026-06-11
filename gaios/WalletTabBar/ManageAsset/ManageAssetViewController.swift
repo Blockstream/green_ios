@@ -157,7 +157,7 @@ class ManageAssetViewController: UIViewController {
         let vm = ManageAssetViewModel(
             walletDataModel: viewModel.walletDataModel,
             wallet: viewModel.wallet,
-            mainAccount: viewModel.mainAccount,
+            mainWallet: viewModel.mainWallet,
             assetId: viewModel.assetId,
             selectedSubaccount: subaccount
         )
@@ -258,7 +258,7 @@ class ManageAssetViewController: UIViewController {
     @MainActor
     func pushJadeBoltzExportViewController() {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        let viewModel = JadeBoltzExportViewModel(wallet: viewModel.wallet, mainAccount: viewModel.mainAccount)
+        let viewModel = JadeBoltzExportViewModel(wallet: viewModel.wallet, mainWallet: viewModel.mainWallet)
         let vc = storyboard.instantiateViewController(identifier: "JadeBoltzExportViewController") { coder in
             JadeBoltzExportViewController(coder: coder, viewModel: viewModel)
         }
@@ -487,8 +487,8 @@ extension ManageAssetViewController {
 
 extension ManageAssetViewController {
     func swapScreen() {
-        AnalyticsManager.shared.swapEntry(account: AccountsRepository.shared.current)
-        if viewModel.mainAccount.isJade && !viewModel.existBoltzKey() {
+        AnalyticsManager.shared.swapEntry(account: WalletsStorage.shared.current)
+        if viewModel.mainWallet.isJade && !viewModel.existBoltzKey() {
             let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
             let vc = storyboard.instantiateViewController(identifier: "DialogSwapJadeViewController") { coder in
                 DialogSwapJadeViewController(coder: coder)
@@ -498,7 +498,7 @@ extension ManageAssetViewController {
             present(vc, animated: false, completion: nil)
         } else {
             if let nav = navigationController {
-                activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self, weak nav] in
+                activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainWallet: viewModel.mainWallet) { [weak self, weak nav] in
                     nav?.popToRootViewController(animated: true)
                     self?.activeSendCoordinator = nil
                 }
@@ -508,7 +508,7 @@ extension ManageAssetViewController {
     }
 
     func buyScreen() {
-        AnalyticsManager.shared.buyInitiate(account: AccountsRepository.shared.current)
+        AnalyticsManager.shared.buyInitiate(account: WalletsStorage.shared.current)
         if !getCountlyRemoteConfigEnableBuyIosUk() && checkUKRegion() {
             showAlert(title: "id_buy_bitcoin".localized, message: "id_feature_unavailable_in_the_uk".localized)
             return
@@ -528,7 +528,7 @@ extension ManageAssetViewController {
     }
     func sendScreen() {
         if let nav = navigationController {
-            activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self, weak nav] in
+            activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainWallet: viewModel.mainWallet) { [weak self, weak nav] in
                 nav?.popToRootViewController(animated: true)
                 self?.activeSendCoordinator = nil
             }
@@ -545,7 +545,10 @@ extension ManageAssetViewController {
     }
     func receiveScreen() {
         if let nav = navigationController, let account = viewModel.selectedSubaccount {
-            activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainAccount) { [weak self, weak nav] in
+            activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainWallet) { [
+                weak self,
+                weak nav
+            ] in
                 // nav?.popToRootViewController(animated: true)
                 self?.activeReceiveCoordinator = nil
             }

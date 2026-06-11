@@ -207,8 +207,8 @@ class NotificationService: UNNotificationServiceExtension {
         }
     }
 
-    func getAccount(xpub: String) -> Account? {
-        let accounts = AccountsRepository.shared.accounts
+    func getAccount(xpub: String) -> Wallet? {
+        let accounts = WalletsStorage.shared.wallets
         return accounts
             .filter { $0.xpubHashId == xpub }
             .first

@@ -119,7 +119,7 @@ class SecuritySelectViewModel {
     }
 
     func loginHW(session: SessionManager) async throws {
-        guard let account = AccountsRepository.shared.current else {
+        guard let account = WalletsStorage.shared.current else {
             throw GaError.GenericError("No account provided")
         }
         if session.gdkNetwork.liquid && account.isLedger {

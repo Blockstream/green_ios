@@ -74,7 +74,7 @@ class BuyBTCViewController: KeyboardViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // always nag even after dismiss
-        BackupHelper.shared.cleanDismissedCache(walletId: viewModel.mainAccount?.id, position: .buy)
+        BackupHelper.shared.cleanDismissedCache(walletId: viewModel.mainWallet?.id, position: .buy)
         reload()
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
             self.amountTextField.becomeFirstResponder()
@@ -139,7 +139,7 @@ class BuyBTCViewController: KeyboardViewController {
         btnLeftBackup.setTitle("id_back_up_now".localized, for: .normal)
         btnRightBackup.isHidden = true
         iconWarnBackup.image = UIImage(named: "ic_card_warn")
-        if BackupHelper.shared.needsBackup(walletId: viewModel.mainAccount?.id) && BackupHelper.shared.isDismissed(walletId: viewModel.mainAccount?.id, position: .buy) == false {
+        if BackupHelper.shared.needsBackup(walletId: viewModel.mainWallet?.id) && BackupHelper.shared.isDismissed(walletId: viewModel.mainWallet?.id, position: .buy) == false {
             bgBackup.isHidden = false
         } else {
             bgBackup.isHidden = true
@@ -363,7 +363,7 @@ class BuyBTCViewController: KeyboardViewController {
         }
     }
     func verifySingleAddress() async {
-        AnalyticsManager.shared.verifyAddressJade(account: AccountsRepository.shared.current, walletItem: viewModel.account)
+        AnalyticsManager.shared.verifyAddressJade(account: WalletsStorage.shared.current, walletItem: viewModel.account)
         if let vm = viewModel.verifyOnDeviceViewModel() {
             presentVerifyOnDeviceViewController(viewModel: vm)
         }
@@ -444,7 +444,7 @@ class BuyBTCViewController: KeyboardViewController {
     }
     @IBAction func btnNext(_ sender: Any) {
         if quotes.count != 0 {
-            AnalyticsManager.shared.buyRedirect(account: self.viewModel.mainAccount)
+            AnalyticsManager.shared.buyRedirect(account: self.viewModel.mainWallet)
             selectProvider(quotes[selectedIndex])
         }
     }
@@ -455,7 +455,7 @@ class BuyBTCViewController: KeyboardViewController {
         }
     }
     @IBAction func btnBackupAlertDismiss(_ sender: Any) {
-        BackupHelper.shared.addToDismissed(walletId: viewModel.mainAccount?.id, position: .buy)
+        BackupHelper.shared.addToDismissed(walletId: viewModel.mainWallet?.id, position: .buy)
         bgBackup.isHidden = true
     }
 }

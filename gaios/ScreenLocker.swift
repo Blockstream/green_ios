@@ -64,7 +64,7 @@ class ScreenLocker {
         for (id, wm) in WalletsRepository.shared.wallets {
             let altimeout = wm.prominentSession?.settings?.altimeout ?? 5
             if Int(countdown) >= altimeout * 60 {
-                if id == AccountsRepository.shared.current?.id {
+                if id == WalletsStorage.shared.current?.id {
                     self.isScreenLockLocked = true
                 }
             }
@@ -150,20 +150,20 @@ class ScreenLocker {
     }
 
     func logout() async {
-        guard let mainAccount = AccountsRepository.shared.current else {
+        guard let mainWallet = WalletsStorage.shared.current else {
             return
         }
-        if mainAccount.isHW {
+        if mainWallet.isHW {
             try? await BleHwManager.shared.disconnect()
         }
-        let wallet = WalletsRepository.shared.get(for: mainAccount.id)
+        let wallet = WalletsRepository.shared.get(for: mainWallet.id)
         await wallet?.disconnect()
         if wallet?.isEphemeral ?? false {
-            await AccountsRepository.shared.remove(mainAccount)
+            await WalletsStorage.shared.remove(mainWallet)
         }
-        WalletsRepository.shared.delete(for: mainAccount.id)
+        WalletsRepository.shared.delete(for: mainWallet.id)
         await MainActor.run {
-            AccountNavigator.navLogout(accountId: wallet?.isEphemeral ?? false ? nil : mainAccount.id)
+            AccountNavigator.navLogout(walletId: wallet?.isEphemeral ?? false ? nil : mainWallet.id)
         }
     }
 

@@ -238,7 +238,7 @@ class SendAddressViewController: KeyboardViewController {
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: false, completion: nil)
         AnalyticsManager.shared.scanQr(
-            account: AccountsRepository.shared.current,
+            account: WalletsStorage.shared.current,
             screen: .send)
     }
 }

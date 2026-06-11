@@ -68,10 +68,10 @@ class BleLedgerManager {
         return .defaultLedger()
     }
 
-    func defaultAccount() async throws -> Account {
+    func defaultAccount() async throws -> Wallet {
         let device: HWDevice = .defaultLedger()
         let network = try await getLedgerNetwork()
-        return Account(name: bleLedger.peripheral.name ?? device.name,
+        return Wallet(name: bleLedger.peripheral.name ?? device.name,
                        network: network,
                        isJade: device.isJade,
                        isLedger: device.isLedger,

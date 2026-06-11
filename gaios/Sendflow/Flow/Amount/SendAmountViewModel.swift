@@ -9,7 +9,7 @@ import greenaddress
 final class SendAmountViewModel {
 
     let wallet: WalletDataModel
-    let mainAccount: Account
+    let mainWallet: Wallet
     var draft: TransactionDraft
     var denominationType: DenominationType
     var isFiat: Bool
@@ -60,7 +60,7 @@ final class SendAmountViewModel {
     }
 
     init(
-        mainAccount: Account,
+        mainWallet: Wallet,
         wallet: WalletDataModel,
         draft: TransactionDraft,
         tx: gdk.Transaction?,
@@ -69,7 +69,7 @@ final class SendAmountViewModel {
         isFiat: Bool,
         delegate: SendAmountViewModelDelegate
     ) {
-        self.mainAccount = mainAccount
+        self.mainWallet = mainWallet
         self.wallet = wallet
         self.draft = draft
         self.tx = tx

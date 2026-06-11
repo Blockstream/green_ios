@@ -14,7 +14,7 @@ class ScanViewController: HWFlowBaseViewController {
     private var cancellables = Set<AnyCancellable>()
     var deviceType = DeviceType.Jade
     var scanViewModel: ScanViewModel!
-    var account: Account?
+    var account: Wallet?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -248,7 +248,7 @@ extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
         let peripheral = scanViewModel.peripherals[indexPath.row]
         stopScan()
         startAnimating()
-        account = Account(name: peripheral.name, network: NetworkSecurityCase.bitcoinSS, isJade: peripheral.type == .Jade, isLedger: peripheral.type == .Ledger)
+        account = Wallet(name: peripheral.name, network: NetworkSecurityCase.bitcoinSS, isJade: peripheral.type == .Jade, isLedger: peripheral.type == .Ledger)
         Task {
             do {
                 AnalyticsManager.shared.hwwConnect(account: account)
@@ -292,9 +292,13 @@ extension ScanViewController: QRUnlockInfoAlertViewControllerDelegate {
 }
 
 extension ScanViewController: QRUnlockJadeViewControllerDelegate {
-    func login(credentials: gdk.Credentials, wallet: WalletManager, account: Account) {
-        AccountsRepository.shared.current = account
-        AccountNavigator.navLogged(accountId: account.id)
+    func unlock() {
+        
+    }
+    
+    func login(credentials: gdk.Credentials, wallet: WalletManager, account: Wallet) {
+        WalletsStorage.shared.current = account
+        AccountNavigator.navLogged(walletId: account.id)
     }
 
     func abort() {

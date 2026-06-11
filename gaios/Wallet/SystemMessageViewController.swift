@@ -27,7 +27,7 @@ class SystemMessageViewController: UIViewController {
         confirmBtn.isEnabled = false
         reload()
 
-        AnalyticsManager.shared.recordView(.systemMessage, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+        AnalyticsManager.shared.recordView(.systemMessage, sgmt: AnalyticsManager.shared.sessSgmt(WalletsStorage.shared.current))
     }
 
     func reload() {

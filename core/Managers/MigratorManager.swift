@@ -22,8 +22,8 @@ public class MigratorManager {
         migrateDatadir()
     }
 
-    var keychainStoragev0 = KeychainStorage(account: AccountsRepository.attrAccount, service: AccountsRepository.attrServicev0)
-    var keychainStoragev1 = KeychainStorage(account: AccountsRepository.attrAccount, service: AccountsRepository.attrServicev1)
+    var keychainStoragev0 = KeychainStorage(account: WalletsStorage.attrAccount, service: WalletsStorage.attrServicev0)
+    var keychainStoragev1 = KeychainStorage(account: WalletsStorage.attrAccount, service: WalletsStorage.attrServicev1)
 
     func nilKeychainStorage() -> Bool {
         let storagev1 = try? keychainStoragev1.read()
@@ -46,30 +46,30 @@ public class MigratorManager {
 
     private func migrateWallets() { // from "3.5.5"
         logger.info("MigrateManager: migrateWallets")
-        var accounts: [Account]?
+        var wallets: [Wallet]?
         for network in ["mainnet", "testnet", "liquid"] {
             let bioData = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: network)
             let pinData = AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: network)
             if pinData || bioData {
                 let networkType = NetworkSecurityCase(rawValue: network) ?? .bitcoinMS
-                var account = Account(name: network.firstCapitalized, network: networkType, keychain: network)
-                account.attempts = UserDefaults.standard.integer(forKey: network + "_pin_attempts")
-                if accounts == nil {
-                    accounts = [account]
+                var wallet = Wallet(name: network.firstCapitalized, network: networkType, keychain: network)
+                wallet.attempts = UserDefaults.standard.integer(forKey: network + "_pin_attempts")
+                if wallets == nil {
+                    wallets = [wallet]
                 } else {
-                    accounts?.append(account)
+                    wallets?.append(wallet)
                 }
             }
         }
-        if let accounts = accounts {
-            logger.info("MigrateManager: \(accounts.debugDescription, privacy: .public)")
-            AccountsRepository.shared.accounts = accounts
+        if let wallets = wallets {
+            logger.info("MigrateManager: \(wallets.debugDescription, privacy: .public)")
+            WalletsStorage.shared.wallets = wallets
         }
     }
 
     func updateKeychainAccessGroup() throws { // from  "4.0.25"
         logger.info("MigrateManager: updateKeychainAccessGroup")
-        let keychainStoragev0 = KeychainStorage(account: AccountsRepository.attrAccount, service: AccountsRepository.attrServicev0)
+        let keychainStoragev0 = KeychainStorage(account: WalletsStorage.attrAccount, service: WalletsStorage.attrServicev0)
         let query = [
             // without kSecAttrAccessible & kSecAttrAccessGroup
             kSecClass as String: kSecClassGenericPassword,
@@ -78,12 +78,12 @@ public class MigratorManager {
         if let data = try keychainStoragev0.read(query) {
             try keychainStoragev1.write(data)
         }
-        AccountsRepository.shared.cleanCache()
+        WalletsStorage.shared.cleanCache()
     }
 
     func updateKeychainAccessible() throws { // from "4.1.0"
         logger.info("MigrateManager: updateKeychainAccessible")
-        let keychainStoragev0 = KeychainStorage(account: AccountsRepository.attrAccount, service: AccountsRepository.attrServicev0)
+        let keychainStoragev0 = KeychainStorage(account: WalletsStorage.attrAccount, service: WalletsStorage.attrServicev0)
         let query = [
             // without kSecAttrAccessible
             kSecClass as String: kSecClassGenericPassword,
@@ -93,7 +93,7 @@ public class MigratorManager {
         if let data = try keychainStoragev0.read(query) {
             try keychainStoragev1.write(data)
         }
-        AccountsRepository.shared.cleanCache()
+        WalletsStorage.shared.cleanCache()
     }
 
     // only for tests
@@ -107,6 +107,6 @@ public class MigratorManager {
         query[kSecAttrAccessGroup as String] = Bundle.main.appGroup
         try? keychainStoragev0.removeAll(query)
         try? keychainStoragev1.removeAll()
-        AccountsRepository.shared.cleanCache()
+        WalletsStorage.shared.cleanCache()
     }
 }

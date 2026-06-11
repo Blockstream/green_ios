@@ -3,7 +3,7 @@ import UIKit
 import core
 
 protocol DrawerNetworkSelectionDelegate: AnyObject {
-    func didSelectAccount(account: Account)
+    func didSelectAccount(account: Wallet)
     func didSelectAddWallet()
     func didSelectSettings()
     func didSelectAbout()
@@ -20,7 +20,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
     @IBOutlet weak var btnAddWallet: UIButton!
     @IBOutlet weak var btnClose: UIButton!
 
-    var onSelection: ((Account) -> Void)?
+    var onSelection: ((Wallet) -> Void)?
     weak var delegate: DrawerNetworkSelectionDelegate?
 
     var headerH: CGFloat = 44.0
@@ -58,14 +58,14 @@ class DrawerNetworkSelectionViewController: UIViewController {
         lblWallets.textColor = UIColor.gGrayTxt()
     }
 
-    func getAccountFromTableView(_ indexPath: IndexPath) -> Account? {
+    func getAccountFromTableView(_ indexPath: IndexPath) -> Wallet? {
         switch HomeSection(rawValue: indexPath.section) {
         case .swWallet:
-            return AccountsRepository.shared.swAccounts[indexPath.row]
+            return WalletsStorage.shared.sws[indexPath.row]
         case .ephWallet:
-            return AccountsRepository.shared.ephAccounts[indexPath.row]
+            return WalletsStorage.shared.ephs[indexPath.row]
         case .hwWallet:
-            return AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
+            return WalletsStorage.shared.hwsVisible[indexPath.row]
         default:
             return nil
         }
@@ -111,11 +111,11 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch HomeSection(rawValue: section) {
         case .swWallet:
-            return AccountsRepository.shared.swAccounts.count
+            return WalletsStorage.shared.sws.count
         case .ephWallet:
-            return AccountsRepository.shared.ephAccounts.count
+            return WalletsStorage.shared.ephs.count
         case .hwWallet:
-            return AccountsRepository.shared.hwVisibleAccounts.count
+            return WalletsStorage.shared.hwsVisible.count
         default:
             return 0
         }
@@ -124,7 +124,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch HomeSection(rawValue: indexPath.section) {
         case .swWallet:
-            let account = AccountsRepository.shared.swAccounts[indexPath.row]
+            let account = WalletsStorage.shared.sws[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
                                indexPath: indexPath,
@@ -135,7 +135,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                 return cell
             }
         case .ephWallet:
-            let account = AccountsRepository.shared.ephAccounts[indexPath.row]
+            let account = WalletsStorage.shared.ephs[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
                                indexPath: indexPath,
@@ -146,7 +146,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                 return cell
             }
         case .hwWallet:
-            let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
+            let account = WalletsStorage.shared.hwsVisible[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(item: account,
                                indexPath: indexPath,
@@ -163,7 +163,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         return UITableViewCell()
     }
 
-    func isOverviewSelected(_ account: Account) -> Bool {
+    func isOverviewSelected(_ account: Wallet) -> Bool {
         WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
     }
 

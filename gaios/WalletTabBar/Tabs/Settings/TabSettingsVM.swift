@@ -14,9 +14,9 @@ class TabSettingsVM: TabViewModel {
     var session: SessionManager? { wallet.prominentSession }
     var isWatchonly: Bool { wallet.isWatchonly }
     var isEphemeral: Bool { wallet.isEphemeral }
-    var isWatchonlySinglesig: Bool { (wallet.isWatchonly ?? false) && (mainAccount.username?.isEmpty ?? true) }
+    var isWatchonlySinglesig: Bool { (wallet.isWatchonly ?? false) && (mainWallet.username?.isEmpty ?? true) }
     var isSinglesig: Bool { session?.gdkNetwork.electrum ?? true }
-    var isHW: Bool { AccountsRepository.shared.current?.isHW ?? false }
+    var isHW: Bool { WalletsStorage.shared.current?.isHW ?? false }
     var multiSigSession: SessionManager? { wallet.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }
 
     func getSettingsItemCellModel(for setting: SettingsItem) -> TabSettingsCellModel? {
@@ -92,7 +92,7 @@ class TabSettingsVM: TabViewModel {
             return gaios.TabSettingsCellModel(
                 title: "\("id_rename".localized)",
                 icon: UIImage(named: "rightArrow"),
-                subtitle: "\(AccountsRepository.shared.current?.name ?? "")",
+                subtitle: "\(WalletsStorage.shared.current?.name ?? "")",
                 type: .rename)
         case .lightning:
             return gaios.TabSettingsCellModel(
@@ -197,7 +197,7 @@ class TabSettingsVM: TabViewModel {
     func hasLightning() -> Bool {
         return AuthenticationTypeHandler.findAuth(
             method: .AuthKeyLightning,
-            forNetwork: mainAccount.keychainLightning)
+            forNetwork: mainWallet.keychainLightning)
     }
 
     func rescanSwaps() async throws {
@@ -224,7 +224,7 @@ class TabSettingsVM: TabViewModel {
 
     func lTCreateViewModel() -> LTCreateViewModel? {
         return LTCreateViewModel(
-            mainAccount: mainAccount,
+            mainWallet: mainWallet,
             wallet: walletDataModel)
     }
 }

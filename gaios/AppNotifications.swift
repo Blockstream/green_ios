@@ -121,9 +121,9 @@ extension AppNotifications: UNUserNotificationCenterDelegate {
         if let xpub = walletXpub ?? meldXpub,
            let account = getAccount(xpub: xpub) {
             if let wm = WalletsRepository.shared.get(for: account), wm.logged {
-                AccountNavigator.navLogged(accountId: account.id)
+                AccountNavigator.navLogged(walletId: account.id)
             } else {
-                AccountNavigator.navLogin(accountId: account.id)
+                AccountNavigator.navLogin(walletId: account.id)
             }
         }
         completionHandler()
@@ -138,10 +138,10 @@ extension AppNotifications: UNUserNotificationCenterDelegate {
         completionHandler([.sound, .banner])
     }
 
-    func getAccount(xpub: String) -> Account? {
-        let accounts = AccountsRepository.shared.accounts
-        let mainAccounts = accounts.filter { $0.xpubHashId == xpub }
-        return mainAccounts.first
+    func getAccount(xpub: String) -> Wallet? {
+        let accounts = WalletsStorage.shared.wallets
+        let mainWallets = accounts.filter { $0.xpubHashId == xpub }
+        return mainWallets.first
     }
 }
 

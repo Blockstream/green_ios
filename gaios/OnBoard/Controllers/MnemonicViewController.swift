@@ -191,8 +191,8 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         case .success(let accountWallet):
             stopLoader()
             if let account = accountWallet?.0 {
-                AccountsRepository.shared.current = account
-                AccountNavigator.navLogged(accountId: account.id, isCreated: false, isRestored: true)
+                WalletsStorage.shared.current = account
+                AccountNavigator.navLogged(walletId: account.id, isCreated: false, isRestored: true)
             }
         case .failure(let err):
             stopLoader()

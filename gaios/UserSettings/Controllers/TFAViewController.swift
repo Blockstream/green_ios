@@ -19,7 +19,7 @@ class TFAViewController: UIViewController {
 
         register()
         setContent()
-        AnalyticsManager.shared.recordView(.walletSettings2FA, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+        AnalyticsManager.shared.recordView(.walletSettings2FA, sgmt: AnalyticsManager.shared.sessSgmt(WalletsStorage.shared.current))
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

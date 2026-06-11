@@ -102,8 +102,8 @@ class SetupNewViewController: UIViewController {
         case .success(let accountWallet):
             stopLoader()
             if let account = accountWallet?.0 {
-                AccountsRepository.shared.current = account
-                AccountNavigator.navLogged(accountId: account.id, isCreated: true, isRestored: false)
+                WalletsStorage.shared.current = account
+                AccountNavigator.navLogged(walletId: account.id, isCreated: true, isRestored: false)
             }
         case .failure(let err):
             stopLoader()

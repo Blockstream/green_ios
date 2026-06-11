@@ -16,10 +16,10 @@ class SendTxConfirmViewModel {
     var transaction: gdk.Transaction?
     var subaccount: WalletItem?
     var wm: WalletManager? { WalletManager.current }
-    var mainAccount: Account? { AccountsRepository.shared.current }
+    var mainWallet: Wallet? { WalletsStorage.shared.current }
     var denominationType: DenominationType
     var isFiat = false
-    var isJade: Bool { mainAccount?.isJade ?? false }
+    var isJade: Bool { mainWallet?.isJade ?? false }
     var session: SessionManager? {
         guard let subaccount = subaccount else { return nil }
         if isJade && BleHwManager.shared.walletManager != nil {
@@ -50,12 +50,12 @@ class SendTxConfirmViewModel {
         self.unsignedPsbt = unsignedPsbt
         self.signedPsbt = signedPsbt
         self.importSignedPsbt = signedPsbt != nil
-        self.verifyAddressState = (txType == .redepositExpiredUtxos && (AccountsRepository.shared.current?.isHW ?? false) && !(subaccount?.session?.networkType.liquid ?? false)) ? .unverified : .noneed
+        self.verifyAddressState = (txType == .redepositExpiredUtxos && (WalletsStorage.shared.current?.isHW ?? false) && !(subaccount?.session?.networkType.liquid ?? false)) ? .unverified : .noneed
     }
 
     var isLightning: Bool { subaccount?.networkType == .lightning }
     var isConsolitating: Bool { txType == .redepositExpiredUtxos }
-    var hasHW: Bool { mainAccount?.isHW ?? false }
+    var hasHW: Bool { mainWallet?.isHW ?? false }
     var addressee: Addressee? { transaction?.addressees.first }
     var address: String? { addressee?.address }
     var assetId: String { addressee?.assetId ?? subaccount?.gdkNetwork.getFeeAsset() ?? "btc" }
@@ -121,7 +121,7 @@ class SendTxConfirmViewModel {
         wm?.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && !importSignedPsbt
     }
     func needConnectHw() -> Bool {
-        mainAccount?.isHW ?? false
+        mainWallet?.isHW ?? false
     }
     func needExportPsbt() -> Bool {
         wm?.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && signedPsbt == nil
@@ -224,7 +224,7 @@ class SendTxConfirmViewModel {
                 sendTransaction = try await sendTx()
             }
             AnalyticsManager.shared.endSendTransaction(
-                account: AccountsRepository.shared.current,
+                account: WalletsStorage.shared.current,
                 walletItem: subaccount,
                 transactionSgmt: transSgmt,
                 withMemo: withMemo)
@@ -232,7 +232,7 @@ class SendTxConfirmViewModel {
             return sendTransaction!
         } catch {
             AnalyticsManager.shared.failedTransaction(
-                account: AccountsRepository.shared.current,
+                account: WalletsStorage.shared.current,
                 walletItem: subaccount,
                 transactionSgmt: transSgmt,
                 withMemo: withMemo,
@@ -278,7 +278,7 @@ class SendTxConfirmViewModel {
 
     func sendVerifyOnDeviceViewModel(_ address: gdk.Address) -> HWDialogVerifyOnDeviceViewModel? {
         guard let address = address.address else { return nil }
-        let account = AccountsRepository.shared.current
+        let account = WalletsStorage.shared.current
         return HWDialogVerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false,
                                        address: address,
                                        isRedeposit: true,
@@ -286,13 +286,13 @@ class SendTxConfirmViewModel {
     }
 
     func showSignTransactionViaQR() -> Bool {
-        if mainAccount?.isHW ?? false && mainAccount?.boardType == .v2c {
+        if mainWallet?.isHW ?? false && mainWallet?.boardType == .v2c {
             return false
         }
         return wm?.isWatchonly ?? false && [.bitcoinSS, .testnetSS].contains(session?.networkType) && txType != .sweep && !importSignedPsbt
     }
 
     func showSignTransaction() -> Bool {
-        txType == .sweep || !(wm?.isWatchonly ?? false) || (mainAccount?.isHW ?? false) || importSignedPsbt
+        txType == .sweep || !(wm?.isWatchonly ?? false) || (mainWallet?.isHW ?? false) || importSignedPsbt
     }
 }

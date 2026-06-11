@@ -14,7 +14,7 @@ class WalletTabBarViewController: UITabBarController {
 
     var walletDataModel: WalletDataModel { walletTabBarModel.walletDataModel }
     var wallet: WalletManager { walletTabBarModel.wallet }
-    var mainAccount: Account { walletTabBarModel.mainAccount }
+    var mainWallet: Wallet { walletTabBarModel.mainWallet }
 
     init?(coder: NSCoder, walletTabBarModel: WalletTabBarModel) {
         self.walletTabBarModel = walletTabBarModel
@@ -57,7 +57,7 @@ class WalletTabBarViewController: UITabBarController {
         wView.frame = windowView.bounds
         windowView.addSubview(wView)
         wView.configure(with: WelcomeViewModel(), onTap: {[weak self] in
-            AnalyticsManager.shared.swwCreated(account: self?.mainAccount)
+            AnalyticsManager.shared.swwCreated(account: self?.mainWallet)
             self?.wView.removeFromSuperview()
         })
     }
@@ -97,7 +97,7 @@ class WalletTabBarViewController: UITabBarController {
         let viewControllers = [tabHomeVC, tabTransactVC, tabSecurityVC, tabSettingsVC]
         self.setViewControllers(viewControllers, animated: false)
         delegate = self
-        setSecurityState(BackupHelper.shared.needsBackup(walletId: mainAccount.id) ? .alerted : .normal)
+        setSecurityState(BackupHelper.shared.needsBackup(walletId: mainWallet.id) ? .alerted : .normal)
     }
     func changeTab(_ tab: WalletTab) {
         self.selectedIndex = tab.rawValue
@@ -117,15 +117,15 @@ class WalletTabBarViewController: UITabBarController {
     func userLogout() {
         self.startLoader(message: "id_logging_out".localized)
         Task {
-            if mainAccount.isHW {
+            if mainWallet.isHW {
                 try? await BleHwManager.shared.disconnect()
             }
             await wallet.disconnect()
             if wallet.isEphemeral {
-                await AccountsRepository.shared.remove(mainAccount)
+                await WalletsStorage.shared.remove(mainWallet)
             }
-            WalletsRepository.shared.delete(for: mainAccount.id)
-            AccountNavigator.navLogout(accountId: wallet.isEphemeral ? nil : mainAccount.id)
+            WalletsRepository.shared.delete(for: mainWallet.id)
+            AccountNavigator.navLogout(walletId: wallet.isEphemeral ? nil : mainWallet.id)
             self.stopLoader()
         }
     }
@@ -184,16 +184,16 @@ extension WalletTabBarViewController: DrawerNetworkSelectionDelegate {
     }
 
     // accounts drawer: select another account
-    func didSelectAccount(account: Account) {
+    func didSelectAccount(account: Wallet) {
         // don't switch if same account selected
-        if account.id == AccountsRepository.shared.current?.id ?? "" {
+        if account.id == WalletsStorage.shared.current?.id ?? "" {
             presentedViewController?.dismiss(animated: true)
         } else if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
-            AccountsRepository.shared.current = account
-            AccountNavigator.navLogged(accountId: account.id)
+            WalletsStorage.shared.current = account
+            AccountNavigator.navLogged(walletId: account.id)
         } else {
-            AccountsRepository.shared.current = account
-            AccountNavigator.navLogin(accountId: account.id)
+            WalletsStorage.shared.current = account
+            AccountNavigator.navLogin(walletId: account.id)
         }
     }
 

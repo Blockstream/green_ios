@@ -12,7 +12,7 @@ class MultisigSettingsViewController: UIViewController {
         super.viewDidLoad()
 
         title = session.gdkNetwork.chain
-        AnalyticsManager.shared.recordView(.walletSettings, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+        AnalyticsManager.shared.recordView(.walletSettings, sgmt: AnalyticsManager.shared.sessSgmt(WalletsStorage.shared.current))
         initViewModel()
     }
 

@@ -20,9 +20,10 @@ enum RefreshReceiveFeature: Sendable, Hashable {
 final class ReceiveViewModel: Sendable {
     var walletDataModel: WalletDataModel
     var wm: WalletManager { walletDataModel.wallet }
-    let mainAccount: Account
+    let mainAccount: Wallet
     weak var delegate: ReceiveViewModelDelegate?
     private let receiveService: ReceiveService
+
 
     // Tasks
     private var addressTask: Task<Void, Never>?
@@ -34,7 +35,7 @@ final class ReceiveViewModel: Sendable {
     // Callback for UI updates
     var onUpdate: (@MainActor @Sendable (RefreshReceiveFeature?) -> Void)?
     init(
-        mainAccount: Account,
+        mainAccount: Wallet,
         walletDataModel: WalletDataModel,
         subaccount: WalletItem,
         anyOrAsset: AnyOrAsset,
@@ -231,7 +232,7 @@ final class ReceiveViewModel: Sendable {
     }
     func receiveVerifyOnDeviceViewModel() -> HWDialogVerifyOnDeviceViewModel? {
         guard let address = state.address?.address else { return nil }
-        let account = AccountsRepository.shared.current
+        let account = WalletsStorage.shared.current
         return HWDialogVerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false,
                                                address: address,
                                                isRedeposit: false,

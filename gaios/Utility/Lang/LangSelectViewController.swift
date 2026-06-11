@@ -116,21 +116,21 @@ class LangSelectViewController: UIViewController {
 
     func reInit() {
         Task {
-            if AccountsRepository.shared.current == nil {
-                AccountNavigator.navLogout(accountId: nil)
+            if WalletsStorage.shared.current == nil {
+                AccountNavigator.navLogout(walletId: nil)
                 return
             }
             if AppSettings.shared.gdkSettings?.tor ?? false {
                 self.startLoader(message: "id_logging_out".localized)
             }
             Task {
-                let account = AccountsRepository.shared.current
+                let account = WalletsStorage.shared.current
                 if account?.isHW ?? false {
                     try? await BleHwManager.shared.disconnect()
                 }
                 await WalletManager.current?.disconnect()
                 WalletsRepository.shared.delete(for: account?.id ?? "")
-                AccountNavigator.navLogout(accountId: nil)
+                AccountNavigator.navLogout(walletId: nil)
                 self.stopLoader()
             }
 

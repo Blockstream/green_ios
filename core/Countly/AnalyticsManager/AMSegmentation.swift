@@ -23,7 +23,7 @@ public extension AnalyticsManager {
         return s
     }
 
-    func sessSgmt(_ account: Account?) -> Sgmt {
+    func sessSgmt(_ account: Wallet?) -> Sgmt {
         var s = ntwSgmtUnified()
         if account?.isJade ?? false {
             s[AnalyticsManager.strBrand] = "Blockstream"
@@ -53,7 +53,7 @@ public extension AnalyticsManager {
         return [server, liquid, mainnet].compactMap { $0 }.joined(separator: "-")
     }
 
-    func subAccSeg(_ account: Account?, walletItem: WalletItem?) -> Sgmt {
+    func subAccSeg(_ account: Wallet?, walletItem: WalletItem?) -> Sgmt {
         var s = sessSgmt(account)
         if let walletItem = walletItem {
             s[AnalyticsManager.strAccountType] = walletItem.type.rawValue
@@ -62,7 +62,7 @@ public extension AnalyticsManager {
         return s
     }
 
-    func twoFacSgmt(_ account: Account?, walletItem: WalletItem?, twoFactorType: TwoFactorType?) -> Sgmt {
+    func twoFacSgmt(_ account: Wallet?, walletItem: WalletItem?, twoFactorType: TwoFactorType?) -> Sgmt {
         var s = subAccSeg(account, walletItem: walletItem)
         if let twoFactorType = twoFactorType, let walletItem = walletItem {
             s[AnalyticsManager.str2fa] = twoFactorType.rawValue
@@ -71,7 +71,7 @@ public extension AnalyticsManager {
         return s
     }
 
-    func firmwareSgmt(_ account: Account?, firmware: Firmware) -> Sgmt {
+    func firmwareSgmt(_ account: Wallet?, firmware: Firmware) -> Sgmt {
         var s = sessSgmt(account)
         s[AnalyticsManager.strSelectedConfig] = firmware.config.lowercased()
         s[AnalyticsManager.strSelectedDelta] = firmware.isDelta == true ? "true" : "false"
@@ -79,7 +79,7 @@ public extension AnalyticsManager {
         return s
     }
 
-    func swapSgmt(_ account: Account?, from: String, to: String) -> Sgmt {
+    func swapSgmt(_ account: Wallet?, from: String, to: String) -> Sgmt {
         var s = sessSgmt(account)
         s[AnalyticsManager.strSwapFrom] = from
         s[AnalyticsManager.strSwapTo] = to

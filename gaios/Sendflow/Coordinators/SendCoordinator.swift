@@ -23,7 +23,7 @@ final class SendCoordinator {
     private let onFinish: (() -> Void)?
     private let builder = TransactionBuilder()
     private let wallet: WalletDataModel
-    private let mainAccount: Account
+    private let mainWallet: Wallet
     private var selectedFiat: Bool = false
     private var selectedDenomination: DenominationType = .Sats
 
@@ -36,16 +36,16 @@ final class SendCoordinator {
     private var swapLockupResponse: LockupResponse?
     private var isRoutingInProgress = false
 
-    init(nav: UINavigationController, wallet: WalletDataModel, mainAccount: Account, onFinish: (() -> Void)?) {
+    init(nav: UINavigationController, wallet: WalletDataModel, mainWallet: Wallet, onFinish: (() -> Void)?) {
         self.nav = nav
         self.wallet = wallet
-        self.mainAccount = mainAccount
+        self.mainWallet = mainWallet
         self.onFinish = onFinish
     }
 
     func start(input: String?, subaccount: WalletItem?, assetId: String?) {
         selectedDenomination = wallet.wallet.prominentSession?.settings?.denomination ?? .Sats
-        let model = SendAddressViewModel(mainAccount: mainAccount, wallet: wallet, text: input, subaccount: subaccount, assetId: assetId, delegate: self)
+        let model = SendAddressViewModel(mainWallet: mainWallet, wallet: wallet, text: input, subaccount: subaccount, assetId: assetId, delegate: self)
         let vc = sendAddressViewController(model: model)
         nav.pushViewController(vc, animated: true)
     }
@@ -350,7 +350,7 @@ extension SendCoordinator {
         payment: LiquidWalletKit.Payment,
         draft: TransactionDraft
     ) async throws -> SendRoute {
-        let parser = PaymentTargetParser(mainAccount: mainAccount)
+        let parser = PaymentTargetParser(mainWallet: mainWallet)
         let resolved = try await withRouteLoader(message: "Resolve DNS Payment") {
             try await parser.resolveBip353(original, payment: payment)
         }
@@ -366,7 +366,7 @@ extension SendCoordinator {
         draft: TransactionDraft,
         subaccount: WalletItem
     ) async throws -> SendRoute {
-        let xpub = AccountsRepository.shared.current?.xpubHashId
+        let xpub = WalletsStorage.shared.current?.xpubHashId
         let lwk = await wallet.wallet.awaitLwkSession()
         guard let xpub, let lwk else {
             throw SendFlowError.invalidSession
@@ -461,7 +461,7 @@ extension SendCoordinator {
             try lightningPayment.setBolt12InvoiceAmount(amountSats: satoshi)
         }
         let lwk = await wallet.wallet.awaitLwkSession()
-        guard let lwk, let xpub = AccountsRepository.shared.current?.xpubHashId else {
+        guard let lwk, let xpub = WalletsStorage.shared.current?.xpubHashId else {
             throw SendFlowError.invalidSession
         }
         let (swap, tx) = try await withRouteLoader(message: "Preparing Payment") {
@@ -517,7 +517,7 @@ extension SendCoordinator {
         satoshi: UInt64
     ) async throws -> SendRoute {
         let lwk = await wallet.wallet.awaitLwkSession()
-        guard let lwk, let xpub = AccountsRepository.shared.current?.xpubHashId else {
+        guard let lwk, let xpub = WalletsStorage.shared.current?.xpubHashId else {
             throw SendFlowError.invalidSession
         }
         let (swap, tx) = try await withRouteLoader(message: "Preparing Payment") {
@@ -558,7 +558,7 @@ extension SendCoordinator {
 
     private func makeEnterAmountViewModel(draft: TransactionDraft, subaccount: WalletItem) -> SendAmountViewModel {
         SendAmountViewModel(
-            mainAccount: mainAccount,
+            mainWallet: mainWallet,
             wallet: wallet,
             draft: draft,
             tx: nil,
@@ -575,7 +575,7 @@ extension SendCoordinator {
         tx: gdk.Transaction
     ) -> SendLwkSignViewModel {
         SendLwkSignViewModel(
-            mainAccount: mainAccount,
+            mainWallet: mainWallet,
             transactionDraft: draft,
             denominationType: selectedDenomination,
             isFiat: selectedFiat,
@@ -752,7 +752,7 @@ extension SendCoordinator: SendSuccessViewModelDelegate {
             .shared
             .request(
                 isSendAll: draft?.sendAll ?? false,
-                account: AccountsRepository.shared.current,
+                account: WalletsStorage.shared.current,
                 walletItem: draft?.subaccount)
         Task {
             await nav.dismissAsync(animated: true)
@@ -831,7 +831,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             switch route {
             case .success(let model):
                 AnalyticsManager.shared.endSendTransaction(
-                    account: AccountsRepository.shared.current,
+                    account: WalletsStorage.shared.current,
                     walletItem: transaction.subaccount,
                     transactionSgmt: segment,
                     withMemo: false)
@@ -841,12 +841,12 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
                         let from = try vm.draft.lockupResponse?.chainFrom() ?? ""
                         let to = try vm.draft.lockupResponse?.chainTo() ?? ""
                         AnalyticsManager.shared.swapInternal(
-                            account: AccountsRepository.shared.current,
+                            account: WalletsStorage.shared.current,
                             from: from,
                             to: to)
                     } else if vm.isSubmarineSwap {
                         AnalyticsManager.shared.swapSend(
-                            account: AccountsRepository.shared.current,
+                            account: WalletsStorage.shared.current,
                             from: SwapChainName.liquid.rawValue,
                             to: SwapChainName.lightning.rawValue)
                     }
@@ -854,7 +854,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
                 await navigate(to: route)
             case .failure(let model):
                 AnalyticsManager.shared.failedTransaction(
-                    account: AccountsRepository.shared.current,
+                    account: WalletsStorage.shared.current,
                     walletItem: transaction.subaccount,
                     transactionSgmt: segment,
                     withMemo: false,
@@ -867,8 +867,8 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
         }
     }
     func handleSend(vm: SendLwkSignViewModel, transaction: gdk.Transaction) async -> SendRoute {
-        let isHW = mainAccount.isHW
-        let xpubHashId = mainAccount.xpubHashId
+        let isHW = mainWallet.isHW
+        let xpubHashId = mainWallet.xpubHashId
         let isLightning = transaction.subaccount?.isLightning ?? false
         gdkTransaction = transaction
         nav.topViewController?.startLoader(message: "id_sending".localized)
@@ -949,7 +949,7 @@ extension SendCoordinator: SendSwapViewModelDelegate {
             return
         }
         let model = SendLwkSignViewModel(
-            mainAccount: mainAccount,
+            mainWallet: mainWallet,
             transactionDraft: draft,
             denominationType: selectedDenomination,
             isFiat: selectedFiat,

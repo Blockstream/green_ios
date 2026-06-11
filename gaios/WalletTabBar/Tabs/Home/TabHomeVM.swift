@@ -45,8 +45,8 @@ class TabHomeVM: TabViewModel {
     }
     func relogin() async throws {
         let credentials = try? await wallet.prominentSession?.getCredentials(password: "")
-        let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: mainAccount.keychainLightning)
-        let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: mainAccount.keychain)
+        let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: mainWallet.keychainLightning)
+        let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: mainWallet.keychain)
         let walletIdentifier = try wallet.prominentSession?.walletIdentifier(credentials: credentials)
         _ = try await wallet.login(
             credentials: credentials,
@@ -61,7 +61,7 @@ class TabHomeVM: TabViewModel {
     }
     func getExpiredSubaccounts() async -> [WalletItem]? {
         let expired = try? await wallet.getExpiredSubaccounts()
-        if let expired = expired, !expired.isEmpty && !mainAccount.isWatchonly {
+        if let expired = expired, !expired.isEmpty && !mainWallet.isWatchonly {
             return expired
         }
         return nil
@@ -75,8 +75,8 @@ class TabHomeVM: TabViewModel {
     }
     func fetchBackupCards() -> [AlertCardType] {
         var cards: [AlertCardType] = []
-        if BackupHelper.shared.needsBackup(walletId: mainAccount.id) &&
-            BackupHelper.shared.isDismissed(walletId: mainAccount.id, position: .homeTab) == false &&
+        if BackupHelper.shared.needsBackup(walletId: mainWallet.id) &&
+            BackupHelper.shared.isDismissed(walletId: mainWallet.id, position: .homeTab) == false &&
             state.totals?.1 ?? 0 > 0 && !state.subaccounts.isEmpty {
             cards.append(.backup)
         }

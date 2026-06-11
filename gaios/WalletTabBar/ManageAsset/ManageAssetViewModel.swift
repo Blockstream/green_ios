@@ -10,7 +10,7 @@ class ManageAssetViewModel {
 
     let walletDataModel: WalletDataModel
     let wallet: WalletManager
-    var mainAccount: Account
+    var mainWallet: Wallet
     var assetId: String
     var selectedSubaccount: WalletItem?
 
@@ -32,7 +32,7 @@ class ManageAssetViewModel {
         }
     }
     func getBoltzKey() throws -> Credentials {
-        try AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: mainAccount.keychain)
+        try AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: mainWallet.keychain)
     }
     func existBoltzKey() -> Bool {
         (try? getBoltzKey()) != nil
@@ -68,10 +68,10 @@ class ManageAssetViewModel {
         return []
     }
 
-    init(walletDataModel: WalletDataModel, wallet: WalletManager, mainAccount: Account, assetId: String, selectedSubaccount: WalletItem?) {
+    init(walletDataModel: WalletDataModel, wallet: WalletManager, mainWallet: Wallet, assetId: String, selectedSubaccount: WalletItem?) {
         self.walletDataModel = walletDataModel
         self.wallet = wallet
-        self.mainAccount = mainAccount
+        self.mainWallet = mainWallet
         self.assetId = assetId
         self.selectedSubaccount = selectedSubaccount
         observationTask = Task { [weak self] in
@@ -150,7 +150,7 @@ class ManageAssetViewModel {
         return nil
     }
     func hasLightning() -> Bool {
-        guard let account = AccountsRepository.shared.current else {
+        guard let account = WalletsStorage.shared.current else {
             return false
         }
         return AuthenticationTypeHandler.findAuth(
@@ -174,8 +174,8 @@ class ManageAssetViewModel {
         wallet.prominentSession?.settings?.pricing["currency"]
     }
     func canSwap() -> Bool {
-        if mainAccount.isWatchonly ||
-            (mainAccount.isHW && mainAccount.boardType == .v2c ||
+        if mainWallet.isWatchonly ||
+            (mainWallet.isHW && mainWallet.boardType == .v2c ||
              !AssetInfo.baseIds.contains(assetId) || assetId == AssetInfo.lightningId) {
             return false
         }
@@ -185,14 +185,14 @@ class ManageAssetViewModel {
     func lTSettingsDialogViewModel() -> LTSettingsDialogViewModel? {
         guard let lightningSession = wallet.lightningSession else { return nil }
         return LTSettingsDialogViewModel(
-            mainAccount: mainAccount,
+            mainWallet: mainWallet,
             wallet: walletDataModel,
             lightningSession: lightningSession)
     }
 
     func lTCreateViewModel() -> LTCreateViewModel? {
         return LTCreateViewModel(
-            mainAccount: mainAccount,
+            mainWallet: mainWallet,
             wallet: walletDataModel)
     }
 }

@@ -5,7 +5,7 @@ import gdk
 import hw
 
 protocol QRUnlockJadeViewControllerDelegate: AnyObject {
-    func login(credentials: Credentials, wallet: WalletManager, account: Account)
+    func login(credentials: Credentials, wallet: WalletManager, account: Wallet)
     func abort()
 }
 class QRUnlockJadeViewController: UIViewController {
@@ -305,28 +305,28 @@ extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate
             switch await task.result {
             case .success(let wallet):
                 if let wallet = wallet {
-                    AccountsRepository.shared.current = vm.account
+                    WalletsStorage.shared.current = vm.account
                     success(wallet: wallet, account: vm.account)
                 }
             case .failure(let error):
-                failure(error, account: vm.account)
+                failure(error, wallet: vm.account)
             }
         }
     }
 
     @MainActor
-    func success(wallet: WalletManager, account: Account) {
+    func success(wallet: WalletManager, account: Wallet) {
         stopLoader()
         dismiss(animated: true) {
             if let credentials = self.credentials {
-                AccountsRepository.shared.current = account
+                WalletsStorage.shared.current = account
                 self.delegate?.login(credentials: credentials, wallet: wallet, account: account)
             }
         }
     }
 
     @MainActor
-    func failure(_ error: Error, account: Account) {
+    func failure(_ error: Error, wallet: Wallet) {
         var prettyError = "id_login_failed"
         switch error {
         case TwoFactorCallError.failure(let localizedDescription):
@@ -340,7 +340,7 @@ extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate
         }
         stopLoader()
         DropAlert().error(message: prettyError.localized)
-        AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: prettyError)
-        WalletsRepository.shared.delete(for: account)
+        AnalyticsManager.shared.failedWalletLogin(account: wallet, error: error, prettyError: prettyError)
+        WalletsRepository.shared.delete(for: wallet)
     }
 }

@@ -3,7 +3,7 @@ import UIKit
 import gdk
 import hw
 
-public struct Account: Codable, Equatable {
+public struct Wallet: Codable, Equatable {
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -71,7 +71,7 @@ public struct Account: Codable, Equatable {
         if !isEphemeral {
             return nil
         }
-        return (AccountsRepository.shared.ephAccounts
+        return (WalletsStorage.shared.ephs
             .filter({ $0.keychain == keychain })
             .firstIndex(of: self) ?? 0) + 1
     }

@@ -47,7 +47,7 @@ class DialogSendHWSummaryViewController: UIViewController {
             icWallet.image = JadeAsset.img(.load, JadeVersion(boardType: boardType))
         }
 
-        AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+        AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.sessSgmt(WalletsStorage.shared.current))
     }
 
     func setContent() {

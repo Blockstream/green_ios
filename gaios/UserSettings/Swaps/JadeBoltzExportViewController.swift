@@ -37,7 +37,7 @@ class JadeBoltzExportViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // Connect jade if there is no active connection
-        if viewModel.mainAccount.isJade {
+        if viewModel.mainWallet.isJade {
             if !BleHwManager.shared.isConnected() || !BleHwManager.shared.isLogged() {
                 let vc = hWDialogConnectViewController()
                 present(vc, animated: true)

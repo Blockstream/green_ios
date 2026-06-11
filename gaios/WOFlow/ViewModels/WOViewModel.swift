@@ -12,7 +12,7 @@ struct WOCellModel {
 
 class WOViewModel {
     
-    var account: Account
+    var wallet: Wallet
 
     let types: [WOCellModel] = [
         WOCellModel(img: UIImage(named: "ic_key_ss")!,
@@ -23,71 +23,71 @@ class WOViewModel {
                     hint: "id_log_in_to_your_multisig_shield".localized)
     ]
     
-    init(account: Account) {
-        self.account = account
+    init(wallet: Wallet) {
+        self.wallet = wallet
     }
 
-    static func newAccountMultisig(for gdkNetwork: GdkNetwork, username: String, password: String, remember: Bool) -> Account {
-        let name = AccountsRepository.shared.getUniqueAccountName(
+    static func newAccountMultisig(for gdkNetwork: GdkNetwork, username: String, password: String, remember: Bool) -> Wallet {
+        let name = WalletsStorage.shared.getUniqueAccountName(
             testnet: !gdkNetwork.mainnet,
             watchonly: true)
         let network = NetworkSecurityCase(rawValue: gdkNetwork.network) ?? .bitcoinSS
-        return Account(name: name, network: network, username: username, password: remember ? password : nil)
+        return Wallet(name: name, network: network, username: username, password: remember ? password : nil)
     }
 
-    static func newAccountSinglesig(for gdkNetwork: GdkNetwork) -> Account {
-        let name = AccountsRepository.shared.getUniqueAccountName(
+    static func newAccountSinglesig(for gdkNetwork: GdkNetwork) -> Wallet {
+        let name = WalletsStorage.shared.getUniqueAccountName(
             testnet: !gdkNetwork.mainnet,
             watchonly: true)
         let network = NetworkSecurityCase(rawValue: gdkNetwork.network) ?? .bitcoinSS
-        return Account(name: name, network: network, username: "")
+        return Wallet(name: name, network: network, username: "")
     }
 
     func loginMultisig(password: String?) async throws {
-        guard let username = account.username,
-              let password = !password.isNilOrEmpty ? password : account.password else {
+        guard let username = wallet.username,
+              let password = !password.isNilOrEmpty ? password : wallet.password else {
             throw GaError.GenericError("Invalid credentials")
         }
         AnalyticsManager.shared.loginWalletStart()
-        let wm = WalletsRepository.shared.getOrAdd(for: account)
+        let wm = WalletsRepository.shared.getOrAdd(for: wallet)
         let credentials = Credentials.watchonlyMultisig(username: username, password: password)
         let res = try await wm.loginWatchonly(credentials: credentials)
-        account.xpubHashId = res?.xpubHashId
-        account.walletHashId = res?.walletHashId
-        AccountsRepository.shared.current = account
-        AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly)
+        wallet.xpubHashId = res?.xpubHashId
+        wallet.walletHashId = res?.walletHashId
+        WalletsStorage.shared.current = wallet
+        AnalyticsManager.shared.loginWalletEnd(account: wallet, loginType: .watchOnly)
     }
 
     func setupSinglesig(credentials: Credentials) async throws {
-        try AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoCredentials, credentials: credentials, for: account.keychain)
+        try AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoCredentials, credentials: credentials, for: wallet.keychain)
     }
 
     func loginSinglesig() async throws {
         AnalyticsManager.shared.loginWalletStart()
-        let wm = WalletsRepository.shared.getOrAdd(for: account)
-        if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: account.keychain) {
-            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
+        let wm = WalletsRepository.shared.getOrAdd(for: wallet)
+        if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: wallet.keychain) {
+            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: wallet.keychain)
             let res = try await wm.loginWatchonly(credentials: credentials)
-            account.xpubHashId = res?.xpubHashId
-            account.walletHashId = res?.walletHashId
-        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: account.keychain) {
-            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
+            wallet.xpubHashId = res?.xpubHashId
+            wallet.walletHashId = res?.walletHashId
+        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: wallet.keychain) {
+            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: wallet.keychain)
             let res = try await wm.loginWatchonly(credentials: credentials)
-            account.xpubHashId = res?.xpubHashId
-            account.walletHashId = res?.walletHashId
+            wallet.xpubHashId = res?.xpubHashId
+            wallet.walletHashId = res?.walletHashId
         } else {
             let session = wm.prominentSession!
-            let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain)
+            let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: wallet.keychain)
             let method: AuthenticationTypeHandler.AuthType = enableBio ? .AuthKeyBiometric : .AuthKeyPIN
-            let data = try AuthenticationTypeHandler.getPinData(method: method, for: account.keychain)
+            let data = try AuthenticationTypeHandler.getPinData(method: method, for: wallet.keychain)
             try await session.connect()
             let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
             let credentials = try await session.decryptWithPin(decrypt)
             let res = try await wm.loginWatchonly(credentials: credentials)
-            account.xpubHashId = res?.xpubHashId
-            account.walletHashId = res?.walletHashId
+            wallet.xpubHashId = res?.xpubHashId
+            wallet.walletHashId = res?.walletHashId
         }
-        AccountsRepository.shared.current = account
-        AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly)
+        WalletsStorage.shared.current = wallet
+        AnalyticsManager.shared.loginWalletEnd(account: wallet, loginType: .watchOnly)
     }
 }

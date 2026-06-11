@@ -82,7 +82,7 @@ extension AnalyticsManager {
         startEvent(event)
     }
 
-    public func activeWalletEnd(account: Account?, walletData: WalletData) {
+    public func activeWalletEnd(account: Wallet?, walletData: WalletData) {
         let event: AnalyticsEventName = AppSettings.shared.gdkSettings?.tor ?? false ? .walletActiveTor : .walletActive
         endTrace(event)
         var s = sessSgmt(account)
@@ -100,7 +100,7 @@ extension AnalyticsManager {
         startEvent(event)
     }
 
-    public func loginWalletEnd(account: Account, loginType: AnalyticsManager.LoginType) {
+    public func loginWalletEnd(account: Wallet, loginType: AnalyticsManager.LoginType) {
         let event: AnalyticsEventName = AppSettings.shared.gdkSettings?.tor ?? false ? .walletLoginTor : .walletLogin
         endTrace(event)
         var s = sessSgmt(account)
@@ -126,7 +126,7 @@ extension AnalyticsManager {
         recordEvent(.deleteWallet)
     }
 
-    public func renameAccount(account: Account?, walletItem: WalletItem?) {
+    public func renameAccount(account: Wallet?, walletItem: WalletItem?) {
         let s = subAccSeg(account, walletItem: walletItem)
         recordEvent(.renameAccount, sgmt: s)
     }
@@ -137,7 +137,7 @@ extension AnalyticsManager {
         startEvent(.sendTransaction)
     }
 
-    public func endSendTransaction(account: Account?, walletItem: WalletItem?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool) {
+    public func endSendTransaction(account: Wallet?, walletItem: WalletItem?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool) {
         endTrace(.sendTransaction)
         var s = subAccSeg(account, walletItem: walletItem)
         switch transactionSgmt.transactionType {
@@ -156,24 +156,24 @@ extension AnalyticsManager {
         endEvent(.sendTransaction, sgmt: s)
     }
 
-    public func createWallet(account: Account?) {
+    public func createWallet(account: Wallet?) {
         let s = sessSgmt(account)
         AnalyticsManager.shared.userPropertiesDidChange()
         recordEvent(.walletCreate, sgmt: s)
     }
 
-    public func importWallet(account: Account?) {
+    public func importWallet(account: Wallet?) {
         let s = sessSgmt(account)
         AnalyticsManager.shared.userPropertiesDidChange()
         recordEvent(.walletImport, sgmt: s)
     }
 
-    public func createAccount(account: Account?, walletItem: WalletItem?) {
+    public func createAccount(account: Wallet?, walletItem: WalletItem?) {
         let s = subAccSeg(account, walletItem: walletItem)
         recordEvent(.createAccount, sgmt: s)
     }
 
-    public func receiveAddress(account: Account?, walletItem: WalletItem?, data: ReceiveAddressData) {
+    public func receiveAddress(account: Wallet?, walletItem: WalletItem?, data: ReceiveAddressData) {
         var s = subAccSeg(account, walletItem: walletItem)
         s[AnalyticsManager.strType] = data.type.rawValue
         s[AnalyticsManager.strMedia] = data.media.rawValue
@@ -181,13 +181,13 @@ extension AnalyticsManager {
         recordEvent(.receiveAddress, sgmt: s)
     }
 
-    public func shareTransaction(account: Account?, isShare: Bool) {
+    public func shareTransaction(account: Wallet?, isShare: Bool) {
         var s = sessSgmt(account)
         s[AnalyticsManager.strMethod] = isShare ? AnalyticsManager.strShare : AnalyticsManager.strCopy
         recordEvent(.shareTransaction, sgmt: s)
     }
 
-    public func failedWalletLogin(account: Account?, error: Error, prettyError: String?) {
+    public func failedWalletLogin(account: Wallet?, error: Error, prettyError: String?) {
         let event: AnalyticsEventName = AppSettings.shared.gdkSettings?.tor ?? false ? .failedWalletLoginTor : .failedWalletLogin
         var s = sessSgmt(account)
         if let prettyError = prettyError {
@@ -205,7 +205,7 @@ extension AnalyticsManager {
     }
 
     public func failedTransaction(
-        account: Account?,
+        account: Wallet?,
         walletItem: WalletItem?,
         transactionSgmt: AnalyticsManager.TransactionSegmentation,
         withMemo: Bool,
@@ -241,7 +241,7 @@ extension AnalyticsManager {
         recordEvent(.failedRecoveryPhraseCheck, sgmt: sgmt)
     }
 
-    public func appReview(account: Account?, walletItem: WalletItem?) {
+    public func appReview(account: Wallet?, walletItem: WalletItem?) {
         let s = subAccSeg(account, walletItem: walletItem)
         recordEvent(.appReview, sgmt: s)
     }
@@ -266,37 +266,37 @@ extension AnalyticsManager {
         recordEvent(.walletRestore)
     }
 
-    public func onAccountFirst(account: Account?) {
+    public func onAccountFirst(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.accountFirst, sgmt: s)
     }
 
-    public func convertBalance(account: Account?) {
+    public func convertBalance(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.balanceConvert, sgmt: s)
     }
 
-    public func changeAsset(account: Account?) {
+    public func changeAsset(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.assetChange, sgmt: s)
     }
 
-    public func selectAsset(account: Account?) {
+    public func selectAsset(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.assetSelect, sgmt: s)
     }
 
-    public func selectAccount(account: Account?, walletItem: WalletItem?) {
+    public func selectAccount(account: Wallet?, walletItem: WalletItem?) {
         let s = subAccSeg(account, walletItem: walletItem)
         recordEvent(.accountSelect, sgmt: s)
     }
 
-    public func newAccount(account: Account?) {
+    public func newAccount(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.accountNew, sgmt: s)
     }
 
-    public func hwwConnect(account: Account?) {
+    public func hwwConnect(account: Wallet?) {
         var s = sessSgmt(account)
 
         s.removeValue(forKey: "\(AnalyticsManager.strFirmware)")
@@ -305,12 +305,12 @@ extension AnalyticsManager {
         recordEvent(.connectHWW, sgmt: s)
     }
 
-    public func hwwConnected(account: Account?) {
+    public func hwwConnected(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.connectedHWW, sgmt: s)
     }
 
-    public func hwwConnected(account: Account?, fwVersion: String?, model: String?) {
+    public func hwwConnected(account: Wallet?, fwVersion: String?, model: String?) {
         var s = sessSgmt(account)
         hwData = (fwVersion, model)
         s.removeValue(forKey: "\(AnalyticsManager.strFirmware)")
@@ -320,40 +320,40 @@ extension AnalyticsManager {
         recordEvent(.connectedHWW, sgmt: s)
     }
 
-    public func initializeJade(account: Account?) {
+    public func initializeJade(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.jadeInitialize, sgmt: s)
     }
 
-    public func verifyAddressJade(account: Account?, walletItem: WalletItem?) {
+    public func verifyAddressJade(account: Wallet?, walletItem: WalletItem?) {
         let s = subAccSeg(account, walletItem: walletItem)
         recordEvent(.jadeVerifyAddress, sgmt: s)
     }
 
-    public func otaStartJade(account: Account?, firmware: Firmware) {
+    public func otaStartJade(account: Wallet?, firmware: Firmware) {
         let s = firmwareSgmt(account, firmware: firmware)
         recordEvent(.jadeOtaStart, sgmt: s)
         cancelEvent(.jadeOtaComplete)
         startEvent(.jadeOtaComplete)
     }
 
-    public func otaCompleteJade(account: Account?, firmware: Firmware) {
+    public func otaCompleteJade(account: Wallet?, firmware: Firmware) {
         let s = firmwareSgmt(account, firmware: firmware)
         endEvent(.jadeOtaComplete, sgmt: s)
     }
 
-    public func otaRefuseJade(account: Account?) {
+    public func otaRefuseJade(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.jadeOtaRefuse, sgmt: s)
     }
 
-    public func otaFailedJade(account: Account?, error: String?) {
+    public func otaFailedJade(account: Wallet?, error: String?) {
         var s = sessSgmt(account)
         s[AnalyticsManager.strError] = error ?? ""
         recordEvent(.jadeOtaFailed, sgmt: s)
     }
 
-    public func scanQr(account: Account?, screen: QrScanScreen) {
+    public func scanQr(account: Wallet?, screen: QrScanScreen) {
         switch screen {
         case .addAccountPK, .send, .walletOverview:
             var s = sessSgmt(account)
@@ -370,7 +370,7 @@ extension AnalyticsManager {
         }
     }
 
-    public func accountEmptied(account: Account?, walletItem: WalletItem, walletData: WalletData) {
+    public func accountEmptied(account: Wallet?, walletItem: WalletItem, walletData: WalletData) {
         var s = sessSgmt(account)
         s[AnalyticsManager.strWalletFunded] = walletData.walletFunded ? "true" : "false"
         s[AnalyticsManager.strAccountsFunded] = "\(walletData.accountsFunded)"
@@ -382,49 +382,49 @@ extension AnalyticsManager {
         recordEvent(.accountEmptied, sgmt: s)
     }
 
-    public func preferredUnits(account: Account?) {
+    public func preferredUnits(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.preferredUnits, sgmt: s)
     }
 
-    public func hideAmount(account: Account?) {
+    public func hideAmount(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.hideAmount, sgmt: s)
     }
 
-    public func promoImpression(account: Account?, promoId: String, screen: String) {
+    public func promoImpression(account: Wallet?, promoId: String, screen: String) {
         var s = sessSgmt(account)
         s[AnalyticsManager.strPromoId] = promoId
         s[AnalyticsManager.strScreen] = screen
         recordEvent(.promoImpression, sgmt: s)
     }
 
-    public func promoDismiss(account: Account?, promoId: String, screen: String) {
+    public func promoDismiss(account: Wallet?, promoId: String, screen: String) {
         var s = sessSgmt(account)
         s[AnalyticsManager.strPromoId] = promoId
         s[AnalyticsManager.strScreen] = screen
         recordEvent(.promoDismiss, sgmt: s)
     }
 
-    public func promoOpen(account: Account?, promoId: String, screen: String) {
+    public func promoOpen(account: Wallet?, promoId: String, screen: String) {
         var s = sessSgmt(account)
         s[AnalyticsManager.strPromoId] = promoId
         s[AnalyticsManager.strScreen] = screen
         recordEvent(.promoOpen, sgmt: s)
     }
 
-    public func promoAction(account: Account?, promoId: String, screen: String) {
+    public func promoAction(account: Wallet?, promoId: String, screen: String) {
         var s = sessSgmt(account)
         s[AnalyticsManager.strPromoId] = promoId
         s[AnalyticsManager.strScreen] = screen
         recordEvent(.promoAction, sgmt: s)
     }
 
-    public func buyInitiate(account: Account?) {
+    public func buyInitiate(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.buyInitiate, sgmt: s)
     }
-    public func buyRedirect(account: Account?) {
+    public func buyRedirect(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.buyRedirect, sgmt: s)
     }
@@ -434,43 +434,43 @@ extension AnalyticsManager {
     public func setupSww() {
         recordEvent(.setupSww)
     }
-    public func swwCreated(account: Account?) {
+    public func swwCreated(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.swwCreated, sgmt: s)
     }
-    public func backupManual(account: Account?) {
+    public func backupManual(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.backupManual, sgmt: s)
     }
-    public func swapToggle(account: Account?, from: String, to: String) {
+    public func swapToggle(account: Wallet?, from: String, to: String) {
         let s = swapSgmt(account, from: from, to: to)
         recordEvent(.swapToggle, sgmt: s)
     }
-    public func swapReceive(account: Account?, from: String, to: String) {
+    public func swapReceive(account: Wallet?, from: String, to: String) {
         let s = swapSgmt(account, from: from, to: to)
         recordEvent(.swapReceive, sgmt: s)
     }
-    public func swapSend(account: Account?, from: String, to: String) {
+    public func swapSend(account: Wallet?, from: String, to: String) {
         let s = swapSgmt(account, from: from, to: to)
         recordEvent(.swapSend, sgmt: s)
     }
-    public func swapInternal(account: Account?, from: String, to: String) {
+    public func swapInternal(account: Wallet?, from: String, to: String) {
         let s = swapSgmt(account, from: from, to: to)
         recordEvent(.swapInternal, sgmt: s)
     }
-    public func swapEntry(account: Account?) {
+    public func swapEntry(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.swapEntry, sgmt: s)
     }
-    public func swapInitiate(account: Account?, from: String, to: String) {
+    public func swapInitiate(account: Wallet?, from: String, to: String) {
         let s = swapSgmt(account, from: from, to: to)
         recordEvent(.swapInitiate, sgmt: s)
     }
-    public func swapSetup(account: Account?) {
+    public func swapSetup(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.swapSetup, sgmt: s)
     }
-    public func swapEnable(account: Account?) {
+    public func swapEnable(account: Wallet?) {
         let s = sessSgmt(account)
         recordEvent(.swapEnable, sgmt: s)
     }

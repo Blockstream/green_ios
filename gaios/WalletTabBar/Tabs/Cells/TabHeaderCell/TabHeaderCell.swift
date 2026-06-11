@@ -24,7 +24,7 @@ class TabHeaderCell: UITableViewCell {
     }
 
     func configure(title: String, icon: UIImage, tab: WalletTab, onTap: (() -> Void)?) {
-        let attrText = NSAttributedString(string: AccountsRepository.shared.current?.name ?? "", attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
+        let attrText = NSAttributedString(string: WalletsStorage.shared.current?.name ?? "", attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
         lblTitle.text = title
         lblWallet.attributedText = attrText
         self.onTap = onTap

@@ -184,7 +184,7 @@ class BleHwManager {
         }
     }
 
-    func login(account: Account, fullRestore: Bool) async throws -> (Account, WalletManager) {
+    func login(account: Wallet, fullRestore: Bool) async throws -> (Wallet, WalletManager) {
         AnalyticsManager.shared.loginWalletStart()
         var account = account
         let walletManager = WalletManager(prominentNetwork: account.networkType)
@@ -241,7 +241,7 @@ class BleHwManager {
         }
     }
 
-    func defaultAccount() async throws -> Account? {
+    func defaultAccount() async throws -> Wallet? {
         switch type {
         case .Jade:
             return try await jade?.defaultAccount()
@@ -262,7 +262,7 @@ class BleHwManager {
 
     func updateFirmware(firmware: Firmware, binary: Data) async throws -> Bool {
         guard let jade = jade else { throw HWError.Abort("No peripheral found") }
-        AnalyticsManager.shared.otaStartJade(account: AccountsRepository.shared.current, firmware: firmware)
+        AnalyticsManager.shared.otaStartJade(account: WalletsStorage.shared.current, firmware: firmware)
         var updated = false
         do {
             updated = try await jade.updateFirmware(firmware: firmware, binary: binary)
@@ -271,7 +271,7 @@ class BleHwManager {
             // return updated
             throw error
         }
-        AnalyticsManager.shared.otaCompleteJade(account: AccountsRepository.shared.current, firmware: firmware)
+        AnalyticsManager.shared.otaCompleteJade(account: WalletsStorage.shared.current, firmware: firmware)
         return updated
     }
 
@@ -279,13 +279,13 @@ class BleHwManager {
         if let err = error as? HWError {
             switch err {
             case HWError.Declined:
-                AnalyticsManager.shared.otaRefuseJade(account: AccountsRepository.shared.current)
+                AnalyticsManager.shared.otaRefuseJade(account: WalletsStorage.shared.current)
             default:
-                AnalyticsManager.shared.otaFailedJade(account: AccountsRepository.shared.current,
+                AnalyticsManager.shared.otaFailedJade(account: WalletsStorage.shared.current,
                                                       error: error.localizedDescription)
             }
         } else {
-            AnalyticsManager.shared.otaFailedJade(account: AccountsRepository.shared.current,
+            AnalyticsManager.shared.otaFailedJade(account: WalletsStorage.shared.current,
                                                   error: error.localizedDescription)
         }
     }

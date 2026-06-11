@@ -69,7 +69,7 @@ class DialogRenameViewController: KeyboardViewController {
         updateUI()
 
         if isAccountRename {
-            AnalyticsManager.shared.recordView(.renameAccount, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+            AnalyticsManager.shared.recordView(.renameAccount, sgmt: AnalyticsManager.shared.sessSgmt(WalletsStorage.shared.current))
         } else {
             AnalyticsManager.shared.recordView(.renameWallet)
         }

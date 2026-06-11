@@ -157,7 +157,7 @@ class WOSetupViewController: KeyboardViewController {
     }
 
     func login(for network: NetworkSecurityCase) {
-        let account = WOViewModel.newAccountMultisig(
+        let wallet = WOViewModel.newAccountMultisig(
             for: network.gdkNetwork,
             username: self.usernameTextField.text ?? "",
             password: isRem ? self.passwordTextField.text ?? "" : "",
@@ -168,23 +168,23 @@ class WOSetupViewController: KeyboardViewController {
         self.startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon)
         Task {
             do {
-                let vm = WOViewModel(account: account)
+                let vm = WOViewModel(wallet: wallet)
                 try await vm.loginMultisig(password: self.passwordTextField.text)
-                success(account: account)
+                success(wallet: wallet)
             } catch {
-                failure(error, account: account)
+                failure(error, wallet: wallet)
             }
         }
     }
 
     @MainActor
-    func success(account: Account) {
+    func success(wallet: Wallet) {
         stopLoader()
-        AccountNavigator.navLogged(accountId: account.id)
+        AccountNavigator.navLogged(walletId: wallet.id)
     }
 
     @MainActor
-    func failure(_ error: Error, account: Account) {
+    func failure(_ error: Error, wallet: Wallet) {
         var prettyError = "id_login_failed"
         switch error {
         case TwoFactorCallError.failure(let localizedDescription):
@@ -198,7 +198,7 @@ class WOSetupViewController: KeyboardViewController {
         }
         stopLoader()
         DropAlert().error(message: prettyError.localized)
-        AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: prettyError)
-        WalletsRepository.shared.delete(for: account)
+        AnalyticsManager.shared.failedWalletLogin(account: wallet, error: error, prettyError: prettyError)
+        WalletsRepository.shared.delete(for: wallet)
     }
 }

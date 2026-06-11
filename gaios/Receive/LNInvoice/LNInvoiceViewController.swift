@@ -167,7 +167,8 @@ class LNInvoiceViewController: UIViewController {
         let data = AnalyticsManager.ReceiveAddressData(type: AnalyticsManager.ReceiveAddressType.address,
                                                        media: AnalyticsManager.ReceiveAddressMedia.text,
                                                        method: AnalyticsManager.ReceiveAddressMethod.copy)
-        AnalyticsManager.shared.receiveAddress(account: AccountsRepository.shared.current,
+        AnalyticsManager.shared
+            .receiveAddress(account: WalletsStorage.shared.current,
                                                walletItem: viewModel.account,
                                                data: data)
         UIPasteboard.general.string = text
@@ -252,7 +253,7 @@ extension LNInvoiceViewController: DialogListViewControllerDelegate {
                     media: AnalyticsManager.ReceiveAddressMedia.text,
                     method: AnalyticsManager.ReceiveAddressMethod.share)
                 AnalyticsManager.shared.receiveAddress(
-                    account: AccountsRepository.shared.current,
+                    account: WalletsStorage.shared.current,
                     walletItem: viewModel.account,
                     data: data)
             case .qr:
@@ -262,7 +263,7 @@ extension LNInvoiceViewController: DialogListViewControllerDelegate {
                     media: AnalyticsManager.ReceiveAddressMedia.image,
                     method: AnalyticsManager.ReceiveAddressMethod.share)
                 AnalyticsManager.shared.receiveAddress(
-                    account: AccountsRepository.shared.current,
+                    account: WalletsStorage.shared.current,
                     walletItem: viewModel.account,
                     data: data)
                 Task {

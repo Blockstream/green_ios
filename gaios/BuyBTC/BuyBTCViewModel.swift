@@ -27,7 +27,7 @@ class BuyBTCViewModel {
     var satoshi: Int64?
     var isFiat: Bool = true
     var account: WalletItem
-    var mainAccount: Account? { AccountsRepository.shared.current }
+    var mainWallet: Wallet? { WalletsStorage.shared.current }
     var inputDenomination: gdk.DenominationType = .Sats
     var meld: Meld
     var wm: WalletManager { WalletManager.current! }
@@ -73,7 +73,7 @@ class BuyBTCViewModel {
         self.currency = currency
         self.loadTiers()
     }
-    var isJade: Bool { mainAccount?.isJade ?? false }
+    var isJade: Bool { mainWallet?.isJade ?? false }
     func quote(_ amountStr: String) async throws -> [MeldQuoteItem] {
         let amt = amountStr.replacingOccurrences(of: ",", with: ".")
         let params = MeldQuoteParams(
@@ -113,7 +113,7 @@ class BuyBTCViewModel {
     }
 
     func getDefaultProvider() async {
-        guard let customerId = mainAccount?.xpubHashId else {
+        guard let customerId = mainWallet?.xpubHashId else {
             return
         }
         if defaultProvider == nil {
@@ -144,7 +144,7 @@ class BuyBTCViewModel {
         let params = MeldWidgetParams(
             sessionData: sessionParams,
             sessionType: MeldTransactionType.BUY.rawValue,
-            externalCustomerId: mainAccount?.xpubHashId ?? "")
+            externalCustomerId: mainWallet?.xpubHashId ?? "")
         return try await meld.widget(params)
     }
     func verifyOnDeviceViewModel() -> HWDialogVerifyOnDeviceViewModel? {
@@ -171,7 +171,7 @@ class BuyBTCViewModel {
         UserDefaults.standard.setValue(cCode, forKey: AppStorageConstants.buyCountyCodeUserSelected.rawValue)
     }
     func hasPendingTransactions() async throws -> Bool {
-        guard let xpub = mainAccount?.xpubHashId else {
+        guard let xpub = mainWallet?.xpubHashId else {
             return false
         }
         let hasPendingTx =  try await meld.getPendingTransactions(xpub: xpub).count > 0
@@ -181,7 +181,7 @@ class BuyBTCViewModel {
     }
 
     static var defaultAccountLabel: String? {
-        return "\(AccountsRepository.shared.current?.id ?? "")_buy_subaccount"
+        return "\(WalletsStorage.shared.current?.id ?? "")_buy_subaccount"
     }
 
     static var defaultAccount: WalletItem? {

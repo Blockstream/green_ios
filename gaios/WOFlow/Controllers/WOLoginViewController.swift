@@ -20,15 +20,15 @@ class WOLoginViewController: KeyboardViewController {
 
     private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
-    var account: Account { viewModel.account }
-    var isSS: Bool { account.gdkNetwork.electrum }
+    var wallet: Wallet { viewModel.wallet }
+    var isSS: Bool { wallet.gdkNetwork.electrum }
     var viewModel: WOViewModel!
     let menuButton = UIButton(type: .system)
     var autologin = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = viewModel.account.name
+        navigationItem.title = viewModel.wallet.name
 
         ssModeView.isHidden = !isSS
         msModeView.isHidden = isSS
@@ -44,8 +44,8 @@ class WOLoginViewController: KeyboardViewController {
         loginSSButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         usernameTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))
         passwordTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))
-        usernameTextField.text = account.username
-        passwordTextField.text = account.password
+        usernameTextField.text = wallet.username
+        passwordTextField.text = wallet.password
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -145,7 +145,7 @@ class WOLoginViewController: KeyboardViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.index = nil
             vc.delegate = self
-            vc.prefill = account.name
+            vc.prefill = wallet.name
             present(vc, animated: false, completion: nil)
         }
     }
@@ -160,9 +160,9 @@ class WOLoginViewController: KeyboardViewController {
     }
 
     func hasBiometricAuthenticationType() -> Bool {
-        if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: account.keychain) {
+        if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: wallet.keychain) {
             return true
-        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain) {
+        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: wallet.keychain) {
             return true
         } else {
             return false
@@ -206,8 +206,8 @@ class WOLoginViewController: KeyboardViewController {
         }
         switch await task.result {
         case .success:
-            AccountNavigator.navLogged(accountId: account.id)
-            AnalyticsManager.shared.importWallet(account: account)
+            AccountNavigator.navLogged(walletId: wallet.id)
+            AnalyticsManager.shared.importWallet(account: wallet)
         case .failure(let error):
             stopLoader()
             if let error = error as? AuthenticationTypeHandler.AuthError {
@@ -215,8 +215,8 @@ class WOLoginViewController: KeyboardViewController {
             } else {
                 showError(error)
             }
-            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: error.description())
-            WalletsRepository.shared.delete(for: self.account)
+            AnalyticsManager.shared.failedWalletLogin(account: self.wallet, error: error, prettyError: error.description())
+            WalletsRepository.shared.delete(for: self.wallet)
         }
     }
 
@@ -276,14 +276,14 @@ class WOLoginViewController: KeyboardViewController {
 
 extension WOLoginViewController: DialogRenameViewControllerDelegate, DialogDeleteViewControllerDelegate {
     func didRename(name: String, index: String?) {
-        viewModel.account.name = name
-        AccountsRepository.shared.upsert(account)
-        navigationItem.title = account.name
+        viewModel.wallet.name = name
+        WalletsStorage.shared.upsert(wallet)
+        navigationItem.title = wallet.name
         AnalyticsManager.shared.renameWallet()
     }
     func didDelete(_ index: String?) {
         Task {
-            await AccountsRepository.shared.remove(account)
+            await WalletsStorage.shared.remove(wallet)
             await MainActor.run {
                 navigationController?.popViewController(animated: true)
                 AnalyticsManager.shared.deleteWallet()

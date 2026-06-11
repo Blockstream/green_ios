@@ -8,7 +8,7 @@ import greenaddress
 final class SendAddressViewModel: Sendable {
 
     let wallet: WalletDataModel
-    let mainAccount: Account
+    let mainWallet: Wallet
     let text: String?
     let sweepPrivateKey: Bool
     let subaccount: WalletItem?
@@ -27,7 +27,7 @@ final class SendAddressViewModel: Sendable {
     var onStateChanged: (() -> Void)?
 
     init(
-        mainAccount: Account,
+        mainWallet: Wallet,
         wallet: WalletDataModel,
         text: String?,
         subaccount: WalletItem?,
@@ -41,12 +41,12 @@ final class SendAddressViewModel: Sendable {
         self.assetId = assetId
         self.sweepPrivateKey = sweepPrivateKey
         self.delegate = delegate
-        self.mainAccount = mainAccount
-        self.parser = PaymentTargetParser(mainAccount: mainAccount)
+        self.mainWallet = mainWallet
+        self.parser = PaymentTargetParser(mainWallet: mainWallet)
     }
     func isJadeCore() -> Bool {
-        if self.mainAccount.isJade {
-            if self.mainAccount.boardType == .v2c {
+        if self.mainWallet.isJade {
+            if self.mainWallet.boardType == .v2c {
                 return true
             }
         }
