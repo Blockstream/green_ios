@@ -1,5 +1,5 @@
 import UIKit
-import gdk
+import core
 
 enum MoreOptPrefs: Int, CaseIterable {
     case requestAmount = 0

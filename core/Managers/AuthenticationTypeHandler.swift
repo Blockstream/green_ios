@@ -1,7 +1,7 @@
 import Foundation
 import LocalAuthentication
 import Security
-import gdk
+
 import lightning
 
 public class AuthenticationTypeHandler {

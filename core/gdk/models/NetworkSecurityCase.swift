@@ -1,5 +1,4 @@
 import Foundation
-import UIKit
 
 public enum NetworkSecurityCase: String, CaseIterable {
     case bitcoinMS = "mainnet"

@@ -1,6 +1,6 @@
 import Foundation
 import core
-import gdk
+
 
 struct SendFeeCellModel {
     var speedName: String

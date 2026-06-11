@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import core
-import gdk
 import LiquidWalletKit
 
 enum ReceiveRoute {
@@ -169,7 +168,7 @@ extension ReceiveCoordinator: ReceiveViewModelDelegate {
             await navigate(to: .manualBackup(model))
         }
     }
-    func send(subaccount: gdk.WalletItem, anyOrAsset: AnyOrAsset) {
+    func send(subaccount: core.WalletItem, anyOrAsset: AnyOrAsset) {
         Task { @MainActor in
             await navigate(to: .send(subaccount: subaccount, anyOrAsset: anyOrAsset))
         }
@@ -186,7 +185,7 @@ extension ReceiveCoordinator: @MainActor DialogInputDenominationViewControllerDe
     func didSelectFiat() {
         receiveViewModel?.selectFiat()
     }
-    func didSelectInput(denomination: gdk.DenominationType) {
+    func didSelectInput(denomination: DenominationType) {
         receiveViewModel?.selectDenomination(denomination)
     }
 }

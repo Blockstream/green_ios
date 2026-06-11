@@ -1,7 +1,7 @@
 import Foundation
 @preconcurrency import core
 import greenaddress
-@preconcurrency import gdk
+@preconcurrency 
 
 struct WalletState: Sendable {
     var subaccounts: [WalletItem] = WalletManager.current?.visibleSubaccounts ?? []

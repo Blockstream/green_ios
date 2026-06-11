@@ -1,3 +1,5 @@
+import Foundation
+
 public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable {
     /// multiSig
     case standard = "2of2"
@@ -72,6 +74,37 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable {
     public static func < (a: AccountType, b: AccountType) -> Bool {
         let rules: [AccountType] = [.segwitWrapped, .segWit, .taproot, .standard, .amp, .twoOfThree, .lightning]
         return rules.firstIndex(of: a) ?? 0 < rules.firstIndex(of: b) ?? 0
+    }
+
+    public var network: String {
+        if lightning {
+            return "Lightning"
+        } else if singlesig {
+            return "Singlesig"
+        } else {
+            return "Multisig"
+        }
+    }
+    public var shortText: String {
+        if lightning {
+            return "Fastest"
+        } else {
+            return "\(shortString)"
+        }
+    }
+    public var longText: String {
+        if lightning {
+            return "Fastest"
+        } else {
+            return "\(string)"
+        }
+    }
+    public var path: String {
+        if lightning {
+            return network
+        } else {
+            return "\(network) / \(shortText)"
+        }
     }
 }
 

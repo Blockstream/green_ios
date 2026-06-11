@@ -1,6 +1,6 @@
 import AVFoundation
 import UIKit
-import gdk
+
 import core
 
 class PromoLayout0Cell: UITableViewCell {

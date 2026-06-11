@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import gdk
+
 import greenaddress
 import core
 import lightning
@@ -323,7 +323,7 @@ extension SendAmountViewController {
     }
 }
 extension SendAmountViewController: SendDialogFeeViewControllerProtocol {
-    func select(transactionPriority: gdk.TransactionPriority, feeRate: UInt64?) {
+    func select(transactionPriority: TransactionPriority, feeRate: UInt64?) {
         reload()
         reloadAmount()
         Task { [weak self] in

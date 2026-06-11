@@ -1,7 +1,6 @@
 import UIKit
 import AVFoundation
 import core
-import gdk
 
 protocol QrScannerViewDelegate: AnyObject, Sendable {
     @MainActor func didFindCode(_ code: ScanResult)
@@ -268,7 +267,7 @@ extension QrScannerView: AVCaptureMetadataOutputObjectsDelegate {
     }
 }
 extension QrScannerView: BcurResolver {
-    func requestData(_ info: gdk.ResolveCodeAuthData) async throws -> String {
+    func requestData(_ info: ResolveCodeAuthData) async throws -> String {
         await MainActor.run {
             flashCornersOnPartAccepted()
             delegate?.didUpdateProgress(Float(info.estimatedProgress ?? 1) / 100)

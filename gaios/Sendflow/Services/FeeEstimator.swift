@@ -1,5 +1,5 @@
 import Foundation
-import gdk
+
 import greenaddress
 import core
 import lightning

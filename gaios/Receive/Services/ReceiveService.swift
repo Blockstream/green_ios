@@ -1,6 +1,5 @@
 import Foundation
 @preconcurrency import core
-@preconcurrency import gdk
 import LiquidWalletKit
 import greenaddress
 @preconcurrency import lightning
@@ -12,7 +11,7 @@ actor ReceiveService {
     }
 
     struct AddressResponse: Sendable {
-        let address: gdk.Address?
+        let address: core.Address?
     }
 
     struct ReverseSwapInfoRequest: Sendable {

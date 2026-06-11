@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import gdk
+
 import greenaddress
 import hw
 import lightning
@@ -604,16 +604,16 @@ public class WalletManager {
         }
     }
 
-    public func transactions(subaccounts: [WalletItem], first: Int = 0, count: Int? = nil) async throws -> [gdk.Transaction] {
-        return try await withThrowingTaskGroup(of: [gdk.Transaction].self, returning: [gdk.Transaction].self) { group in
+    public func transactions(subaccounts: [WalletItem], first: Int = 0, count: Int? = nil) async throws -> [Transaction] {
+        return try await withThrowingTaskGroup(of: [Transaction].self, returning: [Transaction].self) { group in
             for subaccount in subaccounts {
                 group.addTask {
                     let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: first)
-                    let page = txs?.list.map { gdk.Transaction($0.details, subaccountId: subaccount.id) }
+                    let page = txs?.list.map { Transaction($0.details, subaccountId: subaccount.id) }
                     return page ?? []
                 }
             }
-            return try await group.reduce(into: [gdk.Transaction]()) { partial, res in
+            return try await group.reduce(into: [Transaction]()) { partial, res in
                 partial += res
             }.sorted()
         }
@@ -624,7 +624,7 @@ public class WalletManager {
             for subaccount in subaccounts {
                 group.addTask {
                     let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: page * 30, count: 30)
-                    let list = txs?.list.map { gdk.Transaction($0.details, subaccountId: subaccount.id) }
+                    let list = txs?.list.map { Transaction($0.details, subaccountId: subaccount.id) }
                     return (subaccount.id, Transactions(list: list ?? []))
                 }
             }
@@ -633,24 +633,24 @@ public class WalletManager {
             }
         }
     }
-    public func allTransactions(subaccounts: [WalletItem]) async throws -> [gdk.Transaction] {
-        return try await withThrowingTaskGroup(of: [gdk.Transaction].self, returning: [gdk.Transaction].self) { group in
+    public func allTransactions(subaccounts: [WalletItem]) async throws -> [Transaction] {
+        return try await withThrowingTaskGroup(of: [Transaction].self, returning: [Transaction].self) { group in
             for subaccount in subaccounts {
                 group.addTask {
                     let txs = try await self.allBySubaccount(subaccount)
                     return txs
                 }
             }
-            return try await group.reduce(into: [gdk.Transaction]()) { partial, res in
+            return try await group.reduce(into: [Transaction]()) { partial, res in
                 partial += res
             }.sorted(by: { $0 > $1 })
         }
     }
-    func allBySubaccount(_ subaccount: WalletItem) async throws -> [gdk.Transaction] {
+    func allBySubaccount(_ subaccount: WalletItem) async throws -> [Transaction] {
         let offset = 30
         var page = 0
         var end: Bool = false
-        var transactions: [gdk.Transaction] = []
+        var transactions: [Transaction] = []
         while end == false {
             let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: page * offset, count: offset)
             let list = txs?.list.map { Transaction($0.details, subaccountId: subaccount.id) } ?? []
@@ -789,7 +789,7 @@ extension WalletManager {
     }
 }
 extension WalletManager: AssetsProvider {
-    public func getAssets(params: gdk.GetAssetsParams) -> gdk.GetAssetsResult? {
+    public func getAssets(params: GetAssetsParams) -> GetAssetsResult? {
         let session = activeLiquidSessions.first ?? liquidSinglesigSession ?? SessionManager(liquidSinglesigNetwork, newNotificationDelegate: nil)
         return session.getAssets(params: params)
     }
@@ -801,14 +801,14 @@ extension WalletManager: AssetsProvider {
     }
 }
 extension WalletManager: ConverterProvider {
-    public func convertBitcoinAmount(params: gdk.Balance) throws -> gdk.Balance? {
+    public func convertBitcoinAmount(params: Balance) throws -> Balance? {
         guard let session = activeBitcoinSessions.first ?? prominentSession else {
             throw GaError.SessionLost()
         }
         return try convert(session: session, params: params)
     }
 
-    func convert(session: SessionManager, params: gdk.Balance) throws -> gdk.Balance? {
+    func convert(session: SessionManager, params: Balance) throws -> Balance? {
         guard var input = params.toDict() else {
             throw GaError.GenericError("Conversion error")
         }
@@ -839,7 +839,7 @@ extension WalletManager: ConverterProvider {
         return balance
     }
 
-    public func convertLiquidAmount(params: gdk.Balance) throws -> gdk.Balance? {
+    public func convertLiquidAmount(params: Balance) throws -> Balance? {
         guard let session = activeLiquidSessions.first else {
             throw GaError.SessionLost()
         }

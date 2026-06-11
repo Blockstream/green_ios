@@ -1,5 +1,5 @@
 import Foundation
-import gdk
+
 
 protocol SendSuccessViewModelDelegate: AnyObject {
     @MainActor

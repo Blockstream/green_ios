@@ -1,5 +1,5 @@
 import Foundation
-import gdk
+
 import UIKit
 
 class SendSuccessViewController: UIViewController {

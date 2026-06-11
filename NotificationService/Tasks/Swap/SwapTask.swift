@@ -3,7 +3,7 @@ import UserNotifications
 import os.log
 import core
 import LiquidWalletKit
-import gdk
+
 import CoreData
 
 public class SwapTask {

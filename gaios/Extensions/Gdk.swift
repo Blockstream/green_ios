@@ -1,5 +1,5 @@
 import core
-import gdk
+
 
 extension TransactionPriority {
 

@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import core
 import lightning
-import gdk
+
 
 class SendFailureViewController: UIViewController {
 

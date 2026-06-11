@@ -1,12 +1,12 @@
 import Foundation
 import core
-import gdk
+
 
 actor BCURProvider {
     private var parts = Set<String>()
     private var continuation: CheckedContinuation<String, Error>?
 
-    func requestData(_ info: gdk.ResolveCodeAuthData) async throws -> String {
+    func requestData(_ info: ResolveCodeAuthData) async throws -> String {
         continuation?.resume(throwing: CancellationError())
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             self.continuation = continuation

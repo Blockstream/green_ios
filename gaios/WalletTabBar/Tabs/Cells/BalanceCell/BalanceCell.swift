@@ -1,6 +1,6 @@
 import UIKit
 import core
-import gdk
+
 
 struct BalanceItem: Hashable {
     let satoshi: Int64?

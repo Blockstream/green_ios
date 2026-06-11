@@ -1,9 +1,9 @@
 import Foundation
-import gdk
+import core
 
 protocol SendLwkSignViewModelDelegate: AnyObject {
     @MainActor
-    func didSendLwkSignViewModelWillSend(_ vm: SendLwkSignViewModel, transaction: gdk.Transaction)
+    func didSendLwkSignViewModelWillSend(_ vm: SendLwkSignViewModel, transaction: Transaction)
     @MainActor
     func didSendLwkSignViewModelDidSend(_ vm: SendLwkSignViewModel)
     @MainActor

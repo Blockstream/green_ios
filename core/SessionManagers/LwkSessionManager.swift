@@ -1,6 +1,6 @@
 import Foundation
 import LiquidWalletKit
-import gdk
+
 import greenaddress
 import hw
 public class LwkSessionManager: SessionManager {
@@ -159,7 +159,7 @@ public class LwkSessionManager: SessionManager {
         //let chainSwapStatuses = ["transaction.confirmed", "transaction.server.confirmed", "transaction.claimed", "transaction.lockupFailed"]
         let res = try boltzSession.lbtcToBtc(
             amount: amount,
-            refundAddress: try Address(s: refundAddress),
+            refundAddress: try LiquidWalletKit.Address(s: refundAddress),
             claimAddress: try BitcoinAddress(s: claimAddress),
             webhook: try webhook(status: []))
         _ = try await BoltzController.shared.create(
@@ -180,7 +180,7 @@ public class LwkSessionManager: SessionManager {
         let res = try boltzSession.btcToLbtc(
             amount: amount,
             refundAddress: try BitcoinAddress(s: refundAddress),
-            claimAddress: try Address(s: claimAddress),
+            claimAddress: try LiquidWalletKit.Address(s: claimAddress),
             webhook: try webhook(status: []))
         _ = try await BoltzController.shared.create(
             id: try res.swapId(),
@@ -244,7 +244,7 @@ public class LwkSessionManager: SessionManager {
         guard let boltzSession = boltzSession else {
             throw LwkError.Generic(msg: "Invalid session")
         }
-        let liquidAddress = try Address(s: liquidAddress)
+        let liquidAddress = try LiquidWalletKit.Address(s: liquidAddress)
         let list = try boltzSession.swapRestore()
         // Reverse Submarine Swaps: avoid to restore reverse submarine swaps for lack of informations to correctly restore them.
         // Submarine Swaps: restore swaps with lockup transaction and refund liquid address

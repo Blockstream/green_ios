@@ -1,6 +1,6 @@
 import Foundation
 import core
-import gdk
+
 import greenaddress
 import UIKit
 import LiquidWalletKit
@@ -13,7 +13,7 @@ class SendLwkSignViewModel {
     let isFiat: Bool
     let subaccount: WalletItem
     let delegate: SendLwkSignViewModelDelegate?
-    var tx: gdk.Transaction
+    var tx: core.Transaction
     // Variables
     var sendTransactionSuccess: SendTransactionSuccess?
     var error: Error?
@@ -211,7 +211,7 @@ class SendLwkSignViewModel {
         isFiat: Bool = false,
         subaccount: WalletItem,
         delegate: SendLwkSignViewModelDelegate?,
-        tx: gdk.Transaction
+        tx: core.Transaction
     ) {
         self.mainWallet = mainWallet
         self.draft = transactionDraft

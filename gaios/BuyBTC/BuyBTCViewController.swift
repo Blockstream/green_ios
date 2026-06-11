@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import gdk
+
 import greenaddress
 import core
 import lightning
@@ -481,7 +481,7 @@ extension BuyBTCViewController: SelectProviderViewControllerDelegate {
     }
 }
 extension BuyBTCViewController: DialogAccountsViewControllerDelegate {
-    func didSelectAccount(_ walletItem: gdk.WalletItem?) {
+    func didSelectAccount(_ walletItem: WalletItem?) {
         if let walletItem {
             BuyBTCViewModel.defaultAccount = walletItem
             viewModel.account = walletItem

@@ -1,5 +1,5 @@
 import UIKit
-import gdk
+
 
 enum TxDetailsInfoType {
     case fee

@@ -1,6 +1,6 @@
 import UIKit
 import core
-import gdk
+
 enum AccountArchiveSection: Int, CaseIterable {
     case account = 0
 }

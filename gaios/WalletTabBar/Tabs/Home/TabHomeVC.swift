@@ -1,6 +1,6 @@
 import UIKit
 import core
-import gdk
+
 import greenaddress
 
 class TabHomeVC: TabViewController {
@@ -507,7 +507,7 @@ extension TabHomeVC {
     }
 }
 extension TabHomeVC: SystemMessageDelegate {
-    func didAcceptSystemMessage(_ message: gdk.SystemMessage) {
+    func didAcceptSystemMessage(_ message: SystemMessage) {
         viewModel.refresh(features: [.alertCards])
     }
 }

@@ -1,8 +1,8 @@
 import Foundation
 import UIKit
-import gdk
+import core
 
-extension gdk.NetworkSecurityCase {
+extension NetworkSecurityCase {
 
     func icons() -> (UIImage, UIImage) {
         switch self {

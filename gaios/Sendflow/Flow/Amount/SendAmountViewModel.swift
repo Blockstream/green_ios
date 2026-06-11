@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import core
-import gdk
 import LiquidWalletKit
 import greenaddress
 
@@ -14,7 +13,7 @@ final class SendAmountViewModel {
     var denominationType: DenominationType
     var isFiat: Bool
     let subaccount: WalletItem
-    let tx: gdk.Transaction?
+    let tx: core.Transaction?
     let delegate: SendAmountViewModelDelegate?
 
     // UI state
@@ -63,7 +62,7 @@ final class SendAmountViewModel {
         mainWallet: Wallet,
         wallet: WalletDataModel,
         draft: TransactionDraft,
-        tx: gdk.Transaction?,
+        tx: core.Transaction?,
         subaccount: WalletItem,
         denominationType: DenominationType,
         isFiat: Bool,

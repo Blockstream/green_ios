@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import gdk
+import core
 
 protocol SendDialogFeeViewControllerProtocol {
     func select(transactionPriority: TransactionPriority, feeRate: UInt64?)

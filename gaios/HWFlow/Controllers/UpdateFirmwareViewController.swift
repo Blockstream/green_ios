@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-import gdk
+
 import hw
 
 protocol UpdateFirmwareViewControllerDelegate: AnyObject {

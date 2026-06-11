@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import core
-import gdk
 import hw
 
 public class CodeAlertController: UIAlertController {

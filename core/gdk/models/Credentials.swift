@@ -10,6 +10,7 @@ public struct Credentials: Codable {
         case password
         case coreDescriptors = "core_descriptors"
         case slip132ExtendedPubkeys = "slip132_extended_pubkeys"
+        case masterXpub = "master_xpub"
     }
     public let mnemonic: String?
     public var bip39Passphrase: String?
@@ -19,6 +20,7 @@ public struct Credentials: Codable {
     public var password: String?
     public let coreDescriptors: [String]?
     public let slip132ExtendedPubkeys: [String]?
+    public let masterXpub: String?
 
     public init(mnemonic: String? = nil,
                 bip39Passphrase: String? = nil,
@@ -27,7 +29,8 @@ public struct Credentials: Codable {
                 username: String? = nil,
                 password: String? = nil,
                 coreDescriptors: [String]? = nil,
-                slip132ExtendedPubkeys: [String]? = nil) {
+                slip132ExtendedPubkeys: [String]? = nil,
+                masterXpub: String? = nil) {
         self.mnemonic = mnemonic
         self.bip39Passphrase = bip39Passphrase
         self.pin = pin
@@ -36,6 +39,7 @@ public struct Credentials: Codable {
         self.password = password
         self.coreDescriptors = coreDescriptors
         self.slip132ExtendedPubkeys = slip132ExtendedPubkeys
+        self.masterXpub = masterXpub
     }
 
     public static func watchonlyMultisig(username: String, password: String) -> Credentials {

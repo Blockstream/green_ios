@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import gdk
+
 import core
 
 class AccountAssetCellModel: Comparable {

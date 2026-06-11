@@ -1,6 +1,5 @@
 import UIKit
 import core
-import gdk
 import greenaddress
 import Foundation
 

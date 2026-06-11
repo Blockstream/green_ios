@@ -1,6 +1,6 @@
 import UIKit
 import core
-import gdk
+
 
 protocol AccountCreateRecoveryKeyDelegate: AnyObject {
     func didPublicKey(_ key: String)

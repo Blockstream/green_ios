@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 import core
-import gdk
+
 
 protocol AssetsListViewControllerDelegate: AnyObject {
     func didSelect(assetId: String, index: Int?)

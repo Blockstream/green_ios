@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 import core
-import gdk
+
 import greenaddress
 
 protocol QRPsbtAquireViewControllerDelegate: AnyObject {

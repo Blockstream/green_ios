@@ -1,5 +1,5 @@
 import Foundation
-import gdk
+
 import core
 import greenaddress
 import hw

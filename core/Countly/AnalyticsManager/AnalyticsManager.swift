@@ -1,6 +1,6 @@
 import Foundation
 import Countly
-import gdk
+
 import greenaddress
 
 public enum AnalyticsConsent: Int {

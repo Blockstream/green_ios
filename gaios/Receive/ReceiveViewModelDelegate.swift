@@ -1,5 +1,5 @@
 import Foundation
-import gdk
+import core
 
 protocol ReceiveViewModelDelegate: AnyObject {
     @MainActor

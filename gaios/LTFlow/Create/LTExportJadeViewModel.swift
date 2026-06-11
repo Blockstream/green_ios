@@ -1,7 +1,7 @@
 import Foundation
 import core
 import hw
-import gdk
+
 
 class LTExportJadeViewModel {
     private var wm: WalletManager? { WalletManager.current }

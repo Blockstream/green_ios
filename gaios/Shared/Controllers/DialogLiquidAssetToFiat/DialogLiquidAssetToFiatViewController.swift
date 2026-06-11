@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
+import core
 
-import gdk
 
 protocol DialogLiquidAssetToFiatViewControllerDelegate: AnyObject {
     func didSelectLiquidAsset()

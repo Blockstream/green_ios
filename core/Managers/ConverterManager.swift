@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import gdk
+
 
 public protocol ConverterProvider {
     func convertBitcoinAmount(params: Balance) throws -> Balance?

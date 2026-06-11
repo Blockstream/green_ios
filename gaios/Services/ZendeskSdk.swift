@@ -1,7 +1,7 @@
 import Foundation
 import SupportSDK
 import ZendeskCoreSDK
-import gdk
+
 import greenaddress
 import core
 

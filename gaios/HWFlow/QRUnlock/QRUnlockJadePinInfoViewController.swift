@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 import core
-import gdk
+
 
 class QRUnlockJadePinInfoViewController: UIViewController {
 
@@ -79,7 +79,7 @@ extension QRUnlockJadePinInfoViewController: QRUnlockJadeViewControllerDelegate 
         // nothing
     }
 
-    func login(credentials: gdk.Credentials, wallet: WalletManager, account: Wallet) {
+    func login(credentials: Credentials, wallet: WalletManager, account: Wallet) {
         WalletsStorage.shared.current = account
         AccountNavigator.navLogged(walletId: account.id)
     }

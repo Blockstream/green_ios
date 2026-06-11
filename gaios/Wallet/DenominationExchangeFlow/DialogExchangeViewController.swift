@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import gdk
+
 
 protocol DialogExchangeViewControllerDelagate: AnyObject {
     func didSelect(currencyItem: CurrencyItem)

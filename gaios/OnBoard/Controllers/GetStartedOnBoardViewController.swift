@@ -1,6 +1,6 @@
 import UIKit
 import core
-import gdk
+
 import greenaddress
 
 class GetStartedOnBoardViewController: UIViewController {

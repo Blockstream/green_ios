@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import gdk
+
 
 public protocol AssetsProvider {
     func getAssets(params: GetAssetsParams) -> GetAssetsResult?

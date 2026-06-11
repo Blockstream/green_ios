@@ -1,6 +1,6 @@
 import UIKit
 import core
-import gdk
+
 enum AccountDescriptorSection: Int, CaseIterable {
     case card
     case descriptor

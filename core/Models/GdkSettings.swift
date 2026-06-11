@@ -1,5 +1,5 @@
 import Foundation
-import gdk
+
 
 public struct GdkSettings: Codable {
 

@@ -1,6 +1,6 @@
 import Foundation
 import core
-import gdk
+
 import lightning
 import greenaddress
 import LiquidWalletKit
@@ -16,7 +16,7 @@ class LNInvoiceViewModel: ObservableObject {
     var lwkInvoice: InvoiceResponse?
     var account: WalletItem
     var type: ReceiveType
-    var inputDenomination: gdk.DenominationType = .Sats
+    var inputDenomination: DenominationType = .Sats
     var listeningTask: Task<Void, Never>?
     var onInvoicePaid: (() -> Void)?
 

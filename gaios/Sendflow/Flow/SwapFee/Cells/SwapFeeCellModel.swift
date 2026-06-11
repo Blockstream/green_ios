@@ -1,6 +1,6 @@
 import Foundation
 import core
-import gdk
+
 
 struct SwapFeeCellModel {
     var speedName: String

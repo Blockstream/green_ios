@@ -1,5 +1,5 @@
 import UIKit
-import gdk
+import core
 import greenaddress
 
 class RecoveryTransactionsViewController: UIViewController {

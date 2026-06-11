@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 import core
-import gdk
+
 
 class LTSettingsDialogViewController: UIViewController {
     @IBOutlet weak var tappableBg: UIView!

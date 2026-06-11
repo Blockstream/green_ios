@@ -1,5 +1,5 @@
 import Foundation
-import gdk
+
 import UIKit
 import core
 protocol DialogSwapJadeEnabledViewControllerDelegate: AnyObject {

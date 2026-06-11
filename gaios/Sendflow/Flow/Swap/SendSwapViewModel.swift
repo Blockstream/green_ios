@@ -2,7 +2,6 @@ import Foundation
 import UIKit
 import AsyncAlgorithms
 import LiquidWalletKit
-import gdk
 import core
 
 @MainActor
@@ -18,7 +17,7 @@ final class SendSwapViewModel {
     let delegate: SendSwapViewModelDelegate?
     var bitcoinFeeEstimator: FeeEstimator?
     var liquidFeeEstimator: FeeEstimator?
-    var gdkTransaction: gdk.Transaction?
+    var gdkTransaction: core.Transaction?
 
     init(wallet: WalletManager, subaccount: WalletItem?, assetId: String?, delegate: SendSwapViewModelDelegate?) {
         self.wm = wallet
@@ -306,7 +305,7 @@ final class SendSwapViewModel {
         }
     }
     // build cross chain lockup on background thread
-    private nonisolated func handleCrossChainSwap(state: SwapPositionState) async throws -> (TransactionDraft, gdk.Transaction) {
+    private nonisolated func handleCrossChainSwap(state: SwapPositionState) async throws -> (TransactionDraft, core.Transaction) {
         guard let accountFrom = state.from.account, let accountTo = state.to.account, let amount = state.from.amount else {
             throw SendFlowError.invalidPaymentTarget
         }

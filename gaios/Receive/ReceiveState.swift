@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
+import lightning
 import core
-import gdk
 import LiquidWalletKit
 import greenaddress
 import lightning
@@ -29,9 +29,9 @@ struct ReceiveState {
     var satoshi: Int64?
     var selectedSegment: Int = 0
     var reverseSwapInfo: BoltzReverseSwapInfoLBTC?
-    var inputDenomination: gdk.DenominationType
+    var inputDenomination: DenominationType
     // liquid / bitcoin address
-    var address: gdk.Address?
+    var address: core.Address?
     // lwk lightning invoice response
     var lwkInvoice: InvoiceResponse?
     // greenlight lightning invoice response
@@ -107,7 +107,7 @@ struct ReceiveState {
         }
     }
     let minAmountOpening: UInt64 = 25000
-    var gdkNetwork: gdk.GdkNetwork? {
+    var gdkNetwork: GdkNetwork? {
         subaccount.session?.gdkNetwork
     }
     var scope: AmountFieldScope {

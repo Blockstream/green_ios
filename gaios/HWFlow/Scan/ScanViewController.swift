@@ -1,5 +1,5 @@
 import UIKit
-import gdk
+
 import CoreBluetooth
 import AsyncBluetooth
 import Combine
@@ -296,7 +296,7 @@ extension ScanViewController: QRUnlockJadeViewControllerDelegate {
         
     }
     
-    func login(credentials: gdk.Credentials, wallet: WalletManager, account: Wallet) {
+    func login(credentials: Credentials, wallet: WalletManager, account: Wallet) {
         WalletsStorage.shared.current = account
         AccountNavigator.navLogged(walletId: account.id)
     }

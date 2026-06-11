@@ -1,6 +1,6 @@
 import UIKit
 import core
-import gdk
+
 import AsyncAlgorithms
 import greenaddress
 

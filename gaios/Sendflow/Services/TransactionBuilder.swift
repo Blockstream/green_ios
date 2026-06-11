@@ -1,7 +1,7 @@
 import Foundation
 import LiquidWalletKit
 import core
-import gdk
+
 import greenaddress
 import lightning
 
@@ -100,7 +100,7 @@ actor TransactionBuilder {
                 swapPayResponse: swapPayResponse)
         }
     }
-    static func buildGdkTransaction(uri: String, satoshi: Int64, session: SessionManager, subaccount: WalletItem) async throws -> gdk.Transaction {
+    static func buildGdkTransaction(uri: String, satoshi: Int64, session: SessionManager, subaccount: WalletItem) async throws -> core.Transaction {
         return try await Task.detached(priority: .userInitiated) {
             var tx = Transaction([:], subaccountId: subaccount.id)
             tx.feeRate = try await session.getFeeEstimates()?.first ?? session.gdkNetwork.defaultFee
@@ -112,7 +112,7 @@ actor TransactionBuilder {
             return tx
         }.value
     }
-    static func sendGdkTransaction(tx: gdk.Transaction, session: SessionManager) async throws -> SendTransactionSuccess {
+    static func sendGdkTransaction(tx: core.Transaction, session: SessionManager) async throws -> SendTransactionSuccess {
         return try await Task.detached(priority: .userInitiated) {
             var tx = tx
             if session.networkType.liquid {
@@ -157,7 +157,7 @@ actor TransactionBuilder {
         }.value
     }
 
-    static func buildSubmarineSwapTransaction(lightningPayment: LightningPayment, lwk: LwkSessionManager, subaccount: WalletItem, xpub: String) async throws -> (PreparePayResponse?, gdk.Transaction) {
+    static func buildSubmarineSwapTransaction(lightningPayment: LightningPayment, lwk: LwkSessionManager, subaccount: WalletItem, xpub: String) async throws -> (PreparePayResponse?, core.Transaction) {
         return try await Task.detached(priority: .userInitiated) {
             guard let session = subaccount.session else {
                 throw TransactionError.invalid(localizedDescription: "No Lwk session")
@@ -200,8 +200,8 @@ actor TransactionBuilder {
         }
     }
     static func buildGdkTransaction(lockupResponse: LockupResponse, subaccount: WalletItem, feeRate: UInt64? = nil) async throws ->
-    gdk.Transaction {
-        
+    core.Transaction {
+
         return try await Task.detached(priority: .userInitiated) {
             guard let session = subaccount.session else {
                 throw SendFlowError.invalidSession
@@ -252,7 +252,7 @@ actor TransactionBuilder {
         }.value
     }
 
-    func buildGdkTransaction(psbt: String, subaccount: WalletItem) async throws -> gdk.Transaction {
+    func buildGdkTransaction(psbt: String, subaccount: WalletItem) async throws -> core.Transaction {
         return try await Task.detached(priority: .userInitiated) {
             let wallyPsbt = try Wally.psbtFromBase64(psbt)
             let isFinalized = try Wally.psbtIsFinalized(wallyPsbt)
@@ -340,7 +340,7 @@ actor TransactionBuilder {
         }
     }
 
-    static func build(from lightningSubaccount: WalletItem, invoice: Bolt11Invoice, satoshi: UInt64?) async throws -> gdk.Transaction {
+    static func build(from lightningSubaccount: WalletItem, invoice: Bolt11Invoice, satoshi: UInt64?) async throws -> core.Transaction {
         return try await Task.detached(priority: .userInitiated) {
             guard let lightningSession = lightningSubaccount.lightningSession else {
                 throw GaError.GenericError("No lightning subaccount session")
@@ -365,7 +365,7 @@ actor TransactionBuilder {
         }.value
     }
 
-    static func build(from lightningSubaccount: WalletItem, lnurl: String, payment: LiquidWalletKit.Payment, satoshi: UInt64) async throws -> gdk.Transaction {
+    static func build(from lightningSubaccount: WalletItem, lnurl: String, payment: LiquidWalletKit.Payment, satoshi: UInt64) async throws -> core.Transaction {
         return try await Task.detached(priority: .userInitiated) {
             guard payment.kind() == .lnUrl else {
                 throw TransactionError.invalid(localizedDescription: "Invalid LNURL")

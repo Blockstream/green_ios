@@ -1,5 +1,5 @@
 import UIKit
-import gdk
+
 
 class AppSettingsCell: UITableViewCell {
 

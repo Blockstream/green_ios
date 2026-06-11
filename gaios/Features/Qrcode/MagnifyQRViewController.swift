@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import gdk
+import core
 import ScreenShield
 
 protocol MagnifyQRViewControllerDelegate: AnyObject {

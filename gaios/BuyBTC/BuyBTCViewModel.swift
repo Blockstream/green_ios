@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import gdk
+
 import greenaddress
 import hw
 import lightning
@@ -28,7 +28,7 @@ class BuyBTCViewModel {
     var isFiat: Bool = true
     var account: WalletItem
     var mainWallet: Wallet? { WalletsStorage.shared.current }
-    var inputDenomination: gdk.DenominationType = .Sats
+    var inputDenomination: DenominationType = .Sats
     var meld: Meld
     var wm: WalletManager { WalletManager.current! }
     var backupCardCellModel = [AlertCardCellModel]()

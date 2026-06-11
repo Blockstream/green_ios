@@ -1,5 +1,5 @@
 import Foundation
-import gdk
+
 import core
 
 protocol SendSwapViewModelDelegate: AnyObject {
@@ -8,7 +8,7 @@ protocol SendSwapViewModelDelegate: AnyObject {
     @MainActor
     func sendSwapViewModelWillSelectFee(_ vm: SendSwapViewModel, feeEstimator: FeeEstimator, priority: TransactionPriority, isLiquid: Bool)
     @MainActor
-    func sendSwapViewModelDidTransaction(_ vm: SendSwapViewModel, draft: TransactionDraft, gdkTransaction: gdk.Transaction)
+    func sendSwapViewModelDidTransaction(_ vm: SendSwapViewModel, draft: TransactionDraft, gdkTransaction: Transaction)
     @MainActor
     func sendSwapViewModelDidFail(_ vm: SendSwapViewModel, error: Error)
 }

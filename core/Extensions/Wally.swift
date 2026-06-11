@@ -1,5 +1,5 @@
 import greenaddress
-import gdk
+
 
 extension Wally {
     public static func getWallyNetwork(_ network: NetworkSecurityCase) -> UInt32 {

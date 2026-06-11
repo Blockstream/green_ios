@@ -1,7 +1,7 @@
 import core
 import CoreData
 @preconcurrency import LiquidWalletKit
-@preconcurrency import gdk
+@preconcurrency 
 
 struct TransactionDraft: Sendable {
     var subaccount: WalletItem?

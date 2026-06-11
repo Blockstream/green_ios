@@ -1,6 +1,6 @@
 import UIKit
 import core
-import gdk
+
 
 class ReEnable2faViewController: UIViewController {
 

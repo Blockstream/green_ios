@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import core
 import LiquidWalletKit
-@preconcurrency import gdk
+@preconcurrency 
 
 enum SwapPositionEnum: Sendable {
     case from
@@ -15,7 +15,7 @@ struct SwapPositionState: Sendable {
     var priority: TransactionPriority
     var error: Error?
     var isFiat: Bool = false
-    var denomination: gdk.DenominationType
+    var denomination: DenominationType
     var feeRate: UInt64?
     var networkFee: UInt64?
 }

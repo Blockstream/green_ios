@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import core
-import gdk
 import LiquidWalletKit
 
 enum SendRoute {
@@ -28,7 +27,7 @@ final class SendCoordinator {
     private var selectedDenomination: DenominationType = .Sats
 
     private var draft: TransactionDraft?
-    private var gdkTransaction: gdk.Transaction?
+    private var gdkTransaction: core.Transaction?
     private var sendTransactionSuccess: SendTransactionSuccess?
     private var sendHWViewController: SendHWViewController?
     private var sendSwapViewModel: SendSwapViewModel?
@@ -572,7 +571,7 @@ extension SendCoordinator {
     private func makeSignViewModel(
         draft: TransactionDraft,
         subaccount: WalletItem,
-        tx: gdk.Transaction
+        tx: core.Transaction
     ) -> SendLwkSignViewModel {
         SendLwkSignViewModel(
             mainWallet: mainWallet,
@@ -640,7 +639,7 @@ extension SendCoordinator: SendAddressViewModelDelegate {
     func sendAddressViewModel(
         _ vm: SendAddressViewModel,
         paymentTarget: PaymentTarget,
-        subaccount: gdk.WalletItem?,
+        subaccount: WalletItem?,
         assetId: String?) {
         var subaccountToUse: WalletItem? = subaccount
         var assetIdToUse: AssetId? = assetId
@@ -726,7 +725,7 @@ extension SendCoordinator: SendAccountAssetViewModelDelegate {
         forwardError(error)
     }
 
-    func didSelectAccountAsset(_ vm: SendAccountAssetViewModel, subaccount: gdk.WalletItem, assetId: String?) {
+    func didSelectAccountAsset(_ vm: SendAccountAssetViewModel, subaccount: WalletItem, assetId: String?) {
         let updatedDraft = TransactionDraft.init(
             subaccount: subaccount,
             address: nil,
@@ -819,7 +818,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
         }
     }
 
-    func didSendLwkSignViewModelWillSend(_ vm: SendLwkSignViewModel, transaction: gdk.Transaction) {
+    func didSendLwkSignViewModelWillSend(_ vm: SendLwkSignViewModel, transaction: core.Transaction) {
         AnalyticsManager.shared.startSendTransaction()
         AnalyticsManager.shared.startFailedTransaction()
         let segment = AnalyticsManager.TransactionSegmentation(
@@ -866,7 +865,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             }
         }
     }
-    func handleSend(vm: SendLwkSignViewModel, transaction: gdk.Transaction) async -> SendRoute {
+    func handleSend(vm: SendLwkSignViewModel, transaction: core.Transaction) async -> SendRoute {
         let isHW = mainWallet.isHW
         let xpubHashId = mainWallet.xpubHashId
         let isLightning = transaction.subaccount?.isLightning ?? false
@@ -939,7 +938,7 @@ extension SendCoordinator: SendSwapViewModelDelegate {
         sendSwapViewModel = vm
         Task { await navigate(to: .dialogSelectSubaccounts(model)) }
     }
-    func sendSwapViewModelDidTransaction(_ vm: SendSwapViewModel, draft: TransactionDraft, gdkTransaction: gdk.Transaction) {
+    func sendSwapViewModelDidTransaction(_ vm: SendSwapViewModel, draft: TransactionDraft, gdkTransaction: core.Transaction) {
         self.gdkTransaction = gdkTransaction
         self.draft = draft
         self.selectedFiat = vm.currentState().isFiat
@@ -963,14 +962,14 @@ extension SendCoordinator: SendSwapViewModelDelegate {
     }
 }
 extension SendCoordinator: DialogAccountsViewControllerDelegate {
-    func didSelectAccount(_ walletItem: gdk.WalletItem?) {
+    func didSelectAccount(_ walletItem: WalletItem?) {
         if let subaccount = walletItem, let position = sendSwapViewModel?.selectedPosition {
             sendSwapViewModel?.updateAccount(account: subaccount, for: position)
         }
     }
 }
 extension SendCoordinator: SendSwapFeeViewModelDelegate {
-    func sendSwapFeeViewModelDidSelect(_ vm: SendSwapFeeViewModel, transactionPriority: gdk.TransactionPriority, feeRate: UInt64) {
+    func sendSwapFeeViewModelDidSelect(_ vm: SendSwapFeeViewModel, transactionPriority: TransactionPriority, feeRate: UInt64) {
         sendSwapViewModel?.updatePriority(priority: transactionPriority, feeRate: feeRate)
     }
     func sendSwapFeeViewModelDismiss(_ vm: SendSwapFeeViewModel) {

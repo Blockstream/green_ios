@@ -1,6 +1,6 @@
 import UIKit
 import core
-import gdk
+
 
 protocol TwoFactorAuthenticationViewControllerDelegate: AnyObject {
     func userLogout()

@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import gdk
+import core
 
 protocol SendSwapFeeViewControllerDelegate: AnyObject {
     func select(transactionPriority: TransactionPriority, feeRate: UInt64?)

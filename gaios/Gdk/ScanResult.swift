@@ -1,5 +1,5 @@
 import Foundation
-import gdk
+import core
 
 public typealias ScanResult = [String: Any?]
 extension ScanResult {

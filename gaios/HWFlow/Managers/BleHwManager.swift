@@ -2,7 +2,7 @@ import Foundation
 import AsyncBluetooth
 import CoreBluetooth
 import hw
-import gdk
+
 import greenaddress
 import core
 

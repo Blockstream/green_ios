@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import gdk
+
 
 protocol AccountSettingsViewControllerDelegate: AnyObject {
     func didSelectAction(_ type: AccountSettingsType)

@@ -1,7 +1,7 @@
 import Foundation
 import core
 import UIKit
-import gdk
+
 import hw
 
 enum QRUnlockScope: Equatable {

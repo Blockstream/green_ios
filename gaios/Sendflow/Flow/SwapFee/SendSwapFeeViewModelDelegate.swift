@@ -1,5 +1,5 @@
 import Foundation
-import gdk
+import core
 
 protocol SendSwapFeeViewModelDelegate: AnyObject {
     @MainActor

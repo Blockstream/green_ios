@@ -1,7 +1,7 @@
 import Foundation
 import core
 import StoreKit
-import gdk
+
 
 class StoreReviewHelper {
 

@@ -1,5 +1,5 @@
 import Foundation
-import gdk
+import core
 
 enum PolicyCellType: String, CaseIterable {
     case NativeSegwit

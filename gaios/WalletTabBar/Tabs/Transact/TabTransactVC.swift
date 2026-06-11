@@ -1,5 +1,5 @@
 import UIKit
-import gdk
+
 import core
 
 class TabTransactVC: TabViewController {
@@ -443,7 +443,7 @@ extension TabTransactVC: AssetSelectViewControllerDelegate {
     }
 }
 extension TabTransactVC: DialogAccountsViewControllerDelegate {
-    func didSelectAccount(_ walletItem: gdk.WalletItem?) {
+    func didSelectAccount(_ walletItem: WalletItem?) {
         if let nav = navigationController, let account = walletItem, let anyOrAsset {
             activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainWallet) { [
                 weak self,

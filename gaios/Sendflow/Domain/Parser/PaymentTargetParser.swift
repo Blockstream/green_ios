@@ -1,7 +1,7 @@
 import LiquidWalletKit
 import Foundation
 @preconcurrency import core
-import gdk
+
 import greenaddress
 import GreenlightSDK
 

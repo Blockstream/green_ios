@@ -3,7 +3,7 @@ import CoreBluetooth
 import RiveRuntime
 import AsyncBluetooth
 import Combine
-import gdk
+
 import core
 
 class JadeWaitViewController: HWFlowBaseViewController {
@@ -279,7 +279,7 @@ extension JadeWaitViewController: QRUnlockJadeViewControllerDelegate {
         // nothing
     }
 
-    func login(credentials: gdk.Credentials, wallet: core.WalletManager, account: Wallet) {
+    func login(credentials: Credentials, wallet: core.WalletManager, account: Wallet) {
         WalletsStorage.shared.current = account
         AccountNavigator.navLogged(walletId: account.id)
     }

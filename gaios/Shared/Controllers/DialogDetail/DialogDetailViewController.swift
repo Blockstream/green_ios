@@ -2,7 +2,7 @@ import Foundation
 import core
 import UIKit
 
-import gdk
+
 
 enum DetailCellType: CaseIterable {
     case name

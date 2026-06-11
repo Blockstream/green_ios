@@ -1,6 +1,6 @@
 import Foundation
 import OSLog
-import gdk
+
 import greenaddress
 import hw
 

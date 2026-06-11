@@ -1,6 +1,6 @@
 import UIKit
 import core
-import gdk
+
 
 enum SecuritySelectSection: Int, CaseIterable {
     case asset

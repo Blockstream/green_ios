@@ -1,7 +1,6 @@
 
 import Foundation
 import GreenlightSDK
-import gdk
 import greenaddress
 import lightning
 import LiquidWalletKit
@@ -31,11 +30,11 @@ public class LightningSessionManager: SessionManager {
         return appSupport.appending(path: path)
     }
     
-    public override func loginUser(_ params: gdk.Credentials) async throws -> LoginUserResult {
+    public override func loginUser(_ params: Credentials) async throws -> LoginUserResult {
         return try await self.loginUser(params, isForceConnectAllowed: true)
     }
 
-    public func loginUser(_ params: gdk.Credentials, isForceConnectAllowed: Bool) async throws -> LoginUserResult {
+    public func loginUser(_ params: Credentials, isForceConnectAllowed: Bool) async throws -> LoginUserResult {
         guard let greenlightKeys = LightningSdk.CREDENTIALS else {
             throw GreenlightSDK.Error.Other("No greenlight keys found")
         }
@@ -156,7 +155,7 @@ public class LightningSessionManager: SessionManager {
         return sdk?.nodeState
     }
 
-    public override func createTransaction(tx: gdk.Transaction) async throws -> gdk.Transaction {
+    public override func createTransaction(tx: Transaction) async throws -> Transaction {
         guard let addressee = tx.addressees.first else {
             throw GreenlightSDK.Error.Other("Invalid invoice")
         }
@@ -179,10 +178,10 @@ public class LightningSessionManager: SessionManager {
         return tx
     }
 
-    public override func signTransaction(tx: gdk.Transaction) async throws -> gdk.Transaction {
+    public override func signTransaction(tx: Transaction) async throws -> Transaction {
         return tx
     }
-    public override func sendTransaction(tx: gdk.Transaction) async throws -> SendTransactionSuccess {
+    public override func sendTransaction(tx: Transaction) async throws -> SendTransactionSuccess {
         guard let sdk else {
             throw GreenlightSDK.Error.Other("Not connected")
         }
@@ -202,12 +201,12 @@ public class LightningSessionManager: SessionManager {
         let res = try await sdk.redeemAllOnchainFunds(destination: destination)
         return res.txid
     }
-    public override func getReceiveAddress(subaccount: UInt32) async throws -> gdk.Address {
+    public override func getReceiveAddress(subaccount: UInt32) async throws -> Address {
         guard let sdk else {
             throw GreenlightSDK.Error.Other("Not connected")
         }
         let res = try await sdk.onchainReceive()
-        return gdk.Address(address: res.bech32)
+        return Address(address: res.bech32)
     }
     public func registerNotification(fcmToken: String, xpubHashId: String) async throws {
         let nodeId = nodeState()?.id
@@ -218,8 +217,8 @@ public class LightningSessionManager: SessionManager {
         )
     }
 }
-extension gdk.Transaction {
-    static public func from(payment: GreenlightSDK.Payment, subaccountId: String) -> gdk.Transaction {
+extension Transaction {
+    static public func from(payment: GreenlightSDK.Payment, subaccountId: String) -> Transaction {
         var tx = Transaction([:])
         tx.subaccountId = subaccountId
         let amount = Int64(payment.amountMsat) * (payment.paymentType == .received ? 1 : -1)

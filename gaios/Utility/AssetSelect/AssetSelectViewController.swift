@@ -1,6 +1,6 @@
 import UIKit
 import core
-import gdk
+
 
 protocol AssetSelectViewControllerDelegate: AnyObject {
     func didSelectAnyOrAsset(_ ref: AnyOrAsset)

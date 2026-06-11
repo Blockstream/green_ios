@@ -1,6 +1,6 @@
 import Foundation
 import core
-import gdk
+
 import greenaddress
 import UIKit
 import LiquidWalletKit
@@ -13,7 +13,7 @@ enum VerifyAddressState {
 
 class SendTxConfirmViewModel {
 
-    var transaction: gdk.Transaction?
+    var transaction: core.Transaction?
     var subaccount: WalletItem?
     var wm: WalletManager? { WalletManager.current }
     var mainWallet: Wallet? { WalletsStorage.shared.current }
@@ -36,12 +36,12 @@ class SendTxConfirmViewModel {
     var signedPsbt: String?
     var bcurUnsignedPsbt: BcurEncodedData?
     var importSignedPsbt = false
-    var txAddresses: [gdk.Address]? {
+    var txAddresses: [core.Address]? {
         transaction?.addressees.compactMap { Address(address: $0.address, subtype: $0.subtype, userPath: $0.userPath, isGreedy: $0.isGreedy) }
     }
     var pay: PreparePayResponse?
 
-    internal init(transaction: gdk.Transaction?, subaccount: WalletItem?, denominationType: DenominationType, isFiat: Bool, txType: TxType, unsignedPsbt: String?, signedPsbt: String?) {
+    internal init(transaction: core.Transaction?, subaccount: WalletItem?, denominationType: DenominationType, isFiat: Bool, txType: TxType, unsignedPsbt: String?, signedPsbt: String?) {
         self.transaction = transaction
         self.subaccount = subaccount
         self.denominationType = denominationType
@@ -269,14 +269,14 @@ class SendTxConfirmViewModel {
         return URL(string: (subaccount?.gdkNetwork.txExplorerUrl ?? "") + (sendTransaction?.txHash ?? "") + (transaction?.blindingUrlString(address: address) ?? ""))
     }
 
-    func validateHW(_ address: gdk.Address) async throws -> Bool {
+    func validateHW(_ address: core.Address) async throws -> Bool {
         guard let subaccount = subaccount else {
             throw GaError.GenericError("id_invalid_subaccount".localized)
         }
         return try await BleHwManager.shared.validateAddress(account: subaccount, address: address)
     }
 
-    func sendVerifyOnDeviceViewModel(_ address: gdk.Address) -> HWDialogVerifyOnDeviceViewModel? {
+    func sendVerifyOnDeviceViewModel(_ address: core.Address) -> HWDialogVerifyOnDeviceViewModel? {
         guard let address = address.address else { return nil }
         let account = WalletsStorage.shared.current
         return HWDialogVerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false,

@@ -1,17 +1,16 @@
 import Foundation
 import core
-import gdk
 import LiquidWalletKit
 import greenaddress
 
 @MainActor
 final class SendSuccessViewModel: Sendable {
     let sendTransactionSuccess: SendTransactionSuccess
-    let tx: gdk.Transaction
+    let tx: core.Transaction
     let total: String?
     let delegate: SendSuccessViewModelDelegate?
 
-    internal init(sendTransactionSuccess: SendTransactionSuccess, tx: gdk.Transaction, total: String?, delegate: SendSuccessViewModelDelegate?) {
+    internal init(sendTransactionSuccess: SendTransactionSuccess, tx: core.Transaction, total: String?, delegate: SendSuccessViewModelDelegate?) {
         self.sendTransactionSuccess = sendTransactionSuccess
         self.tx = tx
         self.total = total

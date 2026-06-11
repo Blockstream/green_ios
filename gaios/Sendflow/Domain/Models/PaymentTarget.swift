@@ -1,7 +1,7 @@
 import LiquidWalletKit
 import Foundation
 import core
-import gdk
+
 import greenaddress
 
 enum PaymentTarget {

@@ -1,7 +1,7 @@
 import Foundation
 import core
 import greenaddress
-import gdk
+
 
 enum MeldTransactionType: String {
     case BUY

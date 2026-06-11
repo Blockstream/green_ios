@@ -3,7 +3,7 @@ import AsyncAlgorithms
 
 import core
 import greenaddress
-@preconcurrency import gdk
+@preconcurrency 
 
 actor WalletDataModel {
 
@@ -431,7 +431,7 @@ actor WalletDataModel {
 extension WalletDataModel: NewNotificationDelegate {
     nonisolated func didReceive(
         event: core.EventNotificationTypes,
-        networkType: gdk.NetworkSecurityCase
+        networkType: NetworkSecurityCase
     ) {
         Task { await handleEvent(event) }
     }

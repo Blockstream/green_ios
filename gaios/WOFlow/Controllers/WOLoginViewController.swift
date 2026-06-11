@@ -2,7 +2,7 @@ import Foundation
 import LocalAuthentication
 import UIKit
 import core
-import gdk
+
 
 class WOLoginViewController: KeyboardViewController {
 

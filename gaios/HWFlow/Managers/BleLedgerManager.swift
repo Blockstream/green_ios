@@ -1,7 +1,7 @@
 import Foundation
 import AsyncBluetooth
 import hw
-import gdk
+
 import core
 
 class BleLedgerManager {

@@ -1,6 +1,9 @@
 import Foundation
+import UIKit
+import greenaddress
+import hw
+import lightning
 import core
-import gdk
 import LiquidWalletKit
 import greenaddress
 
@@ -46,6 +49,7 @@ final class ReceiveViewModel: Sendable {
         self.mainAccount = mainAccount
         self.delegate = delegate
         self.receiveService = receiveService
+
         self.walletDataModel = walletDataModel
 
         let type: ReceiveType = anyOrAsset.assetId == AssetInfo.lightningId ? .bolt11 : .address
@@ -224,7 +228,7 @@ final class ReceiveViewModel: Sendable {
         state.isFiat = true
         onUpdate?(nil)
     }
-    func selectDenomination(_ denom: gdk.DenominationType) {
+    func selectDenomination(_ denom: DenominationType) {
         paymentTask?.cancel()
         state.isFiat = false
         state.inputDenomination = denom

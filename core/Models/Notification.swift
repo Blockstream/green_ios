@@ -1,6 +1,6 @@
 import Foundation
 import greenaddress
-import gdk
+
 import GreenlightSDK
 
 public enum EventNotificationTypes {

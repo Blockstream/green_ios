@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import gdk
+
 
 protocol DialogCustomFeeViewControllerDelegate: AnyObject {
     func didSave(fee: UInt64?)
