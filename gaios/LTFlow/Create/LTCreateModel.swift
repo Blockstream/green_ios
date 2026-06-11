@@ -34,6 +34,13 @@ struct LTCreateViewModel {
                 credentials: lightningCredentials,
                 for: mainAccount.keychainLightning
             )
+        
+        // Register device to receive notifications
+        let token = UserDefaults(suiteName: Bundle.main.appGroup)?.string(forKey: "token") ?? ""
+        if !token.isEmpty, let xpubHashId = mainAccount.xpubHashId {
+            try? await session.registerNotification(fcmToken: token, xpubHashId: xpubHashId)
+        }
+        
         // Update subaccounts and UI
         await wallet.triggerRefresh(
                 features: [.subaccounts]

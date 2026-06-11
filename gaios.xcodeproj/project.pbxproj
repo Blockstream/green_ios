@@ -830,6 +830,9 @@
 		C71E2AA72FBB0419003E816A /* LTDetailsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C71E2AA62FBB0419003E816A /* LTDetailsCell.xib */; };
 		C742272B2FC0991800BDE83E /* LTSettingsDialogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C742272A2FC0991800BDE83E /* LTSettingsDialogViewController.swift */; };
 		C78788722FB74648009F2907 /* lightning_success.riv in Resources */ = {isa = PBXBuildFile; fileRef = C78788712FB74648009F2907 /* lightning_success.riv */; };
+		C79C85A62FD9881A00501B33 /* LightningTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A52FD9881A00501B33 /* LightningTask.swift */; };
+		C79C85A82FD98CEE00501B33 /* NotificationDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A72FD98CEE00501B33 /* NotificationDeviceManager.swift */; };
+		C79C85AA2FD9A94F00501B33 /* LightningModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A92FD9A94F00501B33 /* LightningModel.swift */; };
 		FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7522374F1A0035F95A /* UIButton.swift */; };
 		FF29CA7822374F8D0035F95A /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7722374F8D0035F95A /* UILabel.swift */; };
 /* End PBXBuildFile section */
@@ -1838,6 +1841,9 @@
 		C71E2AA62FBB0419003E816A /* LTDetailsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LTDetailsCell.xib; sourceTree = "<group>"; };
 		C742272A2FC0991800BDE83E /* LTSettingsDialogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTSettingsDialogViewController.swift; sourceTree = "<group>"; };
 		C78788712FB74648009F2907 /* lightning_success.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = lightning_success.riv; sourceTree = "<group>"; };
+		C79C85A52FD9881A00501B33 /* LightningTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningTask.swift; sourceTree = "<group>"; };
+		C79C85A72FD98CEE00501B33 /* NotificationDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDeviceManager.swift; sourceTree = "<group>"; };
+		C79C85A92FD9A94F00501B33 /* LightningModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningModel.swift; sourceTree = "<group>"; };
 		FF29CA7122374E8B0035F95A /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		FF29CA7522374F1A0035F95A /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
 		FF29CA7722374F8D0035F95A /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
@@ -3975,6 +3981,7 @@
 				81BF5D4828C885AF006225C6 /* WalletManager.swift */,
 				81CCDF072B9F3E3800C8490C /* Logger.swift */,
 				81EB9F9C2F582CAE00C335AE /* SwapMonitor.swift */,
+				C79C85A72FD98CEE00501B33 /* NotificationDeviceManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -3982,6 +3989,7 @@
 		8177EDB12B6C743B00C2271C /* Tasks */ = {
 			isa = PBXGroup;
 			children = (
+				C79C85A12FD9764900501B33 /* Lightning */,
 				815D63A22F6426DA000A4CD7 /* Swap */,
 				2096C07A2DCFB22E000E3E0F /* MeldTypes.swift */,
 				201BF8912DCFA4AD003A9383 /* MeldTransactionTask.swift */,
@@ -4585,6 +4593,15 @@
 				C71E2A9F2FBB0263003E816A /* LTDetailsModel.swift */,
 			);
 			path = Details;
+			sourceTree = "<group>";
+		};
+		C79C85A12FD9764900501B33 /* Lightning */ = {
+			isa = PBXGroup;
+			children = (
+				C79C85A92FD9A94F00501B33 /* LightningModel.swift */,
+				C79C85A52FD9881A00501B33 /* LightningTask.swift */,
+			);
+			path = Lightning;
 			sourceTree = "<group>";
 		};
 		FF29CA7022374D670035F95A /* Extensions */ = {
@@ -5762,6 +5779,8 @@
 				2096C07B2DCFB22E000E3E0F /* MeldTypes.swift in Sources */,
 				81F8AC552BC56F5D002E384D /* NotificationService.swift in Sources */,
 				811931F72EB9A08A00AD21D4 /* SwapTask.swift in Sources */,
+				C79C85AA2FD9A94F00501B33 /* LightningModel.swift in Sources */,
+				C79C85A62FD9881A00501B33 /* LightningTask.swift in Sources */,
 				815D63A42F6426FC000A4CD7 /* SwapManager.swift in Sources */,
 				201BF8922DCFA4AD003A9383 /* MeldTransactionTask.swift in Sources */,
 			);
@@ -5788,6 +5807,7 @@
 				8177EE132B6C933300C2271C /* AccountType.swift in Sources */,
 				8177EE142B6C933300C2271C /* AssetInfo.swift in Sources */,
 				8177EE152B6C933300C2271C /* WalletItem.swift in Sources */,
+				C79C85A82FD98CEE00501B33 /* NotificationDeviceManager.swift in Sources */,
 				81B0DC452E94792400CE6F5D /* LwkSessionManager.swift in Sources */,
 				816E9BDB2BC5199C008DBFA7 /* SerialTasks.swift in Sources */,
 				81FBF6792E65253100852F93 /* Wally.swift in Sources */,

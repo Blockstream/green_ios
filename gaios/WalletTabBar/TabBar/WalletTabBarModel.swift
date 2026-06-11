@@ -81,9 +81,7 @@ class WalletTabBarModel {
         }
         /// Register notification token for lightning
         if let lightningSession = wallet.lightningSession, lightningSession.logged {
-            /// TODO: reigster lightning notifications
-            ///try? await lightningSession.registerNotification(token: token, xpubHashId: xpubHashId)
-            // _ = lightningSession.lightBridge?.updateLspInformation()
+            try? await lightningSession.registerNotification(fcmToken: token, xpubHashId: xpubHashId)
         }
     }
     func startSwapMonitor() async throws {

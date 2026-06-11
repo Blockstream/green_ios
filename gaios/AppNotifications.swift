@@ -106,13 +106,19 @@ extension AppNotifications: UNUserNotificationCenterDelegate {
         // User TAP on local/remote notification
         let content = response.notification.request.content.userInfo
         logger.info("userNotificationCenter didReceive \(content.description)")
-        // For lightning notification
-        let appData = content["app_data"] as? String
+        // For lightning and boltz/lwk notification
+        let walletXpub = content["wallet_hashed_id"] as? String
         // For meld notification
-        let payload = content["payload"] as? String
-        let txPayload = try? JSONDecoder().decode(MeldTransactionPayload.self, from: Data((payload ?? "").utf8))
+        var meldXpub: String? = nil
+        if let payloadStr = content["payload"] as? String,
+           let txPayload = try? JSONDecoder().decode(MeldTransactionPayload.self, from: Data(payloadStr.utf8)) {
+            meldXpub = txPayload.externalCustomerId
+        } else if let payloadDict = content["payload"] as? [String: Any] {
+            meldXpub = payloadDict["externalCustomerId"] as? String
+        }
+        
         // Open Screen
-        if let xpub = appData ?? txPayload?.externalCustomerId,
+        if let xpub = walletXpub ?? meldXpub,
            let account = getAccount(xpub: xpub) {
             if let wm = WalletsRepository.shared.get(for: account), wm.logged {
                 AccountNavigator.navLogged(accountId: account.id)

@@ -19,17 +19,6 @@ public enum NotificationType: String, Codable {
     case boltzEvent = "BOLTZ_EVENT"
 }
 
-public struct LightningEvent: Codable {
-    enum CodingKeys: String, CodingKey {
-        case appData = "app_data"
-        case notificationType = "notification_type"
-        case notificationPayload = "notification_payload"
-    }
-    let appData: String?
-    let notificationType: NotificationType
-    let notificationPayload: String?
-}
-
 public enum NotificationError: Error {
     case InvalidNotification
     case InvalidSwap
@@ -179,27 +168,42 @@ class NotificationService: UNNotificationServiceExtension {
     }
 
     func didReceiveLightning(_ notification: LightningEvent) async {
-        guard let xpub = notification.appData else {
-            logger.error("NotificationService: Invalid xpub: \(self.bestAttemptContent?.userInfo.description ?? "", privacy: .public)")
-            shutdown()
-            return
-        }
-        logger.info("NotificationService: xpub: \(xpub, privacy: .public)")
-        guard let account = getAccount(xpub: xpub) else {
-            logger.error("NotificationService: Wallet not lightning found")
-            shutdown()
-            return
-        }
-        logger.info("NotificationService: Using lightning wallet \(account.name, privacy: .public)")
-        let task = Task { [weak self] in
-            logger.info("NotificationService: todo: start task....")
-        }
-        switch await task.result {
-        case .success:
-            logger.info("NotificationService: MeldTransactionTask starts successfully")
-        case .failure(let err):
-            logger.error("NotificationService: failed \(err.localizedDescription, privacy: .public)")
-            shutdown()
+        do {
+            guard let xpub = notification.walletHashedId else {
+                throw NotificationError.InvalidNotification
+            }
+            logger.info("NotificationService: xpub: \(xpub, privacy: .public)")
+            
+            guard let account = getAccount(xpub: xpub),
+                  let xpubHashId = account.xpubHashId else {
+                throw NotificationError.WalletNotFound
+            }
+            
+            bestAttemptContent?.title = account.name
+            bestAttemptContent?.threadIdentifier = xpubHashId
+            bestAttemptContent?.body = notification.displayMessage ?? "Lightning is running in the background"
+            
+            #if DEBUG
+            let canWakeSigner = true
+            #else
+            let canWakeSigner = (notification.eventType == .incomingPayment)
+            #endif
+            
+            if canWakeSigner {
+                logger.info("NotificationService: Using lightning wallet \(account.name, privacy: .public)")
+                let keychainLightning = account.keychainLightning
+                let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: keychainLightning)
+                guard let mnemonic = credentials.mnemonic else {
+                    throw NotificationError.Failed
+                }
+                
+                let task = LightningTask()
+                try await task.start(xpubHashId: xpubHashId, secret: mnemonic)
+            } else {
+                logger.info("NotificationService: Event \(notification.eventType.rawValue, privacy: .public) handled")
+            }
+        } catch {
+            logger.error("NotificationService error: \(error.localizedDescription, privacy: .public)")
         }
     }
 

@@ -13,7 +13,7 @@ public class LightningSessionManager: SessionManager {
     var xpubHashId: String?
     var streamTask: Task<Void, Never>?
 
-    init(newNotificationDelegate: NewNotificationDelegate?) {
+    public init(newNotificationDelegate: NewNotificationDelegate?) {
         super.init(.lightning, newNotificationDelegate: newNotificationDelegate)
     }
 
@@ -206,6 +206,14 @@ public class LightningSessionManager: SessionManager {
         }
         let res = try await sdk.onchainReceive()
         return gdk.Address(address: res.bech32)
+    }
+    public func registerNotification(fcmToken: String, xpubHashId: String) async throws {
+        let nodeId = nodeState()?.id
+        try await NotificationDeviceManager.shared.registerDevice(
+            walletHashedId: xpubHashId,
+            fcmToken: fcmToken,
+            nodeId: nodeId
+        )
     }
 }
 extension gdk.Transaction {

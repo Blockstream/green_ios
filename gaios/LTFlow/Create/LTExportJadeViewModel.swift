@@ -51,6 +51,11 @@ class LTExportJadeViewModel {
         _ = try await wm?.subaccounts()
         // Add auth into keychain
         try AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: credentials, for: account.keychainLightning)
+        // Register device to receive notifications
+        let token = UserDefaults(suiteName: Bundle.main.appGroup)?.string(forKey: "token") ?? ""
+        if !token.isEmpty, let mainAccount = mainAccount, let xpubHashId = mainAccount.xpubHashId {
+            try? await session.registerNotification(fcmToken: token, xpubHashId: xpubHashId)
+        }
         // Update subaccounts and UI
         await wallet.triggerRefresh(features: [.subaccounts])
         await wallet.triggerRefresh(features: [.balance, .txs(reset: true)])
