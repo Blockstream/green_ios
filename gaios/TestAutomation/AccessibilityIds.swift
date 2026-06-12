@@ -83,9 +83,24 @@ struct AccessibilityIds {
         static let view = "view_receive"
         static let btnQRCode = "btn_receive_qr_code"
         static let textFieldAmount = "textfield_receive_amount"
+        static let lblLearnWhy = "lbl_receive_learn_why"
     }
     struct ManageAssetScreen {
         static let view = "view_manage_asset"
         static let viewAssetIcon = "view_manage_asset_asset_icon"
+    }
+    struct LNInvoiceScreen {
+        static let view = "view_ln_invoice"
+        static let viewQRCode = "view_ln_invoice_qr_code"
+        static let btnFundFeeInfo = "btn_ln_invoice_fund_fee_info"
+    }
+    struct SendConfirmScreen {
+        static let btnInfoFee = "btn_send_confirm_info_fee"
+    }
+    struct LTCreateScreen {
+        static let viewAnimation = "view_lt_create_animation"
+    }
+    struct LTDetailsScreen {
+        static let iconCopy = "icon_lt_details_copy"
     }
 }

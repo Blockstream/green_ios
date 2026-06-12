@@ -42,6 +42,8 @@ final class QRCodeView: UIView {
         setupSubviews()
     }
     private func setupSubviews() {
+        isAccessibilityElement = true
+        accessibilityTraits = .image
         backgroundColor = .clear
         layer.cornerRadius = 12
         layer.masksToBounds = true

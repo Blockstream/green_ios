@@ -16,6 +16,9 @@ class LTDetailsCell: UITableViewCell {
         bg.setStyle(CardStyle.defaultStyle)
         lblTitle.setStyle(.titleCard)
         lblValue.setStyle(.txtCard)
+        icon.isAccessibilityElement = true
+        icon.accessibilityTraits = .image
+        icon.accessibilityIdentifier = AccessibilityIds.LTDetailsScreen.iconCopy
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

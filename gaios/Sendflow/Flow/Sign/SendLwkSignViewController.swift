@@ -65,6 +65,9 @@ class SendLwkSignViewController: UIViewController {
             addNoteInNavigation()
         }
         reload()
+        
+        btnInfoFee.accessibilityIdentifier = AccessibilityIds.SendConfirmScreen.btnInfoFee
+        btnInfoFee.isAccessibilityElement = true
     }
 
     func setContent() {

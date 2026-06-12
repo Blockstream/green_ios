@@ -56,6 +56,10 @@ class LNInvoiceViewController: UIViewController {
             DropAlert().success(message: "id_payment_received".localized)
         }
         viewModel.listenToEvents()
+
+        view.accessibilityIdentifier = AccessibilityIds.LNInvoiceScreen.view
+        qrFrame.accessibilityIdentifier = AccessibilityIds.LNInvoiceScreen.viewQRCode
+        btnFundFee.accessibilityIdentifier = AccessibilityIds.LNInvoiceScreen.btnFundFeeInfo
     }
 
     deinit {

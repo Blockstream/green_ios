@@ -70,6 +70,9 @@ class SendTxConfirmViewController: UIViewController {
         setStyle()
         reload()
         updateVerifyAddressState()
+        
+        btnInfoFee.accessibilityIdentifier = AccessibilityIds.SendConfirmScreen.btnInfoFee
+        btnInfoFee.isAccessibilityElement = true
     }
 
     func setContent() {

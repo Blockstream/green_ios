@@ -28,6 +28,7 @@ class LTCreateViewController: UIViewController {
         setStyle()
         setupAlertCard()
         setupRiveView()
+        setupAccessibilityLocators()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -97,6 +98,12 @@ class LTCreateViewController: UIViewController {
         view.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
         animateView.addSubview(view)
         riveView = view
+    }
+
+    func setupAccessibilityLocators() {
+        animateView.isAccessibilityElement = true
+        animateView.accessibilityTraits = .image
+        animateView.accessibilityIdentifier = AccessibilityIds.LTCreateScreen.viewAnimation
     }
 
     @IBAction func tapNext(_ sender: Any) {

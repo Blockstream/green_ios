@@ -548,6 +548,9 @@ extension ReceiveViewController {
         textFieldAmount.accessibilityIdentifier = AccessibilityIds.ReceiveScreen.textFieldAmount
         textFieldAmount.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         lblInfoAmount.isUserInteractionEnabled = true
+        lblInfoAmount.isAccessibilityElement = true
+        lblInfoAmount.accessibilityTraits = .button
+        lblInfoAmount.accessibilityIdentifier = AccessibilityIds.ReceiveScreen.lblLearnWhy
         lblInfoAmount.lineBreakMode = .byWordWrapping
         lblInfoAmount.textAlignment = .left
         let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(onFundingFeeInfo(_:)))
