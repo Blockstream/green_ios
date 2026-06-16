@@ -179,7 +179,7 @@ extension QRPsbtShowViewController: QRUnlockSignDialogViewControllerDelegate {
     func presentQRPinUnlockFlow() {
         let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadeViewController") as? QRUnlockJadeViewController {
-            vc.vm = QRUnlockJadeViewModel(scope: .oracle, testnet: WalletManager.current?.prominentNetwork.testnet ?? false, askXpub: false)
+            vc.vm = QRUnlockJadeViewModel(scope: .oracle, testnet: WalletManager.current?.prominentNetworkId.testnet ?? false, askXpub: false)
             vc.delegate = self
             present(vc, animated: true)
         }

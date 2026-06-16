@@ -1,8 +1,7 @@
 import Foundation
-
 import greenaddress
 
-public struct GdkNetwork: Codable, Equatable, Comparable {
+public struct GdkNetwork: Codable, Equatable, Comparable, Sendable {
 
     enum CodingKeys: String, CodingKey {
         case name
@@ -50,6 +49,10 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
         "greenlight" == serverType
     }
 
+    public var testnet: Bool {
+        !mainnet
+    }
+
     public var singlesig: Bool {
         electrum
     }
@@ -87,6 +90,7 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
         network.replacingOccurrences(of: "electrum-", with: "")
             .replacingOccurrences(of: "lightning-", with: "")
             .replacingOccurrences(of: "lwk-", with: "")
+            .replacingOccurrences(of: "lwkswap-", with: "")
     }
 
     public var defaultFee: UInt64 {
@@ -137,6 +141,10 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
         }
     }
 
+    var explorerUrl: String? {
+        txExplorerUrl?.replacingOccurrences(of: "tx/", with: "")
+    }
+
     public static func < (lhs: GdkNetwork, rhs: GdkNetwork) -> Bool {
         let rules: [NetworkId] = [
             .electrumMainnet,
@@ -154,4 +162,3 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
         return rules.firstIndex(of: lnet) ?? 0 < rules.firstIndex(of: rnet) ?? 0
     }
 }
-

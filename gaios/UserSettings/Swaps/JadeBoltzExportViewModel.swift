@@ -22,7 +22,7 @@ class JadeBoltzExportViewModel {
 
     func performRequest() async {
         do {
-            guard let session = wm.prominentSession else { return }
+            let session = wm.prominentSession
             let (privateKey, bcurParts) = try await request(session: session)
             self.privateKey = privateKey
             self.bcurParts = bcurParts
@@ -37,7 +37,7 @@ class JadeBoltzExportViewModel {
             onError?(HWError.Abort("Invalid private key"))
             return
         }
-            let lightningMnemonic = await wm.prominentSession?.jadeBip8539Reply(
+            let lightningMnemonic = await wm.prominentSession.jadeBip8539Reply(
                 privateKey: privateKey,
                 publicKey: publicKey.hexToData(),
                 encrypted: encrypted.hexToData())
@@ -57,14 +57,16 @@ class JadeBoltzExportViewModel {
     }
 
     func loginBoltz() async throws {
-        guard let credentials, let lwkSession = wm.lwkSession else {
+        guard let credentials else {
             throw HWError.Abort("No credentials found")
         }
-        _ = try await wm.loginLWK(lwk: lwkSession, credentials: credentials, parentWalletId: mainWallet.walletIdentifier)
+        let xpubHashId = WalletsStorage.shared.current?.xpubHashId
+        wm.loginLwkBoltz(boltzCredentials: credentials, xpubHashId: xpubHashId!)
+        _ = await wm.awaitLwkSession()
     }
 
     nonisolated func request(session: SessionManager) async throws -> (Data?, BcurEncodedData?) {
-        return try await session.jadeBip8539Request(index: LwkSessionManager.BOLTZ_BIP85_INDEX)
+        return try await session.jadeBip8539Request(index: LwkBoltzBackend.BOLTZ_BIP85_INDEX)
     }
 
     nonisolated func startSwapMonitor() async throws {
@@ -78,8 +80,8 @@ class JadeBoltzExportViewModel {
 
     nonisolated func getAddress(subaccount: Account?) async -> String? {
         guard let subaccount else { return nil }
-        let session = wm.getSession(for: subaccount)
-        let address = try? await session?.getReceiveAddress(subaccount: subaccount.pointer)
+        let backend = try? wm.gdkAccountBackend(subaccount)
+        let address = try? await backend?.getReceiveAddress()
         return address?.address
     }
 }

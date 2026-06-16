@@ -259,10 +259,7 @@ extension QrScannerView: AVCaptureMetadataOutputObjectsDelegate {
         }
     }
     private func startBCURDecodingProcess(initialPart: String) async throws -> BcurDecodedData? {
-        let session = WalletManager.current?.prominentSession ?? SessionManager(
-            .electrumMainnet,
-            newNotificationDelegate: nil
-        )
+        let session = WalletManager.current?.prominentSession ?? SessionManager(.electrumMainnet)
         return try await session.bcurDecode(params: BcurDecodeParams(part: initialPart), bcurResolver: self)
     }
 }

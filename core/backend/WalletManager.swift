@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-
 import greenaddress
 import hw
 import lightning
@@ -24,8 +23,8 @@ public actor Failures {
         errors.removeAll()
     }
 }
-
-public class WalletManager {
+/*
+public class WalletManagerLegacy {
 
     // Return current WalletManager used for the active user session
     public static var current: WalletManager? {
@@ -132,7 +131,7 @@ public class WalletManager {
                 newNotificationDelegate: self
             )
         case .lwkMainnet:
-            sessions[network.rawValue] = LwkSessionManager(network: Network.mainnet(), newNotificationDelegate: self)
+            sessions[network.rawValue] = LwkBoltzBackend(network: Network.mainnet())
         default:
             sessions[network.rawValue] = SessionManager(network, newNotificationDelegate: self)
         }
@@ -150,11 +149,11 @@ public class WalletManager {
         return sessions[NetworkId.lightningMainnet.rawValue] as? LightningSessionManager
     }
 
-    public var lwkSession: LwkSessionManager? {
-        return sessions[NetworkId.lwkMainnet.network] as? LwkSessionManager
+    public var lwkSession: LwkBoltzBackend? {
+        return sessions[NetworkId.lwkMainnet.network] as? LwkBoltzBackend
     }
 
-    public func awaitLwkSession() async -> LwkSessionManager? {
+    public func awaitLwkSession() async -> LwkBoltzBackend? {
         if let task = deferredLwkLoginTask {
             _ = try? await task.value
         }
@@ -324,8 +323,8 @@ public class WalletManager {
         }
     }
 
-    public func loginLWK(
-        lwk: LwkSessionManager,
+    public func loginLwkBoltz(
+        lwk: LwkBoltzBackend,
         credentials: Credentials,
         parentWalletId: WalletIdentifier?
     ) async throws -> LoginUserResult? {
@@ -508,13 +507,13 @@ public class WalletManager {
         liquidSubaccounts.filter { $0.type == .ampAccount }
     }
     public var bitcoinSubaccountsWithFunds: [Account] {
-        bitcoinSubaccounts.filter { $0.satoshi?.compactMap{ $0.value }.reduce(0, +) ?? 0 > 0 }
+        [] //bitcoinSubaccounts.filter { $0.satoshi?.compactMap{ $0.value }.reduce(0, +) ?? 0 > 0 }
     }
     public var liquidSubaccountsWithFunds: [Account] {
-        liquidSubaccounts.filter { $0.satoshi?.compactMap{ $0.value }.reduce(0, +) ?? 0 > 0 }
+        [] //liquidSubaccounts.filter { $0.satoshi?.compactMap{ $0.value }.reduce(0, +) ?? 0 > 0 }
     }
     public func liquidSubaccountsWithAssetIdFunds(assetId: String) -> [Account] {
-        liquidSubaccounts.filter { $0.satoshi?.filter{ $0.key == assetId }.compactMap{ $0.value }.reduce(0, +) ?? 0 > 0 }
+        [] //liquidSubaccounts.filter { $0.satoshi?.filter{ $0.key == assetId }.compactMap{ $0.value }.reduce(0, +) ?? 0 > 0 }
     }
 
     func syncSettings(restore: Bool) async throws {
@@ -594,9 +593,9 @@ public class WalletManager {
                     let acc = account.element
                     let satoshi = try await acc.session?.getBalance(subaccount: acc.pointer, numConfs: 0)
                     if let index = self.subaccounts.firstIndex(where: { $0.id == acc.id }), let satoshi = satoshi {
-                        self.subaccounts[index].satoshi = satoshi
-                        self.subaccounts[index].hasTxs = satoshi.count > 1 ? true : account.element.hasTxs
-                        self.subaccounts[index].hasTxs = (satoshi.first?.value ?? 0) > 0 ? true : account.element.hasTxs
+                        //self.subaccounts[index].satoshi = satoshi
+                        //self.subaccounts[index].hasTxs = satoshi.count > 1 ? true : account.element.hasTxs
+                        //self.subaccounts[index].hasTxs = (satoshi.first?.value ?? 0) > 0 ? true : account.element.hasTxs
                     }
                     return (acc.id, satoshi ?? [:])
                 }
@@ -612,7 +611,7 @@ public class WalletManager {
             for subaccount in subaccounts {
                 group.addTask {
                     let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: first)
-                    let page = txs?.list.map { Transaction($0.details, subaccountId: subaccount.id) }
+                    let page = txs?.list.map { Transaction($0.details, accountId: subaccount.id) }
                     return page ?? []
                 }
             }
@@ -627,7 +626,7 @@ public class WalletManager {
             for subaccount in subaccounts {
                 group.addTask {
                     let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: page * 30, count: 30)
-                    let list = txs?.list.map { Transaction($0.details, subaccountId: subaccount.id) }
+                    let list = txs?.list.map { Transaction($0.details, accountId: subaccount.id) }
                     return (subaccount.id, Transactions(list: list ?? []))
                 }
             }
@@ -656,7 +655,7 @@ public class WalletManager {
         var transactions: [Transaction] = []
         while end == false {
             let txs = try await subaccount.session?.transactions(subaccount: subaccount.pointer, first: page * offset, count: offset)
-            let list = txs?.list.map { Transaction($0.details, subaccountId: subaccount.id) } ?? []
+            let list = txs?.list.map { Transaction($0.details, accountId: subaccount.id) } ?? []
             transactions.append(contentsOf: list)
             if list.count < offset {
                 end = true
@@ -709,7 +708,7 @@ public class WalletManager {
             mnemonic: mnemonic,
             passphrase: credentials.bip39Passphrase,
             isTestnet: false,
-            index: LwkSessionManager.BOLTZ_BIP85_INDEX)
+            index: LwkBoltzBackend.BOLTZ_BIP85_INDEX)
         return Credentials(
             mnemonic: bip85Key,
             bip39Passphrase: credentials.bip39Passphrase)
@@ -763,13 +762,13 @@ public class WalletManager {
     }
 }
 
-extension WalletManager: NewNotificationDelegate {
+extension WalletManagerLegacy: NewNotificationDelegate {
     public func didReceive(event: EventNotificationTypes, networkId: NetworkId) {
         logger.info("WalletManager didReceive on \(networkId.rawValue)")
         newNotificationDelegate?.didReceive(event: event, networkId: networkId)
     }
 }
-extension WalletManager {
+extension WalletManagerLegacy {
 
     public func refreshRegistryIfNeeded() async throws {
         let interval = CFAbsoluteTimeGetCurrent() - (updatedRegistryAt ?? .zero)
@@ -793,7 +792,7 @@ extension WalletManager {
         registry.hasImage(for: key ?? "", provider: self)
     }
 }
-extension WalletManager: AssetsProvider {
+extension WalletManagerLegacy: AssetsProvider {
     public func getAssets(params: GetAssetsParams) -> GetAssetsResult? {
         let session = activeLiquidSessions.first ?? liquidSinglesigSession ?? SessionManager(liquidSinglesigNetwork, newNotificationDelegate: nil)
         return session.getAssets(params: params)
@@ -805,7 +804,7 @@ extension WalletManager: AssetsProvider {
         return try await session.refreshAssets(icons: icons, assets: assets)
     }
 }
-extension WalletManager: ConverterProvider {
+extension WalletManagerLegacy: ConverterProvider {
     public func convertBitcoinAmount(params: Balance) throws -> Balance? {
         guard let session = activeBitcoinSessions.first ?? prominentSession else {
             throw GaError.SessionLost()
@@ -851,3 +850,4 @@ extension WalletManager: ConverterProvider {
         return try convert(session: session, params: params)
     }
 }
+*/

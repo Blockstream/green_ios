@@ -12,7 +12,7 @@ enum TxDetailsAction {
 
 class TxDetailsViewModel {
 
-    var wallet: Account
+    var account: Account
     var transaction: Transaction
     var assetAmountList: AssetAmountList
     var swapId: String?
@@ -23,14 +23,14 @@ class TxDetailsViewModel {
         return UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue)
     }
 
-    init(wallet: Account, transaction: Transaction) {
-        self.wallet = wallet
+    init(account: Account, transaction: Transaction) {
+        self.account = account
         self.transaction = transaction
         self.assetAmountList = AssetAmountList(transaction.amountsWithoutFees)
     }
 
     var txDetailsStatusCellModel: TxDetailsStatusCellModel {
-        let blockHeight: UInt32 = wallet.session?.blockHeight ?? 0
+        let blockHeight = account.networkBackend?.block?.height ?? 0
         return TxDetailsStatusCellModel(transaction: transaction,
                                         blockHeight: blockHeight,
                                         assetAmountList: assetAmountList)
@@ -39,12 +39,12 @@ class TxDetailsViewModel {
     var txDetailsAmountCellModels: [TxDetailsAmountCellModel] {
         return assetAmountList.amounts.map {
             var amount = $0.1
-            let assetId = transaction.subaccount?.gdkNetwork.getFeeAsset() ?? "btc"
+            let assetId = transaction.networkIdInjected?.gdkNetwork.getFeeAsset() ?? "btc"
             if ($0.0 == assetId) && transaction.type == .outgoing && !transaction.isLightning {
                 amount = -(abs($0.1) - Int64(transaction.fee ?? 0))
             }
             return TxDetailsAmountCellModel(tx: transaction,
-                                     isLightning: wallet.type.lightning,
+                                     isLightning: account.type.lightning,
                                      id: $0.0,
                                      value: amount,
                                      hideBalance: hideBalance)
@@ -68,7 +68,7 @@ class TxDetailsViewModel {
         guard let amountObj: (String, Int64) = assetAmountList.amounts.first else {
             return items
         }
-        let assetId = transaction.subaccount?.gdkNetwork.getFeeAsset() ?? "btc"
+        let assetId = transaction.networkIdInjected?.gdkNetwork.getFeeAsset() ?? "btc"
         if assetAmountList.amounts.count == 1 {
             var tSpent = abs(amountObj.1)
             if transaction.isLightning {
@@ -124,6 +124,8 @@ class TxDetailsViewModel {
                 title = "id_sent_to".localized
             case .mixed:
                 title = "id_swapped".localized
+            default:
+                title = ""
             }
 
             let hint = address
@@ -138,7 +140,11 @@ class TxDetailsViewModel {
             !showTotals {
 
             // fee
-            if let balance = Balance.fromSatoshi(transaction.fee ?? 0, assetId: transaction.subaccount?.gdkNetwork.getFeeAsset() ?? "btc") {
+            if let balance = Balance.fromSatoshi(
+                transaction.fee ?? 0,
+                assetId: transaction.networkIdInjected?.gdkNetwork
+                    .getFeeAsset() ?? "btc"
+            ) {
                 let (amount, denom) = balance.toValue()
                 let (fiat, fiatCurrency) = balance.toFiat()
                 let str = "\(amount) \(denom) ≈ \(fiat) \(fiatCurrency)"
@@ -239,8 +245,10 @@ class TxDetailsViewModel {
     }
 
     func showBumpFee() -> Bool {
-        let subaccount =  WalletManager.current?.subaccounts.filter { $0.id == transaction.subaccountId }.first
-        let showBumpFee = !transaction.isLiquid && transaction.canRBF && !(subaccount?.session?.isResetActive ?? false)
+        let subaccount =  WalletManager.current?.accounts.filter { $0.id == transaction.accountId }.first
+        let showBumpFee = !transaction.isLiquid && transaction.canRBF && !(
+            subaccount?.gdkSession?.isResetActive ?? false
+        )
         return showBumpFee
     }
 

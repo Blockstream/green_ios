@@ -32,22 +32,17 @@ public class SessionManager {
     public var gdkFailures = [String]()
     public var hwProtocol: HWProtocol?
     public let uuid = UUID()
-    public var newNotificationDelegate: NewNotificationDelegate?
+    public weak var newNotificationDelegate: NewNotificationDelegate?
 
     // Serial reconnect queue for network events
     public let reconnectionTasks = SerialTasks<Void>()
-
-    //public var networkId: NetworkId {
-    //    NetworkId(rawValue: gdkNetwork.network) ?? .electrumMainnet
-    //}
 
     public var isResetActive: Bool? {
         get { twoFactorConfig?.twofactorReset.isResetActive }
     }
 
-    public init(_ networkId: NetworkId, newNotificationDelegate: NewNotificationDelegate?) {
+    public init(_ networkId: NetworkId) {
         self.networkId = networkId
-        self.newNotificationDelegate = newNotificationDelegate
         self.gdkNetwork = Gdk.shared.networks
             .getNetworkBy(networkId)
         session = GDKSession()
@@ -82,7 +77,11 @@ public class SessionManager {
         }
     }
 
-    private func connect(network: String) async throws {
+    public func connect(network: String) async throws {
+        if connected {
+            return
+        }
+        logger.info("Connecting to session \(self.networkId.rawValue)")
         do {
             gdkFailures = []
             paused = false
@@ -114,6 +113,13 @@ public class SessionManager {
         let res = try self.session?.getWalletIdentifier(
             net_params: netParams ?? [:],
             details: details ?? [:])
+        return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
+    }
+
+    public func getWalletIdentifier(netParams: ConnectionParams, credentials: Credentials) throws -> WalletIdentifier? {
+        let res = try self.session?.getWalletIdentifier(
+            net_params: netParams.asDictionary(),
+            details: credentials.asDictionary())
         return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
 
@@ -185,9 +191,21 @@ public class SessionManager {
             bcurResolver: bcurResolver)
         return try await rm.run()
     }
+
     public func transactions(subaccount: UInt32, first: Int = 0, count: Int = 30) async throws -> Transactions {
-        let params = ["subaccount": subaccount, "first": UInt32(first), "count": UInt32(count)]
-        let res = try await wrap(fun: self.session?.getTransactions, params: params)
+        let params = GetTransactionsParams(
+            subaccount: subaccount,
+            first: first,
+            count: count
+        )
+        return try await transactions(params)
+    }
+
+    public func transactions(_ params: GetTransactionsParams) async throws -> Transactions {
+        let res = try await wrap(
+            fun: self.session?.getTransactions,
+            params: params.toDict() ?? [:]
+        )
         let result = res["result"] as? [String: Any]
         let dict = result?["transactions"] as? [[String: Any]]
         let list = dict?.map { Transaction($0) }
@@ -256,6 +274,7 @@ public class SessionManager {
 
     public func loginUser(_ params: Credentials) async throws -> LoginUserResult {
         try await connect()
+        logger.info("Connecting to login session \(self.networkId.rawValue)")
         let res: LoginUserResult = try await self.wrapper(fun: self.session?.loginUserSW, params: params)
         loginData = res
         logged = true
@@ -264,6 +283,7 @@ public class SessionManager {
 
     public func loginUser(_ params: HWDevice) async throws -> LoginUserResult {
         try await connect()
+        logger.info("Connecting to login session \(self.networkId.rawValue)")
         let res: LoginUserResult = try await self.wrapper(fun: self.session?.loginUserHW, params: params)
         loginData = res
         logged = true
@@ -498,17 +518,17 @@ public class SessionManager {
 
     public func createTransaction(tx: Transaction) async throws -> Transaction {
         let res = try await wrap(fun: self.session?.createTransaction, params: tx.details)
-        return Transaction(res["result"] as? [String: Any] ?? [:], subaccountId: tx.subaccountId)
+        return Transaction(res["result"] as? [String: Any] ?? [:], accountId: tx.accountId)
     }
 
     public func blindTransaction(tx: Transaction) async throws -> Transaction {
         let res = try await wrap(fun: self.session?.blindTransaction, params: tx.details)
-        return Transaction(res["result"] as? [String: Any] ?? [:], subaccountId: tx.subaccountId)
+        return Transaction(res["result"] as? [String: Any] ?? [:], accountId: tx.accountId)
     }
 
     public func signTransaction(tx: Transaction) async throws -> Transaction {
         let res = try await wrap(fun: self.session?.signTransaction, params: tx.details)
-        return Transaction(res["result"] as? [String: Any] ?? [:], subaccountId: tx.subaccountId)
+        return Transaction(res["result"] as? [String: Any] ?? [:], accountId: tx.accountId)
     }
 
     public func sendTransaction(tx: Transaction) async throws -> SendTransactionSuccess {
@@ -638,13 +658,13 @@ public class SessionManager {
     public func createRedepositTransaction(params: CreateRedepositTransactionParams) async throws -> Transaction {
         let res = try await wrap(fun: session?.createRedepositTransaction, params: params.toDict() ?? [:])
         let result = res["result"] as? [String: Any]
-        return Transaction(result ?? [:], subaccountId: nil)
+        return Transaction(result ?? [:], accountId: nil)
     }
 
     public func psbtGetDetails(params: PsbtGetDetailParams) async throws -> Transaction {
         let res = try await wrap(fun: session?.PsbtGetDetails, params: params.toDict() ?? [:])
         let result = res["result"] as? [String: Any]
-        return Transaction(result ?? [:], subaccountId: nil)
+        return Transaction(result ?? [:], accountId: nil)
     }
     
     public func signPsbt(params: SignPsbtParams) async throws -> SignPsbtResult {
@@ -654,10 +674,22 @@ public class SessionManager {
     public func rsaVerify(details: RSAVerifyParams) async throws -> RSAVerifyResult {
         try await wrapper(fun: session?.rsaVerify, params: details)
     }
+
+    public func reconnectHint(hint: ReconnectHintParams) async throws {
+        try session?.reconnectHint(hint: hint.toDict() ?? [:])
+    }
+
+    public func connectHint() async throws {
+        let hint = ReconnectHintParams(torHint: "connect", hint: "connect")
+        try await reconnectHint(hint: hint)
+    }
+    public func disconnectHint() async throws {
+        let hint = ReconnectHintParams(torHint: "disconnect", hint: "disconnect")
+        try await reconnectHint(hint: hint)
+    }
 }
 
 extension SessionManager {
-    @MainActor
     public func newNotification(notification: [String: Any]?) {
         guard let notificationEvent = notification?["event"] as? String,
                 let event = EventType(rawValue: notificationEvent),
@@ -667,9 +699,10 @@ extension SessionManager {
         logger.info("newNotification \(notification?.stringify()?.prefix(100) ?? "", privacy: .public)")
         switch event {
         case .Block:
-            guard let height = data["block_height"] as? UInt32 else { break }
-            blockHeight = height
-            newNotificationDelegate?.didReceive(event: .newBlock(blockheight: height), networkId: networkId)
+            if let block = Block.from(data) as? Block {
+                blockHeight = block.height
+                newNotificationDelegate?.didReceive(event: .newBlock(block: block), networkId: networkId)
+            }
         case .Subaccount:
             guard let subaccountEvent = SubaccountEvent.from(data) as? SubaccountEvent else { break }
             newNotificationDelegate?.didReceive(event: .newSubaccount(subaccount: subaccountEvent), networkId: networkId)

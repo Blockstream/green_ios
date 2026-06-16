@@ -12,7 +12,7 @@ class AssetCell: UITableViewCell {
     @IBOutlet weak var bgView: UIView!
 
     private var btc: String {
-        return WalletManager.current?.prominentNetwork.gdkNetwork.getFeeAsset() ?? ""
+        return WalletManager.current?.prominentNetwork.getFeeAsset() ?? ""
     }
 
     override func prepareForReuse() {

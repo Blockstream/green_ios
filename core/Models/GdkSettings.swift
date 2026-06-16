@@ -59,7 +59,7 @@ public struct GdkSettings: Codable {
         UserDefaults.standard.synchronize()
     }
 
-    public func toNetworkParams(_ network: String) -> NetworkSettings {
+    public func toNetworkParams(_ network: String) -> ConnectionParams {
         let gdkSettings = GdkSettings.read()
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? CVarArg ?? ""
         let proxyURI = String(format: "socks5://%@:%@/", gdkSettings?.socks5Hostname ?? "", gdkSettings?.socks5Port ?? "")
@@ -84,7 +84,7 @@ public struct GdkSettings: Codable {
             GdkSettings.liquidTestnetElectrumSrvDefaultEndPoint,
             "", nil].contains(electrumUrl)
         let electrumTls = isDefaultEletrumEndpoint ? nil : gdkSettings?.electrumTls
-        return NetworkSettings(
+        return ConnectionParams(
             name: network,
             useTor: gdkSettings?.tor ?? false,
             proxy: (gdkSettings?.proxy ?? false) ? proxyURI : nil,

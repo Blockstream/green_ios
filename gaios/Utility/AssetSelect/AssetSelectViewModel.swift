@@ -50,6 +50,7 @@ class AssetSelectViewModel {
         reload?()
     }
     var hasLwkSession: Bool {
-        return wm.lwkSession?.logged ?? false
+        return wm
+            .hasActiveNetwork(.lightningMainnet)
     }
 }

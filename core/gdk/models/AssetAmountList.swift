@@ -1,16 +1,14 @@
 import Foundation
-
 import UIKit
-import core
 
-class AssetAmountList {
+public class AssetAmountList {
 
-    var amounts: [(String, Int64)]
-    var assets: [String: AssetInfo]  = [:]
-    var hasImages: [String: Bool]  = [:]
-    var ids: [String] { amounts.map { $0.0} }
+    public var amounts: [(String, Int64)]
+    public var assets: [String: AssetInfo]  = [:]
+    public var hasImages: [String: Bool]  = [:]
+    public var ids: [String] { amounts.map { $0.0} }
 
-    init(_ amounts: [String: Int64]) {
+    public init(_ amounts: [String: Int64]) {
         let registry = WalletManager.current
         for assetId in amounts.keys {
             let assetInfo = registry?.info(for: assetId)
@@ -22,17 +20,17 @@ class AssetAmountList {
         self.amounts = sorted()
     }
 
-    static func from(assetIds: [String]) -> AssetAmountList {
+    public static func from(assetIds: [String]) -> AssetAmountList {
         let assetIds = assetIds.map { ($0, Int64(0)) }
         let dict = Dictionary(uniqueKeysWithValues: assetIds)
         return AssetAmountList(dict)
     }
 
-    func satoshi() -> Int64 {
+    public func policyAsset() -> Int64 {
         amounts.filter { AssetInfo.baseIds.contains($0.0) }.map { $0.1 }.reduce(0, { (res, partial) in res + partial })
     }
 
-    func sortAssets(lhs: String, rhs: String) -> Bool {
+    public func sortAssets(lhs: String, rhs: String) -> Bool {
         if [AssetInfo.btcId, AssetInfo.testId].contains(lhs) { return true }
         if [AssetInfo.btcId, AssetInfo.testId].contains(rhs) { return false }
         if [AssetInfo.lightningId].contains(lhs) { return true }
@@ -55,17 +53,17 @@ class AssetAmountList {
         return lhs < rhs
     }
 
-    func sorted() -> [(String, Int64)] {
+    public func sorted() -> [(String, Int64)] {
         return amounts.sorted(by: { (lhs, rhs) in
             return sortAssets(lhs: lhs.0, rhs: rhs.0)
         })
     }
 
-    func nonZeroAmounts() -> [(String, Int64)] {
+    public func nonZeroAmounts() -> [(String, Int64)] {
         return amounts.filter { $0.1 != 0 }
     }
 
-    func image(for id: String) -> UIImage {
+    public func image(for id: String) -> UIImage {
         return WalletManager.current?.image(for: id) ?? UIImage()
     }
 }

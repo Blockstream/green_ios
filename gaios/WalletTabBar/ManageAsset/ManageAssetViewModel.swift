@@ -20,15 +20,21 @@ class ManageAssetViewModel {
     var isBTCAsset: Bool {
         "BTC" == assetId.uppercased()
     }
+    var selectedAccountBackend: AccountBackend? {
+        if let selectedSubaccount {
+            return wallet.accountBackendOrNil(selectedSubaccount)
+        }
+        return nil
+    }
     var subaccounts: [Account] {
         if assetId == AssetInfo.lightningId {
-            return state.subaccounts.filter { $0.networkId.lightning }
+            return state.subaccounts.filter { $0.networkId.lightning }.sorted()
         } else if assetId == AssetInfo.btcId || assetId == AssetInfo.testId {
-            return state.subaccounts.filter { $0.networkId.bitcoin }
+            return state.subaccounts.filter { $0.networkId.bitcoin }.sorted()
         } else if assetId == AssetInfo.lbtcId || assetId == AssetInfo.ltestId {
-            return state.subaccounts.filter { $0.networkId.liquid }
+            return state.subaccounts.filter { $0.networkId.liquid }.sorted()
         } else {
-            return state.subaccounts.filter { $0.networkId.liquid /* && $0.hasAsset(assetId) */ }
+            return state.subaccounts.filter { $0.networkId.liquid }.sorted()
         }
     }
     func getBoltzKey() throws -> Credentials {
@@ -125,29 +131,20 @@ class ManageAssetViewModel {
 
     func renameSubaccount(name: String) async throws {
         guard let selectedSubaccount else { return }
-        let params = UpdateSubaccountParams(subaccount: selectedSubaccount.pointer, name: name)
-        try await selectedSubaccount.session?.renameSubaccount(params)
-        if let subaccount = try await wallet.subaccountUpdate(account: selectedSubaccount) {
-            self.selectedSubaccount = subaccount
-        }
+        self.selectedSubaccount = try await wallet.updateAccount(
+            account: selectedSubaccount,
+            newAccountName: name)
+        _ = try await wallet.getAccounts()
     }
     func archiveSubaccount() async throws {
         guard let selectedSubaccount else { return }
-        let params = UpdateSubaccountParams(subaccount: selectedSubaccount.pointer, hidden: true)
-        try await selectedSubaccount.session?.updateSubaccount(params)
-        if let subaccount = try await wallet.subaccountUpdate(account: selectedSubaccount) {
-            self.selectedSubaccount = subaccount
-        }
-        _ = try await wallet.subaccounts()
+        self.selectedSubaccount = try await wallet.updateAccount(
+            account: selectedSubaccount,
+            isHidden: true)
+        _ = try await wallet.getAccounts()
     }
     var isFunded: Bool? {
-        if let selectedSubaccount {
-            if selectedSubaccount.satoshi == nil { return false }
-            if let sats = selectedSubaccount.satoshi?[assetId] {
-                return sats > 0
-            }
-        }
-        return nil
+        return balances?[assetId] ?? 0 > 0
     }
     func hasLightning() -> Bool {
         guard let account = WalletsStorage.shared.current else {
@@ -171,7 +168,7 @@ class ManageAssetViewModel {
         ) > 0
     }
     func currency() -> String? {
-        wallet.prominentSession?.settings?.pricing["currency"]
+        wallet.prominentSession.settings?.pricing["currency"]
     }
     func canSwap() -> Bool {
         if mainWallet.isWatchonly ||

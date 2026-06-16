@@ -25,8 +25,8 @@ class WalletTabBarModel {
         self.isCreated = isCreated
         self.isRestored = isRestored
         self.walletDataModel = WalletDataModel(wallet: wallet, mainWallet: mainWallet)
-        if let lwkSession = wallet.lwkSession {
-            self.wallet.swapMonitor = SwapMonitor(xpubHashId: mainWallet.xpubHashId ?? "", lwkSession: lwkSession)
+        if let lwkBoltzBackend = wallet.lwkBoltzBackend {
+            self.wallet.swapMonitor = SwapMonitor(xpubHashId: mainWallet.xpubHashId ?? "", lwkBoltzBackend: lwkBoltzBackend)
         }
     }
 
@@ -97,23 +97,21 @@ class WalletTabBarModel {
     }
     func getAddress(subaccount: Account?) async -> String? {
         guard let subaccount else { return nil }
-        let session = wallet.getSession(for: subaccount)
-        let address = try? await session?.getReceiveAddress(subaccount: subaccount.pointer)
-        return address?.address
+        return try? await wallet.accountBackend(subaccount).getReceiveAddress().address
     }
     func callAnalytics() {
         if analyticsDone == true { return }
         analyticsDone = true
         let fundedSubaccounts = wallet
-            .subaccounts
-            .filter({ $0.satoshi?.values.reduce(0, +) ?? 0 > 0 })
+            .accounts
+            .filter { (try? $0.isFunded(wallet)) ?? false }
         let accountsTypes: String = Array(Set(fundedSubaccounts.map { $0.type.rawValue })).sorted().joined(separator: ",")
         AnalyticsManager.shared.activeWalletEnd(
             account: mainWallet,
             walletData: AnalyticsManager.WalletData(
                 walletFunded: fundedSubaccounts.count > 0,
                 accountsFunded: fundedSubaccounts.count,
-                accounts: wallet.subaccounts.count,
+                accounts: wallet.accounts.count,
                 accountsTypes: accountsTypes))
     }
 

@@ -24,7 +24,8 @@ class SendAccountAssetViewModel {
     func getCellModels() -> [AccountAssetCellModel] {
         return subaccounts
             .flatMap { subaccount in
-                (subaccount.satoshi ?? [:])
+                wallet.accountBackendOrNil(subaccount)?
+                    .assets
                     .filter { assetId, _ in
                         filter(for: assetId, subaccount: subaccount)
                     }.compactMap { assetId, amount in
@@ -35,7 +36,7 @@ class SendAccountAssetViewModel {
                             balance: amount,
                             showBalance: true
                         )
-                    }
+                    } ?? []
             }
             .sorted()
     }

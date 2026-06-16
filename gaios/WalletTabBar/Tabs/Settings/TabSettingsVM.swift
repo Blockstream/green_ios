@@ -14,10 +14,17 @@ class TabSettingsVM: TabViewModel {
     var session: SessionManager? { wallet.prominentSession }
     var isWatchonly: Bool { wallet.isWatchonly }
     var isEphemeral: Bool { wallet.isEphemeral }
-    var isWatchonlySinglesig: Bool { (wallet.isWatchonly ?? false) && (mainWallet.username?.isEmpty ?? true) }
+    var isWatchonlySinglesig: Bool { (wallet.isWatchonly) && (mainWallet.username?.isEmpty ?? true) }
     var isSinglesig: Bool { session?.gdkNetwork.electrum ?? true }
     var isHW: Bool { WalletsStorage.shared.current?.isHW ?? false }
-    var multiSigSession: SessionManager? { wallet.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }
+    var multiSigSession: SessionManager? {
+        wallet
+            .multisigNetworkIds
+            .compactMap { wallet.gdkNetworkBackendOrNil($0) }
+            .compactMap(\.session)
+            .filter { $0.logged }
+            .filter { !$0.gdkNetwork.electrum }.first
+    }
 
     func getSettingsItemCellModel(for setting: SettingsItem) -> TabSettingsCellModel? {
         switch setting {
@@ -147,13 +154,13 @@ class TabSettingsVM: TabViewModel {
     }
 
     func getSubaccountsAmp() -> [Account] {
-        wallet.subaccounts.filter({ $0.type == .ampAccount })
+        wallet.accounts.filter({ $0.type == .ampAccount || $0.type == .amp2Account })
     }
 
     func createSubaccountAmp() async throws {
-        guard let session = wallet.liquidMultisigSession else {
-            throw GaError.GenericError("id_invalid_session".localized)
-        }
+        let session = try wallet.gdkNetworkBackend(
+            wallet.liquidMultisigNetworkId
+        ).session
         let wasLoggedMultisig = session.logged
         try await session.connect()
         guard session.connected else {
@@ -163,7 +170,7 @@ class TabSettingsVM: TabViewModel {
             try await session.register(credentials: nil, hw: device)
             _ = try await session.loginUser(device)
         } else {
-            if let credentials = try await wallet.prominentSession?.getCredentials(password: "") {
+            if let credentials = try await wallet.prominentSession.getCredentials(password: "") {
                 try await session.register(credentials: credentials, hw: nil)
                 _ = try await session.loginUser(credentials)
             }
@@ -176,11 +183,11 @@ class TabSettingsVM: TabViewModel {
             // hide default 0 multisig subaccount when creating a new multisig
             _ = try await session.updateSubaccount(UpdateSubaccountParams(subaccount: 0, hidden: true))
         }
-        _ = try await wallet.subaccounts()
+        _ = try await wallet.getAccounts()
     }
 
     func uniqueAmpName() -> String {
-        let counter = wallet.subaccounts.filter(
+        let counter = wallet.accounts.filter(
             { $0.type == .ampAccount && $0.gdkNetwork.liquid
             }).count
         if counter > 0 {
@@ -217,9 +224,7 @@ class TabSettingsVM: TabViewModel {
 
     func getAddress(subaccount: Account?) async -> String? {
         guard let subaccount else { return nil }
-        let session = wallet.getSession(for: subaccount)
-        let address = try? await session?.getReceiveAddress(subaccount: subaccount.pointer)
-        return address?.address
+        return try? await wallet.accountBackend(subaccount).getReceiveAddress().address
     }
     
     func lTDetailsViewModel() -> LTDetailsViewModel? {

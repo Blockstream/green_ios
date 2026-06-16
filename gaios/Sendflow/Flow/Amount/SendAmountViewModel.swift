@@ -164,17 +164,21 @@ final class SendAmountViewModel {
 
     private func submarineSwapLimits() async -> BoltzSwapInfoLimits? {
         if submarineSwapInfo == nil {
-            submarineSwapInfo = try? await wallet.wallet.awaitLwkSession()?.fetchSubmarineSwapsInfo()
+            // TODO
+            //submarineSwapInfo = try? await wallet.wallet
+            //    .gdkNetworkBackend(.lwkMainnet)
+            //    .fetchSubmarineSwapsInfo()
         }
         return submarineSwapInfo?.limits
     }
 
     private func submarineSwapQuote(receiveAmount: UInt64) async throws -> Quote? {
         if submarineQuoteBuilder == nil {
-            guard let boltzSession = await wallet.wallet.awaitLwkSession()?.boltzSession else {
-                return nil
-            }
-            submarineQuoteBuilder = QuoteBuilder(boltzSession: boltzSession)
+            // TODO
+           // guard let boltzSession = await wallet.wallet.awaitLwkSession()?.boltzSession else {
+            //    return nil
+            //}
+            //submarineQuoteBuilder = QuoteBuilder(boltzSession: boltzSession)
         }
         return try await submarineQuoteBuilder?.quote(
             amount: receiveAmount,
@@ -308,12 +312,15 @@ final class SendAmountViewModel {
             draft.sendAll = sendAll
         }
     }
+    var backend: AccountBackend? {
+        return wallet.wallet.accountBackendOrNil(subaccount)
+    }
     var maxSendAmount: UInt64? {
         if subaccount.isLightning {
             return subaccount.lightningSession?
                 .nodeState()?.maxPayableMsat.satoshi
         } else {
-            return UInt64(subaccount.btc ?? 0)
+            return UInt64(backend?.assets.policyAsset() ?? 0)
         }
     }
     var currency: String {

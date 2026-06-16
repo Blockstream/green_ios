@@ -76,7 +76,7 @@ class WOViewModel {
             wallet.xpubHashId = res?.xpubHashId
             wallet.walletHashId = res?.walletHashId
         } else {
-            let session = wm.prominentSession!
+            let session = wm.prominentSession
             let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: wallet.keychain)
             let method: AuthenticationTypeHandler.AuthType = enableBio ? .AuthKeyBiometric : .AuthKeyPIN
             let data = try AuthenticationTypeHandler.getPinData(method: method, for: wallet.keychain)

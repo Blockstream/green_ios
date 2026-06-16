@@ -55,10 +55,13 @@ class SystemMessageViewController: UIViewController {
     }
 
     @IBAction func confirmBtn(_ sender: Any) {
-        let session = WalletManager.current?.sessions.filter { $0.key == msg.network }.values.first
+        let backend = WalletManager.current?.loggedInGdkNetworkBackends.filter {
+            $0.key.network == msg.network
+        }.values.first
         Task {
             do {
-                try await session?.ackSystemMessage(message: self.msg.text)
+                try await backend?.session
+                    .ackSystemMessage(message: self.msg.text)
                 delegate?.didAcceptSystemMessage(self.msg)
                 navigationController?.popViewController(animated: true)
             } catch {

@@ -317,7 +317,7 @@ class WalletSettingsViewController: KeyboardViewController {
                 // no change
             }
         }
-        let session = WalletManager.current?.prominentSession?.session
+        let session = WalletManager.current?.prominentSession.session
         AnalyticsManager.shared.setupSession(session: session)
         delegate?.didSet(tor: switchTor.isOn)
         delegate?.didSet(testnet: switchTestnet.isOn)

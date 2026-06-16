@@ -208,8 +208,10 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                 let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateRecoveryKeyViewController") as? AccountCreateRecoveryKeyViewController {
                     if let network = policy.getNetwork(testnet: WalletManager.current?.testnet ?? false,
-                                                       liquid: viewModel.asset != "btc"),
-                       let session = viewModel.getSession(for: network) {
+                                                       liquid: viewModel.asset != "btc") {
+                        let session = viewModel.wm.gdkNetworkBackendOrNil(
+                            network
+                        )?.session
                         vc.session = session
                         vc.delegate = self
                         navigationController?.pushViewController(vc, animated: true)
@@ -250,7 +252,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         if isHW {
             showHWCheckDialog()
         } else {
-            startLoader(message: String(format: "id_creating_your_s_account".localized, policy.accountType.shortString))
+            startLoader(message: String(format: "id_creating_your_s_account".localized, policy.accountType.description))
         }
         let task = Task { try await viewModel.create(policy: policy, params: params) }
         switch await task.result {

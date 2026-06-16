@@ -34,22 +34,22 @@ class TxDetailsViewController: UIViewController {
         WalletManager.current?.isWatchonly ?? false
     }
     var isSinglesig: Bool {
-        vm.transaction.subaccount?.isSinglesig ?? true
+        vm.transaction.accountInjected?.isSinglesig ?? true
     }
 
     var viewInExplorerPreference: Bool {
         get {
-            return UserDefaults.standard.bool(forKey: vm.wallet.gdkNetwork.chain + "_view_in_explorer")
+            return UserDefaults.standard.bool(forKey: vm.account.gdkNetwork.chain + "_view_in_explorer")
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: vm.wallet.gdkNetwork.chain + "_view_in_explorer")
+            UserDefaults.standard.set(newValue, forKey: vm.account.gdkNetwork.chain + "_view_in_explorer")
         }
     }
 
     private var transactionToken: NSObjectProtocol?
     private var blockToken: NSObjectProtocol?
     private var cantBumpFees: Bool {
-        return vm.wallet.session?.isResetActive ?? false ||
+        return vm.account.gdkSession?.isResetActive ?? false ||
         !vm.transaction.canRBF
     }
 
@@ -149,15 +149,15 @@ class TxDetailsViewController: UIViewController {
     }
 
     func urlForTx() -> URL? {
-        return URL(string: (vm.wallet.gdkNetwork.txExplorerUrl ?? "") + (vm.transaction.hash ?? ""))
+        return URL(string: (vm.account.gdkNetwork.txExplorerUrl ?? "") + (vm.transaction.hash ?? ""))
     }
 
     func urlForTxUnblinded() -> URL? {
-        return URL(string: (vm.wallet.gdkNetwork.txExplorerUrl ?? "") + (vm.transaction.hash ?? "") + vm.transaction.blindingUrlString())
+        return URL(string: vm.transaction.unblindingUrl ?? "")
     }
 
     func blidingDataString() -> String? {
-        let blinding = vm.transaction.blindingData()
+        let blinding = vm.transaction.unblindingData()
         let jsonData = try? JSONEncoder().encode(blinding)
         let jsonString = String(data: jsonData ?? Data(), encoding: .utf8)
         return jsonString
@@ -258,22 +258,22 @@ class TxDetailsViewController: UIViewController {
     func createTx(session: SessionManager) async throws -> CreateTx {
         let feeRates = try await session.getFeeEstimates()
         let feeRate = feeRates?.first ?? session.gdkNetwork.defaultFee
-        return CreateTx(feeRate: vm.transaction.feeRate + feeRate, subaccount: vm.wallet, previousTransaction: vm.transaction.details, txType: .bumpFee)
+        return CreateTx(feeRate: vm.transaction.feeRate + feeRate, subaccount: vm.account, previousTransaction: vm.transaction.details, txType: .bumpFee)
     }
 
     func createTransaction(createTx: CreateTx, session: SessionManager) async throws -> Transaction {
-        let unspentOutputs = try await session.getUnspentOutputs(GetUnspentOutputsParams(subaccount: vm.wallet.pointer, numConfs: 1))
-        var tx = Transaction([:], subaccountId: vm.transaction.subaccountId)
+        let unspentOutputs = try await session.getUnspentOutputs(GetUnspentOutputsParams(subaccount: vm.account.pointer, numConfs: 1))
+        var tx = Transaction([:], accountId: vm.transaction.accountId)
         tx.previousTransaction = createTx.previousTransaction
         tx.feeRate = createTx.feeRate ?? session.gdkNetwork.defaultFee
         tx.utxos = unspentOutputs
-        tx.sessionSubaccount = vm.wallet.pointer
+        tx.sessionSubaccount = vm.account.pointer
         return try await session.createTransaction(tx: tx)
     }
 
     func increaseFeeTapped() {
         if self.cantBumpFees { return }
-        guard let session = vm.wallet.session else { return }
+        guard let session = vm.account.gdkSession else { return }
         Task {
             do {
                 startAnimating()
@@ -481,7 +481,7 @@ extension TxDetailsViewController: DialogEditViewControllerDelegate {
         guard let txhash = vm.transaction.hash else { return }
         self.startAnimating()
         Task {
-            try? await vm.wallet.session?.session?.setTransactionMemo(txhash_hex: txhash, memo: note, memo_type: 0)
+            try? await vm.account.gdkSession?.session?.setTransactionMemo(txhash_hex: txhash, memo: note, memo_type: 0)
             self.vm.transaction.memo = note
             self.delegate?.onMemoEdit()
             self.stopAnimating()

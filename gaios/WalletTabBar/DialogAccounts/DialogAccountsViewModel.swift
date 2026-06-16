@@ -29,7 +29,8 @@ class DialogAccountsViewModel {
     var accountCellModels: [AccountCellModel] {
         var list = [AccountCellModel]()
         for account in accounts {
-            let satohi = assetId == nil ? nil : account.satoshi?[assetId!]
+            let assets = WalletManager.current?.accountBackendOrNil(account)?.assets
+            let satohi = assetId == nil ? nil : assets?[assetId!]
             list += [
                 AccountCellModel(
                     account: account,

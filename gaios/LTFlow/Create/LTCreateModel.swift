@@ -14,19 +14,24 @@ struct LTCreateViewModel {
     }
 
     func enableLightning() async throws {
-        guard let credentials = try await wallet.wallet.prominentSession?.getCredentials(password: "") else {
+        guard let credentials = try await wallet.wallet.prominentSession.getCredentials(password: "") else {
             throw GaError.GenericError("Invalid credentials")
         }
-        let lightningCredentials = try await wallet.wallet.deriveLightningCredentials(from: credentials)
+        guard let xpubHashId = mainWallet.xpubHashId else {
+            throw GaError.GenericError("Invalid xpub")
+        }
+        let walletManager = await wallet.wallet
+        let lightningCredentials = try walletManager.deriveLightningCredentials(from: credentials)
+        // remove previous lightning data
+            if let workingDir = try? LightningSessionManager.workingDir(xpub: xpubHashId) {
+                try? walletManager.removeDatadir(workingDir.path())
+            }
+        let backend = try walletManager.glNetworkBackend()
+        try await backend.login(credentials: lightningCredentials, parentXpub: xpubHashId)
         // Get lightning session
         guard let session = await wallet.wallet.lightningSession else {
             throw GaError.GenericError("Invalid lightning session")
         }
-        // remove previous lightning data
-        await session.removeDatadir(credentials: lightningCredentials)
-        // connect lightning session
-        await session.connect()
-        _ = try await session.loginUser(lightningCredentials)
         // Add auth into keychain
         try AuthenticationTypeHandler
             .setCredentials(
@@ -37,7 +42,7 @@ struct LTCreateViewModel {
         
         // Register device to receive notifications
         let token = UserDefaults(suiteName: Bundle.main.appGroup)?.string(forKey: "token") ?? ""
-        if !token.isEmpty, let xpubHashId = mainAccount.xpubHashId {
+        if !token.isEmpty, let xpubHashId = mainWallet.xpubHashId {
             try? await session.registerNotification(fcmToken: token, xpubHashId: xpubHashId)
         }
         

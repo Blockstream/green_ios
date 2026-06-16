@@ -1,4 +1,5 @@
 import Foundation
+import green.gdk
 
 public class GDKSession: Session {
     public var ephemeral = false

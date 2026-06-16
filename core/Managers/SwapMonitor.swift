@@ -5,12 +5,12 @@ import LiquidWalletKit
 public actor SwapMonitor {
 
     private let xpubHashId: String
-    private let lwkSession: LwkSessionManager
+    private let lwkBoltzBackend: LwkBoltzBackend
     private var activeTasks: [NSManagedObjectID: Task<Void, Never>] = [:]
 
-    public init(xpubHashId: String, lwkSession: LwkSessionManager) {
+    public init(xpubHashId: String, lwkBoltzBackend: LwkBoltzBackend) {
         self.xpubHashId = xpubHashId
-        self.lwkSession = lwkSession
+        self.lwkBoltzBackend = lwkBoltzBackend
     }
 
     deinit {
@@ -28,7 +28,7 @@ public actor SwapMonitor {
 
     /// Called on restore wallet before wallet login to restore swaps, do before bootstrap()
     public func restoreSwaps(bitcoinAddress: String, liquidAddress: String) async throws {
-        try await lwkSession.restoreSwaps(
+        try await lwkBoltzBackend.restoreSwaps(
             bitcoinAddress: bitcoinAddress,
             liquidAddress: liquidAddress,
             xpubHashId: xpubHashId)
@@ -49,7 +49,7 @@ public actor SwapMonitor {
     private func removeTask(for id: NSManagedObjectID) {
         activeTasks.removeValue(forKey: id)
     }
-    
+
     public func stop() async {
         for task in activeTasks {
             task.value.cancel()
@@ -73,19 +73,19 @@ public actor SwapMonitor {
         lwkLogger.info("\(swap.id ?? "", privacy: .public): \(swap.data?.prefix(128) ?? "")")
         switch swap.type {
         case .some(BoltzSwapTypes.Submarine):
-            if let pay = try await lwkSession.restorePreparePay(data: swap.data ?? "") {
+            if let pay = try await lwkBoltzBackend.restorePreparePay(data: swap.data ?? "") {
                 lwkLogger.info("\(swap.id ?? "", privacy: .public) restored")
                 let state = try await loopSwap(swap: SwapResponse.submarine(pay))
                 lwkLogger.info("\(swap.id ?? "", privacy: .public) \(state.localized, privacy: .public)")
             }
         case .some(BoltzSwapTypes.ReverseSubmarine):
-            if let invoice = try await lwkSession.restoreInvoice(data: swap.data ?? "") {
+            if let invoice = try await lwkBoltzBackend.restoreInvoice(data: swap.data ?? "") {
                 lwkLogger.info("\(swap.id ?? "", privacy: .public) restored")
                 let state = try await loopSwap(swap: SwapResponse.reverseSubmarine(invoice))
                 lwkLogger.info("\(swap.id ?? "", privacy: .public) \(state.localized, privacy: .public)")
             }
         case .some(.Chain):
-            if let lockup = try await lwkSession.restoreLockup(data: swap.data ?? "") {
+            if let lockup = try await lwkBoltzBackend.restoreLockup(data: swap.data ?? "") {
                 lwkLogger.info("\(swap.id ?? "", privacy: .public) restored")
                 let state = try await loopSwap(swap: SwapResponse.chain(lockup))
                 lwkLogger.info("\(swap.id ?? "", privacy: .public) \(state.localized, privacy: .public)")

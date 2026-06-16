@@ -25,6 +25,8 @@ class TxDetailsStatusCellModel {
             return "id_sent".localized
         case .mixed:
             return "id_swapped".localized
+        default:
+            return ""
         }
     }
 
@@ -39,6 +41,8 @@ class TxDetailsStatusCellModel {
             return "id_your_transaction_was".localized
         case .mixed:
             return "id_your_transaction_was".localized
+        default:
+            return ""
         }
     }
 
@@ -52,6 +56,8 @@ class TxDetailsStatusCellModel {
             return "id_outgoing".localized
         case .mixed:
             return "id_swapping".localized
+        default:
+            return ""
         }
     }
 }

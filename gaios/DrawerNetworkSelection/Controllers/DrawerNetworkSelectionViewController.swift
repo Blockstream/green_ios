@@ -164,7 +164,8 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     }
 
     func isOverviewSelected(_ account: Wallet) -> Bool {
-        WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
+        WalletsRepository.shared
+            .get(for: account.id)?.activeNetworkIds.count ?? 0 > 0
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

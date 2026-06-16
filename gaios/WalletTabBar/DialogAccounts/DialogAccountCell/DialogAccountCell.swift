@@ -65,11 +65,11 @@ class DialogAccountCell: UITableViewCell {
     }
 
     func reloadAmounts(_ model: AccountCellModel) {
-        let list = model.hasTxs ? model.account.satoshi ?? [:] : [:]
-        let assets = AssetAmountList(list)
+        let backend = WalletManager.current?.accountBackendOrNil(model.account)
+        let assets = backend?.assets.toList()
         let registry = WalletManager.current
         var icons = [UIImage]()
-        assets.amounts.compactMap {
+        assets?.amounts.compactMap {
             if model.networkId.lightning && $0.0 == "btc" {
                 return UIImage(named: "ic_lightning_btc")
             }

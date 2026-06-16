@@ -73,7 +73,7 @@ class TransactionCell: UITableViewCell {
         }
         if showDate || model.amounts.count > 1 {
             // for base assets and multi asset txs add always the date below
-            let satoshi = model.assetAmountList.satoshi()
+            let satoshi = model.assetAmountList.policyAsset()
             let policyAsset = model.subaccount?.gdkNetwork.policyAsset ?? AssetInfo.btcId
             let fiat = Balance.fromSatoshi(satoshi, assetId: policyAsset)?.toFiatText()
             // hide fiat value for multi asset liquid (swaps)

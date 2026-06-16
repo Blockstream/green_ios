@@ -14,7 +14,7 @@ class TxDetailsAmountCell: UITableViewCell {
     @IBOutlet weak var lblFiat: UILabel!
 
     private var btc: String {
-        return WalletManager.current?.prominentNetwork.gdkNetwork.getFeeAsset() ?? ""
+        return WalletManager.current?.prominentNetwork.getFeeAsset() ?? ""
     }
 
     override func awakeFromNib() {

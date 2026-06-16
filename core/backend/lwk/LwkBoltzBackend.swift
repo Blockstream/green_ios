@@ -3,53 +3,31 @@ import LiquidWalletKit
 
 import greenaddress
 import hw
-public class LwkSessionManager: SessionManager {
+public final class LwkBoltzBackend {
 
     static public let BOLTZ_BIP85_INDEX: UInt32 = 26589
     static let BASE_URL = "https://green-webhooks.blockstream.com/"
     static let DEV_BASE_URL = "https://green-webhooks.dev.blockstream.com/"
-    var network = Network.mainnet()
+
     public var boltzSession: BoltzSession?
+    public var logged = false
+
+    let network: Network
     var xpubHashId: String?
-    private var client: AnyClient?
+    var client: AnyClient?
 
     public init(
         network: Network = Network.mainnet(),
         boltzSession: BoltzSession? = nil,
         xpubHashId: String? = nil,
-        client: AnyClient? = nil,
-        newNotificationDelegate: NewNotificationDelegate?) {
-        super.init(NetworkId.lwkMainnet, newNotificationDelegate: newNotificationDelegate)
+        client: AnyClient? = nil ) {
         self.network = network
         self.boltzSession = boltzSession
         self.xpubHashId = xpubHashId
         self.client = client
-        self.session = GDKSession()
-    }
-    public override func connect() async { }
-    public override func disconnect() async {
-        boltzSession = nil
-    }
-    public override func reconnect() async { }
-    public override func networkConnect() async { }
-    public override func networkDisconnect() async { }
-    public override func changeSettings(settings: Settings) async throws {
-        throw LwkError.Generic(msg: "Not implemented")
-    }
-    public override func subaccount(_ pointer: UInt32) async throws -> Account? {
-        return nil
-    }
-    public override func subaccounts(_ refresh: Bool = false) async throws -> [Account] {
-        return []
-    }
-    public override func transactions(subaccount: UInt32, first: Int = 0, count: Int = 30) async throws -> Transactions {
-        return Transactions(list: [])
-    }
-    public override func loginUser(_ params: HWDevice) async throws -> LoginUserResult {
-        throw LwkError.Generic(msg: "Not supported")
     }
 
-    public override func loginUser(_ params: Credentials) async throws -> LoginUserResult {
+    public func loginUser(_ params: Credentials, xpubHashId: String) async throws {
         guard let secret = params.mnemonic else {
             throw LwkError.Generic(msg: "Invalid mnemonic")
         }
@@ -59,13 +37,16 @@ public class LwkSessionManager: SessionManager {
         boltzSession = try createBoltzSession(
             client: client!,
             mnemonic: try Mnemonic(s: secret))
-        logged = true
-        guard let walletHash = try walletIdentifier(credentials: params) else {
-            throw LwkError.Generic(msg: "Invalid wallet hash")
-        }
-        return LoginUserResult(xpubHashId: walletHash.xpubHashId, walletHashId: walletHash.walletHashId)
+        self.xpubHashId = xpubHashId
+        self.logged = true
     }
-    
+
+    public func disconnect() {
+        boltzSession = nil
+        client = nil
+        logged = false
+    }
+
     func getClient() throws -> AnyClient {
         do {
             let client = try network.defaultElectrumClient()
@@ -96,11 +77,11 @@ public class LwkSessionManager: SessionManager {
     }
 
     func webhookBaseUrl() -> String {
-        Bundle.main.dev ? LwkSessionManager.DEV_BASE_URL : LwkSessionManager.BASE_URL
+        Bundle.main.dev ? LwkBoltzBackend.DEV_BASE_URL : LwkBoltzBackend.BASE_URL
     }
 
     func webhook(status: [String]?) throws -> WebHook {
-        guard let xpubHashId = xpubHashId else {
+        guard let xpubHashId else {
             throw LwkError.Generic(msg: "No xpub defined")
         }
         return WebHook(url: "\(webhookBaseUrl())/webhook/boltz/\(xpubHashId)", status: status ?? [])
@@ -299,7 +280,7 @@ public class LwkSessionManager: SessionManager {
     }
 }
 
-extension LwkSessionManager: Logging {
+extension LwkBoltzBackend: Logging {
     public func log(level: LiquidWalletKit.LogLevel, message: String) {
         switch level {
         case .debug:

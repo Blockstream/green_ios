@@ -68,7 +68,7 @@ enum AccountPrefs {
         var prefs: [AccountPrefs] = []
         if !isLightning {
             prefs.append(.rename)
-            if let subaccount = WalletManager.current?.subaccounts,
+            if let subaccount = WalletManager.current?.accounts,
                subaccount.filter({ !$0.hidden }).count > 1 {
                 prefs.append(.archive)
             }

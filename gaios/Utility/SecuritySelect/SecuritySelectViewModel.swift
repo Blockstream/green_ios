@@ -25,7 +25,7 @@ class SecuritySelectViewModel {
         }
         return nil
     }
-    private var wm: WalletManager { WalletManager.current! }
+    var wm: WalletManager { WalletManager.current! }
 
     init(asset: String? = nil, anyLiquidAsset: Bool = false, anyLiquidAmpAsset: Bool = false, onlyBtc: Bool = false) {
         self.asset = asset
@@ -76,7 +76,7 @@ class SecuritySelectViewModel {
     }
 
     func hasLightning() -> Bool {
-        return wm.lightningSubaccount != nil
+        return wm.hasLightning
     }
 
     /// cell models
@@ -102,9 +102,7 @@ class SecuritySelectViewModel {
     func create(policy: PolicyCellType, params: CreateSubaccountParams) async throws -> SubaccountAction {
         let isLiquid = anyLiquidAsset || anyLiquidAmpAsset || asset != "btc"
         let network = policy.getNetwork(testnet: wm.testnet, liquid: isLiquid)!
-        guard let session = getSession(for: network) else {
-            throw GaError.GenericError("id_invalid_session".localized)
-        }
+        let session = try wm.gdkNetworkBackend(network).session
         if !session.logged {
             if wm.isHW {
                 try await loginHW(session: session)
@@ -113,7 +111,7 @@ class SecuritySelectViewModel {
             }
         }
         let action = try await self.createOrUnarchiveSubaccount(session: session, params: params)
-        let subaccounts = try await self.wm.subaccounts()
+        let subaccounts = try await self.wm.getAccounts()
         _ = try await self.wm.balances(subaccounts: subaccounts)
         return action
     }
@@ -147,13 +145,11 @@ class SecuritySelectViewModel {
             let params = UpdateSubaccountParams(subaccount: 0, hidden: true)
             try await session.updateSubaccount(params)
         }
-        _ = try await wm.subaccounts()
+        _ = try await wm.getAccounts()
     }
 
     func loginCredentials(session: SessionManager) async throws {
-        guard let prominentSession = wm.prominentSession else {
-            throw GaError.GenericError("No session available")
-        }
+        let prominentSession = wm.prominentSession
         guard let credentials = try await prominentSession.getCredentials(password: "") else {
             throw GaError.GenericError("No credential provided")
         }
@@ -165,7 +161,7 @@ class SecuritySelectViewModel {
             let params = UpdateSubaccountParams(subaccount: 0, hidden: true)
             try await session.updateSubaccount(params)
         }
-        _ = try await wm.subaccounts()
+        _ = try await wm.getAccounts()
     }
 
     func isUsedDefaultAccount(for session: SessionManager, account: Account?) async throws -> Bool {
@@ -182,7 +178,7 @@ class SecuritySelectViewModel {
     }
 
     func createOrUnarchiveSubaccount(session: SessionManager, params: CreateSubaccountParams) async throws -> SubaccountAction {
-        let accounts = self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.type != .twoOfThree && $0.hidden }
+        let accounts = self.wm.accounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.type != .twoOfThree && $0.hidden }
         guard let account = accounts.first else {
             _ = try await session.createSubaccount(params)
             return .created
@@ -217,12 +213,12 @@ class SecuritySelectViewModel {
     }
 
     func getSession(for network: NetworkId) -> SessionManager? {
-        wm.sessions[network.network]
+        wm.gdkNetworkBackendOrNil(network)?.session
     }
 
     func uniqueName(_ type: AccountType, liquid: Bool) -> String {
         let network = liquid ? " Liquid " : " "
-        let counter = wm.subaccounts.filter { $0.type == type && $0.gdkNetwork.liquid == liquid }.count
+        let counter = wm.accounts.filter { $0.type == type && $0.gdkNetwork.liquid == liquid }.count
         if counter > 0 {
             return "\(type.string)\(network)\(counter+1)"
         }

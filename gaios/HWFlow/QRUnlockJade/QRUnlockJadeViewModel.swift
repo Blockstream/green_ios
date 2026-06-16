@@ -110,7 +110,7 @@ class QRUnlockJadeViewModel {
             account.xpubHashId = res?.xpubHashId
             account.walletHashId = res?.walletHashId
         } else {
-            let session = wm.prominentSession!
+            let session = wm.prominentSession
             let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain)
             AnalyticsManager.shared.loginWalletStart()
             let method: AuthenticationTypeHandler.AuthType = enableBio ? .AuthKeyBiometric : .AuthKeyPIN

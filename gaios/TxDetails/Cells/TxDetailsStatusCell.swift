@@ -43,7 +43,7 @@ class TxDetailsStatusCell: UITableViewCell {
         lblStateDate.text = model.transaction.date(dateStyle: .long, timeStyle: .short)
         lblStateDate.isHidden = model.transaction.createdAtTs == 0
 
-        let isLightning = model.transaction.subaccount?.gdkNetwork.lightning ?? false
+        let isLightning = model.transaction.networkIdInjected?.gdkNetwork.lightning ?? false
         // Handle Lightning transactions first
         if isLightning {
             let hasClosingTxId = !(model.transaction.closingTxid?.isEmpty ?? true)
@@ -99,7 +99,7 @@ class TxDetailsStatusCell: UITableViewCell {
     }
 
     private func getRequiredConfirmations(_ model: TxDetailsStatusCellModel) -> Int {
-        if model.transaction.subaccount?.gdkNetwork.lightning ?? false {
+        if model.transaction.networkIdInjected?.gdkNetwork.lightning ?? false {
             return 1 // Lightning transactions complete after 1 confirmation
         }
         return model.transaction.isLiquid ? 2 : 6
@@ -147,7 +147,7 @@ class TxDetailsStatusCell: UITableViewCell {
 
             let amounts = model.transaction.amounts
             var icons: [UIImage] = []
-            if model.transaction.subaccount?.gdkNetwork.lightning ?? false {
+            if model.transaction.networkIdInjected?.gdkNetwork.lightning ?? false {
                 icons = [UIImage(named: "ic_lightning_btc")!]
             } else {
                 let registry = WalletManager.current
@@ -167,7 +167,7 @@ class TxDetailsStatusCell: UITableViewCell {
             }
         } else {
             var icons: [UIImage] = []
-            if model.transaction.subaccount?.gdkNetwork.lightning ?? false {
+            if model.transaction.networkIdInjected?.gdkNetwork.lightning ?? false {
                 icons = [UIImage(named: "ic_lightning_btc")!]
             } else {
                 let ids = model.assetAmountList.amounts.map { $0.0 }
@@ -219,6 +219,6 @@ class TxDetailsStatusCell: UITableViewCell {
     }
 
     func subaccount(tx: Transaction) -> Account? {
-        return WalletManager.current?.subaccounts.filter { $0.id == tx.subaccountId }.first
+        return WalletManager.current?.accounts.filter { $0.id == tx.accountId }.first
     }
 }

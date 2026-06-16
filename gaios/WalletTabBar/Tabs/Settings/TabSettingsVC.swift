@@ -407,7 +407,7 @@ extension TabSettingsVC {
     }
 
     func showAutoLogout() {
-        guard var settings = viewModel.wallet.prominentSession?.settings else { return }
+        guard var settings = viewModel.wallet.prominentSession.settings else { return }
         let list = [AutoLockType.minute.string, AutoLockType.twoMinutes.string, AutoLockType.fiveMinutes.string, AutoLockType.tenMinutes.string, AutoLockType.sixtyMinutes.string]
         let dialogViewModel = DialogListViewModel(
             title: "id_auto_logout_timeout".localized,

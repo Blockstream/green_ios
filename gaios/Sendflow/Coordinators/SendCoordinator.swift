@@ -43,14 +43,14 @@ final class SendCoordinator {
     }
 
     func start(input: String?, subaccount: Account?, assetId: String?) {
-        selectedDenomination = wallet.wallet.prominentSession?.settings?.denomination ?? .Sats
+        selectedDenomination = wallet.wallet.prominentNetworkBackend.session.settings?.denomination ?? .Sats
         let model = SendAddressViewModel(mainWallet: mainWallet, wallet: wallet, text: input, subaccount: subaccount, assetId: assetId, delegate: self)
         let vc = sendAddressViewController(model: model)
         nav.pushViewController(vc, animated: true)
     }
 
     func startSwap(subaccount: Account?, assetId: String?) {
-        selectedDenomination = wallet.wallet.prominentSession?.settings?.denomination ?? .Sats
+        selectedDenomination = wallet.wallet.prominentNetworkBackend.session.settings?.denomination ?? .Sats
         let model = SendSwapViewModel(wallet: wallet.wallet, subaccount: subaccount, assetId: assetId, delegate: self)
         let vc = sendSwapViewController(model: model)
         nav.pushViewController(vc, animated: true)
@@ -174,11 +174,11 @@ extension SendCoordinator {
     private func subaccounts(for rail: PaymentRail, wallet: WalletManager, amount: UInt64?) -> [Account] {
         switch rail {
         case .bitcoin:
-            return wallet.bitcoinSubaccountsWithFunds
+            return wallet.bitcoinSubaccountsWithFunds()
         case .liquid:
-            return wallet.liquidSubaccountsWithFunds
+            return wallet.liquidSubaccountsWithFunds()
         case .lightning:
-            if let subaccount = wallet.lightningSubaccount {
+            if let subaccount = wallet.glNetworkBackendOrNil()?.account {
                 let maxPayable = subaccount.lightningSession?.nodeState()?.maxPayableMsat.satoshi ?? 0
                 if maxPayable > 0 {
                     if let amount = amount, maxPayable < amount {
@@ -831,7 +831,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             case .success(let model):
                 AnalyticsManager.shared.endSendTransaction(
                     account: WalletsStorage.shared.current,
-                    walletItem: transaction.subaccount,
+                    walletItem: transaction.accountInjected,
                     transactionSgmt: segment,
                     withMemo: false)
                 // Swap analytics must never be emitted for pure lightning payments.
@@ -854,7 +854,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             case .failure(let model):
                 AnalyticsManager.shared.failedTransaction(
                     account: WalletsStorage.shared.current,
-                    walletItem: transaction.subaccount,
+                    walletItem: transaction.accountInjected,
                     transactionSgmt: segment,
                     withMemo: false,
                     prettyError: model.error.description().localized,
@@ -868,7 +868,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
     func handleSend(vm: SendLwkSignViewModel, transaction: core.Transaction) async -> SendRoute {
         let isHW = mainWallet.isHW
         let xpubHashId = mainWallet.xpubHashId
-        let isLightning = transaction.subaccount?.isLightning ?? false
+        let isLightning = transaction.accountInjected?.isLightning ?? false
         gdkTransaction = transaction
         nav.topViewController?.startLoader(message: "id_sending".localized)
         if isHW && !isLightning {
@@ -876,19 +876,20 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
                 tx: transaction,
                 draft: draft,
                 denomination: .Sats,
-                subaccount: transaction.subaccount,
+                subaccount: transaction.accountInjected,
                 isMultiAddressees: false,
                 isQRMode: false)
             let vc = sendHWViewController(model: model)
             await nav.presentAsync(vc, animated: true)
         }
         let task = Task.detached {
-            guard let subaccount = transaction.subaccount, var session = subaccount.session else {
+            guard let subaccount = transaction.accountInjected, var session = subaccount.gdkSession else {
                 throw TransactionError.invalid(localizedDescription: "No subaccount selected")
             }
             if isHW && !isLightning {
                 if let wm = BleHwManager.shared.walletManager, BleHwManager.shared.isConnected() && BleHwManager.shared.isLogged() {
-                    session = wm.getSession(for: subaccount) ?? session
+                    session = try await wm
+                        .gdkAccountBackend(subaccount).session
                 }
             }
             let sendTransactionSuccess = try await TransactionBuilder.sendGdkTransaction(
@@ -923,7 +924,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             nav.topViewController?.stopLoader()
             let model = SendFailureViewModel(delegate: self,
                                              error: error,
-                                             hideErrors: transaction.subaccount?.networkId.lightning ?? false)
+                                             hideErrors: transaction.accountInjected?.networkId.lightning ?? false)
             return .failure(model)
         }
     }

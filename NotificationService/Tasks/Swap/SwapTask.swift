@@ -7,16 +7,16 @@ import LiquidWalletKit
 import CoreData
 
 public class SwapTask {
-    private let lwkSession: LwkSessionManager
+    private let lwkBoltzBackend: LwkBoltzBackend
     private let startTime: Date
     // Timeout for notifications
     // ~30s = standard timeout
     // ~25s = cleanup zone
     private let maxDuration: TimeInterval = 30.0
     
-    init(session: LwkSessionManager) {
+    init(lwkBoltzBackend: LwkBoltzBackend) {
         self.startTime = Date()
-        self.lwkSession = session
+        self.lwkBoltzBackend = lwkBoltzBackend
     }
 
     public func start(xpubHashId: String, secret: String, swapId: String) async throws -> BoltzSwap {
@@ -27,7 +27,7 @@ public class SwapTask {
             // This is triggered INSTANTLY when task.cancel() is called.
             // It does NOT wait for the block above to finish.
             Task {
-                await lwkSession.disconnect()
+                await lwkBoltzBackend.disconnect()
             }
         }
     }
@@ -41,31 +41,31 @@ public class SwapTask {
         }
         logger.info("LwkSwapTask: Swap \(swapId, privacy: .public) \(swap.isPending ? "pending" : "completed")")
         GdkInit.defaults().run()
-        await lwkSession.connect()
-        _ = try await lwkSession.loginUser(Credentials(mnemonic: secret))
+        _ = try await lwkBoltzBackend
+            .loginUser(Credentials(mnemonic: secret), xpubHashId: xpubHashId)
         logger.info("LwkSwapTask: connected")
         switch swap.type {
         case .Submarine:
-            if let pay = try await lwkSession.restorePreparePay(data: swapData) {
+            if let pay = try await lwkBoltzBackend.restorePreparePay(data: swapData) {
                 _ = try await loopSwap(
                     xpubHashId: xpubHashId,
-                    lwkSession: lwkSession,
+                    lwkBoltzBackend: lwkBoltzBackend,
                     persistentId: persistentId,
                     swap: SwapResponse.submarine(pay))
             }
         case .ReverseSubmarine:
-            if let invoice = try await lwkSession.restoreInvoice(data: swapData) {
+            if let invoice = try await lwkBoltzBackend.restoreInvoice(data: swapData) {
                 _ = try await loopSwap(
                     xpubHashId: xpubHashId,
-                    lwkSession: lwkSession,
+                    lwkBoltzBackend: lwkBoltzBackend,
                     persistentId: persistentId,
                     swap: SwapResponse.reverseSubmarine(invoice))
             }
         case .Chain:
-            if let lockup = try await lwkSession.restoreLockup(data: swapData) {
+            if let lockup = try await lwkBoltzBackend.restoreLockup(data: swapData) {
                 _ = try await loopSwap(
                     xpubHashId: xpubHashId,
-                    lwkSession: lwkSession,
+                    lwkBoltzBackend: lwkBoltzBackend,
                     persistentId: persistentId,
                     swap: SwapResponse.chain(lockup))
             }
@@ -78,8 +78,8 @@ public class SwapTask {
         return swap
     }
 
-    nonisolated public func loopSwap(xpubHashId: String, lwkSession: LwkSessionManager, persistentId: NSManagedObjectID, swap: SwapResponse) async throws -> PaymentState {
-        let monitor = SwapMonitor(xpubHashId: xpubHashId, lwkSession: lwkSession)
+    nonisolated public func loopSwap(xpubHashId: String, lwkBoltzBackend: LwkBoltzBackend, persistentId: NSManagedObjectID, swap: SwapResponse) async throws -> PaymentState {
+        let monitor = SwapMonitor(xpubHashId: xpubHashId, lwkBoltzBackend: lwkBoltzBackend)
         var state = PaymentState.continue
         var swap = swap
         repeat {
@@ -87,12 +87,12 @@ public class SwapTask {
             let elapsed = Date().timeIntervalSince(startTime)
             if elapsed > (maxDuration - 5.0) {
                 logger.info("LwkSwapTask: Approaching execution limit (\(elapsed)s). Cleaning up.")
-                await lwkSession.disconnect()
+                await lwkBoltzBackend.disconnect()
                 throw NotificationError.Timeout
             }
             state = try await monitor.handleSingleSwap(persistentId: persistentId, swap: &swap)
         } while state == PaymentState.continue && !Task.isCancelled
-        await lwkSession.disconnect()
+        await lwkBoltzBackend.disconnect()
         return state
     }
 }

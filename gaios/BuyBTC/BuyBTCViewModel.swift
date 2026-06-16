@@ -21,6 +21,7 @@ struct Tiers {
         String(format: "%.0f", max)
     }
 }
+@MainActor
 class BuyBTCViewModel {
 
     var asset: String
@@ -42,7 +43,7 @@ class BuyBTCViewModel {
         getAccounts().count > 1
     }
     static func getBitcoinSubaccounts() -> [Account] {
-        WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+        WalletManager.current?.bitcoinSubaccounts.sorted() ?? []
     }
     var address: Address?
     var defaultProvider: String?
@@ -68,7 +69,7 @@ class BuyBTCViewModel {
         }
         self.asset = self.account.gdkNetwork.getFeeAsset()
         self.meld = Meld()
-        self.inputDenomination = WalletManager.current?.prominentSession?.settings?.denomination ?? .Sats
+        self.inputDenomination = WalletManager.current?.prominentSession.settings?.denomination ?? .Sats
         self.hideBalance = hideBalance
         self.currency = currency
         self.loadTiers()
@@ -188,7 +189,7 @@ class BuyBTCViewModel {
         get {
             guard let label = defaultAccountLabel else { return nil }
             let accountId = UserDefaults.standard.string(forKey: label)
-            return WalletManager.current?.subaccounts.filter({ $0.id == accountId }).first
+            return WalletManager.current?.accounts.filter({ $0.id == accountId }).first
         }
         set {
             guard let label = defaultAccountLabel else { return }
@@ -196,7 +197,7 @@ class BuyBTCViewModel {
         }
     }
     func getBitcoinSubaccounts() -> [Account] {
-        wm.subaccounts.filter { !$0.hidden && !$0.networkId.liquid && !$0.networkId.lightning }.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 })
+        wm.accounts.filter { !$0.hidden && !$0.networkId.liquid && !$0.networkId.lightning }.sorted()
     }
     func getAccounts() -> [Account] {
         return getBitcoinSubaccounts()

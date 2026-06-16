@@ -57,7 +57,7 @@ class ShowMnemonicsViewController: UIViewController {
     }
 
     func getCredentials() async -> Credentials? {
-        return try? await WalletManager.current?.prominentSession?.getCredentials(password: "")
+        return try? await WalletManager.current?.prominentSession.getCredentials(password: "")
     }
 
     func getLightningCredentials() -> Credentials? {

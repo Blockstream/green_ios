@@ -9,13 +9,14 @@ struct DialogSignViewModel {
     var address: String
     var isHW: Bool { WalletsStorage.shared.current?.isHW ?? false }
     
-    var session: SessionManager? {
+    @MainActor var session: SessionManager? {
         if isHW && BleHwManager.shared.walletManager != nil {
             if BleHwManager.shared.isConnected() {
-                return BleHwManager.shared.walletManager?.getSession(for: subaccount)
+                return BleHwManager.shared.walletManager?
+                    .gdkAccountBackendOrNil(subaccount)?.session
             }
         }
-        return WalletManager.current?.getSession(for: subaccount)
+        return WalletManager.current?.gdkAccountBackendOrNil(subaccount)?.session
     }
 
     func sign(message: String) async throws -> String? {

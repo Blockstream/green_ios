@@ -159,7 +159,7 @@ class ConnectViewModel: NSObject {
 
     func createJadeWatchonly(wm: WalletManager) async throws {
         // export core descriptors for watchonly
-        let subaccounts = try await wm.subaccounts()
+        let subaccounts = try await wm.getAccounts()
         let descriptors = subaccounts
             .filter({ !$0.hidden })
             .compactMap({ $0.coreDescriptors })
@@ -201,8 +201,8 @@ class ConnectViewModel: NSObject {
         case .AuthKeyWoBioCredentials:
             return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
         case .AuthKeyBiometric, .AuthKeyPIN:
-            let wm = WalletManager(prominentNetwork: account.networkId)
-            let session = wm.prominentSession!
+            let wm = WalletManager(networkId: account.networkId)
+            let session = wm.prominentSession
             let data = try AuthenticationTypeHandler.getPinData(method: method, for: account.keychain)
             try await session.connect()
             let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
@@ -215,7 +215,7 @@ class ConnectViewModel: NSObject {
     func loginJadeWatchonly(method: AuthenticationTypeHandler.AuthType) async throws {
         updateState?(.watchonly)
         AnalyticsManager.shared.loginWalletStart()
-        let wm = WalletManager(prominentNetwork: account.networkId)
+        let wm = WalletManager(networkId: account.networkId)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = HwPopupResolver()
         let credentials = try await getCredentials(method: method)

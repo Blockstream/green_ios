@@ -1,23 +1,31 @@
-
-import Foundation
+core/backend/gl/LightningSessionManager.swiftimport Foundation
 import GreenlightSDK
 import greenaddress
 import lightning
 import LiquidWalletKit
 import hw
 
-public class LightningSessionManager: SessionManager {
+public final class LightningSessionManager {
 
     var sdk: LightningSdk?
     var xpubHashId: String?
     var streamTask: Task<Void, Never>?
+    let network: GdkNetwork
+    var connected: Bool = false
+    public var logged: Bool = false
+    weak var newNotificationDelegate: NewNotificationDelegate?
 
-    public init(newNotificationDelegate: NewNotificationDelegate?) {
-        super.init(.lightningMainnet, newNotificationDelegate: newNotificationDelegate)
+    public init(network: GdkNetwork, newNotificationDelegate: NewNotificationDelegate? = nil) {
+        self.network = network
+        self.newNotificationDelegate = newNotificationDelegate
     }
 
-    func workingDir(xpubHashId: String) throws -> URL {
-        let path = "/gl-sdk/\(xpubHashId)/0"
+    func setNotificationDelegate(_ delegate: NewNotificationDelegate) {
+        self.newNotificationDelegate = delegate
+    }
+
+    public static func workingDir(xpub: String) throws -> URL {
+        let path = "/gl-sdk/\(xpub)/0"
         if let appGroupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Bundle.main.appGroup) {
             return appGroupURL.appending(path: path)
         }
@@ -29,41 +37,24 @@ public class LightningSessionManager: SessionManager {
         )
         return appSupport.appending(path: path)
     }
-    
-    public override func loginUser(_ params: Credentials) async throws -> LoginUserResult {
-        return try await self.loginUser(params, isForceConnectAllowed: true)
-    }
 
-    public func loginUser(_ params: Credentials, isForceConnectAllowed: Bool) async throws -> LoginUserResult {
+    public func loginUser(params: GreenlightMnemonicAndCredentials, workingDir: String, isForceConnectAllowed: Bool) async throws -> LightningCredentials? {
         guard let greenlightKeys = LightningSdk.CREDENTIALS else {
             throw GreenlightSDK.Error.Other("No greenlight keys found")
         }
-        guard let walletId = try walletIdentifier(credentials: params) else {
-            throw GreenlightSDK.Error.Other("Failed to get walletId")
-        }
-        let workingDir = try workingDir(xpubHashId: walletId.xpubHashId)
         let sdk = LightningSdk(
-            workingDir: workingDir.path,
+            workingDir: workingDir,
             greenlightKeys: greenlightKeys,
             logListener: self,
             nodeEventListener: self
         )
-        guard let mnemonic = params.mnemonic else {
-            throw GreenlightSDK.Error.Other("Invalid mnemonic")
-        }
-        // get node credentials if available
-        let creds = LightningRepository.shared.get(for: walletId.xpubHashId)
-        let greenlightCredentials = GreenlightMnemonicAndCredentials(
-            mnemonic: mnemonic,
-            credentials: creds?.credentials
-        )
         do {
             // connect to greenlight and restore if available
-            try await sdk.connect(mnemonicAndCredentials: greenlightCredentials, isRestore: creds == nil)
+            try await sdk.connect(mnemonicAndCredentials: params, isRestore:  params.credentials == nil)
         } catch {
             // fallback to normal connect
             if isForceConnectAllowed {
-                try await sdk.connect(mnemonicAndCredentials: greenlightCredentials, isRestore: false)
+                try await sdk.connect(mnemonicAndCredentials: params, isRestore: false)
             } else {
                 throw error
             }
@@ -72,16 +63,10 @@ public class LightningSessionManager: SessionManager {
         logged = true
         connected = true
         // store node credentials
-        let nodeCredentials = try await sdk.getNodeCredentials(mnemonic: mnemonic)
-        LightningRepository.shared
-            .upsert(
-                for: walletId.xpubHashId,
-                credentials: LightningCredentials(credentials: nodeCredentials)
-            )
-        // return login data
-        let res = LoginUserResult(xpubHashId: walletId.xpubHashId, walletHashId: walletId.walletHashId)
-        self.loginData = res
-        return res
+        let nodeCredentials = try await sdk.getNodeCredentials(
+            mnemonic: params.mnemonic
+        )
+        return LightningCredentials(credentials: nodeCredentials)
     }
 
     public func createInvoice(satoshi: UInt64, description: String) async throws -> LightningReceivePayment {
@@ -98,29 +83,27 @@ public class LightningSessionManager: SessionManager {
         return try await sdk.isPaidInvoice(paymentHash: paymentHash)
     }
 
-    public override func connect() async {
+    public func connect() async {
     }
-    public override func disconnect() async {
+    public func disconnect() async {
         sdk?.stop()
         sdk = nil
         connected = false
         logged = false
         streamTask?.cancel()
     }
-    public override func reconnect() async { }
-    public override func networkConnect() async { }
-    public override func networkDisconnect() async { }
-    public override func changeSettings(settings: Settings) async throws {
-        throw GreenlightSDK.Error.Other("Not implemented")
+    deinit {
+        sdk?.stop()
+        streamTask?.cancel()
     }
 
-    public override func getBalance(subaccount: UInt32, numConfs: Int) async throws -> [String: Int64] {
+    public func getBalance(subaccount: UInt32, numConfs: Int) async throws -> [String: Int64] {
         let msats = try await sdk?.balance()
         let balance = [AssetInfo.lightningId: Int64(msats?.satoshi ?? 0)]
         return balance
     }
 
-    public override func subaccount(_ pointer: UInt32) async throws -> Account {
+    public func subaccount(_ pointer: UInt32) async throws -> Account {
         return Account(
             gdkName: "",
             pointer: 0,
@@ -131,26 +114,31 @@ public class LightningSessionManager: SessionManager {
         )
     }
 
-    public override func subaccounts(_ refresh: Bool = false) async throws -> [Account] {
+    public func subaccounts(_ refresh: Bool = false) async throws -> [Account] {
         let subaccount = try await subaccount(0)
         return [subaccount]
     }
 
-    public override func transactions(subaccount: UInt32, first: Int = 0, count: Int = 30) async throws -> Transactions {
+    public func transactions(_ params: GetTransactionsParams) async throws -> Transactions {
         guard let sdk else {
             throw GreenlightSDK.Error.Other("Not connected")
         }
-        if first > 0 {
+        if params.first > 0 {
             return Transactions(list: [])
         }
-        let subaccount = try await self.subaccount(subaccount)
+        let subaccount = try await self.subaccount(params.subaccount)
         let list = try await sdk.getPayments()
-            .map { Transaction.from(payment: $0, subaccountId: subaccount.id) }
+            .map { Transaction.from(payment: $0, account: subaccount) }
         return Transactions(list: list)
     }
 
-    public override func loginUser(_ params: HWDevice) async throws -> LoginUserResult {
-        throw GreenlightSDK.Error.Other("Not supported")
+    public func transactions(subaccount: UInt32, first: Int = 0, count: Int = 30) async throws -> Transactions {
+        let params = GetTransactionsParams(
+            subaccount: subaccount,
+            first: first,
+            count: count
+        )
+        return try await transactions(params)
     }
 
     public func updateNodeInfoState() async throws -> NodeState? {
@@ -162,7 +150,7 @@ public class LightningSessionManager: SessionManager {
         return sdk?.nodeState
     }
 
-    public override func createTransaction(tx: Transaction) async throws -> Transaction {
+    public func createTransaction(tx: Transaction) async throws -> Transaction {
         guard let addressee = tx.addressees.first else {
             throw GreenlightSDK.Error.Other("Invalid invoice")
         }
@@ -179,16 +167,20 @@ public class LightningSessionManager: SessionManager {
             if amount > maxPayable {
                 throw TransactionError.invalid(localizedDescription: "id_insufficient_funds", maxPayable: maxPayable)
             }
-        } else if amount > tx.subaccount?.btc ?? 0 {
-            throw TransactionError.invalid(localizedDescription: "id_insufficient_funds")
+
+        } else {
+            let balance = try await getBalance(subaccount: 0, numConfs: 0)
+            if amount > balance.first?.value ?? 0 {
+                throw TransactionError.invalid(localizedDescription: "id_insufficient_funds")
+            }
         }
         return tx
     }
 
-    public override func signTransaction(tx: Transaction) async throws -> Transaction {
+    public func signTransaction(tx: Transaction) async throws -> Transaction {
         return tx
     }
-    public override func sendTransaction(tx: Transaction) async throws -> SendTransactionSuccess {
+    public func sendTransaction(tx: Transaction) async throws -> SendTransactionSuccess {
         guard let sdk else {
             throw GreenlightSDK.Error.Other("Not connected")
         }
@@ -208,7 +200,7 @@ public class LightningSessionManager: SessionManager {
         let res = try await sdk.redeemAllOnchainFunds(destination: destination)
         return res.txid
     }
-    public override func getReceiveAddress(subaccount: UInt32) async throws -> Address {
+    public func getReceiveAddress(subaccount: UInt32) async throws -> Address {
         guard let sdk else {
             throw GreenlightSDK.Error.Other("Not connected")
         }
@@ -225,9 +217,9 @@ public class LightningSessionManager: SessionManager {
     }
 }
 extension Transaction {
-    static public func from(payment: GreenlightSDK.Payment, subaccountId: String) -> Transaction {
+    static public func from(payment: GreenlightSDK.Payment, account: Account) -> Transaction {
         var tx = Transaction([:])
-        tx.subaccountId = subaccountId
+        tx.setup(account: account)
         let amount = Int64(payment.amountMsat) * (payment.paymentType == .received ? 1 : -1)
         tx.type = payment.paymentType == .received ? .incoming : .outgoing
         tx.memo = payment.description
@@ -256,7 +248,7 @@ extension LightningSessionManager: GreenlightSDK.NodeEventListener {
                 newNotificationDelegate?
                     .didReceive(
                         event: .invoicePaid(details),
-                        networkId: networkId
+                        networkId: network.networkId
                     )
             }
         }

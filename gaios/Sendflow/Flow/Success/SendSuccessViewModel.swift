@@ -18,7 +18,7 @@ final class SendSuccessViewModel: Sendable {
     }
 
     func urlForTx() -> URL? {
-        guard let txExplorerUrl = tx.subaccount?.gdkNetwork.txExplorerUrl, let
+        guard let txExplorerUrl = tx.networkIdInjected?.gdkNetwork.txExplorerUrl, let
                 txHash = sendTransactionSuccess.txHash else {
             return nil
         }
@@ -26,12 +26,10 @@ final class SendSuccessViewModel: Sendable {
     }
 
     func urlForTxUnblinded() -> URL? {
-        guard let txExplorerUrl = tx.subaccount?.gdkNetwork.txExplorerUrl,
-                let txHash = sendTransactionSuccess.txHash else {
-            return nil
+        if let unblindingUrl = tx.unblindingUrl{
+            return URL(string: unblindingUrl)
         }
-        let blindingUrl = tx.blindingUrlString(address: txHash)
-        return URL(string: "\(txExplorerUrl)\(txHash)\(blindingUrl)")
+        return nil
     }
 
     func url() -> URL? {

@@ -276,8 +276,8 @@ class ConnectViewController: HWFlowBaseViewController {
         }
     }
     func handleBiometricSetup() async throws {
-        let subaccounts = try? await viewModel.bleHwManager.walletManager?.subaccounts()
-        let hasNoMultisig = (subaccounts ?? []).filter({$0.isMultisig}).isEmpty
+        let subaccounts = viewModel.bleHwManager.walletManager?.accounts
+        let hasNoMultisig = (subaccounts ?? []).filter({$0.network.multisig}).isEmpty
         if hasNoMultisig {
             let action = await suspendEnableBiometricsDialogViewController()
             if action == .bio {

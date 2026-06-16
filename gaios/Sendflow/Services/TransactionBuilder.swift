@@ -102,7 +102,7 @@ actor TransactionBuilder {
     }
     static func buildGdkTransaction(uri: String, satoshi: Int64, session: SessionManager, subaccount: Account) async throws -> core.Transaction {
         return try await Task.detached(priority: .userInitiated) {
-            var tx = Transaction([:], subaccountId: subaccount.id)
+            var tx = Transaction([:], accountId: subaccount.id)
             tx.feeRate = try await session.getFeeEstimates()?.first ?? session.gdkNetwork.defaultFee
             let unspent = try await session.getUnspentOutputs(GetUnspentOutputsParams(subaccount: subaccount.pointer, numConfs: 0))
             tx.utxos = unspent
@@ -134,7 +134,7 @@ actor TransactionBuilder {
     // bolt11 invoice has been resolved). The DB dedup is keyed on the resolved
     // bolt11 invoice; for BOLT12 offers that don't expose a resolvable invoice
     // yet, dedup is skipped (we still proceed with a fresh preparePay).
-    static func buildSwap(lightningPayment: LightningPayment, lwk: LwkSessionManager, subaccount: Account, xpub: String) async throws -> PreparePayResponse {
+    static func buildSwap(lightningPayment: LightningPayment, lwk: LwkBoltzBackend, subaccount: Account, xpub: String) async throws -> PreparePayResponse {
         return try await Task.detached(priority: .userInitiated) {
             if let invoice = try lightningPayment.bolt11Invoice()?.description {
                 let swapIdsByInvoice = try await BoltzController.shared.fetchSwaps(xpubHashId: xpub, invoice: invoice, swapType: .Submarine)
@@ -148,7 +148,9 @@ actor TransactionBuilder {
                     }
                 }
             }
-            let address = try await subaccount.session?.getReceiveAddress(subaccount: subaccount.pointer)
+            let address = try await subaccount.gdkSession?.getReceiveAddress(
+                subaccount: subaccount.pointer
+            )
             guard let address = address?.address else {
                 throw TransactionError.invalid(localizedDescription: "Invalid address")
             }
@@ -157,9 +159,9 @@ actor TransactionBuilder {
         }.value
     }
 
-    static func buildSubmarineSwapTransaction(lightningPayment: LightningPayment, lwk: LwkSessionManager, subaccount: Account, xpub: String) async throws -> (PreparePayResponse?, core.Transaction) {
+    static func buildSubmarineSwapTransaction(lightningPayment: LightningPayment, lwk: LwkBoltzBackend, subaccount: Account, xpub: String) async throws -> (PreparePayResponse?, core.Transaction) {
         return try await Task.detached(priority: .userInitiated) {
-            guard let session = subaccount.session else {
+            guard let session = subaccount.gdkSession else {
                 throw TransactionError.invalid(localizedDescription: "No Lwk session")
             }
             do {
@@ -190,7 +192,7 @@ actor TransactionBuilder {
             }
         }.value
     }
-    static func buildCrossChainSwap(from: Account, to: Account, amount: UInt64, lwk: LwkSessionManager, xpub: String) async throws -> LockupResponse {
+    static func buildCrossChainSwap(from: Account, to: Account, amount: UInt64, lwk: LwkBoltzBackend, xpub: String) async throws -> LockupResponse {
         if from.networkId.bitcoin && to.networkId.liquid {
             return try await buildBtcToLbtcSwap(from: from, to: to, amount: amount, lwk: lwk, xpub: xpub)
         } else if from.networkId.liquid && to.networkId.bitcoin {
@@ -203,10 +205,10 @@ actor TransactionBuilder {
     core.Transaction {
 
         return try await Task.detached(priority: .userInitiated) {
-            guard let session = subaccount.session else {
+            guard let session = subaccount.gdkSession else {
                 throw SendFlowError.invalidSession
             }
-            var tx = Transaction([:], subaccountId: subaccount.id)
+            var tx = Transaction([:], accountId: subaccount.id)
             if let feeRate {
                 tx.feeRate = feeRate
             } else {
@@ -223,28 +225,28 @@ actor TransactionBuilder {
         }.value
     }
 
-    static func buildLbtcToBtcSwap(from: Account, to: Account, amount: UInt64, lwk: LwkSessionManager, xpub: String) async throws -> LockupResponse {
+    static func buildLbtcToBtcSwap(from: Account, to: Account, amount: UInt64, lwk: LwkBoltzBackend, xpub: String) async throws -> LockupResponse {
         return try await Task.detached(priority: .userInitiated) {
             // Get a Liquid refund address
-            guard let refundAddress = try await from.session?.getReceiveAddress(subaccount: from.pointer).address else {
+            guard let refundAddress = try await from.gdkSession?.getReceiveAddress(subaccount: from.pointer).address else {
                 throw SendFlowError.failedToBuildTransaction
             }
             // Ask for the Bitcoin claim address
-            guard let claimAddress = try await to.session?.getReceiveAddress(subaccount: to.pointer).address else {
+            guard let claimAddress = try await to.gdkSession?.getReceiveAddress(subaccount: to.pointer).address else {
                 throw SendFlowError.failedToBuildTransaction
             }
             // Create the swap
             return try await lwk.lbtcToBtc(amount: amount, refundAddress: refundAddress, claimAddress: claimAddress, xpubHashId: xpub)
         }.value
     }
-    static func buildBtcToLbtcSwap(from: Account, to: Account, amount: UInt64, lwk: LwkSessionManager, xpub: String) async throws -> LockupResponse {
+    static func buildBtcToLbtcSwap(from: Account, to: Account, amount: UInt64, lwk: LwkBoltzBackend, xpub: String) async throws -> LockupResponse {
         return try await Task.detached(priority: .userInitiated) {
             // Get a Bitcoin refund address
-            guard let refundAddress = try await from.session?.getReceiveAddress(subaccount: from.pointer).address else {
+            guard let refundAddress = try await from.gdkSession?.getReceiveAddress(subaccount: from.pointer).address else {
                 throw SendFlowError.failedToBuildTransaction
             }
             // Ask for the Liquid claim address
-            guard let claimAddress = try await to.session?.getReceiveAddress(subaccount: to.pointer).address else {
+            guard let claimAddress = try await to.gdkSession?.getReceiveAddress(subaccount: to.pointer).address else {
                 throw SendFlowError.failedToBuildTransaction
             }
             // Create the swap
@@ -262,13 +264,13 @@ actor TransactionBuilder {
             } else if !subaccount.networkId.liquid && isPset {
                 throw TransactionError.invalid(localizedDescription: "Select a bitcoin subaccount for Psbt")
             }
-            guard let session = subaccount.session else {
+            guard let session = subaccount.gdkSession else {
                 throw TransactionError.invalid(localizedDescription: "Select subaccount")
             }
             var tx = try await session.psbtGetDetails(params: PsbtGetDetailParams(psbt: psbt, utxos: [:]))
             let addressee = tx.transactionOutputs?.map { Addressee.from(address: $0.address ?? "", satoshi: $0.satoshi, assetId: $0.assetId) }
             tx.addressees = addressee ?? []
-            tx.subaccountId = subaccount.id
+            tx.accountId = subaccount.id
             return tx
         }.value
     }
@@ -352,7 +354,7 @@ actor TransactionBuilder {
                 assetId: nil,
                 isGreedy: false
             )
-            var tx = Transaction([:], subaccountId: lightningSubaccount.id)
+            var tx = Transaction([:], accountId: lightningSubaccount.id)
             tx.addressees = [addressee]
             tx.paymentHash = invoice.paymentHash()
             tx.invoice = invoice.description
@@ -360,7 +362,7 @@ actor TransactionBuilder {
             tx.anyAmouts = satoshi == nil
             tx.fee = 0
             var created = try await lightningSession.createTransaction(tx: tx)
-            created.subaccountId = lightningSubaccount.id
+            created.accountId = lightningSubaccount.id
             return created
         }.value
     }

@@ -46,7 +46,7 @@ class JadeManager {
     func connectPinServer(testnet: Bool) async throws {
         if pinServerSession == nil {
             let networkId: NetworkId = testnet ? .electrumTestnet : .electrumMainnet
-            pinServerSession = SessionManager(networkId, newNotificationDelegate: nil)
+            pinServerSession = SessionManager(networkId)
         }
         try await pinServerSession?.connect()
     }

@@ -26,6 +26,10 @@ extension NetworkId {
             return (UIImage(named: "ic_key")!, UIImage(named: "ntw_btc")!)
         case .lwkMainnet:
             return (UIImage(named: "ic_key")!, UIImage(named: "ntw_liquid")!)
+        case .lwkTestnet:
+            return (UIImage(named: "ic_keys_invert")!, UIImage(named: "ntw_testnet_liquid")!)
+        case .lwkSwapMainnet:
+            return (UIImage(named: "ic_key")!, UIImage(named: "ntw_liquid")!)
         }
     }
 
@@ -33,9 +37,9 @@ extension NetworkId {
         switch self {
         case .greenMainnet, .electrumMainnet:
             return UIColor.gAccountOrange()
-        case .greenLiquid, .electrumLiquid, .lwkMainnet:
+        case .greenLiquid, .electrumLiquid, .lwkMainnet, .lwkSwapMainnet:
             return UIColor.gAccountLightBlue()
-        case .greenTestnet, .electrumTestnet, .greenTestnetLiquid, .electrumTestnetLiquid:
+        case .greenTestnet, .electrumTestnet, .greenTestnetLiquid, .electrumTestnetLiquid, .lwkTestnet:
             return UIColor.gAccountTestGray()
         case .lightningMainnet:
             return UIColor.yellow

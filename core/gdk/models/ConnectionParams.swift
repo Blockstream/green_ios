@@ -1,6 +1,6 @@
 import Foundation
 
-public struct NetworkSettings: Codable {
+public struct ConnectionParams: Codable {
 
     enum CodingKeys: String, CodingKey {
         case name
@@ -31,13 +31,13 @@ public struct NetworkSettings: Codable {
         electrumOnionUrl: String? = nil,
         electrumTls: Bool? = nil,
         gapLimit: Int? = nil) {
-        self.name = name
-        self.useTor = useTor
-        self.proxy = proxy
-        self.userAgent = userAgent
-        self.electrumUrl = electrumUrl
-        self.electrumOnionUrl = electrumOnionUrl
-        self.electrumTls = electrumTls
-        self.gapLimit = gapLimit
-    }
+            self.name = name
+            self.useTor = useTor
+            self.proxy = proxy
+            self.userAgent = userAgent
+            self.electrumUrl = electrumUrl
+            self.electrumOnionUrl = electrumOnionUrl
+            self.electrumTls = electrumTls
+            self.gapLimit = gapLimit
+        }
 }

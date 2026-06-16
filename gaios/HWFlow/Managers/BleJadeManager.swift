@@ -174,7 +174,7 @@ class BleJadeManager: JadeManager {
         "DvMN0FWJF/3y6x0UOJiNK3VJKjhorYi6dRuJCmk6n+BLXHCaYvfLD7mEp0IEapo7\n" +
         "VTWr98cwCwEqT+NTHm2FaNMCAwEAAQ==\n" +
         "-----END PUBLIC KEY-----"
-        let session = SessionManager(NetworkId.electrumMainnet, newNotificationDelegate: nil)
+        let session = SessionManager(NetworkId.electrumMainnet)
         try? await session.connect()
         let challenge = try Data.random(length: 32)
         let signAttestationResult = try await jade.signAttestation(JadeSignAttestation(challenge: challenge))

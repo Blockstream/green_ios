@@ -139,10 +139,10 @@ public class AnalyticsManager {
 
     public var activeNetworks: [NetworkId]? {
         let wm = WalletManager.current
-        return wm?.activeNetworks
+        return wm?.activeNetworkIds
             .filter {
                 net in !(
-                    wm?.subaccounts.filter { !$0.hidden && $0.networkId == net
+                    wm?.accounts.filter { !$0.hidden && $0.networkId == net
                     }.isEmpty ?? false)
             }
     }

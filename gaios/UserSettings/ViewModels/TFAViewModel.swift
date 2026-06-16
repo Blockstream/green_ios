@@ -19,10 +19,12 @@ class TFAViewModel {
 
     var wm: WalletManager { WalletManager.current! }
 
-    var sessionBitcoin: SessionManager? { wm.sessions["mainnet"] }
-    var sessionLiquid: SessionManager? { wm.sessions["liquid"] }
+    var sessionBitcoin: SessionManager? { sessions.first }
+    var sessionLiquid: SessionManager? { sessions.last }
     var networks: [NetworkId] { wm.testnet ? [.greenTestnet, .greenTestnetLiquid] : [.greenMainnet, .greenLiquid] }
-    var sessions: [SessionManager] { networks.compactMap { wm.sessions[$0.network] }}
+    var sessions: [SessionManager] {
+        networks.compactMap { wm.gdkNetworkBackendOrNil($0)?.session }
+    }
     var selectedSegmentIndex = 0
     var session: SessionManager {
         sessions[selectedSegmentIndex]

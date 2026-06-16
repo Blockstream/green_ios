@@ -89,7 +89,7 @@ actor WalletDataModel {
                     return nextDict
                 }
             let totals = balances.filter { AssetInfo.baseIds.contains($0.0) }.map { $0.1 }.reduce(0, { (res, partial) in res + partial })
-            let assetAmountList = AssetAmountList(balances)
+            let assetAmountList = balances.toList()
             await update(.balance) {
                 $0.balancesForSubaccount = balancesForSubaccount
                 $0.balances = balances
@@ -102,8 +102,8 @@ actor WalletDataModel {
     }
     private func performFetchSubaccounts(refresh: Bool) async {
         do {
-            let subaccounts = try await wallet.visibleSubaccounts(refresh)
-            await update(.subaccounts) { $0.subaccounts = subaccounts }
+            let subaccounts = try await wallet.getAccounts(refresh: refresh)
+            await update(.subaccounts) { $0.subaccounts = subaccounts.sorted() }
         } catch {
             logger.error("WalletDataModel performFetchSubaccounts error: \(error.localizedDescription)")
         }
@@ -124,8 +124,8 @@ actor WalletDataModel {
             for (account, pagetxs) in txsCurrentPage {
                 cache[account] = (cache[account] ?? []) + [pagetxs]
             }
-            let prominentSubaccounts = try? await wallet.prominentSession?.subaccounts().filter({ !$0.hidden })
-            let txsMeld = try? await fetchMeldTransactions(prominentSubaccounts?.first)
+            let prominentSubaccount = subaccounts.filter({ !$0.hidden }).first
+            let txsMeld = try? await fetchMeldTransactions(prominentSubaccount)
             var list = cache
                 .flatMap({$0.value})
                 .flatMap({$0.list})
@@ -166,7 +166,7 @@ actor WalletDataModel {
     }
 
     var defaultCurrency: String? {
-        if let settings = wallet.prominentSession?.settings {
+        if let settings = wallet.prominentSession.settings {
             return settings.pricing["currency"]
         }
         return nil
@@ -263,7 +263,7 @@ actor WalletDataModel {
         let meld = Meld()
         let meldTxs = try await meld.getPendingTransactions(xpub: xpubHashId)
         Meld.enableFetchingTxs(xpub: xpubHashId, enable: !meldTxs.isEmpty)
-        return meldTxs.map({ Transaction($0.details, subaccountId: subaccount.id) })
+        return meldTxs.map({ Transaction($0.details, accountId: subaccount.id) })
     }
 
     func fetchAlertCards() async -> ([AlertCardType], [RemoteAlert]?) {
@@ -279,13 +279,17 @@ actor WalletDataModel {
         // countly alerts
         var remoteAlerts = state.remoteAlerts
         if remoteAlerts == nil {
-            remoteAlerts = RemoteAlertManager.shared.alerts(screen: .walletOverview, networks: wallet.activeNetworks)
+            remoteAlerts = RemoteAlertManager.shared
+                .alerts(
+                    screen: .walletOverview,
+                    networks: Array(wallet.activeNetworkIds)
+                )
         }
         if let remoteAlert = remoteAlerts?.first {
             cards.append(AlertCardType.remoteAlert(remoteAlert))
         }
         // Failure login session
-        cards += await wallet.failureSessionsError.errors
+        cards += wallet.networkErrors
             .filter {
                 switch $0.value {
                 case TwoFactorCallError.failure(localizedDescription: let txt):
@@ -293,10 +297,10 @@ actor WalletDataModel {
                 default:
                     return true
                 }
-            }.map { AlertCardType.login($0.key, $0.value) }
+            }.map { AlertCardType.login($0.key.network, $0.value) }
         // Load dispute on not wo session
         if !mainWallet.isWatchonly {
-            wallet.sessions.values.forEach { session in
+            wallet.activeGdkMultisigBackends.map{$0.session}.forEach { session in
                 if session.logged && session.isResetActive ?? false,
                    let twoFaReset = session.twoFactorConfig?.twofactorReset {
                     let message = TwoFactorResetMessage(twoFactorReset: twoFaReset, network: session.gdkNetwork.network)
@@ -309,11 +313,11 @@ actor WalletDataModel {
             }
         }
         // Load missing princing
-        if Balance.fromSatoshi(Int64(0), assetId: wallet.prominentSession?.gdkNetwork.getFeeAsset() ?? "btc")?.toFiat().0 == "n/a" {
+        if Balance.fromSatoshi(Int64(0), assetId: wallet.prominentSession.gdkNetwork.getFeeAsset() ?? "btc")?.toFiat().0 == "n/a" {
             cards.append(AlertCardType.fiatMissing)
         }
         // Load system messages
-        let messages = try? await wallet.loadSystemMessages()
+        let messages = try? await wallet.getSystemMessages()
         messages?.forEach { msg in
             if !msg.text.isEmpty {
                 cards.append(AlertCardType.systemMessage(msg))
@@ -446,14 +450,14 @@ extension WalletDataModel: NewNotificationDelegate {
             // Update content if exist an unconfirmed tx
             let btcBlockHeight = wallet.bitcoinBlockHeight()
             let liquidBlockHeight = wallet.liquidBlockHeight()
-            let pendings = state.txs?.filter {
-                $0.confirmations(block: ($0.isLiquid ? liquidBlockHeight ?? 0: btcBlockHeight ?? 0)) <= (
-                        $0.isLiquid ? 2 : 6
-                    )
-            }
-            if pendings?.count ?? 0 > 0 {
+            //let pendings = state.txs?.filter {
+            //    $0.confirmations(block: ($0.isLiquid ? liquidBlockHeight ?? 0: btcBlockHeight ?? 0)) <= (
+            //            $0.isLiquid ? 2 : 6
+            //        )
+            //}
+            //if pendings?.count ?? 0 > 0 {
                 await triggerRefresh(features: [.balance, .txs(reset: true)])
-            }
+            //}
         case .newSubaccount:
             logger.info("WalletDataModel newSubaccount")
         case .newTransaction:

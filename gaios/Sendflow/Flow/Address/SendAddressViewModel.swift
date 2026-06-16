@@ -144,11 +144,11 @@ final class SendAddressViewModel: Sendable {
     private func subaccounts(for rail: PaymentRail, wallet: WalletManager, amount: UInt64?) -> [Account] {
         switch rail {
         case .bitcoin:
-            return wallet.bitcoinSubaccountsWithFunds
+            return wallet.bitcoinSubaccountsWithFunds()
         case .liquid:
-            return wallet.liquidSubaccountsWithFunds
+            return wallet.liquidSubaccountsWithFunds()
         case .lightning:
-            if let subaccount = wallet.lightningSubaccount {
+            if let subaccount = wallet.glNetworkBackendOrNil()?.account {
                 let maxPayable = subaccount.lightningSession?.nodeState()?.maxPayableMsat.satoshi ?? 0
                 if maxPayable > 0 {
                     if let amount = amount, maxPayable < amount {

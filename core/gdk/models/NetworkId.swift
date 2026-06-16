@@ -12,6 +12,8 @@ public enum NetworkId: String, Codable, CaseIterable {
 
     case lightningMainnet = "greenlight-mainnet"
     case lwkMainnet = "lwk-mainnet"
+    case lwkTestnet = "lwk-testnet"
+    case lwkSwapMainnet = "lwkswap-mainnet"
 
     public init?(network: String) {
         self.init(rawValue: network)
@@ -29,6 +31,7 @@ public enum NetworkId: String, Codable, CaseIterable {
         network.replacingOccurrences(of: "electrum-", with: "")
             .replacingOccurrences(of: "greenlight-", with: "")
             .replacingOccurrences(of: "lwk-", with: "")
+            .replacingOccurrences(of: "lwkswap-", with: "")
     }
 
     public var singlesig: Bool { gdkNetwork.singlesig }
@@ -59,7 +62,11 @@ public enum NetworkId: String, Codable, CaseIterable {
         case .lightningMainnet:
             return "Lightning"
         case .lwkMainnet:
-            return "Liquid Swaps"
+            return "Liquid Amp"
+        case .lwkTestnet:
+            return "Liquid Amp Testnet"
+        case .lwkSwapMainnet:
+            return "Liquid Swap"
         }
     }
 }

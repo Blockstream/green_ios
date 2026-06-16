@@ -13,16 +13,24 @@ struct SendHWViewModel {
     let isMultiAddressees: Bool
     let isQRMode: Bool
 
-    var session: SessionManager? { subaccount?.session }
     var addressee: Addressee? { tx.addressees.first }
     var address: String? { addressee?.address }
-    var assetId: String { addressee?.assetId ?? tx.subaccount?.gdkNetwork.getFeeAsset() ??  "btc" }
+    var assetId: String {
+        addressee?.assetId ?? tx.networkIdInjected?.gdkNetwork
+            .getFeeAsset() ??  "btc"
+    }
     var sendAll: Bool { addressee?.isGreedy ?? false}
     var satoshi: Int64? { addressee?.satoshi }
-    var fee: Balance? { Balance.fromSatoshi(tx.fee ?? 0, assetId: tx.subaccount?.gdkNetwork.getFeeAsset() ?? "btc") }
+    var fee: Balance? {
+        Balance
+            .fromSatoshi(
+                tx.fee ?? 0,
+                assetId: tx.networkIdInjected?.gdkNetwork.getFeeAsset() ?? "btc"
+            )
+    }
     var amount: Balance? { Balance.fromSatoshi(satoshi ?? 0, assetId: assetId) }
     var total: Balance? {
-        let feeAsset = tx.subaccount?.gdkNetwork.getFeeAsset()
+        let feeAsset = tx.networkIdInjected?.gdkNetwork.getFeeAsset()
         var amount = satoshi ?? 0
         if feeAsset == assetId {
             amount += Int64(tx.fee ?? 0)

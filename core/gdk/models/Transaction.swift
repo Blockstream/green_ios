@@ -205,19 +205,41 @@ public enum TransactionType: String, Codable {
     case outgoing
     case redeposit
     case mixed
+    case issuance
+    case reissuance
+    case burn
+    case unknown
 }
 
 public struct Transaction: Comparable {
     public var details: [String: Any]
-    public var subaccountId: String?
+    public var accountId: String?
+
+    public var networkIdInjected: NetworkId? {
+        guard let network = accountId?.split(separator: ":").first else {
+            return nil
+        }
+        return NetworkId(network: String(network))
+    }
+    public var accountInjected: Account? {
+        guard let networkIdInjected else {
+            return nil
+        }
+        let backend = try? WalletManager.current?.networkBackend(networkIdInjected)
+        return backend?.accounts.first { $0.id == accountId }
+    }
+
+    mutating func setup(account: Account) {
+        self.accountId = account.id
+    }
 
     private func get<T>(_ key: String) -> T? {
         return details[key] as? T
     }
 
-    public init(_ details: [String: Any], subaccountId: String? = nil) {
+    public init(_ details: [String: Any], accountId: String? = nil) {
         self.details = details
-        self.subaccountId = subaccountId
+        self.accountId = accountId
     }
 
     public var addressees: [Addressee] {
@@ -227,6 +249,7 @@ public struct Transaction: Comparable {
 
     public var transaction: String? {
         get { return get("transaction") }
+        set { details["transaction"] = newValue }
     }
 
     public var blockHeight: UInt32 {
@@ -439,6 +462,15 @@ public struct Transaction: Comparable {
         set { details["isMeldPayment"] = newValue }
     }
 
+    public var pset: String? {
+        get { return get("pset") }
+        set { details["pset"] = newValue }
+    }
+    public var psbt: String? {
+        get { return get("psbt") }
+        set { details["psbt"] = newValue }
+    }
+
     public var txType: TxType {
         if privateKey != nil {
             return .sweep
@@ -452,13 +484,19 @@ public struct Transaction: Comparable {
     public var isBlinded: Bool {
         get { get("is_blinded") ?? false }
     }
+    public var unblindingUrl: String? {
+        get {
+            return get( "unblindingUrl") ?? unblindingUrlString()
+        }
+        set { details["unblindingUrl"] = newValue }
+    }
 
     public func date(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String {
         let date = Date(timeIntervalSince1970: TimeInterval(Double(createdAtTs / 1_000_000)))
         return DateFormatter.localizedString(from: date, dateStyle: dateStyle, timeStyle: timeStyle)
     }
 
-    public func blindingData() -> BlindingData {
+    public func unblindingData() -> BlindingData {
         let inputs = self.inputs?
             .filter { $0.hasBlindingData() }
             .compactMap { $0.txoBlindingData(isUnspent: false) }
@@ -472,7 +510,7 @@ public struct Transaction: Comparable {
                             outputs: outputs ?? [])
     }
 
-    public func blindingUrlString(address: String? = nil) -> String {
+    public func unblindingUrlString(address: String? = nil) -> String {
         var blindingUrlString = [String]()
         blindingUrlString += inputs?
             .filter { address == nil || address == $0.address }
@@ -486,7 +524,7 @@ public struct Transaction: Comparable {
         blindingUrlString += transactionOutputs?
             .filter { address == nil || address == $0.address }
             .compactMap { $0.txoBlindingString() } ?? []
-        return blindingUrlString.isEmpty ? "" : "#blinded=" + blindingUrlString.joined(separator: ",")
+        return "\(networkIdInjected?.gdkNetwork.txExplorerUrl ?? "")\(hash ?? "")#blinded=\(blindingUrlString.joined(separator: ","))"
     }
 
     public static func == (lhs: Transaction, rhs: Transaction) -> Bool {
@@ -503,13 +541,8 @@ public struct Transaction: Comparable {
         return lhs.createdAtTs < rhs.createdAtTs
     }
 
-    public var subaccount: Account? {
-        get { WalletManager.current?.subaccounts.filter({ $0.id == subaccountId }).first }
-        set { subaccountId = newValue?.id }
-    }
-
     public var feeAsset: String {
-        subaccount?.gdkNetwork.getFeeAsset() ?? "btc"
+        accountInjected?.gdkNetwork.getFeeAsset() ?? "btc"
     }
 
     public var amountsWithFee: [String: Int64] {
@@ -542,7 +575,7 @@ public struct Transaction: Comparable {
     }
 
     public var isLightning: Bool {
-        self.subaccount?.gdkNetwork.lightning ?? false
+        self.accountInjected?.gdkNetwork.lightning ?? false
     }
 
     public func isUnconfirmed(block: UInt32) -> Bool {

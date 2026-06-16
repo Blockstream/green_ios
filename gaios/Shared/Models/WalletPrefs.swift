@@ -83,7 +83,7 @@ enum WalletPrefs: Int, CaseIterable {
     static func groupWalletPrefs() -> ([Int: String], [Int: [WalletPrefs]]) {
 
         var showArchive = false
-        if let subaccount = WalletManager.current?.subaccounts,
+        if let subaccount = WalletManager.current?.accounts,
            subaccount.filter({ $0.hidden }).count > 0 {
             showArchive = true
         }
@@ -105,7 +105,7 @@ enum WalletPrefs: Int, CaseIterable {
         let groupPrefs = groupWalletPrefs()
         let rows: [Int: [WalletPrefs]] = groupPrefs.1
         var archived = 0
-        if let subaccount = WalletManager.current?.subaccounts {
+        if let subaccount = WalletManager.current?.accounts {
            archived = subaccount.filter({ $0.hidden }).count
         }
         for (k, v) in rows {

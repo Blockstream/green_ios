@@ -620,6 +620,23 @@ public struct RSAVerifyResult: Codable {
     public let error: String?
 }
 
+public struct GetTransactionsParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case subaccount
+        case first
+        case count
+    }
+    public let subaccount: UInt32
+    public let first: Int
+    public let count: Int
+
+    init(subaccount: UInt32, first: Int = 0, count: Int = 30) {
+        self.subaccount = subaccount
+        self.first = first
+        self.count = count
+    }
+}
+
 public struct GdkInit: Codable {
     enum CodingKeys: String, CodingKey {
         case datadir

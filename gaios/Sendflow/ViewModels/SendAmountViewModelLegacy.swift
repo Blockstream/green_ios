@@ -15,7 +15,19 @@ class SendAmountViewModelLegacy {
     var subaccount: Account? { createTx.subaccount }
     var assetId: String { createTx.assetId ?? subaccount?.gdkNetwork.getFeeAsset() ?? "btc" }
     var wm: WalletManager? { WalletManager.current }
-    var session: SessionManager? { createTx.subaccount?.session }
+    var network: NetworkId? { subaccount?.networkId }
+    var networkBackend: NetworkBackend? {
+        if let subaccount {
+            return try? wm?.networkBackend(subaccount.networkId)
+        }
+        return nil
+    }
+    var accountBackend: AccountBackend? {
+        if let subaccount {
+            return wm?.accountBackendOrNil(subaccount)
+        }
+        return nil
+    }
     var denominationType: DenominationType = .BTC
     var transaction: Transaction?
     var transactionPriority: TransactionPriority = .Medium
@@ -72,7 +84,8 @@ class SendAmountViewModelLegacy {
     init(createTx: CreateTx, transaction: Transaction? = nil) {
         self.createTx = createTx
         self.transaction = transaction
-        self.denominationType = wm?.prominentSession?.settings?.denomination ?? .BTC
+        self.denominationType = wm?.prominentSession.settings?.denomination ?? .BTC
+        let session = (accountBackend as? GdkAccountBackend)?.session
         if let session {
             self.feeEstimator = FeeEstimator(session: session)
         }
@@ -82,7 +95,8 @@ class SendAmountViewModelLegacy {
     }
 
     var walletBalance: Balance? {
-        if let satoshi = subaccount?.satoshi?[assetId] {
+        guard let wm, let subaccount else { return nil }
+        if let satoshi = try? subaccount.assets(wm)[assetId] {
             return Balance.fromSatoshi(satoshi, assetId: assetId)
         }
         return nil
@@ -97,7 +111,7 @@ class SendAmountViewModelLegacy {
     }
 
     var amountSendAll: Balance? {
-        let feeAsset = session?.gdkNetwork.getFeeAsset()
+        let feeAsset = network?.gdkNetwork.getFeeAsset()
         let assetId = createTx.assetId ?? feeAsset ?? "btc"
         guard let amount = transaction?.amounts[assetId] else {
             return nil
@@ -127,7 +141,7 @@ class SendAmountViewModelLegacy {
 
     var assetInfo: AssetInfo? {
         var asset = wm?.info(for: assetId)
-        if asset?.assetId == session?.gdkNetwork.getFeeAsset() {
+        if asset?.assetId == network?.gdkNetwork.getFeeAsset() {
             asset?.ticker = denomination
         }
        return asset
@@ -164,7 +178,7 @@ class SendAmountViewModelLegacy {
     }
 
     var fee: Balance? {
-        let feeAsset = session?.gdkNetwork.getFeeAsset()
+        let feeAsset = network?.gdkNetwork.getFeeAsset()
         if let fee = transaction?.fee {
             return Balance.fromSatoshi(fee, assetId: feeAsset ?? "btc")
         }
@@ -172,7 +186,7 @@ class SendAmountViewModelLegacy {
     }
 
     var totalWithoutFee: Balance? {
-        let feeAsset = session?.gdkNetwork.getFeeAsset()
+        let feeAsset = network?.gdkNetwork.getFeeAsset()
         let assetId = createTx.assetId ?? feeAsset ?? "btc"
         var amount = transaction?.amounts[assetId]
         if createTx.txType == .redepositExpiredUtxos {
@@ -183,7 +197,7 @@ class SendAmountViewModelLegacy {
     }
 
     var total: Balance? {
-        let feeAsset = session?.gdkNetwork.getFeeAsset()
+        let feeAsset = network?.gdkNetwork.getFeeAsset()
         var satoshi = totalWithoutFee?.satoshi ?? 0
         if createTx.txType == .redepositExpiredUtxos {
             satoshi = createTx.addressee.satoshi ?? 0
@@ -238,7 +252,7 @@ class SendAmountViewModelLegacy {
     func dialogInputDenominationViewModel() -> DialogInputDenominationViewModel? {
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
         let selected = denominationType // session?.settings?.denomination ?? .BTC
-        let network: NetworkId = session?.gdkNetwork.mainnet ?? true ? .electrumMainnet : .electrumTestnet
+        let network: NetworkId = network?.gdkNetwork.mainnet ?? true ? .electrumMainnet : .electrumTestnet
         return DialogInputDenominationViewModel(
             denomination: selected,
             denominations: list,
@@ -262,8 +276,11 @@ class SendAmountViewModelLegacy {
             subaccount: subaccount)
     }
 
-    func sendSendTxConfirmViewModel() -> SendTxConfirmViewModel? {
-        SendTxConfirmViewModel(
+    @MainActor func sendSendTxConfirmViewModel() throws -> SendTxConfirmViewModel? {
+        guard let transaction, let subaccount else {
+            throw GaError.GenericError("Invalid transaction")
+        }
+        return SendTxConfirmViewModel(
             transaction: transaction,
             subaccount: subaccount,
             denominationType: denominationType,
@@ -287,8 +304,7 @@ class SendAmountViewModelLegacy {
     }
 
     private func validateTransaction() async throws -> Transaction? {
-        var tx = Transaction(self.transaction?.details ?? [:])
-        tx.subaccountId = subaccount?.id
+        var tx = Transaction(self.transaction?.details ?? [:], accountId: subaccount?.id)
         if Task.isCancelled { return nil }
         if let feeRate = createTx.feeRate {
             tx.feeRate = feeRate
@@ -302,7 +318,7 @@ class SendAmountViewModelLegacy {
             } else if !createTx.sendAll && (createTx.satoshi == nil || createTx.satoshi == 0) {
                 return tx
             }
-            if let networkId = session?.networkId, networkId.bitcoin || networkId.testnet {
+            if let networkId = network, networkId.multisig && (networkId.bitcoin || networkId.testnet) {
                 createTx.addressee.assetId = nil
             }
             tx.addressees = [createTx.addressee]
@@ -310,17 +326,23 @@ class SendAmountViewModelLegacy {
             tx.sessionSubaccount = subaccount?.pointer ?? 0
             tx.privateKey = createTx.privateKey
             if tx.addressees.isEmpty {
-                var address = try await session?.getReceiveAddress(subaccount: subaccount?.pointer ?? 0)
+                var address = try await accountBackend?.getReceiveAddress()
                 address?.isGreedy = true
                 address?.satoshi = 0
                 var addressee = address.toDict()
-                let btc = tx.subaccount?.gdkNetwork.getFeeAsset()
+                let btc = tx.networkIdInjected?.gdkNetwork.getFeeAsset()
                 addressee?["id_asset"] = btc
                 tx.details["addressees"] = [addressee]
             }
             if tx.utxos?.isEmpty ?? true {
                 do {
-                    let unspent = try await session?.getUnspentOutputsForPrivateKey(UnspentOutputsForPrivateKeyParams(privateKey: tx.privateKey ?? "", password: nil))
+                    let session = (accountBackend as? GdkAccountBackend)?.session
+                    let unspent = try await session?.getUnspentOutputsForPrivateKey(
+                        UnspentOutputsForPrivateKeyParams(
+                            privateKey: tx.privateKey ?? "",
+                            password: nil
+                        )
+                    )
                     tx.utxos = unspent ?? [:]
                 } catch {
                     tx.error = error.description()
@@ -337,12 +359,13 @@ class SendAmountViewModelLegacy {
             tx.addressees = [createTx.addressee]
             tx.anyAmouts = createTx.anyAmounts ?? false
         case .redepositExpiredUtxos:
+            let session = (accountBackend as? GdkAccountBackend)?.session
             let feeRate = createTx.feeRate ?? feeRate
             let guParams = GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 1)
             let res = try await session?.getUtxos(guParams)
             let crtParams = CreateRedepositTransactionParams(utxos: res?.unspentOutputs ?? [:], feeRate: feeRate, feeSubaccount: subaccount?.pointer ?? 0, expiredAt: nil, expiresIn: nil)
             var created = try await session?.createRedepositTransaction(params: crtParams)
-            created?.subaccountId = subaccount?.id
+            created?.accountId = subaccount?.id
             if let addr = created?.addressees.first {
                 createTx.addressee = addr
             }
@@ -352,19 +375,27 @@ class SendAmountViewModelLegacy {
             return created
         }
         if [TxType.transaction, TxType.bumpFee].contains(where: {$0 == createTx.txType }) && tx.utxos == nil {
+            let session = (accountBackend as? GdkAccountBackend)?.session
             let unspent = try await session?.getUnspentOutputs(GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 0))
             tx.utxos = unspent ?? [:]
         }
         self.transaction = tx
         if Task.isCancelled { return nil }
         tx.amounts = [:]
-        var created = try await session?.createTransaction(tx: tx)
-        created?.subaccountId = subaccount?.id
-        return created
+        do {
+            var created = try await accountBackend?.createTransaction(params: tx)
+            created?.accountId = subaccount?.id
+            return created
+        } catch {
+            tx.error = error.description()
+            return tx
+        }
     }
 
     func getExpiredUtxos() async throws -> [String: [[String: Any]]] {
-        let params = GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 1, expiredAt: UInt64(session?.blockHeight ?? 0))
+        let blockHeight = networkBackend?.block?.height
+        let params = GetUnspentOutputsParams(subaccount: subaccount?.pointer ?? 0, numConfs: 1, expiredAt: UInt64(blockHeight ?? 0))
+        let session = (accountBackend as? GdkAccountBackend)?.session
         return try await session?.getUnspentOutputs(params) ?? [:]
     }
 
@@ -374,7 +405,7 @@ class SendAmountViewModelLegacy {
 
     var showFeesInTotals: Bool {
         if createTx.isLiquid {
-            return feeEstimator?.feeRate(at: .High) ?? 0 > session?.gdkNetwork.defaultFee ?? 0
+            return feeEstimator?.feeRate(at: .High) ?? 0 > network?.gdkNetwork.defaultFee ?? 0
         }
         return true
     }

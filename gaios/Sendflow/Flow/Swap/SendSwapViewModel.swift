@@ -21,7 +21,7 @@ final class SendSwapViewModel {
 
     init(wallet: WalletManager, subaccount: Account?, assetId: String?, delegate: SendSwapViewModelDelegate?) {
         self.wm = wallet
-        if let boltzSession = wm.lwkSession?.boltzSession {
+        if let boltzSession = wm.lwkBoltzBackend?.boltzSession {
             self.quoteBuilder = QuoteBuilder(boltzSession: boltzSession)
         } else {
             self.quoteBuilder = nil
@@ -38,14 +38,16 @@ final class SendSwapViewModel {
             account: SendSwapViewModel.getDefaultTo(assetId).0,
             assetId: SendSwapViewModel.getDefaultTo(assetId).1,
             amount: nil)
-        let denomination = wallet.prominentSession?.settings?.denomination
+        let denomination = wallet.prominentSession.settings?.denomination
         self.state = SwapPositionState(from: positionFrom, to: positionTo, priority: .Medium, denomination: denomination ?? .Sats)
         self.delegate = delegate
-        if let bitcoinSession = wm.activeBitcoinSessions.first {
-            self.bitcoinFeeEstimator = FeeEstimator(session: bitcoinSession)
+        if let networkId = wm.activeBitcoinNetworkIds.first,
+           let session = wm.gdkNetworkBackendOrNil(networkId)?.session {
+            self.bitcoinFeeEstimator = FeeEstimator(session: session)
         }
-        if let liquidSession = wm.activeLiquidSessions.first {
-            self.liquidFeeEstimator = FeeEstimator(session: liquidSession)
+        if let networkId = wm.activeLiquidNetworkIds.first,
+           let session = wm.gdkNetworkBackendOrNil(networkId)?.session {
+            self.liquidFeeEstimator = FeeEstimator(session: session)
         }
     }
     func setupEstimators() {
@@ -82,10 +84,10 @@ final class SendSwapViewModel {
         }
     }
     static func getBitcoinSubaccounts() -> [Account] {
-        WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+        (WalletManager.current?.bitcoinSubaccounts ?? []).sorted()
     }
     static func getLiquidSubaccounts() -> [Account] {
-        WalletManager.current?.liquidSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+        (WalletManager.current?.liquidSubaccounts ?? []).sorted()
     }
     func dialogAccountsModel(_ position: SwapPositionEnum) -> DialogAccountsViewModel {
         self.selectedPosition = position
@@ -225,7 +227,9 @@ final class SendSwapViewModel {
                     let maxAmount = self?.convertToDenomTrimmed(satoshi: res.max)
                     let defaultMaxAmount = "\(res.max) sats"
                     throw SendFlowError.invalidAmount("Max limit: \((maxAmount ?? defaultMaxAmount).removingTrailingZeros())")
-                } else if self?.state.from.account?.btc ?? 0 < selectedAmount {
+                } else if let account = self?.state.from.account,
+                          let backend = try self?.wm.accountBackend(account),
+                          backend.assets.policyAsset() ?? 0 < selectedAmount {
                     throw SendFlowError.insufficientFunds
                 }
             }
@@ -274,7 +278,7 @@ final class SendSwapViewModel {
         selectedPosition = position
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
         let selected = state.denomination
-        let network: NetworkId = (wm.prominentSession?.gdkNetwork.mainnet ?? true) ? .electrumMainnet : .electrumTestnet
+        let network: NetworkId = (wm.prominentSession.gdkNetwork.mainnet ?? true) ? .electrumMainnet : .electrumTestnet
         let balance = {
             switch position {
             case .from:
@@ -312,8 +316,11 @@ final class SendSwapViewModel {
         guard let xpub = WalletsStorage.shared.current?.xpubHashId, let lwk = await wm.awaitLwkSession() else {
             throw SendFlowError.invalidPaymentTarget
         }
-        guard (accountFrom.btc ?? 0) >= amount else {
-            throw SendFlowError.insufficientFunds
+        if let account = await self.state.from.account {
+            let backend = try await self.wm.accountBackend(account)
+            if backend.assets.policyAsset() ?? 0 < amount {
+                throw SendFlowError.insufficientFunds
+            }
         }
         let lockupResponse = try await TransactionBuilder.buildCrossChainSwap(from: accountFrom, to: accountTo, amount: amount, lwk: lwk, xpub: xpub)
         let tx = try await TransactionBuilder.buildGdkTransaction(lockupResponse: lockupResponse, subaccount: accountFrom, feeRate: state.feeRate)

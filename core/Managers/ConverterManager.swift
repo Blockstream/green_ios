@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 
-
 public protocol ConverterProvider {
     func convertBitcoinAmount(params: Balance) throws -> Balance?
     func convertLiquidAmount(params: Balance) throws -> Balance?

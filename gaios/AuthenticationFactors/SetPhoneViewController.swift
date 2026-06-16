@@ -20,7 +20,9 @@ class SetPhoneViewController: KeyboardViewController {
     var sms = false
     var phoneCall = false
     var network = NetworkId.greenMainnet
-    var session: SessionManager { (WalletManager.current?.sessions[network.network])! }
+    var session: SessionManager {
+        (WalletManager.current?.gdkNetworkBackendOrNil(network)?.session)!
+    }
     var isSmsBackup = false
 
     private var connected = true

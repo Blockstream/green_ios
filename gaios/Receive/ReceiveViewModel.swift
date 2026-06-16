@@ -49,13 +49,12 @@ final class ReceiveViewModel: Sendable {
         self.delegate = delegate
         self.receiveService = receiveService
         self.walletDataModel = walletDataModel
-
         let type: ReceiveType = anyOrAsset.assetId == AssetInfo.lightningId ? .bolt11 : .address
         self.state = ReceiveState(
             subaccount: subaccount,
             type: type,
             anyOrAsset: anyOrAsset,
-            inputDenomination: walletDataModel.wallet.prominentSession?.settings?.denomination ?? .Sats
+            inputDenomination: walletDataModel.wallet.prominentSession.settings?.denomination ?? .Sats
         )
         self.onUpdate = onUpdate
     }
@@ -111,8 +110,7 @@ final class ReceiveViewModel: Sendable {
         addressTask = Task { [weak self] in
             guard let self else { return }
             do {
-                let response = try await self.receiveService.buildAddress(
-                    .init(subaccount: subaccount, walletManager: walletManager))
+                let response = try await self.receiveService.buildAddress(account: subaccount, walletManager: walletManager)
                 guard !Task.isCancelled else { return }
                 self.state.address = response.address
                 self.onUpdate?(.address)
@@ -197,8 +195,8 @@ final class ReceiveViewModel: Sendable {
     }
     func onInputDenomination() {
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
-        let gdkNetwork = state.subaccount.session?.gdkNetwork
-        let network: NetworkId = gdkNetwork?.mainnet ?? true ? .electrumMainnet : .electrumTestnet
+        let gdkNetwork = state.subaccount.gdkNetwork
+        let network: NetworkId = gdkNetwork.mainnet ? .electrumMainnet : .electrumTestnet
         let model = DialogInputDenominationViewModel(
             denomination: state.inputDenomination,
             denominations: list,
@@ -247,24 +245,27 @@ final class ReceiveViewModel: Sendable {
         return try await BleHwManager.shared.validateAddress(account: state.subaccount, address: address)
     }
     func isBipAddress(_ addr: String) -> Bool {
-        let session = wm.sessions[state.subaccount.gdkNetwork.network]
-        return session?.validBip21Uri(uri: addr) ?? false
+        let backend = try? wm.networkBackend(state.subaccount.networkId)
+        if let bip21Prefix = backend?.network.bip21Prefix {
+            return addr.starts(with: bip21Prefix)
+        }
+        return false
     }
     func getLightningSubaccounts() -> [Account] {
-        if let subaccount = WalletManager.current?.lightningSubaccount {
-            return [subaccount]
+        if let backend = WalletManager.current?.glNetworkBackendOrNil(), backend.isLoggedIn {
+            return backend.accounts
         } else {
             return []
         }
     }
     func getBitcoinSubaccounts() -> [Account] {
-        WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+        WalletManager.current?.bitcoinSubaccounts.sorted() ?? []
     }
     func getLiquidSubaccounts() -> [Account] {
-        WalletManager.current?.liquidSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+        WalletManager.current?.liquidSubaccounts.sorted() ?? []
     }
     func getLiquidAmpSubaccounts() -> [Account] {
-        WalletManager.current?.liquidAmpSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+        WalletManager.current?.liquidAmpSubaccounts.sorted() ?? []
     }
     func getAccounts() -> [Account] {
         switch state.anyOrAsset {
@@ -297,12 +298,12 @@ final class ReceiveViewModel: Sendable {
         return getAccounts().count > 1
     }
     var hasLwkSession: Bool {
-        return wm.lwkSession?.logged ?? false
+        return wm.lwkBoltzBackend?.logged ?? false
     }
     var showSegmented: Bool {
         if state.anyOrAsset.assetId != AssetInfo.lbtcId { return false }
         if state.type == .lwkSwap { return true }
-        if wm.lwkSession?.logged ?? false {
+        if wm.lwkBoltzBackend?.logged ?? false {
             switch state.anyOrAsset {
             case .anyLiquid, .anyAmp:
                 return false

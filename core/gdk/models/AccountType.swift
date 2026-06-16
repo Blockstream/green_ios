@@ -1,7 +1,8 @@
 import Foundation
 
-public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, CustomStringConvertible {
+public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, CustomStringConvertible, Sendable {
 
+    // Multisig
     case standard = "2of2"
     case ampAccount = "2of2_no_recovery"
     case twoOfThree = "2of3"
@@ -12,7 +13,13 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, C
     case bip84Segwit = "p2wpkh"
     case bip86Taproot = "p2tr"
 
+    // Lightning
     case lightning = "lightning"
+
+    // Lwk
+    case amp2Account = "amp2"
+
+    // Others
     case unknown = "unknown"
 
     public var description: String {
@@ -24,6 +31,7 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, C
         case .lightning: return "Lightning"
         case .standard: return "2FA Protected"
         case .ampAccount: return "AMP"
+        case .amp2Account: return "AMP2"
         case .twoOfThree: return "2of3 with 2FA"
         case .unknown: return self.rawValue
         }
@@ -33,6 +41,7 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, C
         switch self {
         case .standard: return "2FA Protected"
         case .ampAccount: return "AMP"
+        case .amp2Account: return "AMP2"
         case .twoOfThree: return "2of3 with 2FA"
         case .bip44Legacy: return "Legacy"
         case .bip49SegwitWrapped: return "Legacy SegWit"
@@ -44,7 +53,6 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, C
     }
 
     public var string: String { title }
-    public var shortString: String { description }
 
     public var singlesig: Bool {
         switch self {
@@ -68,6 +76,7 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, C
             .bip49SegwitWrapped,
             .bip84Segwit,
             .bip86Taproot,
+            .amp2Account,
             .standard,
             .ampAccount,
             .twoOfThree,
@@ -89,7 +98,7 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, C
         if lightning {
             return "Fastest"
         } else {
-            return "\(shortString)"
+            return "\(description)"
         }
     }
     public var longText: String {

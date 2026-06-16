@@ -32,7 +32,7 @@ class TabTransactVM: TabViewModel {
         state.balanceDisplayMode
     }
     var defaultCurrency: String? {
-        if let settings = wallet.prominentSession?.settings {
+        if let settings = wallet.prominentSession.settings {
             return settings.pricing["currency"]
         }
         return nil
@@ -55,7 +55,7 @@ class TabTransactVM: TabViewModel {
     }
     public func selectableAssets(subaccounts: [Account]) -> [String]? {
         let hasSubaccountAmp = !subaccounts.filter(
-            { $0.type == .ampAccount
+            { $0.type == .ampAccount || $0.type == .amp2Account
             }).isEmpty
         let hasLightning = !subaccounts.filter({ $0.networkId.lightning }).isEmpty
         let hasLiquid = !subaccounts.filter({ $0.networkId.liquid }).isEmpty
@@ -71,7 +71,7 @@ class TabTransactVM: TabViewModel {
 
     func assetSelectViewModel(subaccounts: [Account]) -> AssetSelectViewModel {
         let hasSubaccountAmp = !subaccounts.filter(
-            { $0.type == .ampAccount
+            { $0.type == .ampAccount || $0.type == .amp2Account
             }).isEmpty
         let hasLiquid = !subaccounts.filter({ $0.networkId.liquid }).isEmpty
         let assetIds = selectableAssets(subaccounts: subaccounts)

@@ -21,7 +21,12 @@ class Learn2faViewController: UIViewController {
 
     var message: TwoFactorResetMessage!
     weak var delegate: Learn2faViewControllerDelegate?
-    var session: SessionManager? { WalletManager.current?.sessions[message.network] }
+    var session: SessionManager? {
+        WalletManager.current?
+            .gdkNetworkBackendOrNil(
+                NetworkId(network: message.network)!
+            )?.session
+    }
     var isDisputeActive: Bool { self.session?.twoFactorConfig?.twofactorReset.isDisputeActive ?? false }
 
     override func viewDidLoad() {

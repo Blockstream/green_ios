@@ -73,7 +73,8 @@ class SendHWViewController: UIViewController {
             tappableBg.addGestureRecognizer(tapToClose)
         icWallet.image = viewModel.deviceImage
 
-        if viewModel.assetId != viewModel.session?.gdkNetwork.getFeeAsset() {
+        if viewModel.assetId != viewModel.subaccount?.gdkSession?.gdkNetwork
+            .getFeeAsset() {
             [lblConversion].forEach {
                 $0?.isHidden = true
             }

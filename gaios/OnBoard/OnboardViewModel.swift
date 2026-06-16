@@ -40,7 +40,7 @@ class OnboardViewModel {
 
     func checkWalletsJustRestored(account: Wallet, credentials: Credentials) async throws {
         // Avoid to restore an existing wallets
-        let session = SessionManager(account.networkId, newNotificationDelegate: nil)
+        let session = SessionManager(account.networkId)
         let xpub = try await getXpubHashId(session: session, credentials: credentials)
         let prevAccounts = WalletsStorage.shared.find(xpubHashId: xpub ?? "")?
             .filter {
@@ -57,9 +57,7 @@ class OnboardViewModel {
     }
 
     func addPinData(wallet: WalletManager, account: Wallet, credentials: Credentials, pin: String) async throws -> Credentials {
-        guard let session = wallet.prominentSession else {
-            throw LoginError.connectionFailed("Invalid session")
-        }
+        let session = wallet.prominentSession
         try await session.connect()
         let encryptParams = EncryptWithPinParams(pin: pin, credentials: credentials)
         let encrypted = try await session.encryptWithPin(encryptParams)
@@ -91,7 +89,6 @@ class OnboardViewModel {
         }
         try await checkWalletsJustRestored(account: account, credentials: credentials)
         // login
-        let walletIdentifier = try wallet.prominentSession?.walletIdentifier(credentials: credentials)
         let boltzCredentials = try wallet.deriveBoltzCredentials(from: credentials)
         let lightningCredentials = try wallet.deriveLightningCredentials(from: credentials)
         // add boltz auth into keychain
@@ -101,10 +98,8 @@ class OnboardViewModel {
             lightningCredentials: lightningCredentials,
             boltzCredentials: boltzCredentials,
             device: nil,
-            masterXpub: nil,
             fullRestore: true,
-            creation: false,
-            parentWalletId: walletIdentifier)
+            creation: false)
         account.xpubHashId = res?.xpubHashId
         account.walletHashId = res?.walletHashId
         // add lightning auth into keychain only if it successfully restored
@@ -137,16 +132,13 @@ class OnboardViewModel {
         }
         let boltzCredentials = try wallet.deriveBoltzCredentials(from: credentials)
         try AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: boltzCredentials, for: account.keychain)
-        let walletIdentifier = try wallet.prominentSession?.walletIdentifier(credentials: credentials)
         let res = try await wallet.login(
             credentials: credentials,
             lightningCredentials: nil,
             boltzCredentials: boltzCredentials,
             device: nil,
-            masterXpub: nil,
             fullRestore: false,
-            creation: true,
-            parentWalletId: walletIdentifier)
+            creation: true)
         account.xpubHashId = res?.xpubHashId
         account.walletHashId = res?.walletHashId
         return (account, wallet)
@@ -160,8 +152,7 @@ class OnboardViewModel {
     }
 
     func setupPinWallet(credentials: Credentials, pin: String, account: Wallet, wm: WalletManager) async throws -> (Wallet, WalletManager) {
-        guard let session = wm.prominentSession
-        else { throw LoginError.failed() }
+        let session = wm.prominentSession
         try await session.connect()
         try await account.addPin(session: session, pin: pin, credentials: credentials)
         var account = account

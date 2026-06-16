@@ -152,7 +152,10 @@ extension SwapPosition {
         }
     }
     var available: Int64? {
-        return account?.satoshi?[assetId]
+        if let account {
+            return try? WalletManager.current?.accountBackend(account).assets[assetId]
+        }
+        return nil
     }
     init(position: SwapPositionEnum, account: Account?, assetId: String) {
         self.side = position

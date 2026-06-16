@@ -36,25 +36,28 @@ class LTExportJadeViewModel {
         }
         return Credentials(mnemonic: lightningMnemonic)
     }
-    
-    func enableLightning(credentials: Credentials) async throws {
+
+    func enableLightning(lightningCredentials: Credentials) async throws {
         // Get lightning session
-        guard let session = wm?.lightningSession,
-            let account = mainWallet else {
+        guard let walletManager = wm, let mainWallet else {
             throw HWError.Abort("Invalid lightning session")
         }
+        guard let xpubHashId = mainWallet.xpubHashId else {
+            throw HWError.Abort("Invalid xpub")
+        }
         // remove previous lightning data
-        await session.removeDatadir(credentials: credentials)
-        // connect lightning session
-        try await session.connect()
-        let _ = try await session.loginUser(credentials)
-        _ = try await wm?.subaccounts()
+        if let workingDir = try? LightningSessionManager.workingDir(xpub: xpubHashId) {
+            try? walletManager.removeDatadir(workingDir.path())
+        }
+        let backend = try walletManager.glNetworkBackend()
+        try await backend.login(credentials: lightningCredentials, parentXpub: xpubHashId)
+        _ = try await backend.getAccounts(refresh: false)
         // Add auth into keychain
-        try AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: credentials, for: account.keychainLightning)
+        try AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: lightningCredentials, for: mainWallet.keychainLightning)
         // Register device to receive notifications
         let token = UserDefaults(suiteName: Bundle.main.appGroup)?.string(forKey: "token") ?? ""
-        if !token.isEmpty, let mainAccount = mainAccount, let xpubHashId = mainAccount.xpubHashId {
-            try? await session.registerNotification(fcmToken: token, xpubHashId: xpubHashId)
+        if !token.isEmpty, let xpubHashId = mainWallet.xpubHashId {
+            try? await backend.session.registerNotification(fcmToken: token, xpubHashId: xpubHashId)
         }
         // Update subaccounts and UI
         await wallet.triggerRefresh(features: [.subaccounts])

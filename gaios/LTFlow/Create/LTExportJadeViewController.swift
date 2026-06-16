@@ -124,7 +124,7 @@ extension LTExportJadeViewController: QrScannerViewControllerDelegate {
                 encrypted: value.bcur?.encrypted ?? "") else {
                 throw HWError.Abort("id_operation_failure")
             }
-            try await self?.viewModel.enableLightning(credentials: credentials)
+            try await self?.viewModel.enableLightning(lightningCredentials: credentials)
             return credentials
         }
         switch await task.result {

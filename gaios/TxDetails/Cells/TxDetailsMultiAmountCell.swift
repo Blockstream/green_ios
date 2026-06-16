@@ -16,7 +16,7 @@ class TxDetailsMultiAmountCell: UITableViewCell {
     @IBOutlet weak var iconSide: UIImageView!
 
     private var btc: String {
-        return WalletManager.current?.prominentNetwork.gdkNetwork.getFeeAsset() ?? ""
+        return WalletManager.current?.prominentNetwork.getFeeAsset() ?? ""
     }
 
     override func awakeFromNib() {
@@ -50,7 +50,7 @@ class TxDetailsMultiAmountCell: UITableViewCell {
     }
 
     func loadIcon() {
-        if model?.tx.subaccount?.gdkNetwork.lightning ?? false {
+        if model?.tx.accountInjected?.gdkNetwork.lightning ?? false {
             iconAsset.image = UIImage(named: "ic_lightning_btc")
         } else {
             iconAsset.image = WalletManager.current?.image(for: model!.id)

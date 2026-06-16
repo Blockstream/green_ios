@@ -26,7 +26,7 @@ class TransactionCellModel {
         self.tx = tx
         self.blockHeight = blockHeight
         self.date = tx.date(dateStyle: .medium, timeStyle: .none)
-        self.subaccount = wm?.subaccounts.filter { $0.id == tx.subaccountId }.first
+        self.subaccount = wm?.accounts.filter { $0.id == tx.accountId }.first
         if let subaccount = self.subaccount {
             self.amounts = amounts(self.tx, subaccount)
         }
@@ -44,6 +44,9 @@ class TransactionCellModel {
         case .mixed:
             self.status = tx.isPending(block: blockHeight) ? "id_swap_in_progress".localized : "id_swap".localized
             icon = UIImage(named: "ic_tx_swap")!
+        default:
+            self.status = ""
+            icon = UIImage()
         }
         //if tx.isPending(block: blockHeight) { icon = UIImage(named: "ic_tx_hourglass")! }
     }

@@ -150,8 +150,8 @@ class TabTransactVC: TabViewController {
 
     func txScreen(_ tx: Transaction) {
         let storyboard = UIStoryboard(name: "TxDetails", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "TxDetailsViewController") as? TxDetailsViewController, let wallet = tx.subaccount {
-            vc.vm = TxDetailsViewModel(wallet: wallet, transaction: tx)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "TxDetailsViewController") as? TxDetailsViewController, let account = tx.accountInjected {
+            vc.vm = TxDetailsViewModel(account: account, transaction: tx)
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
@@ -374,17 +374,16 @@ extension TabTransactVC: UITableViewDataSourcePrefetching {
         }
     }
     func getLiquidSubaccounts() -> [Account] {
-        WalletManager.current?.liquidSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+        WalletManager.current?.liquidSubaccounts.sorted() ?? []
     }
     func getLiquidAmpSubaccounts() -> [Account] {
-        WalletManager.current?.liquidAmpSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+        WalletManager.current?.liquidAmpSubaccounts.sorted() ?? []
     }
     func getLightningSubaccounts() -> [Account] {
-        if let subaccount = WalletManager.current?.lightningSubaccount {
-            return [subaccount]
-        } else {
-            return []
+        if let backend = WalletManager.current?.glNetworkBackendOrNil(), backend.isLoggedIn {
+            return [backend.account]
         }
+        return []
     }
     func getAccounts(_ ref: AnyOrAsset) -> [Account] {
         switch ref {

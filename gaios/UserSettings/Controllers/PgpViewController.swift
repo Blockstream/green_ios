@@ -78,20 +78,21 @@ class PgpViewController: KeyboardViewController {
         }
     }
     
-    func getPgp() async throws -> String? {
-        if let session = WalletManager.current?.bitcoinMultisigSession, session.logged {
-            return try await session.loadSettings()?.pgp
-        } else if let session = WalletManager.current?.liquidMultisigSession, session.logged {
-            return try await session.loadSettings()?.pgp
-        } else {
-            return nil
-        }
+    func getPgp() -> String? {
+        return WalletManager.current?.loggedInGdkNetworkBackends
+            .values
+            .map { $0.session }
+            .filter { !$0.gdkNetwork.electrum }
+            .map { $0.settings?.pgp ?? "" }
+            .filter { !$0.isEmpty }
+            .first
     }
 
     func setPgp(pgp: String) async throws {
-        let sessions = WalletManager.current?.activeSessions
-            .filter { $0.value.gdkNetwork.multisig }
+        let sessions = WalletManager.current?.loggedInGdkNetworkBackends
             .values
+            .map { $0.session }
+            .filter { !$0.gdkNetwork.electrum }
         if let sessions = sessions {
             for session in sessions {
                 try await self.changeSettings(session: session, pgp: pgp)

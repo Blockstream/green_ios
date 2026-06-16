@@ -8,7 +8,10 @@ struct AccountCellModel {
     var assetId: String?
     var name: String { account.localizedName }
     var lblType: String { account.type.path.uppercased() }
-    var hasTxs: Bool { account.hasTxs }
+    var backend: AccountBackend? {
+        WalletManager.current?.accountBackendOrNil(account)
+    }
+    var hasTxs: Bool { backend?.hasTxs ?? false }
     var networkId: NetworkId { account.networkId }
     var balanceStr: String? {
         let assetId = assetId ?? account.gdkNetwork.getFeeAsset()

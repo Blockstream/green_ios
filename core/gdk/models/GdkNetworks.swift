@@ -36,20 +36,44 @@ public class GdkNetworks: Codable {
 
     public lazy var lwkMainnet = GdkNetwork(
         name: NetworkId.lwkMainnet.name(),
-        network: NetworkId.electrumLiquid.network,
+        network: NetworkId.lwkMainnet.network,
         liquid: true,
-        mainnet: false,
+        mainnet: true,
+        development: false,
+        txExplorerUrl: electrumLiquid.txExplorerUrl,
+        policyAsset: electrumLiquid.getFeeAsset(),
+        serverType: "electrum",
+        bip21Prefix: electrumLiquid.bip21Prefix)
+
+    public lazy var lwkSwapMainnet = GdkNetwork(
+        name: NetworkId.lwkSwapMainnet.name(),
+        network: NetworkId.lwkSwapMainnet.network,
+        liquid: true,
+        mainnet: true,
         development: false,
         txExplorerUrl: electrumLiquid.txExplorerUrl,
         policyAsset: electrumLiquid.getFeeAsset(),
         serverType: "electrum" )
 
+    public lazy var lwkTestnet = GdkNetwork(
+        name: NetworkId.lwkTestnet.name(),
+        network: NetworkId.lwkTestnet.network,
+        liquid: true,
+        mainnet: false,
+        development: false,
+        txExplorerUrl: electrumTestnetLiquid.txExplorerUrl,
+        policyAsset: electrumTestnetLiquid.getFeeAsset(),
+        serverType: "electrum",
+        bip21Prefix: electrumTestnetLiquid.bip21Prefix                                  )
+
     public func getNetworkBy(_ id: NetworkId) -> GdkNetwork {
         switch id {
-            case .lightningMainnet:
+        case .lightningMainnet:
             return lightningMainnet
         case .lwkMainnet:
             return lwkMainnet
+        case .lwkTestnet:
+            return lwkTestnet
         case .greenMainnet:
             return greenMainnet
         case .electrumMainnet:
@@ -66,6 +90,8 @@ public class GdkNetworks: Codable {
             return greenTestnetLiquid
         case .electrumTestnetLiquid:
             return electrumTestnetLiquid
+        case .lwkSwapMainnet:
+            return lwkSwapMainnet
         }
     }
 }

@@ -27,20 +27,20 @@ public class Gdk {
     }
 
     static func getNetworks() throws -> GdkNetworks? {
-        try greenaddress.getNetworks()?.decodeTo(GdkNetworks.self)
+        try greenaddress.getNetworks()?.decode(GdkNetworks.self)
     }
 
-    func hasGdkCache(loginData: LoginUserResult) -> Bool {
+    func hasGdkCache(walletHashId: String) -> Bool {
         if let datadir = config.datadir, !datadir.isEmpty {
-            let dir = "\(datadir)/state/\(loginData.walletHashId)"
+            let dir = "\(datadir)/state/\(walletHashId)"
             return FileManager.default.fileExists(atPath: dir)
         }
         return false
     }
 
-    func removeGdkCache(loginData: LoginUserResult) -> Bool {
+    func removeGdkCache(walletHashId: String) -> Bool {
         if let datadir = config.datadir, !datadir.isEmpty {
-            let dir = "\(datadir)/state/\(loginData.walletHashId)"
+            let dir = "\(datadir)/state/\(walletHashId)"
             try? FileManager.default.removeItem(atPath: dir)
             return true
         }

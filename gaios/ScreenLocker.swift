@@ -62,7 +62,7 @@ class ScreenLocker {
         }
         let countdown: TimeInterval = CFAbsoluteTimeGetCurrent() - countdownInterval
         for (id, wm) in WalletsRepository.shared.wallets {
-            let altimeout = wm.prominentSession?.settings?.altimeout ?? 5
+            let altimeout = wm.prominentSession.settings?.altimeout ?? 5
             if Int(countdown) >= altimeout * 60 {
                 if id == WalletsStorage.shared.current?.id {
                     self.isScreenLockLocked = true
@@ -176,7 +176,7 @@ class ScreenLocker {
         let countdown: TimeInterval = CFAbsoluteTimeGetCurrent() - countdownInterval
         for wm in WalletsRepository.shared.wallets.values {
             if wm.logged {
-                let altimeout = wm.prominentSession?.settings?.altimeout ?? 5
+                let altimeout = wm.prominentSession.settings?.altimeout ?? 5
                 if Int(countdown) >= altimeout * 60 {
                     await wm.disconnect()
                 } else {

@@ -205,7 +205,7 @@ class SetPinViewController: UIViewController {
             switch pinFlow {
             case .settings, .backup:
                 await self?.startLoader(message: "id_setting_up_your_wallet".localized, isRive: true)
-                guard let credentials = try await WalletManager.current?.prominentSession?.getCredentials(password: "") else {
+                guard let credentials = try await WalletManager.current?.prominentNetworkBackend.session.getCredentials(password: "") else {
                     throw LoginError.failed("")
                 }
                 guard let wm = WalletManager.current, let account = WalletsStorage.shared.current else {

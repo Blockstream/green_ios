@@ -32,7 +32,7 @@ struct JadeBoltzSwapViewModel {
         return swaps?.count ?? 0 > 0
     }
     func disconnectBoltz() async throws {
-        try await wm.lwkSession?.disconnect()
+        try await wm.lwkBoltzBackend?.disconnect()
     }
     
 }

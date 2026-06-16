@@ -439,10 +439,10 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     func didSelectAssetRowAt(indexPath: IndexPath) {
-        let amounts = viewModel.assetAmountList?.amounts[indexPath.row]
-        let assetId = amounts?.0 ?? "btc"
-        let subaccounts = viewModel.subaccounts?.filter({$0.satoshi?.keys.contains(assetId) ?? false })
-        let vc = manageAssetViewController(assetId: assetId, subaccounts: subaccounts ?? [])
+        let assetAmount = viewModel.assetAmountList?.amounts[indexPath.row]
+        let assetId = assetAmount?.0 ?? AssetInfo.btcId
+        let subaccounts = viewModel.wallet.subaccountsFor(assetId: assetId)
+        let vc = manageAssetViewController(assetId: assetId, subaccounts: subaccounts)
         navigationController?.pushViewController(vc, animated: true)
     }
 

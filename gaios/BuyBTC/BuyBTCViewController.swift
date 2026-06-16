@@ -238,12 +238,14 @@ class BuyBTCViewController: KeyboardViewController {
     func loadAddress() {
         viewModel.address = nil
         Task {
-            if let address = try? await viewModel.account.session?.getReceiveAddress(subaccount: viewModel.account.pointer) {
-                logger.info("Buy generate address: \(address.address ?? "", privacy: .public)")
-                viewModel.address = address
-            } else {
-                logger.error("Buy generate address error")
-            }
+            let address = try? await
+                viewModel.wm
+                .accountBackend(viewModel.account)
+                .getReceiveAddress()
+            logger
+                .info(
+ "Buy generate address: \(address?.address ?? "")")
+            viewModel.address = address
         }
     }
     private func load() async {

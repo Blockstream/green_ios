@@ -187,7 +187,7 @@ class BleHwManager {
     func login(account: Wallet, fullRestore: Bool) async throws -> (Wallet, WalletManager) {
         AnalyticsManager.shared.loginWalletStart()
         var account = account
-        let walletManager = WalletManager(prominentNetwork: account.networkId)
+        let walletManager = WalletManager(networkId: account.networkId)
         let device = try await getHwProtocol()
         walletManager.popupResolver = await PopupResolver()
         walletManager.hwInterfaceResolver = HwPopupResolver()
@@ -196,16 +196,14 @@ class BleHwManager {
         let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: account.keychain)
         do {
             if let masterXpub = try await getMasterXpub(chain: account.gdkNetwork.chain) {
-                let walletId = try walletManager.prominentSession?.walletIdentifier(masterXpub: masterXpub)
+                let credentials = Credentials(masterXpub: masterXpub)
                 let res = try await walletManager.login(
-                   credentials: nil,
+                   credentials: credentials,
                    lightningCredentials: lightningCredentials,
                    boltzCredentials: boltzCredentials,
                    device: device,
-                   masterXpub: masterXpub,
                    fullRestore: fullRestore,
-                   creation: false,
-                   parentWalletId: walletId
+                   creation: false
                 )
                 account.xpubHashId = res?.xpubHashId
                 account.walletHashId = res?.walletHashId

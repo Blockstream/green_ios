@@ -46,14 +46,13 @@ actor ReceiveService {
     }
 
     func fetchReverseSwapInfo(_ request: ReverseSwapInfoRequest) async throws -> ReverseSwapInfoResponse {
-        let info = try await request.walletManager.lwkSession?.fetchReverseSwapsInfo()
+        let info = try await request.walletManager.lwkBoltzBackend?.fetchReverseSwapsInfo()
         return ReverseSwapInfoResponse(info: info)
     }
 
-    func buildAddress(_ request: AddressRequest) async throws -> AddressResponse {
-        let account = request.subaccount
-        let session = request.walletManager.sessions[account.gdkNetwork.network]
-        let address = try await session?.getReceiveAddress(subaccount: account.pointer)
+    func buildAddress(account: Account, walletManager: WalletManager) async throws -> AddressResponse {
+        let accountBackend = try walletManager.accountBackend(account)
+        let address = try await accountBackend.getReceiveAddress()
         return AddressResponse(address: address)
     }
 
@@ -66,8 +65,10 @@ actor ReceiveService {
 
     func createReverseSwapInvoice(_ request: ReverseSwapInvoiceRequest) async throws -> ReverseSwapInvoiceResponse {
         logger.info("BOLTZ getReceiveAddress")
-        let address = try await request.subaccount.session?.getReceiveAddress(subaccount: request.subaccount.pointer)
-        guard let address = address?.address else {
+        let address = try await request.walletManager.accountBackend(
+            request.subaccount
+        ).getReceiveAddress().address
+        guard let address = address else {
             throw GaError.GenericError("Invalid address")
         }
         logger.info("BOLTZ invoice")

@@ -244,7 +244,7 @@ class ManageAssetViewController: UIViewController {
         }
     }
     func pushLTSettingsViewController() {
-        if viewModel.wallet.lightningSubaccount == nil {
+        if !viewModel.wallet.hasLightning {
             DropAlert().warning(message: "Create a lightning account")
             return
         }
@@ -337,8 +337,10 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
             if let cell, let subaccount {
                 let model = AccountCellModel(
                     account: subaccount,
-                    satoshi: subaccount.satoshi?[viewModel.assetId] ?? 0,
-                    assetId: viewModel.assetId)
+                    satoshi: (try? subaccount
+                        .assets(viewModel.wallet)[viewModel.assetId]) ?? 0,
+                    assetId: viewModel.assetId
+)
                 cell.configure(
                     model: model,
                     isSelectable: true,
@@ -537,8 +539,8 @@ extension ManageAssetViewController {
     }
     func txScreen(_ tx: Transaction) {
         let storyboard = UIStoryboard(name: "TxDetails", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "TxDetailsViewController") as? TxDetailsViewController, let wallet = tx.subaccount {
-            vc.vm = TxDetailsViewModel(wallet: wallet, transaction: tx)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "TxDetailsViewController") as? TxDetailsViewController, let account = tx.accountInjected {
+            vc.vm = TxDetailsViewModel(account: account, transaction: tx)
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
@@ -564,7 +566,7 @@ extension ManageAssetViewController {
         present(vc, animated: true)
     }
     func checkUKRegion() -> Bool {
-        return Locale.current.regionCode == "GB"
+        return Locale.current.region?.identifier == "GB"
     }
 
     func getCountlyRemoteConfigEnableBuyIosUk() -> Bool {
@@ -572,7 +574,7 @@ extension ManageAssetViewController {
     }
 
     func getBitcoinSubaccounts() -> [Account] {
-        WalletManager.current?.bitcoinSubaccounts.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
+        WalletManager.current?.bitcoinSubaccounts.sorted() ?? []
     }
     func openWatchOnly(session: SessionManager) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
@@ -598,7 +600,7 @@ extension ManageAssetViewController: AccountSettingsViewControllerDelegate {
             if viewModel.selectedSubaccount?.isSinglesig == true {
                 showDescriptor()
             } else if viewModel.selectedSubaccount?.isMultisig == true {
-                if let session = viewModel.selectedSubaccount?.session {
+                if let session = viewModel.selectedSubaccount?.gdkSession {
                     openWatchOnly(session: session)
                 }
             }

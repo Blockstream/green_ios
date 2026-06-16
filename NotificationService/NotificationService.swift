@@ -136,8 +136,10 @@ class NotificationService: UNNotificationServiceExtension {
                 throw NotificationError.Failed
             }
             // get session and start task iteration
-            let sharedSession = await SwapManager.shared.getSession(for: xpubHashId)
-            let task = SwapTask(session: sharedSession)
+            let sharedBackend = await SwapManager.shared.getBackend(
+                for: xpubHashId
+            )
+            let task = SwapTask(lwkBoltzBackend: sharedBackend)
             let swap = try await task.start(xpubHashId: xpubHashId, secret: mnemonic, swapId: eventSwap.id)
         } catch NotificationError.Timeout {
             logger.error("NotificationService timeout error")

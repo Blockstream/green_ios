@@ -4,7 +4,7 @@ import greenaddress
 import GreenlightSDK
 
 public enum EventNotificationTypes {
-    case newBlock(blockheight: UInt32)
+    case newBlock(block: Block)
     case newSubaccount(subaccount: SubaccountEvent)
     case newTransaction(transaction: TransactionEvent)
     case twoFactorReset

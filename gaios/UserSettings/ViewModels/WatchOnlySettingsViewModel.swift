@@ -33,8 +33,8 @@ class WatchOnlySettingsViewModel {
     func load() async {
         // Multisig watchonly with username / password
         self.multisigCellModels = []
-        for session in wm.activeMultisigSessions {
-            if let model = try? await self.loadWOMultisig(session) {
+        for backend in wm.activeGdkMultisigBackends {
+            if let model = try? await self.loadWOMultisig(backend.session) {
                 multisigCellModels += [model]
             }
         }
@@ -44,8 +44,8 @@ class WatchOnlySettingsViewModel {
             subtitle: "id_tip_you_can_use_the".localized,
             network: nil)
         self.singlesigCellModels = [cellHeaderPubKeys]
-        for session in wm.activeSinglesigSessions {
-            if let models = try? await self.loadWOSinglesigExtendedPubKeys(session) {
+        for backend in wm.activeGdkSinglesigBackends {
+            if let models = try? await self.loadWOSinglesigExtendedPubKeys(backend.session) {
                 singlesigCellModels += models
             }
         }
@@ -56,8 +56,8 @@ class WatchOnlySettingsViewModel {
             subtitle: "",
             network: nil)
         self.singlesigCellModels += [cellHeaderCoreDesc]
-        for session in wm.activeSinglesigSessions {
-            if let models = try? await self.loadWOSinglesigCoreDescriptors(session) {
+        for backend in wm.activeGdkSinglesigBackends {
+            if let models = try? await self.loadWOSinglesigCoreDescriptors(backend.session) {
                 singlesigCellModels += models
             }
         }

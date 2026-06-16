@@ -136,11 +136,14 @@ class WODetailsCompactViewController: KeyboardViewController {
         let viewModel = WOViewModel(wallet: wallet)
         let task = Task {
             let wm = WalletsRepository.shared.getOrAdd(for: wallet)
-            try? await wm.getSession(for: network ?? .electrumMainnet)?.connect()
-            let loginUserResult = try await wm.getSession(for: network ?? .electrumMainnet)?.loginUser(credentials)
-            _ = try await wm.subaccounts()
+            let session = try wm
+                .gdkNetworkBackend(network ?? .electrumMainnet)
+                .session
+            try await session.connect()
+            let loginUserResult = try await session.loginUser(credentials)
+            _ = try await wm.getAccounts()
             wm.isWatchonly = true
-            wallet.xpubHashId = loginUserResult?.xpubHashId
+            wallet.xpubHashId = loginUserResult.xpubHashId
             try await viewModel.setupSinglesig(credentials: credentials)
             WalletsStorage.shared.current = wallet
         }

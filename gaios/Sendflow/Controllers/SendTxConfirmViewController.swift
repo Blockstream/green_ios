@@ -215,10 +215,10 @@ class SendTxConfirmViewController: UIViewController {
         lblAmountValue.text = viewModel.amountText
         lblAmountFee.text = viewModel.hasPrice ? "\(viewModel.subamountText ?? "")" : ""
         lblAssetName.text = viewModel.asset?.name ?? viewModel.assetId
-        lblAccount1.text = viewModel.subaccount?.localizedName.uppercased()
-        lblAccount2.text = viewModel.subaccount?.type.shortText.uppercased()
+        lblAccount1.text = viewModel.subaccount.localizedName.uppercased()
+        lblAccount2.text = viewModel.subaccount.type.shortText.uppercased()
         iconAsset.image = viewModel.assetImage
-        iconType.image = networkImage(viewModel.subaccount?.networkId ?? .electrumMainnet)
+        iconType.image = networkImage(viewModel.network)
 
         lblSumFeeValue.text = viewModel.feeText
         lblSumFeeFiat.text = viewModel.feeConvertText
@@ -310,7 +310,7 @@ class SendTxConfirmViewController: UIViewController {
     func updateNavigationItem() {
         let noteBtn = UIButton(type: .system)
         noteBtn.setStyle(.inline)
-        noteBtn.setTitle(Common.noteActionName(viewModel.transaction?.memo ?? ""), for: .normal)
+        noteBtn.setTitle(Common.noteActionName(viewModel.transaction.memo ?? ""), for: .normal)
         noteBtn.addTarget(self, action: #selector(noteBtnTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: noteBtn)]
     }
@@ -339,7 +339,7 @@ class SendTxConfirmViewController: UIViewController {
     func presentDialogEditViewController() {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         let vc = storyboard.instantiateViewController(identifier: "DialogEditViewController") { coder in
-            DialogEditViewController(coder: coder, prefill: self.viewModel.transaction?.memo ?? "")
+            DialogEditViewController(coder: coder, prefill: self.viewModel.transaction.memo ?? "")
         }
         vc.modalPresentationStyle = .overFullScreen
         vc.delegate = self
@@ -600,7 +600,7 @@ extension SendTxConfirmViewController: SendFailViewControllerDelegate {
     func presentDialogErrorViewController(error: Error, paymentHash: String?) {
         let request = ZendeskErrorRequest(
             error: error.description().localized,
-            network: viewModel.subaccount?.networkId ?? .electrumMainnet,
+            network: viewModel.network,
             paymentHash: paymentHash,
             shareLogs: true,
             screenName: "FailedTransaction")

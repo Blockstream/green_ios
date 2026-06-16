@@ -140,7 +140,8 @@ class HomeViewController: UIViewController {
     }
 
     func isOverviewSelected(_ account: Wallet) -> Bool {
-        WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
+        WalletsRepository.shared
+            .get(for: account.id)?.activeNetworkIds.count ?? 0 > 0
     }
 
     func onPromo(_ promo: Promo) {

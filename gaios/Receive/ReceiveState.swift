@@ -107,7 +107,7 @@ struct ReceiveState {
     }
     let minAmountOpening: UInt64 = 25000
     var gdkNetwork: GdkNetwork? {
-        subaccount.session?.gdkNetwork
+        subaccount.gdkNetwork
     }
     var scope: AmountFieldScope {
         type == .lwkSwap ? .reverseSwap : .ltReceive

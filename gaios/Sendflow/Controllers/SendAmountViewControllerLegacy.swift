@@ -352,14 +352,18 @@ class SendAmountViewControllerLegacy: KeyboardViewController {
         }
     }
     @IBAction func btnNext(_ sender: Any) {
-        presentSendTxConfirmViewController()
+        do {
+            try presentSendTxConfirmViewController()
+        } catch {
+            showError(error.description().localized)
+        }
     }
 
     @MainActor
-    func presentSendTxConfirmViewController() {
+    func presentSendTxConfirmViewController() throws {
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendTxConfirmViewController") as? SendTxConfirmViewController {
-            vc.viewModel = viewModel.sendSendTxConfirmViewModel()
+            vc.viewModel = try viewModel.sendSendTxConfirmViewModel()
             navigationController?.pushViewController(vc, animated: true)
         }
     }

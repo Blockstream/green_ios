@@ -27,17 +27,21 @@ struct PaymentTargetParser: Sendable {
         }
     }
     nonisolated func isPsbt(_ text: String) async -> Bool {
-        let wm = WalletManager.current
-        let session = wm?.bitcoinSinglesigSession ?? wm?.bitcoinMultisigSession
+        guard let wm = WalletManager.current,
+              let networkId = wm.activeBitcoinNetworkIds.first
+        else { return false }
+        let backend = try! wm.gdkNetworkBackend(networkId)
         let params = PsbtGetDetailParams(psbt: text, utxos: [:])
-        let tx = try? await session?.psbtGetDetails(params: params)
+        let tx = try? await backend.session.psbtGetDetails(params: params)
         return tx != nil
     }
     nonisolated func isPset(_ text: String) async -> Bool {
-        let wm = WalletManager.current
-        let session = wm?.liquidSinglesigSession ?? wm?.liquidMultisigSession
+        guard let wm = WalletManager.current,
+              let networkId = wm.activeLiquidNetworkIds.first
+        else { return false }
+        let backend = try! wm.gdkNetworkBackend(networkId)
         let params = PsbtGetDetailParams(psbt: text, utxos: [:])
-        let tx = try? await session?.psbtGetDetails(params: params)
+        let tx = try? await backend.session.psbtGetDetails(params: params)
         return tx != nil
     }
     func isPrivateKey(_ text: String) -> Bool {

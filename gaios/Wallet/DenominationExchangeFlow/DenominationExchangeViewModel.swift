@@ -53,8 +53,9 @@ class DenominationExchangeViewModel {
     }
 
     func updateSettings(_ settings: Settings) async throws {
-        for session in wm.activeSessions.values {
-            try? await session.changeSettings(settings: settings)
+        for networkId in wm.activeNetworkIds {
+            let backend = try? wm.gdkNetworkBackend(networkId)
+            _ = try? await backend?.session.changeSettings(settings: settings)
         }
     }
 }

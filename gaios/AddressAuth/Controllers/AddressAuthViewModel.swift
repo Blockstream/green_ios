@@ -31,7 +31,7 @@ class AddressAuthViewModel {
         }
         isLoading = true
         let params = GetPreviousAddressesParams(subaccount: Int(wallet.pointer), lastPointer: lastPointer)
-        let res = try await wallet.session?.getPreviousAddresses(params)
+        let res = try await wallet.gdkSession?.getPreviousAddresses(params)
         isLoading = false
         lastPointer = res?.lastPointer
         let newModels = res?.list.compactMap { AddressAuthCellModel(address: $0.address ?? "",

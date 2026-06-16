@@ -9,7 +9,7 @@ public struct TransactionEvent: Codable {
     }
     public let txHash: String
     public let type: String?
-    public let subAccounts: [Int]?
+    public let subAccounts: [UInt32]?
     public let satoshi: UInt64?
 }
 

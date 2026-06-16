@@ -146,7 +146,7 @@ class SendLwkSignViewModel {
         return (claimNetworkFee ?? 0) + (tx.fee ?? 0)
     }
     /*var totalAmount: Balance? {
-        let feeAsset = subaccount.session?.gdkNetwork.getFeeAsset() ?? "btc"
+        let feeAsset = subaccount.gdkSession?.gdkNetwork.getFeeAsset() ?? "btc"
         var amount = abs(tx.amounts[feeAsset] ?? 0)
         if feeAsset == assetIdFrom {
             amount += Int64(tx.fee ?? 0)

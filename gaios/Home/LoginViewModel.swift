@@ -37,7 +37,8 @@ class LoginViewModel {
             // need decrypt with pin server
             let pin = withPIN ?? pinData.plaintextBiometric
             let decryptData = DecryptWithPinParams(pin: pin ?? "", pinData: pinData)
-            let session = SessionManager(account.networkId, newNotificationDelegate: nil)
+            let wm = WalletsRepository.shared.getOrAdd(for: account)
+            let session = wm.prominentNetworkBackend.session
             try await session.connect()
             return try await session.decryptWithPin(decryptData)
         }
@@ -71,16 +72,13 @@ class LoginViewModel {
         lightningCredentials?.bip39Passphrase = credentials.bip39Passphrase
         var boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: account.keychain)
         boltzCredentials?.bip39Passphrase = credentials.bip39Passphrase
-        let walletIdentifier = try wm.prominentSession?.walletIdentifier(credentials: credentials)
         let res = try await wm.login(
             credentials: credentials,
             lightningCredentials: lightningCredentials,
             boltzCredentials: boltzCredentials,
             device: nil,
-            masterXpub: nil,
             fullRestore: false,
-            creation: false,
-            parentWalletId: walletIdentifier)
+            creation: false)
         account.xpubHashId = res?.xpubHashId
         account.walletHashId = res?.walletHashId
         WalletsStorage.shared.current = account
