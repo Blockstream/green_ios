@@ -45,10 +45,10 @@ class SendAccountAssetViewModel {
         case .liquidBip21(let liquidBip21):
             return liquidBip21.asset == assetId
         case .lightningInvoice, .lightningOffer, .lnUrl:
-            if subaccount.networkType.lightning {
+            if subaccount.networkId.lightning {
                 return assetId == AssetInfo.lightningId
             }
-            if subaccount.networkType.liquid {
+            if subaccount.networkId.liquid {
                 // For lightning-destination flows on Liquid, only allow paying with fee asset (LBTC).
                 return assetId == subaccount.gdkNetwork.getFeeAsset()
             }

@@ -58,7 +58,7 @@ class SendDialogFeeViewModel {
 
     var fastSendFeeCellModel: SendFeeCellModel {
         SendFeeCellModel(speedName: "id_fast".localized,
-                         time: TransactionPriority.High.time(isLiquid: subaccount?.networkType.liquid ?? false),
+                         time: TransactionPriority.High.time(isLiquid: subaccount?.networkId.liquid ?? false),
                          amount: btcToText(fastFeeTx?.fee) ?? "",
                          rate: feeRateWithUnit(fastFeeRate) ?? "",
                          fiat: "~ \(btcToFiat(fastFeeTx?.fee) ?? "")",
@@ -68,7 +68,7 @@ class SendDialogFeeViewModel {
     }
     var mediumSendFeeCellModel: SendFeeCellModel {
         SendFeeCellModel(speedName: "id_medium".localized,
-                         time: TransactionPriority.Medium.time(isLiquid: subaccount?.networkType.liquid ?? false),
+                         time: TransactionPriority.Medium.time(isLiquid: subaccount?.networkId.liquid ?? false),
                          amount: btcToText(mediumFeeTx?.fee) ?? "",
                          rate: feeRateWithUnit(mediumFeeRate) ?? "",
                          fiat: "~ \(btcToFiat(mediumFeeTx?.fee) ?? "")",
@@ -78,7 +78,7 @@ class SendDialogFeeViewModel {
     }
     var lowSendFeeCellModel: SendFeeCellModel {
         SendFeeCellModel(speedName: "id_slow".localized,
-                         time: TransactionPriority.Low.time(isLiquid: subaccount?.networkType.liquid ?? false),
+                         time: TransactionPriority.Low.time(isLiquid: subaccount?.networkId.liquid ?? false),
                          amount: btcToText(lowFeeTx?.fee) ?? "",
                          rate: feeRateWithUnit(lowFeeRate) ?? "",
                          fiat: "~ \(btcToFiat(lowFeeTx?.fee) ?? "")",

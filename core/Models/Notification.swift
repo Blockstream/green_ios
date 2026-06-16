@@ -19,5 +19,5 @@ public enum EventNotificationTypes {
 }
 
 public protocol NewNotificationDelegate: AnyObject {
-    func didReceive(event: EventNotificationTypes, networkType: NetworkId)
+    func didReceive(event: EventNotificationTypes, networkId: NetworkId)
 }

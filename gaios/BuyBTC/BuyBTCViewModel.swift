@@ -196,7 +196,7 @@ class BuyBTCViewModel {
         }
     }
     func getBitcoinSubaccounts() -> [Account] {
-        wm.subaccounts.filter { !$0.hidden && !$0.networkType.liquid && !$0.networkType.lightning }.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 })
+        wm.subaccounts.filter { !$0.hidden && !$0.networkId.liquid && !$0.networkId.lightning }.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 })
     }
     func getAccounts() -> [Account] {
         return getBitcoinSubaccounts()

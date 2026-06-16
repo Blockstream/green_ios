@@ -54,10 +54,12 @@ class TabTransactVM: TabViewModel {
         (try? getBoltzKey()) != nil
     }
     public func selectableAssets(subaccounts: [Account]) -> [String]? {
-        let hasSubaccountAmp = !subaccounts.filter({ $0.type == .amp }).isEmpty
-        let hasLightning = !subaccounts.filter({ $0.networkType.lightning }).isEmpty
-        let hasLiquid = !subaccounts.filter({ $0.networkType.liquid }).isEmpty
-        let hasBitcoin = !subaccounts.filter({ $0.networkType.bitcoin }).isEmpty
+        let hasSubaccountAmp = !subaccounts.filter(
+            { $0.type == .ampAccount
+            }).isEmpty
+        let hasLightning = !subaccounts.filter({ $0.networkId.lightning }).isEmpty
+        let hasLiquid = !subaccounts.filter({ $0.networkId.liquid }).isEmpty
+        let hasBitcoin = !subaccounts.filter({ $0.networkId.bitcoin }).isEmpty
         let assetIds = WalletManager.current?.registry.all
             .filter { !(!hasSubaccountAmp && $0.amp == true) }
             .filter { hasLightning || $0.assetId != AssetInfo.lightningId }
@@ -68,8 +70,10 @@ class TabTransactVM: TabViewModel {
     }
 
     func assetSelectViewModel(subaccounts: [Account]) -> AssetSelectViewModel {
-        let hasSubaccountAmp = !subaccounts.filter({ $0.type == .amp }).isEmpty
-        let hasLiquid = !subaccounts.filter({ $0.networkType.liquid }).isEmpty
+        let hasSubaccountAmp = !subaccounts.filter(
+            { $0.type == .ampAccount
+            }).isEmpty
+        let hasLiquid = !subaccounts.filter({ $0.networkId.liquid }).isEmpty
         let assetIds = selectableAssets(subaccounts: subaccounts)
         let list = AssetAmountList.from(assetIds: assetIds ?? [])
         return AssetSelectViewModel(

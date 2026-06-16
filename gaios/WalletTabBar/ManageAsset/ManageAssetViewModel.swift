@@ -22,13 +22,13 @@ class ManageAssetViewModel {
     }
     var subaccounts: [Account] {
         if assetId == AssetInfo.lightningId {
-            return state.subaccounts.filter { $0.networkType.lightning }
+            return state.subaccounts.filter { $0.networkId.lightning }
         } else if assetId == AssetInfo.btcId || assetId == AssetInfo.testId {
-            return state.subaccounts.filter { $0.networkType.bitcoin }
+            return state.subaccounts.filter { $0.networkId.bitcoin }
         } else if assetId == AssetInfo.lbtcId || assetId == AssetInfo.ltestId {
-            return state.subaccounts.filter { $0.networkType.liquid }
+            return state.subaccounts.filter { $0.networkId.liquid }
         } else {
-            return state.subaccounts.filter { $0.networkType.liquid /* && $0.hasAsset(assetId) */ }
+            return state.subaccounts.filter { $0.networkId.liquid /* && $0.hasAsset(assetId) */ }
         }
     }
     func getBoltzKey() throws -> Credentials {

@@ -302,7 +302,7 @@ class SendAmountViewModelLegacy {
             } else if !createTx.sendAll && (createTx.satoshi == nil || createTx.satoshi == 0) {
                 return tx
             }
-            if let networkType = session?.networkType, networkType.bitcoin {
+            if let networkId = session?.networkId, networkId.bitcoin || networkId.testnet {
                 createTx.addressee.assetId = nil
             }
             tx.addressees = [createTx.addressee]

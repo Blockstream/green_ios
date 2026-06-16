@@ -122,7 +122,7 @@ class LoginViewController: UIViewController {
     
     func setRemoteAlert() {
         alertCard.isHidden = true
-        self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .login, networks: [account.networkType]).first
+        self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .login, networks: [account.networkId]).first
         if remoteAlert != nil {
             alertCard.isHidden = false
             alertTitle.text = remoteAlert?.title?.htmlDecoded
@@ -361,7 +361,7 @@ class LoginViewController: UIViewController {
     func showReportError(msg: String) {
         let request = ZendeskErrorRequest(
             error: msg,
-            network: viewModel.account.networkType,
+            network: viewModel.account.networkId,
             paymentHash: nil,
             screenName: "Login")
         presentContactUsViewController(request: request)

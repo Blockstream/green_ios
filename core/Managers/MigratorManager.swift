@@ -51,8 +51,8 @@ public class MigratorManager {
             let bioData = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: network)
             let pinData = AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: network)
             if pinData || bioData {
-                let networkType = NetworkId(rawValue: network) ?? .greenMainnet
-                var wallet = Wallet(name: network.firstCapitalized, network: networkType, keychain: network)
+                let networkId = NetworkId(rawValue: network) ?? .greenMainnet
+                var wallet = Wallet(name: network.firstCapitalized, network: networkId, keychain: network)
                 wallet.attempts = UserDefaults.standard.integer(forKey: network + "_pin_attempts")
                 if wallets == nil {
                     wallets = [wallet]

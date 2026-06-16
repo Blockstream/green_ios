@@ -70,7 +70,7 @@ class DialogAccountCell: UITableViewCell {
         let registry = WalletManager.current
         var icons = [UIImage]()
         assets.amounts.compactMap {
-            if model.networkType.lightning && $0.0 == "btc" {
+            if model.networkId.lightning && $0.0 == "btc" {
                 return UIImage(named: "ic_lightning_btc")
             }
             return registry?.image(for: $0.0)

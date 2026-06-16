@@ -138,7 +138,7 @@ class ConnectViewModel: NSObject {
         updateState?(.auth(version))
         // authentication
         for i in 0..<3 {
-            let res = try await bleHwManager.authenticating(testnet: account.networkType.testnet)
+            let res = try await bleHwManager.authenticating(testnet: account.networkId.testnet)
             if res == true {
                 break
             } else if i == 2 {
@@ -201,7 +201,7 @@ class ConnectViewModel: NSObject {
         case .AuthKeyWoBioCredentials:
             return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
         case .AuthKeyBiometric, .AuthKeyPIN:
-            let wm = WalletManager(prominentNetwork: account.networkType)
+            let wm = WalletManager(prominentNetwork: account.networkId)
             let session = wm.prominentSession!
             let data = try AuthenticationTypeHandler.getPinData(method: method, for: account.keychain)
             try await session.connect()
@@ -215,7 +215,7 @@ class ConnectViewModel: NSObject {
     func loginJadeWatchonly(method: AuthenticationTypeHandler.AuthType) async throws {
         updateState?(.watchonly)
         AnalyticsManager.shared.loginWalletStart()
-        let wm = WalletManager(prominentNetwork: account.networkType)
+        let wm = WalletManager(prominentNetwork: account.networkId)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = HwPopupResolver()
         let credentials = try await getCredentials(method: method)

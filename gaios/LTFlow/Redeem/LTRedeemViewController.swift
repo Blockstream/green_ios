@@ -78,7 +78,7 @@ class LTRedeemViewController: UIViewController {
     func presentDialogErrorViewController(error: Error, paymentHash: String?) {
         let request = ZendeskErrorRequest(
             error: error.description().localized,
-            network: viewModel.wallet?.networkType ?? .electrumMainnet,
+            network: viewModel.wallet?.networkId ?? .electrumMainnet,
             paymentHash: paymentHash,
             shareLogs: true,
             screenName: "EmptyLightningAccount")

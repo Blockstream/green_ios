@@ -187,7 +187,7 @@ class BleHwManager {
     func login(account: Wallet, fullRestore: Bool) async throws -> (Wallet, WalletManager) {
         AnalyticsManager.shared.loginWalletStart()
         var account = account
-        let walletManager = WalletManager(prominentNetwork: account.networkType)
+        let walletManager = WalletManager(prominentNetwork: account.networkId)
         let device = try await getHwProtocol()
         walletManager.popupResolver = await PopupResolver()
         walletManager.hwInterfaceResolver = HwPopupResolver()

@@ -38,7 +38,7 @@ class TabSettingsVM: TabViewModel {
                 title: SettingsItem.unifiedDenominationExchange.string,
                 icon: UIImage(named: "rightArrow"),
                 subtitle: "",
-                attributed: getDenominationExchangeInfo(settings: settings, network: session.networkType),
+                attributed: getDenominationExchangeInfo(settings: settings, network: session.networkId),
                 type: setting)
         case .support:
             return gaios.TabSettingsCellModel(
@@ -147,7 +147,7 @@ class TabSettingsVM: TabViewModel {
     }
 
     func getSubaccountsAmp() -> [Account] {
-        wallet.subaccounts.filter({ $0.type == .amp })
+        wallet.subaccounts.filter({ $0.type == .ampAccount })
     }
 
     func createSubaccountAmp() async throws {
@@ -168,7 +168,10 @@ class TabSettingsVM: TabViewModel {
                 _ = try await session.loginUser(credentials)
             }
         }
-        _ = try await session.createSubaccount(CreateSubaccountParams(name: uniqueAmpName(), type: .amp))
+        _ = try await session
+            .createSubaccount(
+                CreateSubaccountParams(name: uniqueAmpName(), type: .ampAccount)
+            )
         if !wasLoggedMultisig {
             // hide default 0 multisig subaccount when creating a new multisig
             _ = try await session.updateSubaccount(UpdateSubaccountParams(subaccount: 0, hidden: true))
@@ -177,7 +180,9 @@ class TabSettingsVM: TabViewModel {
     }
 
     func uniqueAmpName() -> String {
-        let counter = wallet.subaccounts.filter({ $0.type == .amp && $0.gdkNetwork.liquid }).count
+        let counter = wallet.subaccounts.filter(
+            { $0.type == .ampAccount && $0.gdkNetwork.liquid
+            }).count
         if counter > 0 {
             return "Liquid AMP \(counter+1)"
         }

@@ -143,7 +143,7 @@ public class WalletManager {
     }
 
     public func getSession(for subaccount: Account) -> SessionManager? {
-        getSession(for: subaccount.networkType)
+        getSession(for: subaccount.networkId)
     }
 
     public var lightningSession: LightningSessionManager? {
@@ -252,13 +252,13 @@ public class WalletManager {
         }
         // verify session
         if credentials == nil && device == nil {
-            throw GaError.GenericError("no credentials found for \(session.networkType.rawValue)")
+            throw GaError.GenericError("no credentials found for \(session.networkId.rawValue)")
         }
         // check existing a previous session
         let existDatadir = session.existDatadir(credentials: credentials, masterXpub: masterXpub)
         // ignore login on multisig session if not exist a previous session
         if session.gdkNetwork.multisig && !fullRestore && !existDatadir && credentials?.username ?? nil == nil {
-            logger.info("WM login no previous active session found for \(session.networkType.rawValue, privacy: .public)")
+            logger.info("WM login no previous active session found for \(session.networkId.rawValue, privacy: .public)")
             return nil
         }
         // login
@@ -275,7 +275,7 @@ public class WalletManager {
             // remove multisig session if login is failure
             switch error {
             case TwoFactorCallError.failure(let txt):
-                if txt == "id_login_failed" && prominentSession?.networkType != session.networkType {
+                if txt == "id_login_failed" && prominentSession?.networkId != session.networkId {
                     try? await session.disconnect()
                     if fullRestore {
                         if let masterXpub = masterXpub {
@@ -347,9 +347,9 @@ public class WalletManager {
         parentWalletId: WalletIdentifier?)
     async throws -> LoginUserResult? {
         do {
-            logger.info("WM \(session.networkType.rawValue, privacy: .public) login")
+            logger.info("WM \(session.networkId.rawValue, privacy: .public) login")
             var loginUserResult: LoginUserResult?
-            switch session.networkType {
+            switch session.networkId {
             case .lightningMainnet:
                 // Connect and login greenlight
                 if let session = lightningSession, let credentials = lightningCredentials {
@@ -371,21 +371,25 @@ public class WalletManager {
                 let subaccounts = try await session.subaccounts(!creation && (!existDatadir || fullRestore))
                 // hide default wrapped segwit subaccount if not used
                 if creation || !existDatadir || fullRestore {
-                    let subaccount = subaccounts.filter({ $0.pointer == 0 && $0.type == .segwitWrapped && !$0.hidden && !($0.bip44Discovered ?? false) }).first
+                    let subaccount = subaccounts.filter(
+                        { $0.pointer == 0 && $0.type == .bip49SegwitWrapped && !$0.hidden && !(
+                            $0.bip44Discovered ?? false
+                        )
+                        }).first
                     if let subaccount = subaccount {
                         _ = try await session.updateSubaccount(UpdateSubaccountParams(subaccount: subaccount.pointer, hidden: true))
                     }
                 }
                 // create default native segwit subaccount if not exist on singlesig
-                if session.networkType.singlesig {
-                    if subaccounts.filter({ $0.type == .segWit }).isEmpty {
-                        _ = try await session.createSubaccount(CreateSubaccountParams(name: "", type: .segWit))
+                if session.networkId.singlesig {
+                    if subaccounts.filter({ $0.type == .bip84Segwit }).isEmpty {
+                        _ = try await session.createSubaccount(CreateSubaccountParams(name: "", type: .bip84Segwit))
                     }
                 }
             }
             return loginUserResult
         } catch {
-            logger.info("WM \(session.networkType.rawValue, privacy: .public) failure: \(error, privacy: .public)")
+            logger.info("WM \(session.networkId.rawValue, privacy: .public) failure: \(error, privacy: .public)")
             try? await session.disconnect()
             throw error
         }
@@ -405,7 +409,7 @@ public class WalletManager {
         hwDevice = device
         let loginTask: ((_ session: SessionManager) async -> LoginUserResult?) = { [self] session in
             // Avoid login on multisig by default on new wallet
-            if creation && session.networkType.multisig {
+            if creation && session.networkId.multisig {
                 return nil
             }
             // Login for all other networks
@@ -423,14 +427,14 @@ public class WalletManager {
                 _ = try? await session.loadSettings()
                 return res
             } catch {
-                await failureSessionsError.add(for: session.networkType, error: error)
+                await failureSessionsError.add(for: session.networkId, error: error)
                 return nil
             }
         }
         await failureSessionsError.reset()
         let allSessions = self.sessions.values.filter { !$0.logged }
-        let lwkSessions = allSessions.filter { $0.networkType == .lwkMainnet }
-        let mainSessions = allSessions.filter { $0.networkType != .lwkMainnet }
+        let lwkSessions = allSessions.filter { $0.networkId == .lwkMainnet }
+        let mainSessions = allSessions.filter { $0.networkId != .lwkMainnet }
         logger.info("WM login: \(mainSessions.count) sessions + \(lwkSessions.count) deferred LWK")
         // Only defer LWK if credentials exist; HW wallets provide them later via BIP85 export
         if let lwkSession = lwkSessions.first, boltzCredentials != nil {
@@ -441,7 +445,7 @@ public class WalletManager {
         let loginUserDatas = await withTaskGroup(of: (NetworkId, LoginUserResult?).self) { group in
             for session in mainSessions {
                 group.addTask(priority: .high) {
-                    return (session.networkType, await loginTask(session))
+                    return (session.networkId, await loginTask(session))
                 }
             }
             return await group.reduce(into: [:]) { acc, item in acc[item.0] = item.1 }
@@ -483,10 +487,10 @@ public class WalletManager {
         multisigNetworks.compactMap { sessions[$0.rawValue] }.filter { $0.logged }
     }
     public var activeSinglesigNetworks: [NetworkId] {
-        activeSinglesigSessions.map { $0.networkType }
+        activeSinglesigSessions.map { $0.networkId }
     }
     public var activeMultisigNetworks: [NetworkId] {
-        activeMultisigSessions.map { $0.networkType }
+        activeMultisigSessions.map { $0.networkId }
     }
 
     public var activeBitcoinMultisig: Bool { sessions[bitcoinMultisigNetwork.rawValue]?.logged ?? false }
@@ -494,14 +498,14 @@ public class WalletManager {
 
     public var bitcoinSubaccounts: [Account] {
         subaccounts.filter { !$0.hidden }
-            .filter { bitcoinNetworks.contains($0.networkType) }
+            .filter { bitcoinNetworks.contains($0.networkId) }
     }
     public var liquidSubaccounts: [Account] {
         subaccounts.filter { !$0.hidden }
-            .filter { liquidNetworks.contains($0.networkType) }
+            .filter { liquidNetworks.contains($0.networkId) }
     }
     public var liquidAmpSubaccounts: [Account] {
-        liquidSubaccounts.filter { $0.type == .amp }
+        liquidSubaccounts.filter { $0.type == .ampAccount }
     }
     public var bitcoinSubaccountsWithFunds: [Account] {
         bitcoinSubaccounts.filter { $0.satoshi?.compactMap{ $0.value }.reduce(0, +) ?? 0 > 0 }
@@ -522,7 +526,7 @@ public class WalletManager {
             }
         }
         if let settings = session?.settings {
-            for s in activeSessions where s.key != session?.networkType.network && settings != s.value.settings {
+            for s in activeSessions where s.key != session?.networkId.network && settings != s.value.settings {
                 _ = try? await s.value.changeSettings(settings: settings)
                 _ = try? await s.value.loadSettings()
             }
@@ -557,8 +561,8 @@ public class WalletManager {
             }.sorted()
             for subaccount in subaccounts {
                 let prev = self?.subaccounts.first { $0.network == subaccount.network && $0.pointer == subaccount.pointer }
-                subaccount.satoshi = prev?.satoshi
-                subaccount.hasTxs = prev?.hasTxs ?? false
+                //subaccount.satoshi = prev?.satoshi
+                //subaccount.hasTxs = prev?.hasTxs ?? false
             }
             return subaccounts
         }
@@ -576,8 +580,8 @@ public class WalletManager {
     public func subaccountUpdate(account: Account) async throws -> Account? {
         let res = try await account.session?.subaccount(account.pointer)
         if let res = res, let row = self.subaccounts.firstIndex(where: {$0.pointer == account.pointer && $0.gdkNetwork == account.gdkNetwork}) {
-            res.satoshi = account.satoshi
-            res.hasTxs = account.hasTxs
+            //res.satoshi = account.satoshi
+            //res.hasTxs = account.hasTxs
             self.subaccounts[row] = res
         }
         return res
@@ -743,10 +747,12 @@ public class WalletManager {
     }
 
     public func selectableAssets() -> [String]? {
-        let hasSubaccountAmp = !subaccounts.filter({ $0.type == .amp }).isEmpty
-        let hasLightning = !subaccounts.filter({ $0.networkType.lightning }).isEmpty
-        let hasLiquid = !subaccounts.filter({ $0.networkType.liquid }).isEmpty
-        let hasBitcoin = !subaccounts.filter({ $0.networkType.bitcoin }).isEmpty
+        let hasSubaccountAmp = !subaccounts.filter(
+            { $0.type == .ampAccount
+            }).isEmpty
+        let hasLightning = !subaccounts.filter({ $0.network.lightning }).isEmpty
+        let hasLiquid = !subaccounts.filter({ $0.network.liquid }).isEmpty
+        let hasBitcoin = !subaccounts.filter({ $0.network.bitcoin }).isEmpty
         let assetIds = WalletManager.current?.registry.all
             .filter { !(!hasSubaccountAmp && $0.amp == true) }
             .filter { hasLightning || $0.assetId != AssetInfo.lightningId }
@@ -758,9 +764,9 @@ public class WalletManager {
 }
 
 extension WalletManager: NewNotificationDelegate {
-    public func didReceive(event: EventNotificationTypes, networkType: NetworkId) {
-        logger.info("WalletManager didReceive on \(networkType.rawValue)")
-        newNotificationDelegate?.didReceive(event: event, networkType: networkType)
+    public func didReceive(event: EventNotificationTypes, networkId: NetworkId) {
+        logger.info("WalletManager didReceive on \(networkId.rawValue)")
+        newNotificationDelegate?.didReceive(event: event, networkId: networkId)
     }
 }
 extension WalletManager {
@@ -771,7 +777,7 @@ extension WalletManager {
             registry.refresh(provider: self)
             updatedRegistryAt = CFAbsoluteTimeGetCurrent()
             newNotificationDelegate?
-                .didReceive(event: .refreshAssets, networkType: .electrumLiquid)
+                .didReceive(event: .refreshAssets, networkId: .electrumLiquid)
         }
     }
 

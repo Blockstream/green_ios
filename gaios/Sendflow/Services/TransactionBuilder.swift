@@ -106,7 +106,7 @@ actor TransactionBuilder {
             tx.feeRate = try await session.getFeeEstimates()?.first ?? session.gdkNetwork.defaultFee
             let unspent = try await session.getUnspentOutputs(GetUnspentOutputsParams(subaccount: subaccount.pointer, numConfs: 0))
             tx.utxos = unspent
-            let assetId = session.networkType.gdkNetwork.getFeeAssetOrNull()
+            let assetId = session.networkId.gdkNetwork.getFeeAssetOrNull()
             tx.addressees = [Addressee.from(address: uri, satoshi: satoshi, assetId: assetId)]
             tx = try await session.createTransaction(tx: tx)
             return tx
@@ -115,7 +115,7 @@ actor TransactionBuilder {
     static func sendGdkTransaction(tx: core.Transaction, session: SessionManager) async throws -> SendTransactionSuccess {
         return try await Task.detached(priority: .userInitiated) {
             var tx = tx
-            if session.networkType.liquid {
+            if session.networkId.liquid {
                 tx = try await session.blindTransaction(tx: tx)
                 if let error = tx.error {
                     throw TransactionError.invalid(localizedDescription: error)
@@ -191,9 +191,9 @@ actor TransactionBuilder {
         }.value
     }
     static func buildCrossChainSwap(from: Account, to: Account, amount: UInt64, lwk: LwkSessionManager, xpub: String) async throws -> LockupResponse {
-        if from.networkType.bitcoin && to.networkType.liquid {
+        if from.networkId.bitcoin && to.networkId.liquid {
             return try await buildBtcToLbtcSwap(from: from, to: to, amount: amount, lwk: lwk, xpub: xpub)
-        } else if from.networkType.liquid && to.networkType.bitcoin {
+        } else if from.networkId.liquid && to.networkId.bitcoin {
             return try await buildLbtcToBtcSwap(from: from, to: to, amount: amount, lwk: lwk, xpub: xpub)
         } else {
             throw SendFlowError.failedToBuildTransaction
@@ -214,7 +214,7 @@ actor TransactionBuilder {
             }
             let unspent = try await session.getUnspentOutputs(GetUnspentOutputsParams(subaccount: subaccount.pointer, numConfs: 0))
             tx.utxos = unspent
-            let assetId = session.networkType.gdkNetwork.getFeeAssetOrNull()
+            let assetId = session.networkId.gdkNetwork.getFeeAssetOrNull()
             let address = try lockupResponse.lockupAddress()
             let amount = try lockupResponse.expectedAmount()
             tx.addressees = [Addressee.from(address: address, satoshi: Int64(amount), assetId: assetId)]
@@ -257,9 +257,9 @@ actor TransactionBuilder {
             let wallyPsbt = try Wally.psbtFromBase64(psbt)
             let isFinalized = try Wally.psbtIsFinalized(wallyPsbt)
             let isPset = try Wally.psbtIsElements(wallyPsbt)
-            if subaccount.networkType.liquid && !isPset {
+            if subaccount.networkId.liquid && !isPset {
                 throw TransactionError.invalid(localizedDescription: "Select a liquid subaccount for Pset")
-            } else if !subaccount.networkType.liquid && isPset {
+            } else if !subaccount.networkId.liquid && isPset {
                 throw TransactionError.invalid(localizedDescription: "Select a bitcoin subaccount for Psbt")
             }
             guard let session = subaccount.session else {

@@ -33,7 +33,7 @@ public struct Wallet: Codable, Equatable {
     public let username: String?
     public var password: String?
     public let keychain: String
-    private var network: String? // use NetworkType for retro-compatibility
+    private var network: String? // use networkId for retro-compatibility
     private var chain: String? // legacy field
     private var isSingleSig: Bool? // legacy field
     public var walletHashId: String?
@@ -144,8 +144,8 @@ public struct Wallet: Codable, Equatable {
         try AuthenticationTypeHandler.setPinData(method: .AuthKeyPIN, pinData: encrypted.pinData, extraData: nil, for: keychain)
     }
 
-    public var gdkNetwork: GdkNetwork { networkType.gdkNetwork }
-    public var networkType: NetworkId {
+    public var gdkNetwork: GdkNetwork { networkId.gdkNetwork }
+    public var networkId: NetworkId {
         get {
             if let network = network {
                 return NetworkId(rawValue: network) ?? .electrumMainnet

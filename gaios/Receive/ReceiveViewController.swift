@@ -399,7 +399,7 @@ class ReceiveViewController: KeyboardViewController {
     func presentDialogErrorViewController(errStr: String) {
         let request = ZendeskErrorRequest(
             error: errStr,
-            network: vm.state.subaccount.networkType,
+            network: vm.state.subaccount.networkId,
             paymentHash: nil,
             screenName: "Receive")
         presentContactUsViewController(request: request)
@@ -605,7 +605,7 @@ extension ReceiveViewController {
         let helpButton = UIButton(type: .system)
         helpButton.setImage(UIImage(named: "ic_help"), for: .normal)
         helpButton.addTarget(self, action: #selector(helpButtonTapped), for: .touchUpInside)
-        if vm.state.subaccount.networkType.lightning {
+        if vm.state.subaccount.networkId.lightning {
             let btnNote = UIButton(type: .system)
             btnNote.setStyle(.inline)
             btnNote.setTitle(Common.noteActionName(vm.state.description ?? ""), for: .normal)

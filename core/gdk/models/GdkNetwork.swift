@@ -64,6 +64,21 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
         return !liquid
     }
 
+    public var bitcoinMainnet: Bool {
+        return networkId == .greenMainnet || networkId == .electrumMainnet
+    }
+
+    public var liquidMainnet: Bool {
+        return networkId == .greenLiquid || networkId == .electrumLiquid
+    }
+
+    public var bitcoinTestnet: Bool {
+        return networkId == .greenTestnet || networkId == .electrumTestnet
+    }
+
+    public var liquidTestnet: Bool {
+        return networkId == .greenTestnetLiquid || networkId == .electrumTestnetLiquid
+    }
     public var networkId: NetworkId {
         NetworkId(rawValue: network)!
     }
@@ -139,3 +154,4 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
         return rules.firstIndex(of: lnet) ?? 0 < rules.firstIndex(of: rnet) ?? 0
     }
 }
+

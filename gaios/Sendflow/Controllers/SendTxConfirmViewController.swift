@@ -218,7 +218,7 @@ class SendTxConfirmViewController: UIViewController {
         lblAccount1.text = viewModel.subaccount?.localizedName.uppercased()
         lblAccount2.text = viewModel.subaccount?.type.shortText.uppercased()
         iconAsset.image = viewModel.assetImage
-        iconType.image = networkImage(viewModel.subaccount?.networkType ?? .electrumMainnet)
+        iconType.image = networkImage(viewModel.subaccount?.networkId ?? .electrumMainnet)
 
         lblSumFeeValue.text = viewModel.feeText
         lblSumFeeFiat.text = viewModel.feeConvertText
@@ -600,7 +600,7 @@ extension SendTxConfirmViewController: SendFailViewControllerDelegate {
     func presentDialogErrorViewController(error: Error, paymentHash: String?) {
         let request = ZendeskErrorRequest(
             error: error.description().localized,
-            network: viewModel.subaccount?.networkType ?? .electrumMainnet,
+            network: viewModel.subaccount?.networkId ?? .electrumMainnet,
             paymentHash: paymentHash,
             shareLogs: true,
             screenName: "FailedTransaction")

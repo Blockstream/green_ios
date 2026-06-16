@@ -129,7 +129,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
             var account = try await bleHwManager.defaultAccount()
             try? await bleHwManager.disconnect()
             if let testnet = testnet, testnet {
-                account?.networkType = NetworkId.electrumTestnet
+                account?.networkId = NetworkId.electrumTestnet
             }
             await MainActor.run {
                 let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)

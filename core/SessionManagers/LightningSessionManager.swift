@@ -121,7 +121,14 @@ public class LightningSessionManager: SessionManager {
     }
 
     public override func subaccount(_ pointer: UInt32) async throws -> Account {
-        return Account(name: "", pointer: 0, receivingId: "", type: .lightning, hidden: false, network: NetworkId.lightningMainnet.network)
+        return Account(
+            gdkName: "",
+            pointer: 0,
+            receivingId: "",
+            type: .lightning,
+            hidden: false,
+            networkInjected: NetworkId.lightningMainnet.gdkNetwork
+        )
     }
 
     public override func subaccounts(_ refresh: Bool = false) async throws -> [Account] {
@@ -249,7 +256,7 @@ extension LightningSessionManager: GreenlightSDK.NodeEventListener {
                 newNotificationDelegate?
                     .didReceive(
                         event: .invoicePaid(details),
-                        networkType: networkType
+                        networkId: networkId
                     )
             }
         }

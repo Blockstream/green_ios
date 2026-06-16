@@ -140,7 +140,11 @@ public class AnalyticsManager {
     public var activeNetworks: [NetworkId]? {
         let wm = WalletManager.current
         return wm?.activeNetworks
-            .filter { net in !(wm?.subaccounts.filter { !$0.hidden && $0.networkType == net }.isEmpty ?? false) }
+            .filter {
+                net in !(
+                    wm?.subaccounts.filter { !$0.hidden && $0.networkId == net
+                    }.isEmpty ?? false)
+            }
     }
 
     public var analyticsNetworks: AnalyticsManager.NtwTypeDescriptor? {

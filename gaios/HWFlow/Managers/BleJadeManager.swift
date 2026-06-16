@@ -50,8 +50,8 @@ class BleJadeManager: JadeManager {
                 _ = try await version()
             }
             let isTestnet = (testnet == true && version?.jadeNetworks == "ALL") || version?.jadeNetworks == "TEST"
-            let networkType: NetworkId = isTestnet ? .electrumTestnet : .electrumMainnet
-            pinServerSession = SessionManager(networkType.gdkNetwork)
+            let networkId: NetworkId = isTestnet ? .electrumTestnet : .electrumMainnet
+            pinServerSession = SessionManager(networkId.gdkNetwork)
         }
         try await pinServerSession?.connect()
     }

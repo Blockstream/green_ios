@@ -37,7 +37,7 @@ class LoginViewModel {
             // need decrypt with pin server
             let pin = withPIN ?? pinData.plaintextBiometric
             let decryptData = DecryptWithPinParams(pin: pin ?? "", pinData: pinData)
-            let session = SessionManager(account.networkType, newNotificationDelegate: nil)
+            let session = SessionManager(account.networkId, newNotificationDelegate: nil)
             try await session.connect()
             return try await session.decryptWithPin(decryptData)
         }
@@ -88,8 +88,8 @@ class LoginViewModel {
     }
 
     fileprivate func updateEphemeralAccount(from credentials: Credentials) -> Wallet {
-        let networkType = account.networkType.testnet ? NetworkId.electrumTestnet : NetworkId.electrumMainnet
-        var newAccount = Wallet(name: account.name, network: networkType, keychain: account.keychain)
+        let networkId = account.networkId.testnet ? NetworkId.electrumTestnet : NetworkId.electrumMainnet
+        var newAccount = Wallet(name: account.name, network: networkId, keychain: account.keychain)
         newAccount.isEphemeral = true
         newAccount.askEphemeral = true
         newAccount.attempts = account.attempts

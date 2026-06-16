@@ -192,13 +192,13 @@ extension SendCoordinator {
     }
 
     private func rail(for subaccount: Account) -> PaymentRail? {
-        if subaccount.networkType.liquid {
+        if subaccount.networkId.liquid {
             return .liquid
         }
-        if subaccount.networkType.lightning {
+        if subaccount.networkId.lightning {
             return .lightning
         }
-        if subaccount.networkType.bitcoin {
+        if subaccount.networkId.bitcoin {
             return .bitcoin
         }
         return nil
@@ -291,9 +291,9 @@ extension SendCoordinator {
             if invoice.amountMilliSatoshis() == nil && draft.satoshi == nil {
                 return .enterAmount(makeEnterAmountViewModel(draft: draft, subaccount: subaccount))
             }
-            if subaccount.networkType.lightning {
+            if subaccount.networkId.lightning {
                 return try await routeLightningInvoicePay(invoice, draft: draft, subaccount: subaccount)
-            } else if subaccount.networkType.liquid {
+            } else if subaccount.networkId.liquid {
                 return try await routeLightningInvoiceSwap(invoice, draft: draft, subaccount: subaccount)
             } else {
                 throw SendFlowError.wrongSubaccount
@@ -302,7 +302,7 @@ extension SendCoordinator {
             guard let subaccount = draft.subaccount else {
                 return .selectSubaccount(sendAccountAssetViewModel(draft: draft))
             }
-            if subaccount.networkType.liquid {
+            if subaccount.networkId.liquid {
                 return try await routeLightningOffer(offer, lightningPayment: lightningPayment, draft: draft, subaccount: subaccount)
             } else {
                 throw SendFlowError.wrongSubaccount
@@ -314,7 +314,7 @@ extension SendCoordinator {
             guard let amount = draft.satoshi, amount > 0 else {
                 return .enterAmount(makeEnterAmountViewModel(draft: draft, subaccount: subaccount))
             }
-            if subaccount.networkType.lightning {
+            if subaccount.networkId.lightning {
                 return try await routeLnUrlPay(
                     input,
                     payment: payment,
@@ -322,7 +322,7 @@ extension SendCoordinator {
                     subaccount: subaccount,
                     satoshi: amount
                 )
-            } else if subaccount.networkType.liquid {
+            } else if subaccount.networkId.liquid {
                 return try await routeLnUrlSwap(
                     input,
                     payment: payment,
@@ -370,7 +370,7 @@ extension SendCoordinator {
         guard let xpub, let lwk else {
             throw SendFlowError.invalidSession
         }
-        if !subaccount.networkType.liquid {
+        if !subaccount.networkId.liquid {
             throw SendFlowError.wrongSubaccount
         }
         guard let amount = invoice.amountMilliSatoshis()?.satoshi else {
@@ -437,7 +437,7 @@ extension SendCoordinator {
         draft: TransactionDraft,
         subaccount: Account
     ) async throws -> SendRoute {
-        guard subaccount.networkType.liquid else {
+        guard subaccount.networkId.liquid else {
             throw SendFlowError.wrongSubaccount
         }
         var preparedDraft = updateTransactionDraft(
@@ -628,9 +628,9 @@ extension SendCoordinator: SendAddressViewModelDelegate {
         forwardError(error)
     }
     func subaccountChain(_ subaccount: Account) -> NetworkChainType {
-        if subaccount.networkType.liquid {
+        if subaccount.networkId.liquid {
             return NetworkChainType.liquid
-        } else if subaccount.networkType.lightning {
+        } else if subaccount.networkId.lightning {
             return NetworkChainType.lightning
         } else {
             return NetworkChainType.bitcoin
@@ -658,7 +658,7 @@ extension SendCoordinator: SendAddressViewModelDelegate {
             vm.delegate?.sendAddressViewModel(vm, didFailWith: error)
             return
         }
-        if case .lightningOffer = paymentTarget, subaccountToUse?.networkType.lightning == true {
+        if case .lightningOffer = paymentTarget, subaccountToUse?.networkId.lightning == true {
             vm.delegate?.sendAddressViewModel(vm, didFailWith: SendFlowError.generic("Bolt12 payment is only available via LBTC"))
             return
         }
@@ -669,8 +669,8 @@ extension SendCoordinator: SendAddressViewModelDelegate {
         }
         if case .lnUrl = paymentTarget {
             let eligibleSubaccounts = resolveSubaccounts(paymentTarget: paymentTarget)
-            let hasLiquid = eligibleSubaccounts.contains { $0.networkType.liquid }
-            let hasLightning = eligibleSubaccounts.contains { $0.networkType.lightning }
+            let hasLiquid = eligibleSubaccounts.contains { $0.networkId.liquid }
+            let hasLightning = eligibleSubaccounts.contains { $0.networkId.lightning }
             // Preserve explicit upstream account selection (e.g. Home/Manage Asset).
             // Only force picker when no subaccount was preselected.
             if subaccount == nil && hasLiquid && hasLightning {
@@ -707,7 +707,7 @@ extension SendCoordinator: SendAddressViewModelDelegate {
             }
             if paymentTarget.chain() == .lightning, let subaccount = subaccountToUse {
                 // For lightning-destination flows, the source rail determines displayed/spent asset.
-                assetIdToUse = subaccount.networkType.liquid ? subaccount.gdkNetwork.getFeeAsset() : paymentAssetId
+                assetIdToUse = subaccount.networkId.liquid ? subaccount.gdkNetwork.getFeeAsset() : paymentAssetId
             } else {
                 assetIdToUse = paymentAssetId
             }
@@ -786,7 +786,7 @@ extension SendCoordinator: SendFailureViewModelDelegate {
         Task {
             let request = ZendeskErrorRequest(
                 error: error.description().localized,
-                network: draft?.subaccount?.networkType,
+                network: draft?.subaccount?.networkId,
                 paymentHash: nil,
                 shareLogs: true,
                 screenName: "FailedTransaction")
@@ -923,7 +923,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             nav.topViewController?.stopLoader()
             let model = SendFailureViewModel(delegate: self,
                                              error: error,
-                                             hideErrors: transaction.subaccount?.networkType.lightning ?? false)
+                                             hideErrors: transaction.subaccount?.networkId.lightning ?? false)
             return .failure(model)
         }
     }

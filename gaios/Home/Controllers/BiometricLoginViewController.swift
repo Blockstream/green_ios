@@ -198,7 +198,7 @@ class BiometricLoginViewController: UIViewController {
     func showReportError(msg: String) {
         let request = ZendeskErrorRequest(
             error: msg,
-            network: viewModel.account.networkType,
+            network: viewModel.account.networkId,
             paymentHash: nil,
             screenName: "Login")
         presentContactUsViewController(request: request)

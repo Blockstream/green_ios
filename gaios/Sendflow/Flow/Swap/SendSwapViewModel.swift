@@ -250,7 +250,7 @@ final class SendSwapViewModel {
         case .Custom:
             return "id_custom".localized
         default:
-            let network = state.from.account?.networkType
+            let network = state.from.account?.networkId
             return state.priority.time(isLiquid: network?.liquid ?? false)
         }
     }
@@ -322,7 +322,7 @@ final class SendSwapViewModel {
         }
         let address = try lockupResponse.lockupAddress()
         let paymentTarget: PaymentTarget
-        if accountFrom.networkType.liquid {
+        if accountFrom.networkId.liquid {
             paymentTarget = try PaymentTarget.liquidAddress(Address(s: address))
         } else {
             paymentTarget = try PaymentTarget.bitcoinAddress(BitcoinAddress(s: address))

@@ -13,7 +13,7 @@ enum PolicyCellType: String, CaseIterable {
     var accountType: AccountType {
         switch self {
         case .NativeSegwit:
-            return .segWit
+            return .bip84Segwit
         case .Lightning:
             return .lightning
         case .TwoFAProtected:
@@ -21,9 +21,9 @@ enum PolicyCellType: String, CaseIterable {
         case .TwoOfThreeWith2FA:
             return .twoOfThree
         case .LegacySegwit:
-            return .segwitWrapped
+            return .bip49SegwitWrapped
         case .Amp:
-            return .amp
+            return .ampAccount
         }
     }
 

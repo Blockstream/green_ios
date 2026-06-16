@@ -58,7 +58,7 @@ class SendLwkSignViewModel {
     }
     // True when paying a lightning destination via the Lightning rail (the
     // selected subaccount is Lightning). False for Liquid -> Lightning swaps.
-    var usesLightningRail: Bool { subaccount.networkType == .lightningMainnet }
+    var usesLightningRail: Bool { subaccount.networkId == .lightningMainnet }
     var note: String? {
         let description = try? bolt11.invoiceDescription()
         return tx.memo ?? description

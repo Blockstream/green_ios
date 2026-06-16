@@ -1,78 +1,78 @@
 import Foundation
 
-public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable {
-    /// multiSig
+public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, CustomStringConvertible {
+
     case standard = "2of2"
-    case amp = "2of2_no_recovery"
+    case ampAccount = "2of2_no_recovery"
     case twoOfThree = "2of3"
 
-    /// singleSig
-    case legacy = "p2pkh"
-    case segwitWrapped = "p2sh-p2wpkh" // former legacy
-    case segWit = "p2wpkh"
-    case taproot = "p2tr"
-    case lightning = "lightning"
+    // Singlesig
+    case bip44Legacy = "p2pkh"
+    case bip49SegwitWrapped = "p2sh-p2wpkh"
+    case bip84Segwit = "p2wpkh"
+    case bip86Taproot = "p2tr"
 
-    public var multisig: Bool {
-        [AccountType.standard, AccountType.amp, AccountType.twoOfThree].contains(self)
+    case lightning = "lightning"
+    case unknown = "unknown"
+
+    public var description: String {
+        switch self {
+        case .bip44Legacy: return "Legacy"
+        case .bip49SegwitWrapped: return "Legacy SegWit"
+        case .bip84Segwit: return "Standard"
+        case .bip86Taproot: return "Taproot"
+        case .lightning: return "Lightning"
+        case .standard: return "2FA Protected"
+        case .ampAccount: return "AMP"
+        case .twoOfThree: return "2of3 with 2FA"
+        case .unknown: return self.rawValue
+        }
     }
 
+    public var title: String {
+        switch self {
+        case .standard: return "2FA Protected"
+        case .ampAccount: return "AMP"
+        case .twoOfThree: return "2of3 with 2FA"
+        case .bip44Legacy: return "Legacy"
+        case .bip49SegwitWrapped: return "Legacy SegWit"
+        case .bip84Segwit: return "Standard"
+        case .bip86Taproot: return "Taproot"
+        case .lightning: return "Lightning"
+        case .unknown: return "Unknown"
+        }
+    }
+
+    public var string: String { title }
+    public var shortString: String { description }
+
     public var singlesig: Bool {
-        [.legacy, AccountType.segwitWrapped, AccountType.segWit, AccountType.taproot].contains(self)
+        switch self {
+        case .bip44Legacy, .bip49SegwitWrapped, .bip84Segwit, .bip86Taproot:
+            return true
+        default:
+            return false
+        }
     }
 
     public var lightning: Bool {
-        AccountType.lightning == self
+        return self == .lightning
     }
 
-    public var string: String {
-        get {
-            switch self {
-            case .standard:
-                return "2FA Protected"
-            case .amp:
-                return "AMP"
-            case .twoOfThree:
-                return "2of3 with 2FA"
-            case .legacy:
-                return "Legacy"
-            case .segwitWrapped:
-                return "Legacy SegWit"
-            case .segWit:
-                return "Standard"
-            case .taproot:
-                return "Taproot"
-            case .lightning:
-                return "Lightning"
-            }
-        }
-    }
-
-    public var shortString: String {
-        get {
-            switch self {
-            case .standard:
-                return "2of2"
-            case .amp:
-                return "Amp"
-            case .twoOfThree:
-                return "2of3"
-            case .legacy:
-                return "Legacy"
-            case .segwitWrapped:
-                return "Legacy SegWit"
-            case .segWit:
-                return "Native SegWit"
-            case .taproot:
-                return "Taproot"
-            case .lightning:
-                return "Lightning"
-            }
-        }
+    public var multisig: Bool {
+        return !singlesig && !lightning
     }
 
     public static func < (a: AccountType, b: AccountType) -> Bool {
-        let rules: [AccountType] = [.segwitWrapped, .segWit, .taproot, .standard, .amp, .twoOfThree, .lightning]
+        let rules: [AccountType] = [
+            .bip49SegwitWrapped,
+            .bip84Segwit,
+            .bip86Taproot,
+            .standard,
+            .ampAccount,
+            .twoOfThree,
+            .lightning
+        ]
         return rules.firstIndex(of: a) ?? 0 < rules.firstIndex(of: b) ?? 0
     }
 
@@ -105,6 +105,10 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable {
         } else {
             return "\(network) / \(shortText)"
         }
+    }
+
+    public static func byGDKType(_ name: String) -> AccountType {
+        return AccountType(rawValue: name) ?? .unknown
     }
 }
 

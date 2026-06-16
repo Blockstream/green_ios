@@ -370,14 +370,14 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
                 let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "SetPhoneViewController") as? SetPhoneViewController {
                     vc.sms = true
-                    vc.network = session.networkType
+                    vc.network = session.networkId
                     navigationController?.pushViewController(vc, animated: true)
                 }
             case .phone:
                 let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "SetPhoneViewController") as? SetPhoneViewController {
                     vc.phoneCall = true
-                    vc.network = session.networkType
+                    vc.network = session.networkId
                     navigationController?.pushViewController(vc, animated: true)
                 }
             case .gauth:

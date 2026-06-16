@@ -19,7 +19,7 @@ struct TransactionDraft: Sendable {
     // payment target with the resolved BOLT12/BIP-21/BOLT11 target.
     var bip353Origin: String?
 
-    var network: NetworkId? { subaccount?.networkType }
+    var network: NetworkId? { subaccount?.networkId }
 
     var isSubmarineSwap: Bool { lockupResponse != nil }
     var isCrossChainSwap: Bool { swapPosition != nil && swapPayResponse != nil }

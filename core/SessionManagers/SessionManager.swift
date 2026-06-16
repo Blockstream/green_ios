@@ -19,7 +19,7 @@ public class SessionManager {
     public var twoFactorConfig: TwoFactorConfig?
     public var settings: Settings?
     public var session: GDKSession?
-    public var networkType: NetworkId
+    public var networkId: NetworkId
     public var gdkNetwork: GdkNetwork
     public var blockHeight: UInt32 = 0
     public var popupResolver: PopupResolverDelegate?
@@ -37,7 +37,7 @@ public class SessionManager {
     // Serial reconnect queue for network events
     public let reconnectionTasks = SerialTasks<Void>()
 
-    //public var networkType: NetworkId {
+    //public var networkId: NetworkId {
     //    NetworkId(rawValue: gdkNetwork.network) ?? .electrumMainnet
     //}
 
@@ -46,7 +46,7 @@ public class SessionManager {
     }
 
     public init(_ networkId: NetworkId, newNotificationDelegate: NewNotificationDelegate?) {
-        self.networkType = networkId
+        self.networkId = networkId
         self.newNotificationDelegate = newNotificationDelegate
         self.gdkNetwork = Gdk.shared.networks
             .getNetworkBy(networkId)
@@ -176,7 +176,7 @@ public class SessionManager {
     public func resolve(_ twoFactorCall: TwoFactorCall?, bcurResolver: BcurResolver? = nil) async throws -> [String: Any]? {
         let rm = ResolverManager(
             twoFactorCall,
-            network: networkType,
+            network: networkId,
             connected: { self.connected && self.logged && !self.paused },
             hwDevice: hwProtocol,
             session: self,
@@ -198,16 +198,18 @@ public class SessionManager {
         let subaccount = try self.session?.getSubaccount(subaccount: pointer)
         let res = try await resolve(subaccount)
         let result = res?["result"] as? [String: Any]
-        let wallet = Account.from(result ?? [:]) as? Account
-        wallet?.network = self.gdkNetwork.network
+        var wallet = Account.from(result ?? [:]) as? Account
+        wallet?.networkInjected = self.gdkNetwork
         return wallet
     }
 
     public func subaccounts(_ refresh: Bool = false) async throws -> [Account] {
         let params = GetSubaccountsParams(refresh: refresh)
         let res: GetSubaccountsResult = try await wrapper(fun: self.session?.getSubaccounts, params: params)
-        let wallets = res.subaccounts
-        wallets.forEach { $0.network = self.gdkNetwork.network }
+        var wallets = res.subaccounts
+        for w in wallets.enumerated() {
+            wallets[w.offset].networkInjected = self.gdkNetwork
+        }
         return wallets.sorted()
     }
 
@@ -237,9 +239,14 @@ public class SessionManager {
 
     // create a default segwit account if doesn't exist on singlesig
     public func createDefaultSubaccount(wallets: [Account]) async throws {
-        let notFound = !wallets.contains(where: {$0.type == AccountType.segWit })
+        let notFound = !wallets.contains(
+            where: {$0.type == AccountType.bip84Segwit
+            })
         if gdkNetwork.electrum && notFound {
-            _ = try await wrap(fun: self.session?.createSubaccount, params: ["name": "", "type": AccountType.segWit.rawValue])
+            _ = try await wrap(
+                fun: self.session?.createSubaccount,
+                params: ["name": "", "type": AccountType.bip84Segwit.rawValue]
+            )
         }
     }
 
@@ -454,8 +461,8 @@ public class SessionManager {
     }
 
     public func createSubaccount(_ details: CreateSubaccountParams) async throws -> Account {
-        let wallet: Account = try await wrapper(fun: self.session?.createSubaccount, params: details)
-        wallet.network = self.gdkNetwork.network
+        var wallet: Account = try await wrapper(fun: self.session?.createSubaccount, params: details)
+        wallet.networkInjected = self.gdkNetwork
         return wallet
     }
 
@@ -662,22 +669,22 @@ extension SessionManager {
         case .Block:
             guard let height = data["block_height"] as? UInt32 else { break }
             blockHeight = height
-            newNotificationDelegate?.didReceive(event: .newBlock(blockheight: height), networkType: networkType)
+            newNotificationDelegate?.didReceive(event: .newBlock(blockheight: height), networkId: networkId)
         case .Subaccount:
             guard let subaccountEvent = SubaccountEvent.from(data) as? SubaccountEvent else { break }
-            newNotificationDelegate?.didReceive(event: .newSubaccount(subaccount: subaccountEvent), networkType: networkType)
+            newNotificationDelegate?.didReceive(event: .newSubaccount(subaccount: subaccountEvent), networkId: networkId)
         case .Transaction:
             guard let txEvent = TransactionEvent.from(data) as? TransactionEvent else { break }
-            newNotificationDelegate?.didReceive(event: .newTransaction(transaction: txEvent), networkType: networkType)
+            newNotificationDelegate?.didReceive(event: .newTransaction(transaction: txEvent), networkId: networkId)
         case .TwoFactorReset:
             Task {
                 _ = try? await loadTwoFactorConfig()
-                newNotificationDelegate?.didReceive(event: .twoFactorReset, networkType: networkType)
+                newNotificationDelegate?.didReceive(event: .twoFactorReset, networkId: networkId)
             }
         case .Settings:
             guard let settings = Settings.from(data) else { break }
             self.settings = settings
-            newNotificationDelegate?.didReceive(event: .updateSettings(settings: settings), networkType: networkType)
+            newNotificationDelegate?.didReceive(event: .updateSettings(settings: settings), networkId: networkId)
         case .Network:
             guard let connection = Connection.from(data) as? Connection else { return }
             let hasElectrumUrl = !(getPersonalElectrumServer()?.isEmpty ?? true)
@@ -691,7 +698,7 @@ extension SessionManager {
             // notify disconnected network state
             if connection.currentState == "disconnected" {
                 paused = true
-                newNotificationDelegate?.didReceive(event: .disconnected, networkType: networkType)
+                newNotificationDelegate?.didReceive(event: .disconnected, networkId: networkId)
                 return
             }
             // Restore connection through hidden login
@@ -701,19 +708,19 @@ extension SessionManager {
                     try await reconnect()
                     logger.info("GDK \(self.gdkNetwork.network, privacy: .public) reconnected")
                     paused = false
-                    newNotificationDelegate?.didReceive(event: .reconnected, networkType: networkType)
+                    newNotificationDelegate?.didReceive(event: .reconnected, networkId: networkId)
                 } catch {
                     logger.error("GDK Error on reconnected: \(error.localizedDescription, privacy: .public)")
                 }
             }
         case .Tor:
             if let torData = TorNotification.from(data) as? TorNotification {
-                newNotificationDelegate?.didReceive(event: .tor(data: torData), networkType: networkType)
+                newNotificationDelegate?.didReceive(event: .tor(data: torData), networkId: networkId)
             }
         case .Ticker:
             break
         case .AssetsUpdated:
-            newNotificationDelegate?.didReceive(event: .refreshAssets, networkType: networkType)
+            newNotificationDelegate?.didReceive(event: .refreshAssets, networkId: networkId)
         default:
             break
         }

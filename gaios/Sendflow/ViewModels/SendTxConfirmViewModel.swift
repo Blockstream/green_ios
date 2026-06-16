@@ -50,10 +50,10 @@ class SendTxConfirmViewModel {
         self.unsignedPsbt = unsignedPsbt
         self.signedPsbt = signedPsbt
         self.importSignedPsbt = signedPsbt != nil
-        self.verifyAddressState = (txType == .redepositExpiredUtxos && (WalletsStorage.shared.current?.isHW ?? false) && !(subaccount?.session?.networkType.liquid ?? false)) ? .unverified : .noneed
+        self.verifyAddressState = (txType == .redepositExpiredUtxos && (WalletsStorage.shared.current?.isHW ?? false) && !(subaccount?.session?.networkId.liquid ?? false)) ? .unverified : .noneed
     }
 
-    var isLightning: Bool { subaccount?.networkType == .lightningMainnet }
+    var isLightning: Bool { subaccount?.networkId == .lightningMainnet }
     var isConsolitating: Bool { txType == .redepositExpiredUtxos }
     var hasHW: Bool { mainWallet?.isHW ?? false }
     var addressee: Addressee? { transaction?.addressees.first }
@@ -118,13 +118,13 @@ class SendTxConfirmViewModel {
         transaction?.addressees.compactMap { $0.assetId }.compactMap { self.wm?.image(for: $0) } ?? []
     }
     func enableExportPsbt() -> Bool {
-        wm?.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && !importSignedPsbt
+        wm?.isWatchonly ?? false && session?.networkId.singlesig ?? false && txType != .sweep && !importSignedPsbt
     }
     func needConnectHw() -> Bool {
         mainWallet?.isHW ?? false
     }
     func needExportPsbt() -> Bool {
-        wm?.isWatchonly ?? false && session?.networkType.singlesig ?? false && txType != .sweep && signedPsbt == nil
+        wm?.isWatchonly ?? false && session?.networkId.singlesig ?? false && txType != .sweep && signedPsbt == nil
     }
     var hasPrice: Bool {
         let fiat = Balance.fromSatoshi(Int64(0), assetId: assetId)?.toFiat().0
@@ -289,7 +289,7 @@ class SendTxConfirmViewModel {
         if mainWallet?.isHW ?? false && mainWallet?.boardType == .v2c {
             return false
         }
-        return wm?.isWatchonly ?? false && [.electrumMainnet, .electrumTestnet].contains(session?.networkType) && txType != .sweep && !importSignedPsbt
+        return wm?.isWatchonly ?? false && [.electrumMainnet, .electrumTestnet].contains(session?.networkId) && txType != .sweep && !importSignedPsbt
     }
 
     func showSignTransaction() -> Bool {
