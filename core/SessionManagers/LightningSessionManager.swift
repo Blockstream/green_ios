@@ -13,7 +13,7 @@ public class LightningSessionManager: SessionManager {
     var streamTask: Task<Void, Never>?
 
     public init(newNotificationDelegate: NewNotificationDelegate?) {
-        super.init(.lightning, newNotificationDelegate: newNotificationDelegate)
+        super.init(.lightningMainnet, newNotificationDelegate: newNotificationDelegate)
     }
 
     func workingDir(xpubHashId: String) throws -> URL {
@@ -121,7 +121,7 @@ public class LightningSessionManager: SessionManager {
     }
 
     public override func subaccount(_ pointer: UInt32) async throws -> Account {
-        return Account(name: "", pointer: 0, receivingId: "", type: .lightning, hidden: false, network: NetworkSecurityCase.lightning.network)
+        return Account(name: "", pointer: 0, receivingId: "", type: .lightning, hidden: false, network: NetworkId.lightningMainnet.network)
     }
 
     public override func subaccounts(_ refresh: Bool = false) async throws -> [Account] {

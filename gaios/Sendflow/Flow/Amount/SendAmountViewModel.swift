@@ -27,7 +27,7 @@ final class SendAmountViewModel {
 
     // True when paying a lightning destination via the Lightning rail (the
     // selected subaccount is Lightning). False for Liquid -> Lightning swaps.
-    var usesLightningRail: Bool { subaccount.networkType == .lightning }
+    var usesLightningRail: Bool { subaccount.networkType == .lightningMainnet }
     var isRedepositExpired2FA: Bool { false }
     var canContinue: Bool {
         error == nil && satoshi ?? 0 > 0

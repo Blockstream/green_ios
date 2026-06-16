@@ -129,7 +129,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
             var account = try await bleHwManager.defaultAccount()
             try? await bleHwManager.disconnect()
             if let testnet = testnet, testnet {
-                account?.networkType = NetworkSecurityCase.testnetSS
+                account?.networkType = NetworkId.electrumTestnet
             }
             await MainActor.run {
                 let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
@@ -251,7 +251,7 @@ extension PairingSuccessViewController: GenuineCheckEndViewControllerDelegate {
     func presentDialogErrorViewController(error: Error) {
         let request = ZendeskErrorRequest(
             error: error.description().localized,
-            network: .bitcoinSS,
+            network: .electrumMainnet,
             shareLogs: true,
             screenName: "FailedGenuineCheck")
         presentContactUsViewController(request: request)

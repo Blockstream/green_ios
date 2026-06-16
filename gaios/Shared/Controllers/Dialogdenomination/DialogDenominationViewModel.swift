@@ -5,11 +5,11 @@ class DialogDenominationViewModel {
 
     var denomination: DenominationType
     var denominations: [DenominationType]
-    var network: NetworkSecurityCase
+    var network: NetworkId
 
     init(denomination: DenominationType,
          denominations: [DenominationType],
-         network: NetworkSecurityCase) {
+         network: NetworkId) {
         self.denomination = denomination
         self.denominations = denominations
         self.network = network

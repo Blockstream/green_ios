@@ -27,7 +27,7 @@ class WOSetupViewController: KeyboardViewController {
     private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
     private var isRem: Bool = false
-    var network: NetworkSecurityCase!
+    var network: NetworkId!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -156,7 +156,7 @@ class WOSetupViewController: KeyboardViewController {
         }
     }
 
-    func login(for network: NetworkSecurityCase) {
+    func login(for network: NetworkId) {
         let wallet = WOViewModel.newAccountMultisig(
             for: network.gdkNetwork,
             username: self.usernameTextField.text ?? "",

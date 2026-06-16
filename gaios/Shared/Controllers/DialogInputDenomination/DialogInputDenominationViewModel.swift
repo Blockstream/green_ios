@@ -5,13 +5,13 @@ class DialogInputDenominationViewModel {
 
     var denomination: DenominationType
     var denominations: [DenominationType]
-    var network: NetworkSecurityCase
+    var network: NetworkId
     var isFiat = false
     var balance: Balance?
 
     init(denomination: DenominationType,
          denominations: [DenominationType],
-         network: NetworkSecurityCase,
+         network: NetworkId,
          isFiat: Bool,
          balance: Balance?) {
         self.denomination = denomination

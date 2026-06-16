@@ -248,7 +248,7 @@ extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
         let peripheral = scanViewModel.peripherals[indexPath.row]
         stopScan()
         startAnimating()
-        account = Wallet(name: peripheral.name, network: NetworkSecurityCase.bitcoinSS, isJade: peripheral.type == .Jade, isLedger: peripheral.type == .Ledger)
+        account = Wallet(name: peripheral.name, network: NetworkId.electrumMainnet, isJade: peripheral.type == .Jade, isLedger: peripheral.type == .Ledger)
         Task {
             do {
                 AnalyticsManager.shared.hwwConnect(account: account)

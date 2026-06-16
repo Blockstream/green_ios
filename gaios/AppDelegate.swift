@@ -53,9 +53,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.endEditing(true)
 
-        // Initialize gdk
-        GdkInit.defaults().run()
-
         // Set screen lock
         ScreenLockWindow.shared.setup()
 

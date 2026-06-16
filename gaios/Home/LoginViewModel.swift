@@ -88,7 +88,7 @@ class LoginViewModel {
     }
 
     fileprivate func updateEphemeralAccount(from credentials: Credentials) -> Wallet {
-        let networkType = account.networkType.testnet ? NetworkSecurityCase.testnetSS : NetworkSecurityCase.bitcoinSS
+        let networkType = account.networkType.testnet ? NetworkId.electrumTestnet : NetworkId.electrumMainnet
         var newAccount = Wallet(name: account.name, network: networkType, keychain: account.keychain)
         newAccount.isEphemeral = true
         newAccount.askEphemeral = true

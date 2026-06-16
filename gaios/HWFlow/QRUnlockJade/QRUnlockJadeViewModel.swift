@@ -23,8 +23,8 @@ class QRUnlockJadeViewModel {
         self.scope = scope
         self.testnet = testnet
         self.askXpub = askXpub
-        self.account = Wallet(name: "Jade", network: testnet ? .testnetSS : .bitcoinSS, isJade: true, watchonly: true)
-        jade = QRJadeManager(network: testnet ? .testnetSS : .bitcoinSS)
+        self.account = Wallet(name: "Jade", network: testnet ? .electrumTestnet : .electrumMainnet, isJade: true, watchonly: true)
+        jade = QRJadeManager(network: testnet ? .electrumTestnet : .electrumMainnet)
     }
 
     func stepTitle() -> String {

@@ -431,7 +431,7 @@ actor WalletDataModel {
 extension WalletDataModel: NewNotificationDelegate {
     nonisolated func didReceive(
         event: core.EventNotificationTypes,
-        networkType: NetworkSecurityCase
+        networkType: NetworkId
     ) {
         Task { await handleEvent(event) }
     }

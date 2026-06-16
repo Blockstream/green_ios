@@ -47,7 +47,7 @@ public struct Wallet: Codable, Equatable {
     public var efusemac: String?
     public var boardType: JadeBoardType?
 
-    public init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, walletHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false, username: String? = nil, password: String? = nil, watchonly: Bool? = nil, keychain: String? = nil) {
+    public init(id: String? = nil, name: String, network: NetworkId, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, walletHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false, username: String? = nil, password: String? = nil, watchonly: Bool? = nil, keychain: String? = nil) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name
@@ -145,14 +145,14 @@ public struct Wallet: Codable, Equatable {
     }
 
     public var gdkNetwork: GdkNetwork { networkType.gdkNetwork }
-    public var networkType: NetworkSecurityCase {
+    public var networkType: NetworkId {
         get {
             if let network = network {
-                return NetworkSecurityCase(rawValue: network) ?? .bitcoinSS
+                return NetworkId(rawValue: network) ?? .electrumMainnet
             }
             let chain = self.chain ?? "mainnet"
             let name =  isSingleSig ?? false ? "electrum-" + chain : chain
-            return NetworkSecurityCase(rawValue: name) ?? .bitcoinSS
+            return NetworkId(rawValue: name) ?? .electrumMainnet
         }
         set {
             self.network = newValue.rawValue

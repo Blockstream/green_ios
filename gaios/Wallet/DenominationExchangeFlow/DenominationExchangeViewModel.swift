@@ -46,7 +46,7 @@ class DenominationExchangeViewModel {
 
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
         let selected = settings.denomination
-        let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
+        let network: NetworkId = session.gdkNetwork.mainnet ? .electrumMainnet : .electrumTestnet
         return DialogDenominationViewModel(denomination: selected,
                                            denominations: list,
                                            network: network)

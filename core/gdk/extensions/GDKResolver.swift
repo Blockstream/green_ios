@@ -4,7 +4,7 @@ import greenaddress
 import hw
 
 public protocol PopupResolverDelegate: AnyObject {
-    func code(_ method: String, attemptsRemaining: Int?, enable2faCallMethod: Bool, network: NetworkSecurityCase, failure: Bool) async throws -> String
+    func code(_ method: String, attemptsRemaining: Int?, enable2faCallMethod: Bool, network: NetworkId, failure: Bool) async throws -> String
     func method(_ methods: [String]) async throws -> String
 }
 
@@ -29,7 +29,7 @@ public protocol ProgressDelegate: AnyObject {
 
 public class GDKResolver {
 
-    let network: NetworkSecurityCase
+    let network: NetworkId
     let connected: () -> Bool
     let twoFactorCall: TwoFactorCall?
     let popupDelegate: PopupResolverDelegate?
@@ -48,7 +48,7 @@ public class GDKResolver {
                 hwInterfaceDelegate: HwInterfaceResolver? = nil,
                 bcurDelegate: BcurResolver? = nil,
                 hwDevice: HWProtocol? = nil,
-                network: NetworkSecurityCase,
+                network: NetworkId,
                 connected: @escaping () -> Bool = { true }) {
         self.twoFactorCall = twoFactorCall
         self.gdkSession = gdkSession

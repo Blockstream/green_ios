@@ -216,7 +216,7 @@ class SecuritySelectViewModel {
         }
     }
 
-    func getSession(for network: NetworkSecurityCase) -> SessionManager? {
+    func getSession(for network: NetworkId) -> SessionManager? {
         wm.sessions[network.network]
     }
 

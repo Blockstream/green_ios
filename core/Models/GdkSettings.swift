@@ -63,8 +63,7 @@ public struct GdkSettings: Codable {
         let gdkSettings = GdkSettings.read()
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? CVarArg ?? ""
         let proxyURI = String(format: "socks5://%@:%@/", gdkSettings?.socks5Hostname ?? "", gdkSettings?.socks5Port ?? "")
-        let network = network == NetworkSecurityCase.lightning.rawValue ? NetworkSecurityCase.bitcoinSS.rawValue : network
-        let gdkNetwork = GdkNetworks.get(network: network)
+        let gdkNetwork = NetworkId(network: network)!.gdkNetwork
         let electrumUrl: String? = {
             if let srv = gdkSettings?.btcElectrumSrv, gdkNetwork.mainnet && !gdkNetwork.liquid && !srv.isEmpty {
                 return srv

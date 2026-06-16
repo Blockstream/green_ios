@@ -11,7 +11,7 @@ class TwoFactorSettingsViewModel {
     // current multisig session
     var sessionBitcoin: SessionManager? { wm.sessions["mainnet"] }
     var sessionLiquid: SessionManager? { wm.sessions["liquid"] }
-    var networks: [NetworkSecurityCase] { wm.testnet ? [.testnetMS, .testnetLiquidMS] : [.bitcoinMS, .liquidMS] }
+    var networks: [NetworkId] { wm.testnet ? [.greenTestnet, .greenTestnetLiquid] : [.greenMainnet, .greenLiquid] }
     var sessions: [SessionManager] { networks.compactMap { wm.sessions[$0.network] }}
 
     private var csvTypes = [CsvTime]()

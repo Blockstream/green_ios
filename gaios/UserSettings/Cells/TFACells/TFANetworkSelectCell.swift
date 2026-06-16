@@ -19,7 +19,7 @@ class TFANetworkSelectCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
-    func configure(networks: [NetworkSecurityCase], onChange: ((Int) -> Void)?) {
+    func configure(networks: [NetworkId], onChange: ((Int) -> Void)?) {
         networks.enumerated().forEach { (i, net) in
             let title = net.chain.firstCapitalized
             networkSegmentedControl.setTitle(title, forSegmentAt: i)

@@ -238,7 +238,7 @@ class SendAmountViewModelLegacy {
     func dialogInputDenominationViewModel() -> DialogInputDenominationViewModel? {
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
         let selected = denominationType // session?.settings?.denomination ?? .BTC
-        let network: NetworkSecurityCase = session?.gdkNetwork.mainnet ?? true ? .bitcoinSS : .testnetSS
+        let network: NetworkId = session?.gdkNetwork.mainnet ?? true ? .electrumMainnet : .electrumTestnet
         return DialogInputDenominationViewModel(
             denomination: selected,
             denominations: list,

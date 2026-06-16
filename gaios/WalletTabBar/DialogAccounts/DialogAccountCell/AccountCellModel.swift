@@ -9,7 +9,7 @@ struct AccountCellModel {
     var name: String { account.localizedName }
     var lblType: String { account.type.path.uppercased() }
     var hasTxs: Bool { account.hasTxs }
-    var networkType: NetworkSecurityCase { account.networkType }
+    var networkType: NetworkId { account.networkType }
     var balanceStr: String? {
         let assetId = assetId ?? account.gdkNetwork.getFeeAsset()
         if let converted = Balance.fromSatoshi(satoshi, assetId: assetId) {

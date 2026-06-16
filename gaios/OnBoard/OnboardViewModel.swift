@@ -155,7 +155,7 @@ class OnboardViewModel {
     func createAccount() async throws -> Wallet {
         let testnet = OnboardViewModel.chainType == .testnet ? true : false
         let name = WalletsStorage.shared.getUniqueAccountName(testnet: testnet)
-        let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
+        let mainNetwork: NetworkId = testnet ? .electrumTestnet : .electrumMainnet
         return Wallet(name: name, network: mainNetwork)
     }
 

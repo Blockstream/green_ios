@@ -128,7 +128,7 @@ public class WalletsStorage {
               let walletJson = json["wallet"] as? [String: Any],
               let network = walletJson["network"] as? String else { return }
         let walletName = walletJson["name"] as? String ?? network
-        let networkCase = NetworkSecurityCase(rawValue: network) ?? .bitcoinSS
+        let networkCase = NetworkId(rawValue: network) ?? .electrumMainnet
         let wallet = Wallet(name: walletName, network: networkCase)
         upsert(wallet)
         if let loginCredentials = json["login_credentials"] as? [AnyHashable: Any],

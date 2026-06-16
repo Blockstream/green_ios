@@ -219,7 +219,7 @@ class SendLwkSignViewController: UIViewController {
             reloadSubmarineSwap()
         }
     }
-    func networkImage(_ network: NetworkSecurityCase) -> UIImage? {
+    func networkImage(_ network: NetworkId) -> UIImage? {
         if network.lightning {
             return UIImage(named: "ic_lightning")
         } else if network.multisig {

@@ -274,7 +274,7 @@ final class SendSwapViewModel {
         selectedPosition = position
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
         let selected = state.denomination
-        let network: NetworkSecurityCase = (wm.prominentSession?.gdkNetwork.mainnet ?? true) ? .bitcoinSS : .testnetSS
+        let network: NetworkId = (wm.prominentSession?.gdkNetwork.mainnet ?? true) ? .electrumMainnet : .electrumTestnet
         let balance = {
             switch position {
             case .from:

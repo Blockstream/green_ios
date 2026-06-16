@@ -2,27 +2,27 @@ import Foundation
 import UIKit
 import core
 
-extension NetworkSecurityCase {
+extension NetworkId {
 
     func icons() -> (UIImage, UIImage) {
         switch self {
-        case .bitcoinMS:
+        case .greenMainnet:
             return (UIImage(named: "ic_keys_invert")!, UIImage(named: "ntw_btc")!)
-        case .bitcoinSS:
+        case .electrumMainnet:
             return (UIImage(named: "ic_key")!, UIImage(named: "ntw_btc")!)
-        case .liquidMS:
+        case .greenLiquid:
             return (UIImage(named: "ic_keys_invert")!, UIImage(named: "ntw_liquid")!)
-        case .liquidSS:
+        case .electrumLiquid:
             return (UIImage(named: "ic_key")!, UIImage(named: "ntw_liquid")!)
-        case .testnetMS:
+        case .greenTestnet:
             return (UIImage(named: "ic_keys_invert")!, UIImage(named: "ntw_testnet")!)
-        case .testnetSS:
+        case .electrumTestnet:
             return (UIImage(named: "ic_key")!, UIImage(named: "ntw_testnet")!)
-        case .testnetLiquidMS:
+        case .greenTestnetLiquid:
             return (UIImage(named: "ic_keys_invert")!, UIImage(named: "ntw_testnet_liquid")!)
-        case .testnetLiquidSS:
+        case .electrumTestnetLiquid:
             return (UIImage(named: "ic_key")!, UIImage(named: "ntw_testnet_liquid")!)
-        case .lightning, .testnetLightning:
+        case .lightningMainnet:
             return (UIImage(named: "ic_key")!, UIImage(named: "ntw_btc")!)
         case .lwkMainnet:
             return (UIImage(named: "ic_key")!, UIImage(named: "ntw_liquid")!)
@@ -31,13 +31,13 @@ extension NetworkSecurityCase {
 
     func color() -> UIColor {
         switch self {
-        case .bitcoinMS, .bitcoinSS:
+        case .greenMainnet, .electrumMainnet:
             return UIColor.gAccountOrange()
-        case .liquidMS, .liquidSS, .lwkMainnet:
+        case .greenLiquid, .electrumLiquid, .lwkMainnet:
             return UIColor.gAccountLightBlue()
-        case .testnetMS, .testnetSS, .testnetLiquidMS, .testnetLiquidSS:
+        case .greenTestnet, .electrumTestnet, .greenTestnetLiquid, .electrumTestnetLiquid:
             return UIColor.gAccountTestGray()
-        case .lightning, .testnetLightning:
+        case .lightningMainnet:
             return UIColor.yellow
         }
     }

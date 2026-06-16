@@ -25,7 +25,7 @@ class DialogInputDenominationCell: UITableViewCell {
 
     func configure(denomination: DenominationType,
                    balance: Balance?,
-                   network: NetworkSecurityCase,
+                   network: NetworkId,
                    isSelected: Bool) {
         lblTitle.text = self.symbol(denomination, network)
         icon.isHidden = isSelected == false
@@ -38,7 +38,7 @@ class DialogInputDenominationCell: UITableViewCell {
         lblHint.text = converter?.formatBTC(balance, denomination: denomination)
     }
 
-    func symbol(_ denom: DenominationType, _ network: NetworkSecurityCase) -> String {
+    func symbol(_ denom: DenominationType, _ network: NetworkId) -> String {
         return denom.string(for: network.gdkNetwork)
     }
 }

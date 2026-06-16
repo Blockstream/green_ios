@@ -19,7 +19,7 @@ public class SessionManager {
     public var twoFactorConfig: TwoFactorConfig?
     public var settings: Settings?
     public var session: GDKSession?
-    public var networkType: NetworkSecurityCase
+    public var networkType: NetworkId
     public var gdkNetwork: GdkNetwork
     public var blockHeight: UInt32 = 0
     public var popupResolver: PopupResolverDelegate?
@@ -37,18 +37,19 @@ public class SessionManager {
     // Serial reconnect queue for network events
     public let reconnectionTasks = SerialTasks<Void>()
 
-    //public var networkType: NetworkSecurityCase {
-    //    NetworkSecurityCase(rawValue: gdkNetwork.network) ?? .bitcoinSS
+    //public var networkType: NetworkId {
+    //    NetworkId(rawValue: gdkNetwork.network) ?? .electrumMainnet
     //}
 
     public var isResetActive: Bool? {
         get { twoFactorConfig?.twofactorReset.isResetActive }
     }
 
-    public init(_ networkType: NetworkSecurityCase, newNotificationDelegate: NewNotificationDelegate?) {
-        self.networkType = networkType
+    public init(_ networkId: NetworkId, newNotificationDelegate: NewNotificationDelegate?) {
+        self.networkType = networkId
         self.newNotificationDelegate = newNotificationDelegate
-        self.gdkNetwork = GdkNetworks.get(networkType: networkType)
+        self.gdkNetwork = Gdk.shared.networks
+            .getNetworkBy(networkId)
         session = GDKSession()
     }
 
@@ -210,7 +211,7 @@ public class SessionManager {
         return wallets.sorted()
     }
 
-    public func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?, network: NetworkSecurityCase?) async throws -> ValidateAddresseesResult {
+    public func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?, network: NetworkId?) async throws -> ValidateAddresseesResult {
         let asset = assetId == AssetInfo.btcId ? nil : assetId
         let addressee = Addressee.from(address: input, satoshi: satoshi, assetId: asset)
         let addressees = ValidateAddresseesParams(addressees: [addressee], network: network?.network ?? gdkNetwork.network)

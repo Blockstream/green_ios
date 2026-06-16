@@ -137,7 +137,7 @@ public class AnalyticsManager {
 
     public weak var delegate: AnalyticsManagerDelegate?
 
-    public var activeNetworks: [NetworkSecurityCase]? {
+    public var activeNetworks: [NetworkId]? {
         let wm = WalletManager.current
         return wm?.activeNetworks
             .filter { net in !(wm?.subaccounts.filter { !$0.hidden && $0.networkType == net }.isEmpty ?? false) }
@@ -145,10 +145,10 @@ public class AnalyticsManager {
 
     public var analyticsNetworks: AnalyticsManager.NtwTypeDescriptor? {
         if let activeNetworks = activeNetworks {
-            let bitcoinNtws = activeNetworks.filter { $0 == .bitcoinSS || $0 == .bitcoinMS || $0.lightning }
-            let liquidNtws = activeNetworks.filter { $0 == .liquidSS || $0 == .liquidMS }
-            let testnetNtws = activeNetworks.filter { $0 == .testnetSS || $0 == .testnetMS }
-            let testnetLiquidNtws = activeNetworks.filter { $0 == .testnetLiquidSS || $0 == .testnetLiquidMS }
+            let bitcoinNtws = activeNetworks.filter { $0 == .electrumMainnet || $0 == .greenMainnet || $0.lightning }
+            let liquidNtws = activeNetworks.filter { $0 == .electrumLiquid || $0 == .greenLiquid }
+            let testnetNtws = activeNetworks.filter { $0 == .electrumTestnet || $0 == .greenTestnet }
+            let testnetLiquidNtws = activeNetworks.filter { $0 == .electrumTestnetLiquid || $0 == .greenTestnetLiquid }
 
             if bitcoinNtws.count > 0 && liquidNtws.count > 0 { return AnalyticsManager.NtwTypeDescriptor.mainnetMixed }
             if bitcoinNtws.count > 0 { return AnalyticsManager.NtwTypeDescriptor.mainnet }
@@ -162,9 +162,9 @@ public class AnalyticsManager {
 
     public var analyticsSecurity: [SecTypeDescriptor]? {
         if let activeNetworks = activeNetworks {
-            let hasSinglesig = activeNetworks.filter { [.bitcoinSS, .liquidSS, .testnetSS, .testnetLiquidSS].contains($0) }.count > 0
-            let hasMultisig = activeNetworks.filter { [.bitcoinMS, .liquidMS, .testnetMS, .testnetLiquidMS].contains($0) }.count > 0
-            let hasLightning = activeNetworks.filter { [.lightning, .testnetLightning].contains($0) }.count > 0
+            let hasSinglesig = activeNetworks.filter { [.electrumMainnet, .electrumLiquid, .electrumTestnet, .electrumTestnetLiquid].contains($0) }.count > 0
+            let hasMultisig = activeNetworks.filter { [.greenMainnet, .greenLiquid, .greenTestnet, .greenTestnetLiquid].contains($0) }.count > 0
+            let hasLightning = activeNetworks.filter { [.lightningMainnet].contains($0) }.count > 0
             var security = [SecTypeDescriptor]()
             if hasSinglesig {
                 security += [hasMultisig || hasLightning ? .single : .singlesig]

@@ -21,7 +21,7 @@ class TFAViewModel {
 
     var sessionBitcoin: SessionManager? { wm.sessions["mainnet"] }
     var sessionLiquid: SessionManager? { wm.sessions["liquid"] }
-    var networks: [NetworkSecurityCase] { wm.testnet ? [.testnetMS, .testnetLiquidMS] : [.bitcoinMS, .liquidMS] }
+    var networks: [NetworkId] { wm.testnet ? [.greenTestnet, .greenTestnetLiquid] : [.greenMainnet, .greenLiquid] }
     var sessions: [SessionManager] { networks.compactMap { wm.sessions[$0.network] }}
     var selectedSegmentIndex = 0
     var session: SessionManager {

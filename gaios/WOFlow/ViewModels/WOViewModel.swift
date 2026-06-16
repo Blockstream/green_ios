@@ -31,7 +31,7 @@ class WOViewModel {
         let name = WalletsStorage.shared.getUniqueAccountName(
             testnet: !gdkNetwork.mainnet,
             watchonly: true)
-        let network = NetworkSecurityCase(rawValue: gdkNetwork.network) ?? .bitcoinSS
+        let network = NetworkId(rawValue: gdkNetwork.network) ?? .electrumMainnet
         return Wallet(name: name, network: network, username: username, password: remember ? password : nil)
     }
 
@@ -39,7 +39,7 @@ class WOViewModel {
         let name = WalletsStorage.shared.getUniqueAccountName(
             testnet: !gdkNetwork.mainnet,
             watchonly: true)
-        let network = NetworkSecurityCase(rawValue: gdkNetwork.network) ?? .bitcoinSS
+        let network = NetworkId(rawValue: gdkNetwork.network) ?? .electrumMainnet
         return Wallet(name: name, network: network, username: "")
     }
 

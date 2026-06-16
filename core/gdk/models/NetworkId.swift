@@ -1,31 +1,34 @@
 import Foundation
 
-public enum NetworkSecurityCase: String, CaseIterable {
-    case bitcoinMS = "mainnet"
-    case bitcoinSS = "electrum-mainnet"
-    case liquidMS = "liquid"
-    case liquidSS = "electrum-liquid"
-    case testnetMS = "testnet"
-    case testnetSS = "electrum-testnet"
-    case testnetLiquidMS = "testnet-liquid"
-    case testnetLiquidSS = "electrum-testnet-liquid"
+public enum NetworkId: String, Codable, CaseIterable {
+    case greenMainnet = "mainnet"
+    case electrumMainnet = "electrum-mainnet"
+    case greenLiquid = "liquid"
+    case electrumLiquid = "electrum-liquid"
+    case greenTestnet = "testnet"
+    case electrumTestnet = "electrum-testnet"
+    case greenTestnetLiquid = "testnet-liquid"
+    case electrumTestnetLiquid = "electrum-testnet-liquid"
 
-    case lightning = "lightning-mainnet"
-    case testnetLightning = "lightning-testnet"
-
+    case lightningMainnet = "greenlight-mainnet"
     case lwkMainnet = "lwk-mainnet"
+
+    public init?(network: String) {
+        self.init(rawValue: network)
+    }
 
     public var network: String {
         self.rawValue
     }
 
     public var gdkNetwork: GdkNetwork {
-        return GdkNetworks.get(networkType: self)
+        return Gdk.shared.networks.getNetworkBy(self)
     }
 
     public var chain: String {
         network.replacingOccurrences(of: "electrum-", with: "")
-            .replacingOccurrences(of: "lightning-", with: "")
+            .replacingOccurrences(of: "greenlight-", with: "")
+            .replacingOccurrences(of: "lwk-", with: "")
     }
 
     public var singlesig: Bool { gdkNetwork.singlesig }
@@ -37,26 +40,24 @@ public enum NetworkSecurityCase: String, CaseIterable {
 
     public func name() -> String {
         switch self {
-        case .bitcoinMS:
+        case .greenMainnet:
             return "Multisig Bitcoin"
-        case .bitcoinSS:
+        case .electrumMainnet:
             return "Singlesig Bitcoin"
-        case .liquidMS:
+        case .greenLiquid:
             return "Multisig Liquid"
-        case .liquidSS:
+        case .electrumLiquid:
             return "Singlesig Liquid"
-        case .testnetMS:
+        case .greenTestnet:
             return "Multisig Testnet"
-        case .testnetSS:
+        case .electrumTestnet:
             return "Singlesig Testnet"
-        case .testnetLiquidMS:
+        case .greenTestnetLiquid:
             return "Multisig Liquid Testnet"
-        case .testnetLiquidSS:
+        case .electrumTestnetLiquid:
             return "Singlesig Liquid Testnet"
-        case .lightning:
+        case .lightningMainnet:
             return "Lightning"
-        case .testnetLightning:
-            return "Lightning Testnet"
         case .lwkMainnet:
             return "Liquid Swaps"
         }

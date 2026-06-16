@@ -91,12 +91,12 @@ extension Balance {
     func toDenom(_ denomination: DenominationType? = nil, locale: Bool = true) -> (String, String) {
         let session = WalletManager.current?.prominentSession
         let denomination = denomination ?? session?.settings?.denomination ?? .BTC
-        let network: NetworkSecurityCase = {
+        let network: NetworkId = {
             switch assetId {
-            case AssetInfo.lbtcId: return .liquidSS
-            case AssetInfo.ltestId: return .testnetLiquidSS
-            case AssetInfo.lightningId: return .lightning
-            default: return session?.gdkNetwork.mainnet ?? true ? .bitcoinSS : .testnetSS
+            case AssetInfo.lbtcId: return .electrumLiquid
+            case AssetInfo.ltestId: return .electrumTestnetLiquid
+            case AssetInfo.lightningId: return .lightningMainnet
+            default: return session?.gdkNetwork.mainnet ?? true ? .electrumMainnet : .electrumTestnet
             }
         }()
         let denominationText = denomination.string(for: network.gdkNetwork)

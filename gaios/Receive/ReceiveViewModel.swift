@@ -198,7 +198,7 @@ final class ReceiveViewModel: Sendable {
     func onInputDenomination() {
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
         let gdkNetwork = state.subaccount.session?.gdkNetwork
-        let network: NetworkSecurityCase = gdkNetwork?.mainnet ?? true ? .bitcoinSS : .testnetSS
+        let network: NetworkId = gdkNetwork?.mainnet ?? true ? .electrumMainnet : .electrumTestnet
         let model = DialogInputDenominationViewModel(
             denomination: state.inputDenomination,
             denominations: list,

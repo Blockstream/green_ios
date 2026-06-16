@@ -2,31 +2,31 @@ import greenaddress
 
 
 extension Wally {
-    public static func getWallyNetwork(_ network: NetworkSecurityCase) -> UInt32 {
+    public static func getWallyNetwork(_ network: NetworkId) -> UInt32 {
         switch network {
-        case .bitcoinSS, .bitcoinMS:
+        case .electrumMainnet, .greenMainnet:
             return Wally.WALLY_NETWORK_BITCOIN_MAINNET
-        case .testnetSS, .testnetMS:
+        case .electrumTestnet, .greenTestnet:
             return Wally.WALLY_NETWORK_BITCOIN_TESTNET
-        case .liquidSS, .liquidMS:
+        case .electrumLiquid, .greenLiquid:
             return Wally.WALLY_NETWORK_LIQUID
-        case .testnetLiquidSS, .testnetLiquidMS:
+        case .electrumTestnetLiquid, .greenTestnetLiquid:
             return Wally.WALLY_NETWORK_LIQUID_TESTNET
         default:
             return Wally.WALLY_NETWORK_BITCOIN_MAINNET
         }
     }
 
-    public static func isDescriptor(_ desc: String, for network: NetworkSecurityCase) -> Bool {
+    public static func isDescriptor(_ desc: String, for network: NetworkId) -> Bool {
         return getNetwork(descriptor: desc) == network
     }
 
-    public static func isPubKey(_ xpub: String, for network: NetworkSecurityCase) -> Bool {
+    public static func isPubKey(_ xpub: String, for network: NetworkId) -> Bool {
         return getNetwork(xpub: xpub) == network
     }
 
-    public static func getNetwork(descriptor: String) -> NetworkSecurityCase? {
-        let networks: [NetworkSecurityCase] = descriptor.starts(with: "ct") ? [.liquidSS, .testnetLiquidSS] : [.bitcoinSS, .testnetSS]
+    public static func getNetwork(descriptor: String) -> NetworkId? {
+        let networks: [NetworkId] = descriptor.starts(with: "ct") ? [.electrumLiquid, .electrumTestnetLiquid] : [.electrumMainnet, .electrumTestnet]
         for network in networks {
             if Wally.descriptorParse(descriptor, network: getWallyNetwork(network)) != nil {
                 return network
@@ -35,11 +35,11 @@ extension Wally {
         return nil
     }
 
-    public static func getNetwork(xpub: String) -> NetworkSecurityCase? {
+    public static func getNetwork(xpub: String) -> NetworkId? {
         if ["xpub", "ypub", "zpub"].contains(xpub.prefix(4).lowercased()) {
-            return .bitcoinSS
+            return .electrumMainnet
         } else if ["tpub", "upub", "vpub"].contains(xpub.prefix(4).lowercased()) {
-            return .testnetSS
+            return .electrumTestnet
         }
         return nil
     }

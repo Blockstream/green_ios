@@ -58,7 +58,7 @@ class SendLwkSignViewModel {
     }
     // True when paying a lightning destination via the Lightning rail (the
     // selected subaccount is Lightning). False for Liquid -> Lightning swaps.
-    var usesLightningRail: Bool { subaccount.networkType == .lightning }
+    var usesLightningRail: Bool { subaccount.networkType == .lightningMainnet }
     var note: String? {
         let description = try? bolt11.invoiceDescription()
         return tx.memo ?? description
@@ -115,7 +115,7 @@ class SendLwkSignViewModel {
     var txFee: UInt64? { tx.fee }
     var totalFee: UInt64? { (providerFee ?? 0) + (claimNetworkFee ?? 0) + (tx.fee ?? 0) }
     var txSatoshi: UInt64? {
-        let feeAsset = NetworkSecurityCase.liquidSS.gdkNetwork.getFeeAsset()
+        let feeAsset = NetworkId.electrumLiquid.gdkNetwork.getFeeAsset()
         if let amount = tx.amounts[feeAsset] {
             return UInt64(abs(amount))
         }

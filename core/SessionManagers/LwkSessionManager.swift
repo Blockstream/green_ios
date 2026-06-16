@@ -19,7 +19,7 @@ public class LwkSessionManager: SessionManager {
         xpubHashId: String? = nil,
         client: AnyClient? = nil,
         newNotificationDelegate: NewNotificationDelegate?) {
-        super.init(NetworkSecurityCase.lwkMainnet, newNotificationDelegate: newNotificationDelegate)
+        super.init(NetworkId.lwkMainnet, newNotificationDelegate: newNotificationDelegate)
         self.network = network
         self.boltzSession = boltzSession
         self.xpubHashId = xpubHashId

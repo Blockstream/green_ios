@@ -45,7 +45,7 @@ class JadeManager {
 
     func connectPinServer(testnet: Bool) async throws {
         if pinServerSession == nil {
-            let networkType: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
+            let networkType: NetworkId = testnet ? .electrumTestnet : .electrumMainnet
             pinServerSession = SessionManager(networkType, newNotificationDelegate: nil)
         }
         try await pinServerSession?.connect()
@@ -167,7 +167,7 @@ extension JadeManager: JadeGdkRequest {
     }
 
     func httpRequest(params: [String: Any]) async -> [String: Any]? {
-        var network: NetworkSecurityCase? = .bitcoinSS
+        var network: NetworkId? = .electrumMainnet
         try? await connectPinServer(testnet: network?.testnet ?? false)
         return self.pinServerSession?.httpRequest(params: params)
     }

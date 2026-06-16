@@ -18,7 +18,7 @@ class QRJadeManager: JadeManager {
 
     var qrJadeResolver = QRJadeResolverImpl()
 
-    init(network: NetworkSecurityCase) {
+    init(network: NetworkId) {
         let connection = QRJadeConnection(qrJadeResolver: qrJadeResolver)
         super.init(connection: connection)
     }

@@ -143,7 +143,7 @@ class AlertCardCell: UITableViewCell {
             }
         case .login(let network, let error):
             lblTitle.text = "id_warning".localized
-            let networkName = NetworkSecurityCase(rawValue: network)?.name()
+            let networkName = NetworkId(rawValue: network)?.name()
             let errorString: String = {
                 switch error {
                 case LoginError.connectionFailed(let txt):
@@ -159,7 +159,7 @@ class AlertCardCell: UITableViewCell {
                 }
             }()
             btnRight.setTitle("id_try_again".localized, for: .normal)
-            btnRight.isHidden = network == NetworkSecurityCase.lightning.rawValue
+            btnRight.isHidden = network == NetworkId.lightningMainnet.rawValue
             btnLeft.isHidden = true
             //btnsContainer.isHidden = true
             lblHint.text = errorString.localized

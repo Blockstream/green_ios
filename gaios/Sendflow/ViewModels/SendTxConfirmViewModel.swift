@@ -53,7 +53,7 @@ class SendTxConfirmViewModel {
         self.verifyAddressState = (txType == .redepositExpiredUtxos && (WalletsStorage.shared.current?.isHW ?? false) && !(subaccount?.session?.networkType.liquid ?? false)) ? .unverified : .noneed
     }
 
-    var isLightning: Bool { subaccount?.networkType == .lightning }
+    var isLightning: Bool { subaccount?.networkType == .lightningMainnet }
     var isConsolitating: Bool { txType == .redepositExpiredUtxos }
     var hasHW: Bool { mainWallet?.isHW ?? false }
     var addressee: Addressee? { transaction?.addressees.first }
@@ -289,7 +289,7 @@ class SendTxConfirmViewModel {
         if mainWallet?.isHW ?? false && mainWallet?.boardType == .v2c {
             return false
         }
-        return wm?.isWatchonly ?? false && [.bitcoinSS, .testnetSS].contains(session?.networkType) && txType != .sweep && !importSignedPsbt
+        return wm?.isWatchonly ?? false && [.electrumMainnet, .electrumTestnet].contains(session?.networkType) && txType != .sweep && !importSignedPsbt
     }
 
     func showSignTransaction() -> Bool {

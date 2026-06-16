@@ -189,7 +189,7 @@ class TabSecurityVC: TabViewController {
     func presentDialogErrorViewController(error: Error) {
         let request = ZendeskErrorRequest(
             error: error.description().localized,
-            network: .bitcoinSS,
+            network: .electrumMainnet,
             shareLogs: true,
             screenName: "FailedGenuineCheck")
         presentContactUsViewController(request: request)

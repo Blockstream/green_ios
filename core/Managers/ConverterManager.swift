@@ -125,9 +125,9 @@ public class ConverterManager {
             return nil
         }
         if withDenomination {
-            var network = testnet ? NetworkSecurityCase.testnetSS : NetworkSecurityCase.bitcoinSS
+            var network = testnet ? NetworkId.electrumTestnet : NetworkId.electrumMainnet
             if b.assetId == AssetInfo.lbtcId || b.assetId == AssetInfo.ltestId {
-                network = testnet ? NetworkSecurityCase.testnetLiquidSS : NetworkSecurityCase.liquidSS
+                network = testnet ? NetworkId.electrumTestnetLiquid : NetworkId.electrumLiquid
             }
             let denominations = DenominationType.denominations(for: network.gdkNetwork)
             let denominationText = denominations[denomination]

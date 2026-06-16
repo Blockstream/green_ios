@@ -127,7 +127,7 @@ class TabSettingsVM: TabViewModel {
         }
     }
 
-    func getDenominationExchangeInfo(settings: Settings, network: NetworkSecurityCase) -> NSMutableAttributedString {
+    func getDenominationExchangeInfo(settings: Settings, network: NetworkId) -> NSMutableAttributedString {
         let den = settings.denomination.string(for: network.gdkNetwork)
         let pricing = settings.pricing["currency"] ?? ""
         let exchange = (settings.pricing["exchange"] ?? "").uppercased()

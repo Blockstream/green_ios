@@ -50,7 +50,7 @@ class BleJadeManager: JadeManager {
                 _ = try await version()
             }
             let isTestnet = (testnet == true && version?.jadeNetworks == "ALL") || version?.jadeNetworks == "TEST"
-            let networkType: NetworkSecurityCase = isTestnet ? .testnetSS : .bitcoinSS
+            let networkType: NetworkId = isTestnet ? .electrumTestnet : .electrumMainnet
             pinServerSession = SessionManager(networkType.gdkNetwork)
         }
         try await pinServerSession?.connect()
@@ -87,9 +87,9 @@ class BleJadeManager: JadeManager {
         }
     }
 
-    func defaultNetwork() async throws -> NetworkSecurityCase {
+    func defaultNetwork() async throws -> NetworkId {
         let version = try await version()
-        return version.jadeNetworks == "TEST" ? .testnetSS : .bitcoinSS
+        return version.jadeNetworks == "TEST" ? .electrumTestnet : .electrumMainnet
     }
 
     func getHWDevice() async throws -> HWDevice {
@@ -174,7 +174,7 @@ class BleJadeManager: JadeManager {
         "DvMN0FWJF/3y6x0UOJiNK3VJKjhorYi6dRuJCmk6n+BLXHCaYvfLD7mEp0IEapo7\n" +
         "VTWr98cwCwEqT+NTHm2FaNMCAwEAAQ==\n" +
         "-----END PUBLIC KEY-----"
-        let session = SessionManager(NetworkSecurityCase.bitcoinSS, newNotificationDelegate: nil)
+        let session = SessionManager(NetworkId.electrumMainnet, newNotificationDelegate: nil)
         try? await session.connect()
         let challenge = try Data.random(length: 32)
         let signAttestationResult = try await jade.signAttestation(JadeSignAttestation(challenge: challenge))

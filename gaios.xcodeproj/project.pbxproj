@@ -653,7 +653,7 @@
 		818D0D372ED4E928004AE5DF /* LocalNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818D0D362ED4E923004AE5DF /* LocalNotification.swift */; };
 		8190D4C62A268F93003D31B4 /* Number.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8190D4C52A268F93003D31B4 /* Number.swift */; };
 		81928F872DC4FDBB0016108E /* AccountCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81928F862DC4FDB30016108E /* AccountCellModel.swift */; };
-		81961AAC29E4B01F00E9B94D /* NetworkSecurityCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961AAB29E4B01F00E9B94D /* NetworkSecurityCase.swift */; };
+		81961AAC29E4B01F00E9B94D /* NetworkId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961AAB29E4B01F00E9B94D /* NetworkId.swift */; };
 		81961AB629E4B80F00E9B94D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961AB529E4B80F00E9B94D /* Settings.swift */; };
 		81961AB729E4B91E00E9B94D /* AssetAmountList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81268E7B291BC8190079C13D /* AssetAmountList.swift */; };
 		81961ABB29E4B9C600E9B94D /* Balance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961ABA29E4B9C600E9B94D /* Balance.swift */; };
@@ -682,6 +682,9 @@
 		81A5919D2915772E001D1A65 /* MultisigSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A5919C2915772E001D1A65 /* MultisigSettings.swift */; };
 		81A591A129157B1E001D1A65 /* MultisigSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A591A029157B1E001D1A65 /* MultisigSettingsCell.swift */; };
 		81A591A329157B32001D1A65 /* MultisigSettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A591A229157B32001D1A65 /* MultisigSettingsCellModel.swift */; };
+		81A5F7A92FE0C27E000B8F1B /* GdkNetworks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A5F7A82FE0C27E000B8F1B /* GdkNetworks.swift */; };
+		81A5F7AB2FE0C3D7000B8F1B /* Gdk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A5F7AA2FE0C3D7000B8F1B /* Gdk.swift */; };
+		81A5F7AF2FE0CFCF000B8F1B /* DictionaryEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A5F7AE2FE0CFCF000B8F1B /* DictionaryEncoder.swift */; };
 		81A773052A81029200C9FC5C /* LTRedeemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A773042A81029100C9FC5C /* LTRedeemViewController.swift */; };
 		81A7F2C62F2D617000ECF35C /* SendSwapFeeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A7F2C42F2D617000ECF35C /* SendSwapFeeViewModel.swift */; };
 		81A7F2C72F2D617000ECF35C /* SendSwapFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A7F2C32F2D617000ECF35C /* SendSwapFeeViewController.swift */; };
@@ -729,11 +732,11 @@
 		81CDF3452BF2D50500AA4C19 /* SendHWConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CDF3442BF2D50500AA4C19 /* SendHWConfirmViewModel.swift */; };
 		81D1F9E82FDAE06E00ADF015 /* NetworkSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328F029E9545200D54F1D /* NetworkSettings.swift */; };
 		81D1F9E92FDAE06E00ADF015 /* AccountType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464E2670ECE0009E8FCE /* AccountType.swift */; };
-		81D1F9EA2FDAE06E00ADF015 /* NetworkSecurityCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A34FEE29C547B8004B27F4 /* NetworkSecurityCase.swift */; };
+		81D1F9EA2FDAE06E00ADF015 /* NetworkId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A34FEE29C547B8004B27F4 /* NetworkId.swift */; };
 		81D1F9EB2FDAE06E00ADF015 /* Balance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DC54342885BD8300DC37C9 /* Balance.swift */; };
 		81D1F9EC2FDAE06E00ADF015 /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81205D6821C3B7EB005180CF /* Events.swift */; };
 		81D1F9ED2FDAE06E00ADF015 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D94CF021B93905003B03F9 /* Settings.swift */; };
-		81D1F9EE2FDAE06E00ADF015 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F74BA42278857800A397C9 /* Network.swift */; };
+		81D1F9EE2FDAE06E00ADF015 /* GdkNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F74BA42278857800A397C9 /* GdkNetwork.swift */; };
 		81D1F9EF2FDAE06E00ADF015 /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C602A422A553D3004E26E1 /* Assets.swift */; };
 		81D1F9F02FDAE06E00ADF015 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8124524125D6B0DD00537238 /* Address.swift */; };
 		81D1F9F12FDAE06E00ADF015 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81683F8F26BC022C0058982E /* Transaction.swift */; };
@@ -744,7 +747,7 @@
 		81D1F9F62FDAE06E00ADF015 /* PinData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815D4A9F28638A56004DC015 /* PinData.swift */; };
 		81D1F9F72FDAE06E00ADF015 /* TorNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671F226C80D6B00682508 /* TorNotification.swift */; };
 		81D1F9F82FDAE06E00ADF015 /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F72E0828904D3F00D4DEFF /* Credentials.swift */; };
-		81D1F9F92FDAE06E00ADF015 /* Gdk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81004E2E292B57FD001C2E4D /* Gdk.swift */; };
+		81D1F9F92FDAE06E00ADF015 /* GdkInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81004E2E292B57FD001C2E4D /* GdkInterface.swift */; };
 		81D1F9FA2FDAE06E00ADF015 /* TwoFactorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */; };
 		81D1F9FB2FDAE06E00ADF015 /* GDKResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328FD29ED32D000D54F1D /* GDKResolver.swift */; };
 		81D1F9FD2FDAE06E00ADF015 /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7122374E8B0035F95A /* URL.swift */; };
@@ -1485,7 +1488,7 @@
 		6DF2DEE623F382F7005F16E9 /* Help.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Help.storyboard; sourceTree = "<group>"; };
 		6DF2DEE823F38314005F16E9 /* HelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewController.swift; sourceTree = "<group>"; };
 		7E88DA8680A9CE15F3154259 /* libPods-gaiosUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-gaiosUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		81004E2E292B57FD001C2E4D /* Gdk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gdk.swift; sourceTree = "<group>"; };
+		81004E2E292B57FD001C2E4D /* GdkInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GdkInterface.swift; sourceTree = "<group>"; };
 		81073D7921E8B27700E08F86 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		81073D7B21E8B61400E08F86 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		810A75522EF3618200B47EEB /* TabTransactVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabTransactVM.swift; sourceTree = "<group>"; };
@@ -1640,7 +1643,7 @@
 		8192BB9A21EF616F00B04185 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		81961A6D29E47E5D00E9B94D /* GDKSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GDKSession.swift; sourceTree = "<group>"; };
 		81961A7029E47FE600E9B94D /* PromiseKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = PromiseKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		81961AAB29E4B01F00E9B94D /* NetworkSecurityCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSecurityCase.swift; sourceTree = "<group>"; };
+		81961AAB29E4B01F00E9B94D /* NetworkId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkId.swift; sourceTree = "<group>"; };
 		81961AB529E4B80F00E9B94D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		81961ABA29E4B9C600E9B94D /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
 		81961ABF29E4C40700E9B94D /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -1653,12 +1656,15 @@
 		819FDFC62EC2B91B00C8CE66 /* BoltzController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoltzController.swift; sourceTree = "<group>"; };
 		81A062CF245322B0003464A0 /* HWResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWResolver.swift; sourceTree = "<group>"; };
 		81A062D124532454003464A0 /* HWProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWProtocol.swift; sourceTree = "<group>"; };
-		81A34FEE29C547B8004B27F4 /* NetworkSecurityCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSecurityCase.swift; sourceTree = "<group>"; };
+		81A34FEE29C547B8004B27F4 /* NetworkId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkId.swift; sourceTree = "<group>"; };
 		81A5919829155F6A001D1A65 /* MultisigSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSettingsViewController.swift; sourceTree = "<group>"; };
 		81A5919A29156011001D1A65 /* MultisigSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSettingsViewModel.swift; sourceTree = "<group>"; };
 		81A5919C2915772E001D1A65 /* MultisigSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSettings.swift; sourceTree = "<group>"; };
 		81A591A029157B1E001D1A65 /* MultisigSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSettingsCell.swift; sourceTree = "<group>"; };
 		81A591A229157B32001D1A65 /* MultisigSettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSettingsCellModel.swift; sourceTree = "<group>"; };
+		81A5F7A82FE0C27E000B8F1B /* GdkNetworks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GdkNetworks.swift; sourceTree = "<group>"; };
+		81A5F7AA2FE0C3D7000B8F1B /* Gdk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gdk.swift; sourceTree = "<group>"; };
+		81A5F7AE2FE0CFCF000B8F1B /* DictionaryEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryEncoder.swift; sourceTree = "<group>"; };
 		81A773042A81029100C9FC5C /* LTRedeemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTRedeemViewController.swift; sourceTree = "<group>"; };
 		81A7F2C32F2D617000ECF35C /* SendSwapFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendSwapFeeViewController.swift; sourceTree = "<group>"; };
 		81A7F2C42F2D617000ECF35C /* SendSwapFeeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendSwapFeeViewModel.swift; sourceTree = "<group>"; };
@@ -1764,7 +1770,7 @@
 		81F328FB29ED319300D54F1D /* ResolverManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResolverManager.swift; sourceTree = "<group>"; };
 		81F328FD29ED32D000D54F1D /* GDKResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GDKResolver.swift; sourceTree = "<group>"; };
 		81F72E0828904D3F00D4DEFF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
-		81F74BA42278857800A397C9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
+		81F74BA42278857800A397C9 /* GdkNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GdkNetwork.swift; sourceTree = "<group>"; };
 		81F7FE712BE2FD4D00F44FC2 /* AppNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNotifications.swift; sourceTree = "<group>"; };
 		81F8AC542BC56F5D002E384D /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		81F9B0252F3E4938003D4A85 /* Boltz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Boltz.swift; sourceTree = "<group>"; };
@@ -3939,6 +3945,7 @@
 				6D2A613523302694008C518A /* UIImage.swift */,
 				09DA612520E73A2300C3EA03 /* String.swift */,
 				81FBF6782E65252B00852F93 /* Wally.swift */,
+				81A5F7AE2FE0CFCF000B8F1B /* DictionaryEncoder.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -4058,7 +4065,7 @@
 		81961AC429E4CA2B00E9B94D /* Gdk */ = {
 			isa = PBXGroup;
 			children = (
-				81961AAB29E4B01F00E9B94D /* NetworkSecurityCase.swift */,
+				81961AAB29E4B01F00E9B94D /* NetworkId.swift */,
 				81961ABA29E4B9C600E9B94D /* Balance.swift */,
 				81268E7B291BC8190079C13D /* AssetAmountList.swift */,
 				81961AB529E4B80F00E9B94D /* Settings.swift */,
@@ -4316,6 +4323,7 @@
 		81D1F9A32FDAC08000ADF015 /* gdk */ = {
 			isa = PBXGroup;
 			children = (
+				81A5F7AA2FE0C3D7000B8F1B /* Gdk.swift */,
 				81D1F9A52FDAC0A200ADF015 /* models */,
 				81D1F9A42FDAC08E00ADF015 /* extensions */,
 			);
@@ -4336,11 +4344,12 @@
 			children = (
 				81F328F029E9545200D54F1D /* NetworkSettings.swift */,
 				34C2464E2670ECE0009E8FCE /* AccountType.swift */,
-				81A34FEE29C547B8004B27F4 /* NetworkSecurityCase.swift */,
 				81DC54342885BD8300DC37C9 /* Balance.swift */,
 				81205D6821C3B7EB005180CF /* Events.swift */,
 				81D94CF021B93905003B03F9 /* Settings.swift */,
-				81F74BA42278857800A397C9 /* Network.swift */,
+				81F74BA42278857800A397C9 /* GdkNetwork.swift */,
+				81A5F7A82FE0C27E000B8F1B /* GdkNetworks.swift */,
+				81A34FEE29C547B8004B27F4 /* NetworkId.swift */,
 				81C602A422A553D3004E26E1 /* Assets.swift */,
 				8124524125D6B0DD00537238 /* Address.swift */,
 				81683F8F26BC022C0058982E /* Transaction.swift */,
@@ -4351,7 +4360,7 @@
 				815D4A9F28638A56004DC015 /* PinData.swift */,
 				81D671F226C80D6B00682508 /* TorNotification.swift */,
 				81F72E0828904D3F00D4DEFF /* Credentials.swift */,
-				81004E2E292B57FD001C2E4D /* Gdk.swift */,
+				81004E2E292B57FD001C2E4D /* GdkInterface.swift */,
 				811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */,
 			);
 			path = models;
@@ -5554,7 +5563,7 @@
 				81D401DB2F9DA45E00384005 /* BCURProvider.swift in Sources */,
 				81D401DD2F9E855100384005 /* SmoothProgressView.swift in Sources */,
 				812DBDC82977FACF002992D6 /* TwoFactorSettingsCellModel.swift in Sources */,
-				81961AAC29E4B01F00E9B94D /* NetworkSecurityCase.swift in Sources */,
+				81961AAC29E4B01F00E9B94D /* NetworkId.swift in Sources */,
 				34BC63652D097A09001CC38F /* UIImage.swift in Sources */,
 				812BA6542EEF257000A03A3E /* WalletTabBarModel.swift in Sources */,
 				348401F52DAD3F0700A91C65 /* DialogCompareSecurityViewController.swift in Sources */,
@@ -5687,22 +5696,24 @@
 			files = (
 				81D1F9E82FDAE06E00ADF015 /* NetworkSettings.swift in Sources */,
 				81D1F9E92FDAE06E00ADF015 /* AccountType.swift in Sources */,
-				81D1F9EA2FDAE06E00ADF015 /* NetworkSecurityCase.swift in Sources */,
+				81D1F9EA2FDAE06E00ADF015 /* NetworkId.swift in Sources */,
 				81D1F9EB2FDAE06E00ADF015 /* Balance.swift in Sources */,
 				81D1F9EC2FDAE06E00ADF015 /* Events.swift in Sources */,
 				81D1F9ED2FDAE06E00ADF015 /* Settings.swift in Sources */,
-				81D1F9EE2FDAE06E00ADF015 /* Network.swift in Sources */,
+				81D1F9EE2FDAE06E00ADF015 /* GdkNetwork.swift in Sources */,
 				81D1F9EF2FDAE06E00ADF015 /* Assets.swift in Sources */,
+				81A5F7A92FE0C27E000B8F1B /* GdkNetworks.swift in Sources */,
 				81D1F9F02FDAE06E00ADF015 /* Address.swift in Sources */,
 				81D1F9F12FDAE06E00ADF015 /* Transaction.swift in Sources */,
 				81D1F9F22FDAE06E00ADF015 /* Transactions.swift in Sources */,
+				81A5F7AF2FE0CFCF000B8F1B /* DictionaryEncoder.swift in Sources */,
 				81D1F9F32FDAE06E00ADF015 /* Account.swift in Sources */,
 				81D1F9F42FDAE06E00ADF015 /* EventType.swift in Sources */,
 				81D1F9F52FDAE06E00ADF015 /* Connection.swift in Sources */,
 				81D1F9F62FDAE06E00ADF015 /* PinData.swift in Sources */,
 				81D1F9F72FDAE06E00ADF015 /* TorNotification.swift in Sources */,
 				81D1F9F82FDAE06E00ADF015 /* Credentials.swift in Sources */,
-				81D1F9F92FDAE06E00ADF015 /* Gdk.swift in Sources */,
+				81D1F9F92FDAE06E00ADF015 /* GdkInterface.swift in Sources */,
 				81D1F9FA2FDAE06E00ADF015 /* TwoFactorConfig.swift in Sources */,
 				81D1F9FB2FDAE06E00ADF015 /* GDKResolver.swift in Sources */,
 				81D1F9FD2FDAE06E00ADF015 /* URL.swift in Sources */,
@@ -5747,6 +5758,7 @@
 				819FDFC72EC2B91B00C8CE66 /* BoltzController.swift in Sources */,
 				8177EE252B6C933400C2271C /* GdkSettings.swift in Sources */,
 				8177EE272B6C933400C2271C /* WalletsRepository.swift in Sources */,
+				81A5F7AB2FE0C3D7000B8F1B /* Gdk.swift in Sources */,
 				81FE7C612F85FF6E00520095 /* LightningSessionManager.swift in Sources */,
 				8177EE282B6C933400C2271C /* WalletsStorage.swift in Sources */,
 				8177EE292B6C933400C2271C /* KeychainStorage.swift in Sources */,

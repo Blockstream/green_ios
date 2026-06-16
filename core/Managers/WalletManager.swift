@@ -8,7 +8,7 @@ import LiquidWalletKit
 
 public actor Failures {
     public var errors = [String: Error]()
-    func add(for network: NetworkSecurityCase, error: Error) {
+    func add(for network: NetworkId, error: Error) {
         switch error {
         case TwoFactorCallError.failure(let txt):
             if txt.contains("HWW must enable host unblinding for singlesig wallets") {
@@ -42,7 +42,7 @@ public class WalletManager {
     public var sessions = [String: SessionManager]()
 
     // Prominent network used for login with stored credentials
-    public let prominentNetwork: NetworkSecurityCase
+    public let prominentNetwork: NetworkId
 
     // Cached list of subaccounts
     public var subaccounts = [Account]()
@@ -91,28 +91,28 @@ public class WalletManager {
     }
 
     // For Countly
-    public var activeNetworks: [NetworkSecurityCase] {
-        return activeSessions.keys.compactMap { NetworkSecurityCase(rawValue: $0) }
+    public var activeNetworks: [NetworkId] {
+        return activeSessions.keys.compactMap { NetworkId(rawValue: $0) }
     }
 
     // Constructor
-    public init(prominentNetwork: NetworkSecurityCase?) {
+    public init(prominentNetwork: NetworkId?) {
         self.mainnet = prominentNetwork?.gdkNetwork.mainnet ?? true
-        self.prominentNetwork = prominentNetwork ?? .bitcoinSS
+        self.prominentNetwork = prominentNetwork ?? .electrumMainnet
         self.registry = AssetsManager(testnet: !mainnet, lightning: true)
         self.converter = ConverterManager(provider: self, testnet: !mainnet)
         if mainnet {
-            addSession(for: .bitcoinSS)
-            addSession(for: .liquidSS)
-            addSession(for: .bitcoinMS)
-            addSession(for: .liquidMS)
+            addSession(for: .electrumMainnet)
+            addSession(for: .electrumLiquid)
+            addSession(for: .greenMainnet)
+            addSession(for: .greenLiquid)
             addSession(for: .lwkMainnet)
-            addSession(for: .lightning)
+            addSession(for: .lightningMainnet)
         } else {
-            addSession(for: .testnetSS)
-            addSession(for: .testnetLiquidSS)
-            addSession(for: .testnetMS)
-            addSession(for: .testnetLiquidMS)
+            addSession(for: .electrumTestnet)
+            addSession(for: .electrumTestnetLiquid)
+            addSession(for: .greenTestnet)
+            addSession(for: .greenTestnetLiquid)
         }
     }
 
@@ -125,9 +125,9 @@ public class WalletManager {
         }
     }
 
-    public func addSession(for network: NetworkSecurityCase) {
+    public func addSession(for network: NetworkId) {
         switch network {
-        case .lightning:
+        case .lightningMainnet:
             sessions[network.rawValue] = LightningSessionManager(
                 newNotificationDelegate: self
             )
@@ -138,7 +138,7 @@ public class WalletManager {
         }
     }
 
-    public func getSession(for network: NetworkSecurityCase) -> SessionManager? {
+    public func getSession(for network: NetworkId) -> SessionManager? {
         sessions[network.network]
     }
 
@@ -147,12 +147,11 @@ public class WalletManager {
     }
 
     public var lightningSession: LightningSessionManager? {
-        let network: NetworkSecurityCase = testnet ? .testnetLightning : .lightning
-        return sessions[network.rawValue] as? LightningSessionManager
+        return sessions[NetworkId.lightningMainnet.rawValue] as? LightningSessionManager
     }
 
     public var lwkSession: LwkSessionManager? {
-        return sessions[NetworkSecurityCase.lwkMainnet.network] as? LwkSessionManager
+        return sessions[NetworkId.lwkMainnet.network] as? LwkSessionManager
     }
 
     public func awaitLwkSession() async -> LwkSessionManager? {
@@ -179,15 +178,15 @@ public class WalletManager {
     }
 
     public var hasMultisig: Bool {
-        let multisigNetworks: [NetworkSecurityCase] =  [.bitcoinMS, .testnetMS, .liquidMS, .testnetLiquidMS]
+        let multisigNetworks: [NetworkId] =  [.greenMainnet, .greenTestnet, .greenLiquid, .greenTestnetLiquid]
         return self.activeNetworks.filter { multisigNetworks.contains($0) }.count > 0
     }
     public var hasBTCMultisig: Bool {
-        let multisigNetworks: [NetworkSecurityCase] =  [.bitcoinMS, .testnetMS]
+        let multisigNetworks: [NetworkId] =  [.greenMainnet, .greenTestnet]
         return self.activeNetworks.filter { multisigNetworks.contains($0) }.count > 0
     }
     public var hasLiquidMultisig: Bool {
-        let multisigNetworks: [NetworkSecurityCase] =  [.liquidMS, .testnetLiquidMS]
+        let multisigNetworks: [NetworkId] =  [.greenLiquid, .greenTestnetLiquid]
         return self.activeNetworks.filter { multisigNetworks.contains($0) }.count > 0
     }
     public var failureSessionsError = Failures()
@@ -351,7 +350,7 @@ public class WalletManager {
             logger.info("WM \(session.networkType.rawValue, privacy: .public) login")
             var loginUserResult: LoginUserResult?
             switch session.networkType {
-            case .lightning:
+            case .lightningMainnet:
                 // Connect and login greenlight
                 if let session = lightningSession, let credentials = lightningCredentials {
                     loginUserResult = try await loginLightning(session: session, credentials: credentials, restore: fullRestore, parentWalletId: parentWalletId)
@@ -439,7 +438,7 @@ public class WalletManager {
                 _ = await loginTask(lwkSession)
             }
         }
-        let loginUserDatas = await withTaskGroup(of: (NetworkSecurityCase, LoginUserResult?).self) { group in
+        let loginUserDatas = await withTaskGroup(of: (NetworkId, LoginUserResult?).self) { group in
             for session in mainSessions {
                 group.addTask(priority: .high) {
                     return (session.networkType, await loginTask(session))
@@ -457,14 +456,14 @@ public class WalletManager {
         return loginUserDatas.first { $0.key == prominentNetwork }?.value
     }
 
-    public var bitcoinSinglesigNetwork: NetworkSecurityCase { mainnet ? .bitcoinSS : .testnetSS }
-    public var liquidSinglesigNetwork: NetworkSecurityCase { mainnet ? .liquidSS : .testnetLiquidSS }
-    public var singlesigNetworks: [NetworkSecurityCase] { [bitcoinSinglesigNetwork] + [liquidSinglesigNetwork] }
-    public var bitcoinMultisigNetwork: NetworkSecurityCase { mainnet ? .bitcoinMS : .testnetMS }
-    public var liquidMultisigNetwork: NetworkSecurityCase { mainnet ? .liquidMS : .testnetLiquidMS }
-    public var multisigNetworks: [NetworkSecurityCase] { [bitcoinMultisigNetwork] + [liquidMultisigNetwork] }
-    public var bitcoinNetworks: [NetworkSecurityCase] { [bitcoinSinglesigNetwork] + [bitcoinMultisigNetwork] }
-    public var liquidNetworks: [NetworkSecurityCase] { [liquidSinglesigNetwork] + [liquidMultisigNetwork] }
+    public var bitcoinSinglesigNetwork: NetworkId { mainnet ? .electrumMainnet : .electrumTestnet }
+    public var liquidSinglesigNetwork: NetworkId { mainnet ? .electrumLiquid : .electrumTestnetLiquid }
+    public var singlesigNetworks: [NetworkId] { [bitcoinSinglesigNetwork] + [liquidSinglesigNetwork] }
+    public var bitcoinMultisigNetwork: NetworkId { mainnet ? .greenMainnet : .greenTestnet }
+    public var liquidMultisigNetwork: NetworkId { mainnet ? .greenLiquid : .greenTestnetLiquid }
+    public var multisigNetworks: [NetworkId] { [bitcoinMultisigNetwork] + [liquidMultisigNetwork] }
+    public var bitcoinNetworks: [NetworkId] { [bitcoinSinglesigNetwork] + [bitcoinMultisigNetwork] }
+    public var liquidNetworks: [NetworkId] { [liquidSinglesigNetwork] + [liquidMultisigNetwork] }
 
     public var liquidSinglesigSession: SessionManager? { sessions[liquidSinglesigNetwork.rawValue] }
     public var bitcoinSinglesigSession: SessionManager? { sessions[bitcoinSinglesigNetwork.rawValue] }
@@ -483,10 +482,10 @@ public class WalletManager {
     public var activeMultisigSessions: [SessionManager] {
         multisigNetworks.compactMap { sessions[$0.rawValue] }.filter { $0.logged }
     }
-    public var activeSinglesigNetworks: [NetworkSecurityCase] {
+    public var activeSinglesigNetworks: [NetworkId] {
         activeSinglesigSessions.map { $0.networkType }
     }
-    public var activeMultisigNetworks: [NetworkSecurityCase] {
+    public var activeMultisigNetworks: [NetworkId] {
         activeMultisigSessions.map { $0.networkType }
     }
 
@@ -759,7 +758,7 @@ public class WalletManager {
 }
 
 extension WalletManager: NewNotificationDelegate {
-    public func didReceive(event: EventNotificationTypes, networkType: NetworkSecurityCase) {
+    public func didReceive(event: EventNotificationTypes, networkType: NetworkId) {
         logger.info("WalletManager didReceive on \(networkType.rawValue)")
         newNotificationDelegate?.didReceive(event: event, networkType: networkType)
     }
@@ -772,7 +771,7 @@ extension WalletManager {
             registry.refresh(provider: self)
             updatedRegistryAt = CFAbsoluteTimeGetCurrent()
             newNotificationDelegate?
-                .didReceive(event: .refreshAssets, networkType: .liquidSS)
+                .didReceive(event: .refreshAssets, networkType: .electrumLiquid)
         }
     }
 

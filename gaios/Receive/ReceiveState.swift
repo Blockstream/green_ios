@@ -4,7 +4,6 @@ import lightning
 import core
 import LiquidWalletKit
 import greenaddress
-import lightning
 
 enum AmountFieldScope {
     case ltReceive
@@ -113,7 +112,7 @@ struct ReceiveState {
     var scope: AmountFieldScope {
         type == .lwkSwap ? .reverseSwap : .ltReceive
     }
-    var network: NetworkSecurityCase?
+    var network: NetworkId?
     var amount: String? { isFiat ? fiat : btc }
     var subamountText: String? { isFiat ? "≈ \(btc ?? "") \(denominationHint ?? "")" : "≈ \(fiat ?? "") \(currency ?? "")" }
     var ticker: String? {
@@ -146,7 +145,7 @@ struct ReceiveState {
         return nil
     }
     var showMessage: Bool {
-        return network == .lightning && satoshi != nil
+        return network == .lightningMainnet && satoshi != nil
     }
     var hideSubamount: Bool {
         return satoshi == nil

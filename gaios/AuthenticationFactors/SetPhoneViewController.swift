@@ -19,7 +19,7 @@ class SetPhoneViewController: KeyboardViewController {
 
     var sms = false
     var phoneCall = false
-    var network = NetworkSecurityCase.bitcoinMS
+    var network = NetworkId.greenMainnet
     var session: SessionManager { (WalletManager.current?.sessions[network.network])! }
     var isSmsBackup = false
 
@@ -33,11 +33,11 @@ class SetPhoneViewController: KeyboardViewController {
     var icon: UIImage {
         get {
             switch network {
-            case .bitcoinMS:
+            case .greenMainnet:
                 return UIImage(named: "ntw_btc")!
-            case .liquidMS:
+            case .greenLiquid:
                 return UIImage(named: "ntw_liquid")!
-            case .testnetLiquidMS:
+            case .greenTestnetLiquid:
                 return UIImage(named: "ntw_testnet_liquid")!
             default:
                 return UIImage(named: "ntw_testnet")!

@@ -30,7 +30,7 @@ class BleLedgerManager {
         return self.version
     }
 
-    func getLedgerNetwork() async throws -> NetworkSecurityCase {
+    func getLedgerNetwork() async throws -> NetworkId {
         let app = try await bleLedger.application()
         let name = app["name"] as? String ?? ""
         let version = app["version"] as? String ?? ""
@@ -42,13 +42,13 @@ class BleLedgerManager {
         }
         switch name {
         case "Bitcoin", "Bitcoin Legacy":
-            return .bitcoinSS
+            return .electrumMainnet
         case "Bitcoin Test", "Bitcoin Test Legacy":
-            return .testnetSS
+            return .electrumTestnet
         case "Liquid":
-            return .liquidMS
+            return .greenLiquid
         case "Liquid Test":
-            return .testnetLiquidMS
+            return .greenTestnetLiquid
         default:
             throw DeviceError.wrong_app
         }

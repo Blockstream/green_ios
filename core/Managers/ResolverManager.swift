@@ -11,7 +11,7 @@ public class ResolverManager {
 
     public init(
         _ factor: TwoFactorCall?,
-        network: NetworkSecurityCase,
+        network: NetworkId,
         connected: @escaping () -> Bool = { true },
         hwDevice: HWProtocol?,
         session: SessionManager? = nil,

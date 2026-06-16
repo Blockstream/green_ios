@@ -31,7 +31,7 @@ public class Account: Codable, Equatable, Comparable {
     public var satoshi: [String: Int64]?
     public var transactions = [Transaction]()
 
-    public var networkType: NetworkSecurityCase { NetworkSecurityCase(rawValue: network!)! }
+    public var networkType: NetworkId { NetworkId(rawValue: network!)! }
     public var gdkNetwork: GdkNetwork { networkType.gdkNetwork }
     
     public var id: String {

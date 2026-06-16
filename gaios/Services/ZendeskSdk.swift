@@ -14,7 +14,7 @@ struct ZendeskErrorRequest {
     var email: String?
     var error: String?
     var throwable: String? = Thread.callStackSymbols.joined(separator: "\n")
-    var network: NetworkSecurityCase?
+    var network: NetworkId?
     var timestamp = Date().timeIntervalSince1970
     var paymentHash: String?
     var message: String?

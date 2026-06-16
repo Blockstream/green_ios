@@ -21,7 +21,7 @@ class WODetailsCompactViewController: KeyboardViewController {
     @IBOutlet weak var lblUserPwd: UILabel!
     @IBOutlet weak var btnUserPwd: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
-    var networks = [NetworkSecurityCase]()
+    var networks = [NetworkId]()
     private var placeholderLabel: UILabel! // Placeholder for textView
 
     override func viewDidLoad() {
@@ -111,8 +111,8 @@ class WODetailsCompactViewController: KeyboardViewController {
         let keys = textView.text
             .split(whereSeparator: { $0 == "\n" || $0 == " " || (isListOfPubKeys && $0 == ",") })
                 .map { $0.trimmingCharacters(in: CharacterSet.whitespaces) }
-        let allNetworks: [NetworkSecurityCase] = [.bitcoinSS, .liquidSS, .testnetSS, .testnetLiquidSS]
-        let btcNetworks: [NetworkSecurityCase] = [.bitcoinSS, .testnetSS]
+        let allNetworks: [NetworkId] = [.electrumMainnet, .electrumLiquid, .electrumTestnet, .electrumTestnetLiquid]
+        let btcNetworks: [NetworkId] = [.electrumMainnet, .electrumTestnet]
         if isListOfPubKeys {
             for key in keys {
                 if btcNetworks.filter({ Wally.isPubKey(key, for: $0) }).isEmpty {
@@ -132,12 +132,12 @@ class WODetailsCompactViewController: KeyboardViewController {
         }
         let credentials = Credentials(coreDescriptors: isListOfPubKeys ? nil : keys, slip132ExtendedPubkeys: isListOfPubKeys ? keys : nil)
         let network = isListOfPubKeys ? keys.compactMap { Wally.getNetwork(xpub: $0) }.first : keys.compactMap { Wally.getNetwork(descriptor: $0) }.first
-        var wallet = WOViewModel.newAccountSinglesig(for: (network ?? NetworkSecurityCase.bitcoinSS).gdkNetwork)
+        var wallet = WOViewModel.newAccountSinglesig(for: (network ?? NetworkId.electrumMainnet).gdkNetwork)
         let viewModel = WOViewModel(wallet: wallet)
         let task = Task {
             let wm = WalletsRepository.shared.getOrAdd(for: wallet)
-            try? await wm.getSession(for: network ?? .bitcoinSS)?.connect()
-            let loginUserResult = try await wm.getSession(for: network ?? .bitcoinSS)?.loginUser(credentials)
+            try? await wm.getSession(for: network ?? .electrumMainnet)?.connect()
+            let loginUserResult = try await wm.getSession(for: network ?? .electrumMainnet)?.loginUser(credentials)
             _ = try await wm.subaccounts()
             wm.isWatchonly = true
             wallet.xpubHashId = loginUserResult?.xpubHashId
@@ -309,15 +309,15 @@ extension WODetailsCompactViewController: UIDocumentPickerDelegate {
 extension WODetailsCompactViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
 
-    func getNetworks(singlesig: Bool, withTestnet: Bool) -> [NetworkSecurityCase] {
+    func getNetworks(singlesig: Bool, withTestnet: Bool) -> [NetworkId] {
         if withTestnet && singlesig {
-            return [.bitcoinSS, .liquidSS, .testnetSS, .testnetLiquidSS]
+            return [.electrumMainnet, .electrumLiquid, .electrumTestnet, .electrumTestnetLiquid]
         } else if withTestnet && !singlesig {
-            return [.bitcoinMS, .liquidMS, .testnetMS, .testnetLiquidMS]
+            return [.greenMainnet, .greenLiquid, .greenTestnet, .greenTestnetLiquid]
         } else if singlesig {
-            return [.bitcoinSS, .liquidSS]
+            return [.electrumMainnet, .electrumLiquid]
         } else {
-            return [.bitcoinMS, .liquidMS]
+            return [.greenMainnet, .greenLiquid]
         }
     }
 

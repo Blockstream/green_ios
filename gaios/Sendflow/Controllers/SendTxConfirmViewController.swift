@@ -218,7 +218,7 @@ class SendTxConfirmViewController: UIViewController {
         lblAccount1.text = viewModel.subaccount?.localizedName.uppercased()
         lblAccount2.text = viewModel.subaccount?.type.shortText.uppercased()
         iconAsset.image = viewModel.assetImage
-        iconType.image = networkImage(viewModel.subaccount?.networkType ?? .bitcoinSS)
+        iconType.image = networkImage(viewModel.subaccount?.networkType ?? .electrumMainnet)
 
         lblSumFeeValue.text = viewModel.feeText
         lblSumFeeFiat.text = viewModel.feeConvertText
@@ -278,7 +278,7 @@ class SendTxConfirmViewController: UIViewController {
 //        }
     }
 
-    func networkImage(_ network: NetworkSecurityCase) -> UIImage? {
+    func networkImage(_ network: NetworkId) -> UIImage? {
         if network.lightning {
             return UIImage(named: "ic_lightning")
         } else if network.multisig {
@@ -600,7 +600,7 @@ extension SendTxConfirmViewController: SendFailViewControllerDelegate {
     func presentDialogErrorViewController(error: Error, paymentHash: String?) {
         let request = ZendeskErrorRequest(
             error: error.description().localized,
-            network: viewModel.subaccount?.networkType ?? .bitcoinSS,
+            network: viewModel.subaccount?.networkType ?? .electrumMainnet,
             paymentHash: paymentHash,
             shareLogs: true,
             screenName: "FailedTransaction")

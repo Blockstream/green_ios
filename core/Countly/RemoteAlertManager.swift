@@ -38,7 +38,7 @@ public class RemoteAlertManager {
         return []
     }()
 
-    public func alerts(screen: AnalyticsViewName, networks: [NetworkSecurityCase]) -> [RemoteAlert] {
+    public func alerts(screen: AnalyticsViewName, networks: [NetworkId]) -> [RemoteAlert] {
         let networkNames = networks.map { $0.network }
         return remoteAlerts
             .filter { $0.screens?.contains("*") ?? false || $0.screens?.contains(screen.rawValue) ?? false }
