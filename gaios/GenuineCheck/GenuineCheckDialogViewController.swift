@@ -19,7 +19,7 @@ class GenuineCheckDialogViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-    @IBOutlet weak var icJade: UIImageView!
+    @IBOutlet weak var imgJade: UIImageView!
     @IBOutlet weak var btnNext: UIButton!
     @IBOutlet weak var lblInfo: UILabel!
     weak var delegate: GenuineCheckDialogViewControllerDelegate?
@@ -92,16 +92,17 @@ class GenuineCheckDialogViewController: UIViewController {
         default:
             break
         }
-        lblHint.text = "id_a_new_device_has_been_detected".localized
-        btnNext.setTitle("id_genuine_check".localized, for: .normal)
-        lblInfo.text = "id_genuine_check_is_mandatory_for".localized
+        lblHint.text = "Set it up to start using it".localized
+        btnNext.setTitle("Continue".localized, for: .normal)
+        lblInfo.text = "Genuine Check is mandatory for your first Jade connection to ensure that your device is safe for use.".localized
+        imgJade.image = viewModel.jadeImage
     }
 
     func setStyle() {
         cardView.setStyle(.bottomsheet)
         handle.cornerRadius = 1.5
-        lblTitle.setStyle(.title)
-        lblHint.setStyle(.txtCard)
+        lblTitle.setStyle(.subTitle)
+        lblHint.setStyle(.txtSectionHeader)
         btnNext.setStyle(.primary)
         lblInfo.setStyle(.txtCard)
     }

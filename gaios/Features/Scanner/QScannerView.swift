@@ -64,6 +64,7 @@ class QrScannerView: UIView {
     }
 
     private func setupPreviewLayer(session: AVCaptureSession) async {
+        previewLayer?.removeFromSuperlayer()
         let preview = AVCaptureVideoPreviewLayer(session: session)
         preview.videoGravity = .resizeAspectFill
         preview.frame = self.bounds

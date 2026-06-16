@@ -72,7 +72,7 @@ class EnableBiometricsDialogViewController: UIViewController {
 
     func setStyle() {
         cardView.setStyle(.alert)
-        lblTitle.setStyle(.titleCard)
+        lblTitle.setStyle(.titleDialog)
         [lblHint, lblHint2].forEach {
             $0.setStyle(.txtCard)
         }

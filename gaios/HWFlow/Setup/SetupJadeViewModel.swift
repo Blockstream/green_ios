@@ -11,27 +11,28 @@ struct SetupJadeStep {
 }
 
 class SetupJadeViewModel {
-
     var steps: [SetupJadeStep]
 
     init() {
-
         self.steps = [
             SetupJadeStep(riveModel: RiveModel.animationFrontBtn,
                           titleStep: "id_step".localized.uppercased() + " 1",
-                          title: "id_initialize_and_create_wallet".localized,
-                          hint: "id_select_initialize_and_choose_to".localized,
-                          placeholderName: nil),
+                          title: "Set Up Jade and Create Wallet".localized,
+                          hint: "Select Set Up Jade and choose to create a new wallet".localized,
+                          placeholderName: nil
+                         ),
             SetupJadeStep(riveModel: RiveModel.animationCheckList,
                           titleStep: "id_step".localized.uppercased() + " 2",
                           title: "id_back_up_recovery_phrase".localized,
                           hint: "id_write_down_your_recovery_phrase".localized,
-                          placeholderName: nil),
+                          placeholderName: nil
+                         ),
             SetupJadeStep(riveModel: RiveModel.animationFrontBtn,
                           titleStep: "id_step".localized.uppercased() + " 3",
                           title: "id_verify_recovery_phrase".localized,
-                          hint: "id_use_the_jogwheel_to_select_the".localized,
-                          placeholderName: nil)
+                          hint: "Use the navigation buttons to select the word that matches your recovery phrase".localized,
+                          placeholderName: nil
+                         )
         ]
     }
 }

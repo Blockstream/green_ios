@@ -203,7 +203,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
 
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
-        settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+        settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .medium)
         settingsBtn.tintColor = UIColor.gAccent()
         settingsBtn.setTitle("id_setup_guide".localized, for: .normal)
         settingsBtn.addTarget(self, action: #selector(setupBtnTapped), for: .touchUpInside)
@@ -211,10 +211,11 @@ class JadeWaitViewController: HWFlowBaseViewController {
     }
 
     func setStyle() {
-        infoBox.cornerRadius = 5.0
+        infoBox.setStyle(.defaultStyle)
         lblStepNumber.setStyle(.txt)
-        lblStepTitle.setStyle(.title)
-        lblStepHint.setStyle(.txt)
+        lblStepTitle.setStyle(.titleCard)
+        lblStepTitle.font = UIFont.systemFont(ofSize: lblStepTitle.font.pointSize, weight: .bold)
+        lblStepHint.setStyle(.txtCard)
         lblLoading.setStyle(.txt)
         btnConnectWithQr.setStyle(.inline)
     }
@@ -254,13 +255,6 @@ extension JadeWaitViewController: BleUnavailableViewControllerDelegate {
 extension JadeWaitViewController: QRUnlockInfoAlertViewControllerDelegate {
     func onTap(_ action: QRUnlockInfoAlertAction) {
         switch action {
-        case .learnMore:
-            let url = "https://help.blockstream.com/hc/en-us/sections/10426339090713-Air-gapped-Usage"
-            if let url = URL(string: url) {
-                if UIApplication.shared.canOpenURL(url) {
-                    SafeNavigationManager.shared.navigate(url)
-                }
-            }
         case .setup:
             let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadePinInfoViewController") as? QRUnlockJadePinInfoViewController {
@@ -271,7 +265,6 @@ extension JadeWaitViewController: QRUnlockInfoAlertViewControllerDelegate {
             if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadeViewController") as? QRUnlockJadeViewController {
                 vc.vm = QRUnlockJadeViewModel(scope: .xpub, testnet: false, askXpub: true)
                 vc.delegate = self
-                vc.forceUserhelp = true
                 vc.modalPresentationStyle = .overFullScreen
                 present(vc, animated: true)
             }
@@ -282,10 +275,6 @@ extension JadeWaitViewController: QRUnlockInfoAlertViewControllerDelegate {
 }
 
 extension JadeWaitViewController: QRUnlockJadeViewControllerDelegate {
-    func unlock() {
-        // nothing
-    }
-
     func login(credentials: gdk.Credentials, wallet: core.WalletManager, account: Account) {
         AccountsRepository.shared.current = account
         AccountNavigator.navLogged(accountId: account.id)

@@ -1,16 +1,29 @@
 import UIKit
+import hw
+
 enum JadeVersion: String {
     case v1
     case v2
 }
 
+extension JadeVersion {
+    init?(boardType: JadeBoardType?) {
+        guard let boardType = boardType else { return nil }
+        switch boardType {
+        case .v1, .v1_1:
+            self = .v1
+        case .v2, .v2c:
+            self = .v2
+        default:
+            self = .v2
+        }
+    }
+}
+
 enum JadeImage: String {
-    case normal = "il_jade_normal"
     case normalDual = "il_jade_normal_dual"
     case select = "il_jade_select"
     case selectDual = "il_jade_select_dual"
-    case secure = "il_jade_secure"
-    case logo   = "il_jade_logo"
     case load   = "il_jade_load"
     case horizontal   = "il_jade_horizontal"
 }

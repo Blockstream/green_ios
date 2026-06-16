@@ -117,6 +117,9 @@ extension UIColor {
     class func gAccent() -> UIColor {
         return UIColor(named: "gAccent")!
     }
+    class func gBorderBold() -> UIColor {
+        return UIColor(named: "gBorderBold")!
+    }
 }
 
 extension UIColor {

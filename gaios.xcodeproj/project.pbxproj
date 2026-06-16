@@ -382,7 +382,6 @@
 		34C8BD6D2BED13F200AE9CC4 /* ReEnable2faViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8BD6C2BED13F200AE9CC4 /* ReEnable2faViewController.swift */; };
 		34C8E77629BF868500C84066 /* DeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77429BF868500C84066 /* DeviceCell.swift */; };
 		34C8E77729BF868500C84066 /* DeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C8E77529BF868500C84066 /* DeviceCell.xib */; };
-		34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77F29C069F400C84066 /* PinCreateViewController.swift */; };
 		34C8E78229C0746E00C84066 /* ConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E78129C0746E00C84066 /* ConnectViewController.swift */; };
 		34C9E10726B91F2500200D2F /* TwoFaCsvTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C9E10626B91F2500200D2F /* TwoFaCsvTimeCell.swift */; };
 		34C9E10926B92F0B00200D2F /* DynamicTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C9E10826B92F0B00200D2F /* DynamicTableView.swift */; };
@@ -794,9 +793,6 @@
 		81E56A632C2476950012A5A3 /* QRJadeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A542C2476940012A5A3 /* QRJadeManager.swift */; };
 		81E56A642C2476950012A5A3 /* QRUnlockInfoAlertViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A552C2476950012A5A3 /* QRUnlockInfoAlertViewController.swift */; };
 		81E56A652C2476950012A5A3 /* QRUnlockJadePinInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A562C2476950012A5A3 /* QRUnlockJadePinInfoViewController.swift */; };
-		81E56A662C2476950012A5A3 /* QRUnlockPinUnlockDialogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A572C2476950012A5A3 /* QRUnlockPinUnlockDialogViewController.swift */; };
-		81E56A672C2476950012A5A3 /* QRUnlockSelectAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A582C2476950012A5A3 /* QRUnlockSelectAccountViewController.swift */; };
-		81E56A682C2476950012A5A3 /* QRUnlockSelectAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A592C2476950012A5A3 /* QRUnlockSelectAccountViewModel.swift */; };
 		81E56A692C2476950012A5A3 /* QRUnlockSignDialogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A5A2C2476950012A5A3 /* QRUnlockSignDialogViewController.swift */; };
 		81E56A6A2C2476950012A5A3 /* QRUnlockSuccessAlertViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A5B2C2476950012A5A3 /* QRUnlockSuccessAlertViewController.swift */; };
 		81E56A6B2C2476950012A5A3 /* QRUnlockJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E56A5D2C2476950012A5A3 /* QRUnlockJadeViewController.swift */; };
@@ -1396,7 +1392,6 @@
 		34C8BD6C2BED13F200AE9CC4 /* ReEnable2faViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReEnable2faViewController.swift; sourceTree = "<group>"; };
 		34C8E77429BF868500C84066 /* DeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCell.swift; sourceTree = "<group>"; };
 		34C8E77529BF868500C84066 /* DeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DeviceCell.xib; sourceTree = "<group>"; };
-		34C8E77F29C069F400C84066 /* PinCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinCreateViewController.swift; sourceTree = "<group>"; };
 		34C8E78129C0746E00C84066 /* ConnectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewController.swift; sourceTree = "<group>"; };
 		34C9E10626B91F2500200D2F /* TwoFaCsvTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFaCsvTimeCell.swift; sourceTree = "<group>"; };
 		34C9E10826B92F0B00200D2F /* DynamicTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicTableView.swift; sourceTree = "<group>"; };
@@ -1803,9 +1798,6 @@
 		81E56A542C2476940012A5A3 /* QRJadeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRJadeManager.swift; sourceTree = "<group>"; };
 		81E56A552C2476950012A5A3 /* QRUnlockInfoAlertViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockInfoAlertViewController.swift; sourceTree = "<group>"; };
 		81E56A562C2476950012A5A3 /* QRUnlockJadePinInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockJadePinInfoViewController.swift; sourceTree = "<group>"; };
-		81E56A572C2476950012A5A3 /* QRUnlockPinUnlockDialogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockPinUnlockDialogViewController.swift; sourceTree = "<group>"; };
-		81E56A582C2476950012A5A3 /* QRUnlockSelectAccountViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockSelectAccountViewController.swift; sourceTree = "<group>"; };
-		81E56A592C2476950012A5A3 /* QRUnlockSelectAccountViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockSelectAccountViewModel.swift; sourceTree = "<group>"; };
 		81E56A5A2C2476950012A5A3 /* QRUnlockSignDialogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockSignDialogViewController.swift; sourceTree = "<group>"; };
 		81E56A5B2C2476950012A5A3 /* QRUnlockSuccessAlertViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockSuccessAlertViewController.swift; sourceTree = "<group>"; };
 		81E56A5D2C2476950012A5A3 /* QRUnlockJadeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRUnlockJadeViewController.swift; sourceTree = "<group>"; };
@@ -3146,7 +3138,6 @@
 				349F723D29C84DA4007B9154 /* UpdateFirmwareViewController.swift */,
 				34560B9A29BF1A9D007E916F /* HWFlowBaseViewController.swift */,
 				818BA7172A30838F00DFB03A /* PairingSuccessViewController.swift */,
-				34C8E77F29C069F400C84066 /* PinCreateViewController.swift */,
 				3465E2132A8F38FD0082D556 /* PinServerWarnViewController.swift */,
 				346310EA2C3E69DE0037DA0F /* EnableTorViewController.swift */,
 				34610C5C2B864BED005157C8 /* BleUnavailableViewController.swift */,
@@ -4566,9 +4557,6 @@
 			children = (
 				81E56A552C2476950012A5A3 /* QRUnlockInfoAlertViewController.swift */,
 				81E56A562C2476950012A5A3 /* QRUnlockJadePinInfoViewController.swift */,
-				81E56A572C2476950012A5A3 /* QRUnlockPinUnlockDialogViewController.swift */,
-				81E56A582C2476950012A5A3 /* QRUnlockSelectAccountViewController.swift */,
-				81E56A592C2476950012A5A3 /* QRUnlockSelectAccountViewModel.swift */,
 				81E56A5A2C2476950012A5A3 /* QRUnlockSignDialogViewController.swift */,
 				81E56A5B2C2476950012A5A3 /* QRUnlockSuccessAlertViewController.swift */,
 			);
@@ -5352,7 +5340,6 @@
 				34CD34932C7D98E700018824 /* VerifyOnDeviceViewModel.swift in Sources */,
 				818BA7132A2F909B00DFB03A /* ScanListItem.swift in Sources */,
 				3497936F25F8B18C0029ECB1 /* StrokeAnimation.swift in Sources */,
-				81E56A672C2476950012A5A3 /* QRUnlockSelectAccountViewController.swift in Sources */,
 				34287B772A8385820065471F /* AlertViewModel.swift in Sources */,
 				81C3BC282F269BAA00CD4F2D /* SendLwkSignViewModelDelegate.swift in Sources */,
 				345607362DD350DE0070BCED /* TabSettingsCellModel.swift in Sources */,
@@ -5451,7 +5438,7 @@
 				81C3BC212F2696BC00CD4F2D /* SendAccountAssetViewModelDelegate.swift in Sources */,
 				34FAB3152D95929300317454 /* BackupHelper.swift in Sources */,
 				81A5919929155F6A001D1A65 /* MultisigSettingsViewController.swift in Sources */,
-				34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */,
+				34422E3D2FB1D5E9002FA916 /* LNInvoiceViewController.swift in Sources */,
 				81D401CD2F9BAC4700384005 /* SendAmountViewModel.swift in Sources */,
 				81C3BC1F2F26969A00CD4F2D /* SendAddressViewModelDelegate.swift in Sources */,
 				344EF1C12C10525300689D63 /* TxDetailsTotalsCell.swift in Sources */,
@@ -5701,7 +5688,6 @@
 				34204717291B9A8600EDE945 /* PolicyCell.swift in Sources */,
 				34A2AF0227BD378C006A01E9 /* FooterQrCell.swift in Sources */,
 				34F9809F2913A72600C12D48 /* WalletAssetCellModel.swift in Sources */,
-				81E56A662C2476950012A5A3 /* QRUnlockPinUnlockDialogViewController.swift in Sources */,
 				3469A2482887D56E00B2F640 /* Date.swift in Sources */,
 				81D401D72F9D840900384005 /* QrScannerViewController.swift in Sources */,
 				344D57FD2D75E751009725A3 /* TabViewController.swift in Sources */,
@@ -5743,7 +5729,6 @@
 				34D7613C2A38935200DE57F5 /* DialogExchangeViewModel.swift in Sources */,
 				3457F4B22923988600EF33B5 /* DialogListCell.swift in Sources */,
 				3450C8602AAF0616002B67AE /* TwoFAMethodViewController.swift in Sources */,
-				81E56A682C2476950012A5A3 /* QRUnlockSelectAccountViewModel.swift in Sources */,
 				3415CB172A69627500B66882 /* DialogSignViewController.swift in Sources */,
 				818BA71A2A30839B00DFB03A /* BleHwManager.swift in Sources */,
 				34C246512670F0BB009E8FCE /* UINavigationController.swift in Sources */,

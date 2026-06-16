@@ -47,11 +47,13 @@ class GenuineCheckEndViewController: UIViewController {
         lblTitle.text = model.title
         lblHint.text = model.hint
         lblInfo.text = model.lblInfo
-        iconState.image = model.icon
         [btnCancel, btnRetry, btnContinue, btnDiy, btnSupport, lblInfo, progressView].forEach {
             $0?.isHidden = true
         }
-        imageJade.image = UIImage(named: "ic_genuine_check_jade")
+        imageJade.image = model.image
+        imageJade.isHidden = (model.image == nil)
+        iconState.image = model.icon
+        iconState.isHidden = (model.icon == nil)
         switch model.state {
         case .notGenuine:
             [btnDiy, btnSupport].forEach {
@@ -64,7 +66,6 @@ class GenuineCheckEndViewController: UIViewController {
                 $0?.isHidden = false
             }
         case .progress:
-            imageJade.image = UIImage(named: "ic_genuine_check_jade_vertical")
             [lblInfo, progressView].forEach {
                 $0?.isHidden = false
             }
@@ -117,15 +118,14 @@ class GenuineCheckEndViewController: UIViewController {
     }
 
     func setStyle() {
-        lblTitle.setStyle(.title)
-        lblHint.setStyle(.txt)
+        lblTitle.setStyle(.subTitle24)
+        lblHint.setStyle(.txtCard)
         lblInfo.setStyle(.txt)
         [btnSupport, btnContinue, btnRetry].forEach {
             $0?.setStyle(.primary)
         }
         [btnDiy, btnCancel].forEach {
-            $0?.setStyle(.outlinedWhite)
-            $0?.setTitleColor(.white, for: .normal)
+            $0?.setStyle(.outlined)
         }
         progressView.isAnimating = true
     }

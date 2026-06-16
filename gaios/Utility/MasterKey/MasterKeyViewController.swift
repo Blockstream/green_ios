@@ -48,8 +48,8 @@ class MasterKeyViewController: UIViewController {
         let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTapToClose))
             tappableBg.addGestureRecognizer(tapToClose)
 
-        let isV2 = BleHwManager.shared.jade?.version?.boardType == .v2
-        icon.image = JadeAsset.img(.load, isV2 ? .v2 : .v1)
+        let boardType = BleHwManager.shared.jade?.version?.boardType
+        icon.image = JadeAsset.img(.load, JadeVersion(boardType: boardType))
     }
 
     deinit {

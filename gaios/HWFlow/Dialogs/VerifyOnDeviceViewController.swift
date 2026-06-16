@@ -56,8 +56,8 @@ class HWDialogVerifyOnDeviceViewController: UIViewController {
         if viewModel.isLedger {
             icWallet.image = UIImage(named: "il_check_addr_ledger")
         } else {
-            let isV2 = BleHwManager.shared.jade?.version?.boardType == .v2
-            icWallet.image = JadeAsset.img(.select, isV2 ? .v2 : .v1)
+            let boardType = BleHwManager.shared.jade?.version?.boardType
+            icWallet.image = JadeAsset.img(.select, JadeVersion(boardType: boardType))
         }
 
         if viewModel.isDismissible {

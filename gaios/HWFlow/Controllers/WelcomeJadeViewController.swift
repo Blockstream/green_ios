@@ -32,15 +32,15 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
         lblSlide1Title.text = "id_welcome_to_blockstream_jade".localized
         lblSlide1Hint.text = "id_jade_is_a_specialized_device".localized
         btnConnectJade.setTitle("id_connect_jade".localized, for: .normal)
-        btnConnectOther.setTitle("id_connect_a_different_hardware".localized, for: .normal)
-        btnCheckStore.setTitle( "id_dont_have_a_jade_check_our_store".localized, for: .normal)
+        btnConnectOther.setTitle("Connect a Different Hardware Device".localized, for: .normal)
+        btnCheckStore.setTitle( "Don't have a Jade? Buy one now.".localized, for: .normal)
 
         lblSlide2Title.text = "id_hardware_security".localized
         lblSlide2Hint.text = "id_your_bitcoin_and_liquid_assets".localized
         lblSlide3Title.text = "id_offline_key_storage".localized
         lblSlide3Hint.text = "id_jade_is_an_isolated_device_not".localized
-        lblSlide4Title.text = "id_fully_airgapped_with_qr".localized
-        lblSlide4Hint.text = "id_qr_mode_allows_you_to".localized
+        lblSlide4Title.text = "Fully Air-Gapped with QR".localized
+        lblSlide4Hint.text = "QR Mode allows you to communicate with the Blockstream app using Jade's camera and QR codes (instead of Bluetooth).".localized
     }
 
     func setStyle() {
@@ -48,10 +48,10 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
             $0?.setStyle(.title)
         }
         [lblSlide1Hint, lblSlide2Hint, lblSlide3Hint, lblSlide4Hint].forEach {
-            $0?.setStyle(.txt)
+            $0?.setStyle(.txtCard)
         }
         btnConnectJade.setStyle(.primary)
-        btnConnectOther.setStyle(.outlinedWhite)
+        btnConnectOther.setStyle(.outlined)
         btnCheckStore.setStyle(.inline)
     }
 

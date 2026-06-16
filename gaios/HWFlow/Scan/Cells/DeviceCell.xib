@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -22,47 +22,47 @@
                         <rect key="frame" x="25" y="4" width="285" height="83"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="3yh-AU-Hew">
-                                <rect key="frame" x="12" y="29.666666666666664" width="24" height="24"/>
+                                <rect key="frame" x="16" y="29.666666666666664" width="24" height="24"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="24" id="BmS-uJ-07P"/>
                                     <constraint firstAttribute="width" constant="24" id="Zp6-gp-JLL"/>
                                 </constraints>
                             </imageView>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="99y-WS-DN1">
-                                <rect key="frame" x="48" y="8" width="197" height="67"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="99y-WS-DN1">
+                                <rect key="frame" x="52" y="12" width="181" height="59"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="lbl_title_pin" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7o6-KD-pCr">
-                                        <rect key="frame" x="0.0" y="0.0" width="197" height="33.666666666666664"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="181" height="28.666666666666668"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="lbl_hint_pin" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V6T-NS-nXk">
-                                        <rect key="frame" x="0.0" y="33.666666666666657" width="197" height="33.333333333333343"/>
+                                        <rect key="frame" x="0.0" y="30.666666666666664" width="181" height="28.333333333333336"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
                             </stackView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="rightArrow" translatesAutoresizingMaskIntoConstraints="NO" id="8bF-m2-Kce">
-                                <rect key="frame" x="253" y="31.666666666666664" width="20" height="20"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="ic_carret_right" translatesAutoresizingMaskIntoConstraints="NO" id="8bF-m2-Kce">
+                                <rect key="frame" x="245" y="29.666666666666664" width="24" height="24"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="20" id="30A-mW-R9G"/>
-                                    <constraint firstAttribute="height" constant="20" id="V34-aQ-eKi"/>
+                                    <constraint firstAttribute="width" constant="24" id="30A-mW-R9G"/>
+                                    <constraint firstAttribute="height" constant="24" id="V34-aQ-eKi"/>
                                 </constraints>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" name="gGrayCard"/>
                         <constraints>
                             <constraint firstItem="3yh-AU-Hew" firstAttribute="centerY" secondItem="PcH-Dg-qSK" secondAttribute="centerY" id="5Q3-DT-BmF"/>
-                            <constraint firstAttribute="bottom" secondItem="99y-WS-DN1" secondAttribute="bottom" constant="8" id="5yW-R9-yIC"/>
+                            <constraint firstAttribute="bottom" secondItem="99y-WS-DN1" secondAttribute="bottom" constant="12" id="5yW-R9-yIC"/>
                             <constraint firstItem="99y-WS-DN1" firstAttribute="leading" secondItem="3yh-AU-Hew" secondAttribute="trailing" constant="12" id="KH1-7G-LQN"/>
                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="70" id="PoG-nP-5UZ"/>
-                            <constraint firstAttribute="trailing" secondItem="8bF-m2-Kce" secondAttribute="trailing" constant="12" id="cK9-z9-Tsh"/>
-                            <constraint firstItem="99y-WS-DN1" firstAttribute="top" secondItem="PcH-Dg-qSK" secondAttribute="top" constant="8" id="jOA-2h-szh"/>
-                            <constraint firstItem="3yh-AU-Hew" firstAttribute="leading" secondItem="PcH-Dg-qSK" secondAttribute="leading" constant="12" id="teA-GC-vGf"/>
-                            <constraint firstItem="8bF-m2-Kce" firstAttribute="leading" secondItem="99y-WS-DN1" secondAttribute="trailing" constant="8" id="ttA-Ux-3R9"/>
+                            <constraint firstAttribute="trailing" secondItem="8bF-m2-Kce" secondAttribute="trailing" constant="16" id="cK9-z9-Tsh"/>
+                            <constraint firstItem="99y-WS-DN1" firstAttribute="top" secondItem="PcH-Dg-qSK" secondAttribute="top" constant="12" id="jOA-2h-szh"/>
+                            <constraint firstItem="3yh-AU-Hew" firstAttribute="leading" secondItem="PcH-Dg-qSK" secondAttribute="leading" constant="16" id="teA-GC-vGf"/>
+                            <constraint firstItem="8bF-m2-Kce" firstAttribute="leading" secondItem="99y-WS-DN1" secondAttribute="trailing" constant="12" id="ttA-Ux-3R9"/>
                             <constraint firstItem="8bF-m2-Kce" firstAttribute="centerY" secondItem="PcH-Dg-qSK" secondAttribute="centerY" id="ycb-Oo-iCi"/>
                         </constraints>
                     </view>
@@ -87,7 +87,7 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="rightArrow" width="9" height="14"/>
+        <image name="ic_carret_right" width="24" height="24"/>
         <namedColor name="gBlackBg">
             <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

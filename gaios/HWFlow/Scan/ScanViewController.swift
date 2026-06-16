@@ -122,14 +122,14 @@ class ScanViewController: HWFlowBaseViewController {
 
     func setContent() {
         title = "id_devices".localized
-        btnTroubleshoot.setTitle("id_troubleshoot".localized, for: .normal)
-        btnConnectQr.setTitle("Connect via QR (Plus & Classic only)".localized, for: .normal)
+        btnTroubleshoot.setStyle(.underline(txt: "id_troubleshoot".localized, color: UIColor.gAccent()))
+        btnConnectQr.setTitle("Connect via QR".localized, for: .normal)
         btnTroubleshoot.isHidden = deviceType != .Jade
     }
 
     func setStyle() {
         btnTroubleshoot.setStyle(.inline)
-        btnConnectQr.setStyle(.inline)
+        btnConnectQr.setStyle(.outlined)
     }
     func addCustomBack() {
         let backButton = UIButton(type: .system)
@@ -163,7 +163,7 @@ class ScanViewController: HWFlowBaseViewController {
 
     func loadNavigationBtns() {
         let settingsBtn = UIButton(type: .system)
-        settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+        settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .medium)
         settingsBtn.tintColor = UIColor.gAccent()
         settingsBtn.setTitle("id_setup_guide".localized, for: .normal)
         settingsBtn.addTarget(self, action: #selector(setupBtnTapped), for: .touchUpInside)
@@ -272,13 +272,6 @@ extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
 extension ScanViewController: QRUnlockInfoAlertViewControllerDelegate {
     func onTap(_ action: QRUnlockInfoAlertAction) {
         switch action {
-        case .learnMore:
-            let url = "https://help.blockstream.com/hc/en-us/sections/10426339090713-Air-gapped-Usage"
-            if let url = URL(string: url) {
-                if UIApplication.shared.canOpenURL(url) {
-                    SafeNavigationManager.shared.navigate(url)
-                }
-            }
         case .setup:
             let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadePinInfoViewController") as? QRUnlockJadePinInfoViewController {
@@ -289,7 +282,6 @@ extension ScanViewController: QRUnlockInfoAlertViewControllerDelegate {
             if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadeViewController") as? QRUnlockJadeViewController {
                 vc.vm = QRUnlockJadeViewModel(scope: .xpub, testnet: false, askXpub: true)
                 vc.delegate = self
-                vc.forceUserhelp = true
                 vc.modalPresentationStyle = .overFullScreen
                 present(vc, animated: true)
             }
@@ -300,10 +292,6 @@ extension ScanViewController: QRUnlockInfoAlertViewControllerDelegate {
 }
 
 extension ScanViewController: QRUnlockJadeViewControllerDelegate {
-    func unlock() {
-        
-    }
-    
     func login(credentials: gdk.Credentials, wallet: WalletManager, account: Account) {
         AccountsRepository.shared.current = account
         AccountNavigator.navLogged(accountId: account.id)

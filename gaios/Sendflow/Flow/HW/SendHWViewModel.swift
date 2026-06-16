@@ -39,8 +39,8 @@ struct SendHWViewModel {
         } else if isQRMode {
             return JadeAsset.img(.selectDual, nil)
         } else {
-            let isV2 = BleHwManager.shared.jade?.version?.boardType == .v2
-            return JadeAsset.img(.select, isV2 ? .v2 : .v1)
+            let boardType = BleHwManager.shared.jade?.version?.boardType
+            return JadeAsset.img(.select, JadeVersion(boardType: boardType))
         }
     }
     var isSwap: Bool {

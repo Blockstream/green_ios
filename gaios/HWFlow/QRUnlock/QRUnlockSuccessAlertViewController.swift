@@ -33,7 +33,7 @@ class QRUnlockSuccessAlertViewController: UIViewController {
         view.alpha = 0.0
 
         if AuthenticationTypeHandler.biometryType == .faceID {
-            imgBio.image = UIImage(systemName: "faceid")
+            imgBio.image = UIImage(named: "ic_face_id")
             imgBio.tintColor = .white
             btnBio.setTitle("id_enable_face_id".localized, for: .normal)
             lblTitle.text = String(format: "id_use_s_for_quick_access".localized, "id_face_id".localized)
@@ -60,8 +60,11 @@ class QRUnlockSuccessAlertViewController: UIViewController {
     }
 
     func setStyle() {
-        cardView.setStyle(.alert)
-        lblTitle.setStyle(.titleCard)
+        cardView.backgroundColor = .gGrayCardBorder()
+        cardView.layer.cornerRadius = 12
+        cardView.borderWidth = 1.0
+        cardView.borderColor = .gBorderBold()
+        lblTitle.setStyle(.titleDialog)
         lblHint.setStyle(.txtCard)
         btnBio.setStyle(.primary)
     }

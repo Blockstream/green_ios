@@ -211,7 +211,7 @@ class ConnectViewController: HWFlowBaseViewController {
 
     func setStyle() {
         retryButton.setStyle(.inline)
-        lblTitle.setStyle(.title)
+        lblTitle.setStyle(.subTitle24)
         lblSubtitle.setStyle(.txtCard)
         lblSubtitle.numberOfLines = 0
         lblSubtitle.translatesAutoresizingMaskIntoConstraints = false

@@ -11,7 +11,6 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnContinue: UIButton!
     @IBOutlet weak var imgDevice: UIImageView!
-    @IBOutlet weak var btnAppSettings: UIButton!
     
     var bleHwManager = BleHwManager.shared
     var scanViewModel: ScanViewModel?
@@ -34,35 +33,33 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         btnContinue.setTitle("id_continue".localized, for: .normal)
         switch bleHwManager.type {
         case .Ledger:
-            imgDevice.image = UIImage(named: "il_ledger")
+            imgDevice.image = UIImage(named: "il_hardware_wallet")
         default:
             imgDevice.image = JadeAsset.img(.normalDual, nil)
         }
         lblHint.text = bleHwManager.type == .Jade ? "Blockstream" : ""
-        btnAppSettings.setTitle("id_app_settings".localized, for: .normal)
     }
     
     func setStyle() {
-        lblTitle.setStyle(.title)
-        lblHint.setStyle(.txt)
+        lblTitle.setStyle(.subTitle24)
+        lblHint.setStyle(.txtCard)
         btnContinue.setStyle(.primary)
-        btnAppSettings.setStyle(.inline)
-        btnAppSettings.setTitleColor(.white.withAlphaComponent(0.6), for: .normal)
     }
     
     func loadNavigationBtns() {
-        let settingsBtn = UIButton(type: .system)
-        settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        settingsBtn.tintColor = UIColor.gAccent()
-        settingsBtn.setTitle("id_setup_guide".localized, for: .normal)
-        settingsBtn.addTarget(self, action: #selector(setupBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+        let optBtn = UIButton(type: .system)
+        optBtn.setImage(UIImage(named: "ic_dots_three"), for: .normal)
+        optBtn.addTarget(self, action: #selector(optionsBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: optBtn)]
     }
     
-    @objc func setupBtnTapped() {
-        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "SetupJadeViewController") as? SetupJadeViewController {
-            navigationController?.pushViewController(vc, animated: true)
+    @objc func optionsBtnTapped() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "Options".localized, type: .walletListPrefs, items: WalletListPrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
     }
     
@@ -103,13 +100,6 @@ class PairingSuccessViewController: HWFlowBaseViewController {
             vc.viewModel = GenuineCheckDialogViewModel(BleHwManager: bleHwManager, board: version.boardType)
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
-        }
-    }
-    
-    @IBAction func btnAppSettings(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "AppSettings", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AppSettingsViewController") as? AppSettingsViewController {
-            navigationController?.pushViewController(vc, animated: true)
         }
     }
     
@@ -154,6 +144,22 @@ class PairingSuccessViewController: HWFlowBaseViewController {
             }
         }
     }
+    
+    func onAbout() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAboutViewController") as? DialogAboutViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
+    }
+    
+    func onAppSettings() {
+        let storyboard = UIStoryboard(name: "AppSettings", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AppSettingsViewController") as? AppSettingsViewController {
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
 }
 extension PairingSuccessViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
@@ -169,12 +175,26 @@ extension PairingSuccessViewController: DialogListViewControllerDelegate {
     }
 
     func didSelectIndex(_ index: Int, with type: DialogType) {
-        switch NetworkPrefs(rawValue: index) {
-        case .mainnet:
-            pushConnectViewController(firstConnection: true, testnet: false)
-        case .testnet:
-            pushConnectViewController(firstConnection: true, testnet: true)
-        case .none:
+        switch type {
+        case .walletListPrefs:
+            switch index {
+            case 0:
+                onAppSettings()
+            case 1:
+                onAbout()
+            default:
+                break
+            }
+        case .networkPrefs:
+            switch NetworkPrefs(rawValue: index) {
+            case .mainnet:
+                pushConnectViewController(firstConnection: true, testnet: false)
+            case .testnet:
+                pushConnectViewController(firstConnection: true, testnet: true)
+            case .none:
+                break
+            }
+        default:
             break
         }
     }
@@ -235,5 +255,11 @@ extension PairingSuccessViewController: GenuineCheckEndViewControllerDelegate {
             shareLogs: true,
             screenName: "FailedGenuineCheck")
         presentContactUsViewController(request: request)
+    }
+}
+
+extension PairingSuccessViewController: DialogAboutViewControllerDelegate {
+    func openContactUs() {
+        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
     }
 }

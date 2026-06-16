@@ -6,7 +6,6 @@ protocol QRUnlockInfoAlertViewControllerDelegate: AnyObject {
 }
 
 enum QRUnlockInfoAlertAction {
-    case learnMore
     case setup
     case alreadyUnlocked
     case cancel
@@ -19,8 +18,8 @@ class QRUnlockInfoAlertViewController: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-
-    @IBOutlet weak var btnLearnMore: UIButton!
+    @IBOutlet weak var lblAvailable: UILabel!
+    
     @IBOutlet weak var btnSetup: UIButton!
     @IBOutlet weak var btnAlreadyUnlocked: UIButton!
     @IBOutlet weak var btnClose: UIButton!
@@ -43,20 +42,24 @@ class QRUnlockInfoAlertViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "id_qr_airgapped_mode".localized
-        lblHint.text = "id_qr_mode_allows_you_to".localized
-        btnLearnMore.setTitle("id_learn_more".localized, for: .normal)
+        lblTitle.text = "QR Air-Gapped Mode".localized
+        lblHint.text = "QR Mode allows you to communicate with the Blockstream app using Jade's camera and QR codes (instead of Bluetooth).".localized
         btnSetup.setTitle("id_qr_pin_unlock".localized, for: .normal)
-        btnAlreadyUnlocked.setTitle("id_jade_already_unlocked".localized, for: .normal)
+        btnAlreadyUnlocked.setTitle("My Jade is already unlocked".localized, for: .normal)
+        lblAvailable.text = "Only available on Jade Plus and Jade Classic.".localized
     }
 
     func setStyle() {
-        cardView.setStyle(.alert)
-        lblTitle.setStyle(.titleCard)
+        cardView.backgroundColor = .gGrayCardBorder()
+        cardView.layer.cornerRadius = 12
+        cardView.borderWidth = 1.0
+        cardView.borderColor = .gBorderBold()
+        lblTitle.setStyle(.titleDialog)
         lblHint.setStyle(.txtCard)
-        btnLearnMore.setStyle(.inline)
         btnSetup.setStyle(.primary)
-        btnAlreadyUnlocked.setStyle(.inlineWhite)
+        btnAlreadyUnlocked.setStyle(.outlined)
+        lblAvailable.setStyle(.txtSmaller)
+        lblAvailable.textColor = .gGrayTxt()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -75,9 +78,6 @@ class QRUnlockInfoAlertViewController: UIViewController {
 
     @IBAction func btnClose(_ sender: Any) {
         dismiss(.cancel)
-    }
-    @IBAction func btnLearnMore(_ sender: Any) {
-        dismiss(.learnMore)
     }
     @IBAction func btnSetup(_ sender: Any) {
         dismiss(.setup)

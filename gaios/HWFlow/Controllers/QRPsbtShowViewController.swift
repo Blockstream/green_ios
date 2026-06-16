@@ -186,10 +186,6 @@ extension QRPsbtShowViewController: QRUnlockSignDialogViewControllerDelegate {
     }
 }
 extension QRPsbtShowViewController: QRUnlockJadeViewControllerDelegate {
-    func unlock() {
-        // nothing
-    }
-
     func login(credentials: gdk.Credentials, wallet: core.WalletManager, account: Account) {
         print("login")
     }

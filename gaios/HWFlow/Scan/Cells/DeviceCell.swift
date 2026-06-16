@@ -12,7 +12,8 @@ class DeviceCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         bg.setStyle(CardStyle.defaultStyle)
-        lblTitle.setStyle(.txtBold)
+        lblTitle.setStyle(.txtBigger)
+        lblTitle.font = UIFont.systemFont(ofSize: lblTitle.font.pointSize, weight: .medium)
         lblSubtitle.setStyle(.txtCard)
     }
 
@@ -29,5 +30,6 @@ class DeviceCell: UITableViewCell {
     func configure(text: String) {
         lblTitle.text = text
         lblSubtitle.text = "id_found_via_bluetooth".localized
+        imgIcon.image = UIImage(named: "ic_jade")?.withTintColor(UIColor.gGrayTxt())
     }
 }

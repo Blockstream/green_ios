@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "il_hardware_wallet.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

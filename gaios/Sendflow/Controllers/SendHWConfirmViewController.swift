@@ -71,8 +71,8 @@ class SendHWConfirmViewController: UIViewController {
             if isQRMode {
                 icWallet.image = JadeAsset.img(.selectDual, nil)
             } else {
-                let isV2 = BleHwManager.shared.jade?.version?.boardType == .v2
-                icWallet.image = JadeAsset.img(.select, isV2 ? .v2 : .v1)
+                let boardType = BleHwManager.shared.jade?.version?.boardType
+                icWallet.image = JadeAsset.img(.select, JadeVersion(boardType: boardType))
             }
         }
 

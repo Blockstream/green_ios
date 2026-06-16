@@ -7,29 +7,23 @@ import hw
 protocol QRUnlockJadeViewControllerDelegate: AnyObject {
     func login(credentials: Credentials, wallet: WalletManager, account: Account)
     func abort()
-    func unlock()
 }
 class QRUnlockJadeViewController: UIViewController {
+    
+    @IBOutlet weak var navBar: UINavigationBar!
+    @IBOutlet weak var navItem: UINavigationItem!
+    @IBOutlet weak var btnBack: UIBarButtonItem!
+    @IBOutlet weak var btnTrouble: UIBarButtonItem!
 
-    @IBOutlet weak var lblNavTitle: UILabel!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-    @IBOutlet weak var btnTrouble: UIButton!
     @IBOutlet weak var stepView: UIView!
     @IBOutlet weak var lblStep: UILabel!
     @IBOutlet weak var imgStep: UIImageView!
     @IBOutlet weak var qrCodeView: QRCodeView!
     @IBOutlet weak var qrScanView: QrScannerView!
     @IBOutlet weak var btnNext: UIButton!
-    @IBOutlet weak var btnBack: UIButton!
-
     @IBOutlet weak var progressView: SmoothProgressView!
-    @IBOutlet weak var userHelp: UIView!
-    @IBOutlet weak var lblUserHelpTitle: UILabel!
-    @IBOutlet weak var lblUserHelpHint: UILabel!
-    @IBOutlet weak var btnUserHelpScan: UIButton!
-    @IBOutlet weak var btnUserHelpLearn: UIButton!
-    @IBOutlet weak var jadeImg: UIImageView!
 
     var vm: QRUnlockJadeViewModel!
     weak var delegate: QRUnlockJadeViewControllerDelegate?
@@ -38,11 +32,6 @@ class QRUnlockJadeViewController: UIViewController {
 
     private var bcurDecodedContinuation: CheckedContinuation<BcurDecodedData, Error>?
     private var bcurEncodedContinuation: CheckedContinuation<BcurEncodedData, Error>?
-
-    /// debug only
-    var runCount = 0
-    var isStarted = false
-    var forceUserhelp = false
 
     enum Theme {
         case light
@@ -58,10 +47,6 @@ class QRUnlockJadeViewController: UIViewController {
         setStyle()
         qrScanView.delegate = self
         self.view.alpha = 0.0
-        userHelp.isHidden = true
-        if forceUserhelp {
-            presentUserHelp()
-        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -73,9 +58,7 @@ class QRUnlockJadeViewController: UIViewController {
     }
 
     func setContent() {
-        jadeImg.image = JadeAsset.img(.normalDual, nil)
-        btnBack.setTitle("id_back".localized, for: .normal)
-        lblNavTitle.text = "id_qr_pin_unlock".localized
+        setupNavigationBar()
 
         lblTitle.text = vm.title()
         lblHint.text = vm.hint()
@@ -85,27 +68,41 @@ class QRUnlockJadeViewController: UIViewController {
         btnNext.isHidden = !vm.showQRCode()
         progressView.isHidden = true
         lblStep.isHidden = false
-        lblUserHelpTitle.text = "id_import_pubkey".localized
-        lblUserHelpHint.text = "id_navigate_on_your_jade_to".localized
-        btnUserHelpScan.setTitle("id_scan_pubkey".localized, for: .normal)
-        btnUserHelpLearn.setTitle("id_learn_more".localized, for: .normal)
+    }
+
+    private func setupNavigationBar() {
+        navBar.layoutMargins = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+        navBar.preservesSuperviewLayoutMargins = false
+        
+        var backConfig = UIButton.Configuration.plain()
+        backConfig.image = UIImage(systemName: "chevron.backward", withConfiguration: UIImage.SymbolConfiguration(weight: .semibold))
+        backConfig.imagePadding = 6
+        backConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: -8, bottom: 0, trailing: 0)
+        var attrTitle = AttributedString("id_back".localized)
+        attrTitle.font = UIFont.systemFont(ofSize: 17)
+        backConfig.attributedTitle = attrTitle
+        
+        let customBackBtn = UIButton(configuration: backConfig)
+        customBackBtn.addTarget(self, action: #selector(btnBackTapped(_:)), for: .touchUpInside)
+        btnBack.customView = customBackBtn
+        
+        btnTrouble.title = ""
+        btnTrouble.image = UIImage(named: "ic_help")
+        btnTrouble.target = self
+        btnTrouble.action = #selector(btnTroubleTapped(_:))
+        
+        navItem.title = "id_qr_pin_unlock".localized
     }
 
     func setStyle() {
-
         progressView.isHidden = true
+        progressView.progressColor = UIColor.gAccent()
+        lblStep.setStyle(.txtCard)
+        lblTitle.setStyle(.titleDialog)
         lblHint.setStyle(.txtCard)
-        lblStep.setStyle(.txtSmaller)
-        btnBack.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        lblNavTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
-        lblStep.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        lblStep.textColor = UIColor.gAccent()
+        lblStep.setStyle(.txtCard)
         btnNext.setStyle(.primary)
-        lblUserHelpTitle.setStyle(.subTitle)
-        lblUserHelpHint.setStyle(.txtCard)
-        btnUserHelpScan.setStyle(.primary)
-        btnUserHelpLearn.setStyle(.inline)
         qrScanView.layer.masksToBounds = true
         qrScanView.cornerRadius = 10.0
     }
@@ -139,56 +136,45 @@ class QRUnlockJadeViewController: UIViewController {
                 qrCodeView.configure(frames: qrBcur.parts)
             }
         case .xpub:
-            lblNavTitle.isHidden = true
-            stepView.isHidden = true
+            navItem.title = ""
+            btnTrouble.isHidden = true
+            stepView.isHidden = false
+            lblStep.isHidden = true
             theme(.dark)
             startCapture()
         }
     }
 
-    func presentUserHelp() {
-        view.bringSubviewToFront(userHelp)
-        userHelp.alpha = 0.0
-        userHelp.isHidden = false
-        lblNavTitle.isHidden = true
-        btnTrouble.isHidden = true
-        UIView.animate(withDuration: 0.3) {
-            self.userHelp.alpha = 1.0
-            self.theme(.dark)
-        }
-    }
-
-    func dismissUserHelp() {
-        lblNavTitle.isHidden = false
-        btnTrouble.isHidden = false
-        UIView.animate(withDuration: 0.3, delay: 0.3) {
-            self.userHelp.alpha = 0.0
-        } completion: { _ in
-            self.userHelp.isHidden = true
-        }
-    }
-
     func theme(_ theme: Theme) {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        
         switch theme {
         case .light:
-            imgStep.image = vm.icon()
-            lblNavTitle.textColor = .black
+            imgStep.image = vm.icon(color: .black)
+            lblStep.textColor = .gGrayTxt()
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.black]
+            navBar.tintColor = .black
+            btnBack.customView?.tintColor = .black
             lblTitle.textColor = .black
-            lblHint.textColor = .black
-            btnBack.setImage(UIImage(named: "ic_qr_nav_back")?.maskWithColor(color: .black), for: .normal)
-            btnBack.setTitleColor(.black, for: .normal)
+            lblHint.textColor = .gGrayTxt()
+            btnNext.setTitleColor(.white, for: .normal)
             view.backgroundColor = .white
-            btnTrouble.setImage(UIImage(named: "ic_help")?.maskWithColor(color: .black), for: .normal)
         case .dark:
-            imgStep.image = vm.icon()
-            lblNavTitle.textColor = .white
+            imgStep.image = vm.icon(color: .white)
+            lblStep.textColor = .gGrayTxt()
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+            navBar.tintColor = .white
+            btnBack.customView?.tintColor = .white
             lblTitle.textColor = .white
-            lblHint.textColor = UIColor.gW40()
-            btnBack.setImage(UIImage(named: "ic_qr_nav_back")?.maskWithColor(color: .white), for: .normal)
-            btnBack.setTitleColor(.white, for: .normal)
-            btnTrouble.setImage(UIImage(named: "ic_help")?.maskWithColor(color: .white), for: .normal)
+            lblHint.textColor = .gGrayTxt()
+            btnNext.setTitleColor(UIColor.gBlackBg(), for: .normal)
             view.backgroundColor = UIColor.gBlackBg()
         }
+        
+        navBar.standardAppearance = appearance
+        navBar.scrollEdgeAppearance = appearance
+        navBar.compactAppearance = appearance
     }
 
     func onScanOracle(_ result: ScanResult) async {
@@ -233,9 +219,7 @@ class QRUnlockJadeViewController: UIViewController {
                 vm.scope = .xpub
                 refresh()
             } else {
-                dismiss(animated: true) {
-                    self.delegate?.unlock()
-                }
+                dismiss(animated: true)
             }
         case .xpub:
             guard let bcur = result.bcur else {
@@ -265,38 +249,24 @@ class QRUnlockJadeViewController: UIViewController {
         }
     }
 
-    @IBAction func btnBack(_ sender: Any) {
+    @IBAction func btnBackTapped(_ sender: Any) {
         dismiss(animated: true) {
             self.delegate?.abort()
         }
     }
 
-    @IBAction func btnTrouble(_ sender: Any) {
+    @IBAction func btnTroubleTapped(_ sender: Any) {
         SafeNavigationManager.shared.navigate(ExternalUrls.scanQRFixIssues)
     }
 
     @IBAction func btnNext(_ sender: Any) {
-        switch vm.scope {
-        case .handshakeInitReply:
-            if vm.askXpub {
-                presentUserHelp()
-            } else {
-                dismiss(animated: true) {
-                    self.delegate?.unlock()
-                }
-            }
-        default:
-            break
+        guard vm.scope == .handshakeInitReply else { return }
+        
+        if vm.askXpub {
+            onScanCompleted(ScanResult.from(result: "", bcur: nil))
+        } else {
+            dismiss(animated: true)
         }
-    }
-
-    @IBAction func btnUserHelpScan(_ sender: Any) {
-        dismissUserHelp()
-        onScanCompleted(ScanResult.from(result: "", bcur: nil))
-    }
-
-    @IBAction func btnUserHelpLearn(_ sender: Any) {
-        SafeNavigationManager.shared.navigate(ExternalUrls.qrModeAirGapSupport)
     }
 }
 

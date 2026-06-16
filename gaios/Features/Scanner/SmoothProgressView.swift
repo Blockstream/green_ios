@@ -4,6 +4,12 @@ final class SmoothProgressView: UIView {
     private let progressLayer = CAShapeLayer()
     private let trackLayer = CAShapeLayer()
 
+    var progressColor: UIColor = .white {
+        didSet {
+            progressLayer.strokeColor = progressColor.cgColor
+        }
+    }
+
     private var currentProgress: Float = 0
 
     override init(frame: CGRect) {
@@ -24,7 +30,7 @@ final class SmoothProgressView: UIView {
         layer.addSublayer(trackLayer)
 
         progressLayer.fillColor = UIColor.clear.cgColor
-        progressLayer.strokeColor = UIColor.white.cgColor
+        progressLayer.strokeColor = progressColor.cgColor
         progressLayer.lineWidth = 8
         progressLayer.lineCap = .round
         progressLayer.strokeEnd = 0

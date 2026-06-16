@@ -21,31 +21,31 @@ class GenuineCheckEndViewModel {
         self.state = .progress
         self.board = board
     }
-
-    var icon: UIImage {
+    var image: UIImage? {
+        let suffix = (board == .v2c) ? "_v2c" : "_v2"
         switch state {
-        case .notGenuine:
-            return UIImage(named: "ic_genuine_check_state_warn")!
-        case .genuine:
-            return UIImage(named: "ic_genuine_check_state_genuine")!
-        case .cancel:
-            return UIImage(named: "ic_genuine_check_state_not_genuine")!
-        case .progress:
-            return UIImage()
-        case .exit:
-            return UIImage()
+        case .progress: return UIImage(named: "il_genuine_check_auth\(suffix)")
+        case .genuine: return UIImage(named: "il_genuine_check_genuine\(suffix)")
+        case .cancel: return UIImage(named: "il_genuine_check_cancelled\(suffix)")
+        case .notGenuine, .exit: return nil
+        }
+    }
+    var icon: UIImage? {
+        switch state {
+        case .notGenuine: return UIImage(named: "ic_warning")
+        default: return nil
         }
     }
     var title: String {
         switch state {
         case .cancel:
-            return "id_genuine_check_canceled".localized
+            return "Genuine Check Canceled".localized
         case .genuine:
-            return "id_your_jade_is_genuine".localized
+            return "Your Jade Is Genuine!".localized
         case .notGenuine:
             return "id_this_jade_is_not_genuine".localized
         case .progress:
-            return "id_authenticate_your_jade".localized
+            return "Authenticate Your Jade".localized
         case .exit:
             return "id_error".localized
         }
@@ -75,7 +75,7 @@ class GenuineCheckEndViewModel {
         return "id_contact_support".localized
     }
     var btnContinue: String {
-        return "id_continue_with_jade".localized
+        return "Continue".localized
     }
     var btnCancel: String {
         return "id_skip".localized

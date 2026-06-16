@@ -107,22 +107,29 @@ class SetupJadeViewController: HWFlowBaseViewController {
             riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
         }
 
+
         [lblStep1Hint, lblStep2Hint, lblStep3Hint].forEach {
-            $0?.isHidden = true
+            $0.isHidden = true
         }
         [infoBox1, infoBox2, infoBox3].forEach {
-            $0?.borderColor = UIColor.gGrayCard()
+            $0.borderColor = UIColor.gGrayCardBorder()
+        }
+        [lblStep1Title, lblStep2Title, lblStep3Title].forEach {
+            $0.textColor = UIColor.gGrayTxt()
         }
         switch idx {
         case 0:
             lblStep1Hint.isHidden = false
             infoBox1.borderColor = UIColor.gAccent()
+            lblStep1Title.textColor = .white
         case 1:
             lblStep2Hint.isHidden = false
             infoBox2.borderColor = UIColor.gAccent()
+            lblStep2Title.textColor = .white
         case 2:
             lblStep3Hint.isHidden = false
             infoBox3.borderColor = UIColor.gAccent()
+            lblStep3Title.textColor = .white
         default:
             break
         }
@@ -131,7 +138,7 @@ class SetupJadeViewController: HWFlowBaseViewController {
     func loadNavigationBtns() {
         // Troubleshoot
         let settingsBtn = UIButton(type: .system)
-        settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+        settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .medium)
         settingsBtn.tintColor = UIColor.gAccent()
         settingsBtn.setTitle("id_troubleshoot".localized, for: .normal)
         settingsBtn.addTarget(self, action: #selector(troubleshootBtnTapped), for: .touchUpInside)
@@ -140,23 +147,21 @@ class SetupJadeViewController: HWFlowBaseViewController {
 
     func setStyle() {
         [infoBox1, infoBox2, infoBox3].forEach {
-            $0?.cornerRadius = 5.0
-            $0?.borderWidth = 2.0
-            $0?.borderColor = UIColor.gGrayCard()
+            $0.setStyle(.defaultStyle)
         }
         [lblStep1Number, lblStep2Number, lblStep3Number].forEach {
-            $0?.font = UIFont.systemFont(ofSize: 12.0, weight: .black)
-            $0?.textColor = UIColor.gAccent()
+            $0.setStyle(.txt)
+            $0.font = UIFont.systemFont(ofSize: $0.font.pointSize, weight: .semibold)
+            $0.textColor = UIColor.gAccent()
         }
         [lblStep1Title, lblStep2Title, lblStep3Title].forEach {
-            $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-            $0?.textColor = .white
+            $0.setStyle(.titleCard)
+            $0.font = UIFont.systemFont(ofSize: $0.font.pointSize, weight: .bold)
         }
         [lblStep1Hint, lblStep2Hint, lblStep3Hint].forEach {
-            $0?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-            $0?.textColor = .white.withAlphaComponent(0.6)
+            $0.setStyle(.txtCard)
         }
-        btnExit.setStyle(.outlinedWhite)
+        btnExit.setStyle(.outlined)
     }
 
     @objc func troubleshootBtnTapped() {

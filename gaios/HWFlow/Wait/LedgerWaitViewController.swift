@@ -118,13 +118,13 @@ class LedgerWaitViewController: HWFlowBaseViewController {
     }
 
     func setContent() {
-        lblTitle.text = "id_follow_the_instructions_of_your".localized
-        lblHint.text = "id_please_follow_the_instructions".localized
+        lblTitle.text = "Check your hardware wallet".localized
+        lblHint.text = "Follow the instructions on your device to continue.".localized
     }
 
     func setStyle() {
-        lblTitle.setStyle(.title)
-        lblHint.setStyle(.txt)
+        lblTitle.setStyle(.subTitle24)
+        lblHint.setStyle(.txtCard)
     }
 
     func next() {

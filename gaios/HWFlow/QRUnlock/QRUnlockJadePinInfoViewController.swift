@@ -32,7 +32,8 @@ class QRUnlockJadePinInfoViewController: UIViewController {
     }
 
     func setStyle() {
-        lblTitle.setStyle(.subTitle)
+        lblTitle.setStyle(.titleCard)
+        lblTitle.font = UIFont.systemFont(ofSize: lblTitle.font.pointSize, weight: .bold)
         lblHint.setStyle(.txtCard)
         btnNext.setStyle(.primary)
         [lblInfo1, lblInfo2, lblInfo3].forEach {
@@ -74,10 +75,6 @@ class QRUnlockJadePinInfoViewController: UIViewController {
     }
 }
 extension QRUnlockJadePinInfoViewController: QRUnlockJadeViewControllerDelegate {
-    func unlock() {
-        // nothing
-    }
-
     func login(credentials: gdk.Credentials, wallet: WalletManager, account: Account) {
         AccountsRepository.shared.current = account
         AccountNavigator.navLogged(accountId: account.id)

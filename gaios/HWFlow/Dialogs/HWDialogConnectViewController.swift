@@ -86,8 +86,7 @@ class HWDialogConnectViewController: UIViewController {
     func updateImage() {
         if viewModel?.isJade ?? true {
             let boardType = viewModel?.account.boardType ?? BleHwManager.shared.jade?.version?.boardType
-            let isV2 = boardType == .v2
-            icWallet.image = JadeAsset.img(.horizontal, isV2 ? .v2 : .v1)
+            icWallet.image = JadeAsset.img(.horizontal, JadeVersion(boardType: boardType))
         } else {
             icWallet.image = UIImage(named: "ic_hww_ledger")
         }

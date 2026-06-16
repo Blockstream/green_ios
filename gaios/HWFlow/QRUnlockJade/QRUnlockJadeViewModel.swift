@@ -36,7 +36,7 @@ class QRUnlockJadeViewModel {
         case .handshakeInitReply:
             return "\("id_step".localized) 2".uppercased()
         case .xpub:
-            return "id_export_xpub".localized.uppercased()
+            return ""
         }
     }
 
@@ -49,20 +49,20 @@ class QRUnlockJadeViewModel {
         case .handshakeInitReply:
             return "id_scan_qr_with_jade".localized
         case .xpub:
-            return "id_scan_qr_on_jade".localized
+            return "id_scan_pubkey".localized
         }
     }
 
-    func icon() -> UIImage {
+    func icon(color: UIColor = .white) -> UIImage {
         switch scope {
         case .oracle:
-            return UIImage(named: "ic_qr_scan_square")!.maskWithColor(color: UIColor.gAccent())
+            return UIImage(named: "ic_qr_scan_square")!.maskWithColor(color: color)
         case .handshakeInit:
-            return UIImage(named: "ic_qr_scan_square")!.maskWithColor(color: UIColor.gAccent())
+            return UIImage(named: "ic_qr_scan_square")!.maskWithColor(color: color)
         case .handshakeInitReply:
-            return UIImage(named: "ic_qr_scan_shield")!.maskWithColor(color: UIColor.gAccent())
+            return UIImage(named: "ic_qr_scan_shield")!.maskWithColor(color: color)
         case .xpub:
-            return UIImage(named: "ic_qr_scan_square")!.maskWithColor(color: UIColor.gAccent())
+            return UIImage(named: "ic_qr_scan_square")!.maskWithColor(color: color)
         }
     }
 
@@ -75,7 +75,7 @@ class QRUnlockJadeViewModel {
         case .handshakeInitReply:
             return String(format: "id_select_s_on_jade_and_scan_this".localized, "✅")
         case .xpub:
-            return "id_get_watchonly_information_from".localized
+            return "id_navigate_on_your_jade_to".localized
         }
     }
 
