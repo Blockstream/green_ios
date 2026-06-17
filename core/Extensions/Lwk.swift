@@ -31,6 +31,12 @@ extension LwkError {
             return "Http error \(status): \(error ?? "")"
         case .GenericWithSwapId(msg: let msg, swapId: let swapId):
             return "Swap \(swapId) error: \(msg)"
+        case .EsploraHttpError(
+            url: _,
+            status: let status,
+            body: let body
+        ):
+            return "Esplora \(status) error: \(body ?? "")"
         }
     }
 }
