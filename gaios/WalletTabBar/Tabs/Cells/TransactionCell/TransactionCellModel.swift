@@ -113,11 +113,12 @@ class TransactionCellModel {
             }
         } else if tx.isLightning {
             let amount: Int64 = tx.amounts.first?.value ?? 0
+            let assetId = tx.amounts.first?.key ?? "btc"
             let fee: Int64 = Int64(tx.fee ?? 0)
             if amount < 0 {
-                return ["btc": amount - fee]
+                return [assetId: amount - fee]
             } else {
-                return ["btc": amount]
+                return [assetId: amount]
             }
         }
         return tx.amounts

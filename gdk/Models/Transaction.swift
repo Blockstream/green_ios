@@ -284,7 +284,8 @@ public struct Transaction: Comparable {
     }
 
     public var isLiquid: Bool {
-        amounts["btc"] == nil
+        amounts[AssetInfo.btcId] == nil &&
+        amounts[AssetInfo.lightningId] == nil
     }
 
     public var sessionSubaccount: UInt32 {

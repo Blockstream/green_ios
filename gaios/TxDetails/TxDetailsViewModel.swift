@@ -40,7 +40,7 @@ class TxDetailsViewModel {
         return assetAmountList.amounts.map {
             var amount = $0.1
             let assetId = transaction.subaccount?.gdkNetwork.getFeeAsset() ?? "btc"
-            if ($0.0 == assetId) && transaction.type == .outgoing {
+            if ($0.0 == assetId) && transaction.type == .outgoing && !transaction.isLightning {
                 amount = -(abs($0.1) - Int64(transaction.fee ?? 0))
             }
             return TxDetailsAmountCellModel(tx: transaction,
@@ -52,7 +52,7 @@ class TxDetailsViewModel {
     }
 
     var showTotals: Bool {
-        return !transaction.isLightning && transaction.type == .outgoing /* && assetAmountList.amounts.count == 1 */
+        return transaction.type == .outgoing /* && assetAmountList.amounts.count == 1 */
     }
 
     var txDetailsTotalsCellModels: [TxDetailsTotalsCellModel] {
@@ -70,7 +70,10 @@ class TxDetailsViewModel {
         }
         let assetId = transaction.subaccount?.gdkNetwork.getFeeAsset() ?? "btc"
         if assetAmountList.amounts.count == 1 {
-            let tSpent = abs(amountObj.1)
+            var tSpent = abs(amountObj.1)
+            if transaction.isLightning {
+                tSpent += Int64(transaction.fee ?? 0)
+            }
             if let balance = Balance.fromSatoshi(tSpent, assetId: amountObj.0) {
                 let (amount, denom) = balance.toValue()
                 let (fiat, fiatCurrency) = balance.toFiat()
