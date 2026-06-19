@@ -147,7 +147,7 @@ class AlertCardCell: UITableViewCell {
             let errorString: String = {
                 switch error {
                 case LoginError.connectionFailed(let txt):
-                    return "Failed in \(networkName ?? ""): \(txt?.localized ?? "")\n\nid_ensure_your_app_is_up_to_date".localized
+                    return "Failed in \(networkName ?? ""): \(txt?.localized ?? "")\n\n\("id_ensure_your_app_is_up_to_date".localized)"
                 case LoginError.walletNotFound(let txt):
                     return "Failed in \(networkName ?? ""): \(txt?.localized ?? "")"
                 case LoginError.hostUnblindingDisabled(_):

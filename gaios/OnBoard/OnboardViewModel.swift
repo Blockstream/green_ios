@@ -93,11 +93,12 @@ class OnboardViewModel {
         // login
         let walletIdentifier = try wallet.prominentSession?.walletIdentifier(credentials: credentials)
         let boltzCredentials = try wallet.deriveBoltzCredentials(from: credentials)
+        let lightningCredentials = try wallet.deriveLightningCredentials(from: credentials)
         // add boltz auth into keychain
         try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: boltzCredentials, for: account.keychain)
         let res = try await wallet.login(
             credentials: credentials,
-            lightningCredentials: nil,
+            lightningCredentials: lightningCredentials,
             boltzCredentials: boltzCredentials,
             device: nil,
             masterXpub: nil,
@@ -106,6 +107,12 @@ class OnboardViewModel {
             parentWalletId: walletIdentifier)
         account.xpubHashId = res?.xpubHashId
         account.walletHashId = res?.walletHashId
+        // add lightning auth into keychain only if it successfully restored
+        if wallet.lightningSession?.logged == true {
+            try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: lightningCredentials, for: account.keychainLightning)
+        } else {
+            account.removeAuthentication(.AuthKeyLightning)
+        }
         // cleanup previous restored account
         if let restoreAccountId = OnboardViewModel.restoreAccountId {
             if let restoredAccount = AccountsRepository.shared.get(for: restoreAccountId) {

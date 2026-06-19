@@ -30,8 +30,12 @@ public class LightningSessionManager: SessionManager {
         )
         return appSupport.appending(path: path)
     }
-
+    
     public override func loginUser(_ params: gdk.Credentials) async throws -> LoginUserResult {
+        return try await self.loginUser(params, isForceConnectAllowed: true)
+    }
+
+    public func loginUser(_ params: gdk.Credentials, isForceConnectAllowed: Bool) async throws -> LoginUserResult {
         guard let greenlightKeys = LightningSdk.CREDENTIALS else {
             throw GreenlightSDK.Error.Other("No greenlight keys found")
         }
@@ -56,16 +60,14 @@ public class LightningSessionManager: SessionManager {
         )
         do {
             // connect to greenlight and restore if available
-            try await sdk
-                .connect(
-                    mnemonicAndCredentials: greenlightCredentials,
-                    isRestore: creds == nil)
+            try await sdk.connect(mnemonicAndCredentials: greenlightCredentials, isRestore: creds == nil)
         } catch {
             // fallback to normal connect
-            try await sdk
-                .connect(
-                    mnemonicAndCredentials: greenlightCredentials,
-                    isRestore: false)
+            if isForceConnectAllowed {
+                try await sdk.connect(mnemonicAndCredentials: greenlightCredentials, isRestore: false)
+            } else {
+                throw error
+            }
         }
         self.sdk = sdk
         logged = true

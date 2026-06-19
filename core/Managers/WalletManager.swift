@@ -315,8 +315,14 @@ public class WalletManager {
         //}
         // login
         try await session.connect()
-        let res = try await session.loginUser(credentials)
-        return res
+        do {
+            let response = try await session.loginUser(credentials, isForceConnectAllowed: !restore)
+            return response
+        } catch {
+            guard restore else { throw error }
+            logger.info("WM login lightning skipped: node does not exist")
+            return nil
+        }
     }
 
     public func loginLWK(
