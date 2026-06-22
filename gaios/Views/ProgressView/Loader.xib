@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -11,6 +11,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="Loader" customModule="gaios" customModuleProvider="target">
             <connections>
                 <outlet property="animateView" destination="mjQ-HR-J10" id="Kck-vq-b06"/>
+                <outlet property="bottomIconImageView" destination="BIm-Cm-HfX" id="nFq-I7-42A"/>
                 <outlet property="lblHint" destination="5Ha-eL-thk" id="Xdc-0v-NXq"/>
                 <outlet property="loaderPlaceholder" destination="6N4-4c-rfw" id="nxP-8S-3n9"/>
                 <outlet property="rectangle" destination="rCJ-3n-6KM" id="3eJ-Vh-lIc"/>
@@ -36,24 +37,33 @@
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6N4-4c-rfw">
-                                    <rect key="frame" x="195" y="436" width="24" height="24"/>
+                                    <rect key="frame" x="191" y="432" width="32" height="32"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
-                                        <constraint firstAttribute="width" constant="24" id="DcC-dg-gbf"/>
-                                        <constraint firstAttribute="height" constant="24" id="HoC-HU-zCc"/>
+                                        <constraint firstAttribute="width" constant="32" id="DcC-dg-gbf"/>
+                                        <constraint firstAttribute="height" constant="32" id="HoC-HU-zCc"/>
                                     </constraints>
                                 </view>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Ha-eL-thk">
-                                    <rect key="frame" x="36" y="476" width="342" height="0.0"/>
+                                    <rect key="frame" x="36" y="480" width="342" height="0.0"/>
                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_tor" translatesAutoresizingMaskIntoConstraints="NO" id="BIm-Cm-HfX">
+                                    <rect key="frame" x="191" y="492" width="32" height="32"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="32" id="DEj-Y4-OOq"/>
+                                        <constraint firstAttribute="width" constant="32" id="OgE-A7-qpk"/>
+                                    </constraints>
+                                </imageView>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstAttribute="trailing" secondItem="5Ha-eL-thk" secondAttribute="trailing" constant="36" id="0aV-hK-P1x"/>
+                                <constraint firstItem="BIm-Cm-HfX" firstAttribute="centerX" secondItem="rCJ-3n-6KM" secondAttribute="centerX" id="1Te-iq-mbc"/>
                                 <constraint firstItem="6N4-4c-rfw" firstAttribute="centerX" secondItem="rCJ-3n-6KM" secondAttribute="centerX" id="2dJ-f2-jrb"/>
+                                <constraint firstItem="BIm-Cm-HfX" firstAttribute="top" secondItem="5Ha-eL-thk" secondAttribute="bottom" constant="12" id="BIQ-IB-Tfx"/>
                                 <constraint firstItem="mjQ-HR-J10" firstAttribute="centerX" secondItem="rCJ-3n-6KM" secondAttribute="centerX" id="Cc9-25-udP"/>
                                 <constraint firstItem="5Ha-eL-thk" firstAttribute="top" secondItem="6N4-4c-rfw" secondAttribute="bottom" constant="16" id="CqS-Pt-poK"/>
                                 <constraint firstItem="5Ha-eL-thk" firstAttribute="leading" secondItem="rCJ-3n-6KM" secondAttribute="leading" constant="36" id="FWm-D0-6zu"/>
@@ -84,4 +94,7 @@
             <point key="canvasLocation" x="137.68115942028987" y="153.34821428571428"/>
         </view>
     </objects>
+    <resources>
+        <image name="ic_tor" width="60" height="60"/>
+    </resources>
 </document>

@@ -324,7 +324,9 @@ extension QRUnlockJadeViewController: QrScannerViewDelegate {
 extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate {
     func onTap(_ action: QRUnlockSuccessAlertAction) {
         guard let credentials = credentials else { return }
-        startLoader(message: "id_logging_in".localized)
+        let isTorActive = AppSettings.shared.gdkSettings?.tor == true
+        let torIcon = isTorActive ? UIImage(named: "ic_tor") : nil
+        startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon)
         Task {
             let task = Task.detached { [weak self] in
                 try await self?.vm.exportXpub(enableBio: action == .bio, credentials: credentials)

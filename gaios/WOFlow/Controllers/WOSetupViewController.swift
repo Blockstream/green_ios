@@ -127,7 +127,7 @@ class WOSetupViewController: KeyboardViewController {
                 text = "id_logging_in".localized
             }
             DispatchQueue.main.async {
-                self.startLoader(message: text)
+                self.updateLoader(message: text)
             }
         }
     }
@@ -163,7 +163,9 @@ class WOSetupViewController: KeyboardViewController {
             password: isRem ? self.passwordTextField.text ?? "" : "",
             remember: isRem)
         dismissKeyboard()
-        self.startLoader(message: "id_logging_in".localized)
+        let isTorActive = AppSettings.shared.gdkSettings?.tor == true
+        let torIcon = isTorActive ? UIImage(named: "ic_tor") : nil
+        self.startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon)
         Task {
             do {
                 let vm = WOViewModel(account: account)

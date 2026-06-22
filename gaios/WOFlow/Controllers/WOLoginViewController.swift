@@ -117,7 +117,7 @@ class WOLoginViewController: KeyboardViewController {
                 text = "id_logging_in".localized
             }
             DispatchQueue.main.async {
-                self.startLoader(message: text)
+                self.updateLoader(message: text)
             }
         }
     }
@@ -194,7 +194,9 @@ class WOLoginViewController: KeyboardViewController {
 
     func login() async {
         dismissKeyboard()
-        startLoader(message: "id_logging_in".localized)
+        let isTorActive = AppSettings.shared.gdkSettings?.tor == true
+        let torIcon = isTorActive ? UIImage(named: "ic_tor") : nil
+        startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon)
         let task = Task.detached { [weak self] in
             if await self?.isSS ?? false {
                 try await self?.loginSinglesig()

@@ -15,11 +15,19 @@ class Loader: UIView {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var rectangle: UIView!
     @IBOutlet weak var animateView: UIView!
-
+    @IBOutlet weak var bottomIconImageView: UIImageView!
+    
     static let tag = 0x70726f6772657373
     var message: NSMutableAttributedString? {
         didSet { self.lblHint.attributedText = self.message }
     }
+    var bottomIcon: UIImage? {
+        didSet {
+            bottomIconImageView?.image = bottomIcon
+            bottomIconImageView?.isHidden = (bottomIcon == nil)
+        }
+    }
+    
     var isRive = false
 
     init() {
@@ -63,10 +71,20 @@ class Loader: UIView {
             animateView.addSubview(riveView)
             riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
         }
+        
+        if bottomIcon != nil {
+            self.bottomIconImageView.alpha = 1.0
+            
+            UIView.animate(withDuration: 0.5, delay: 0, options: [.repeat, .autoreverse], animations: {
+                self.bottomIconImageView.alpha = 0.75
+            })
+        }
     }
 
     func stop() {
         loadingIndicator.isAnimating = false
+        bottomIconImageView.layer.removeAllAnimations()
+        bottomIconImageView.alpha = 1.0
     }
 
     static func resume() {
@@ -92,16 +110,17 @@ extension UIViewController {
     }
 
     @MainActor
-    func startLoader(message: String = "", isRive: Bool = false) {
-        startLoader(message: NSMutableAttributedString(string: message), isRive: isRive)
+    func startLoader(message: String = "", isRive: Bool = false, bottomIcon: UIImage? = nil) {
+        startLoader(message: NSMutableAttributedString(string: message), isRive: isRive, bottomIcon: bottomIcon)
     }
 
     @MainActor
-    @objc func startLoader(message: NSMutableAttributedString, isRive: Bool = false) {
+    @objc func startLoader(message: NSMutableAttributedString, isRive: Bool = false, bottomIcon: UIImage? = nil) {
         if let window = UIApplication.shared.windows.filter({ $0.isKeyWindow }).first {
             if loader == nil {
                 let loader = Loader()
                 loader.isRive = isRive
+                loader.bottomIcon = bottomIcon
                 window.addSubview(loader)
                 loader.message = message
                 loader.activateConstraints(in: window)
@@ -110,6 +129,7 @@ extension UIViewController {
                 }
             }
             loader?.message = message
+            loader?.bottomIcon = bottomIcon
         }
     }
 
