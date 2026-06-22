@@ -89,12 +89,12 @@ class JadeBoltzExportViewController: UIViewController {
     }
 
     @objc func showQRFullScreen() {
-        let stb = UIStoryboard(name: "Qrcode", bundle: nil)
-        if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
-            vc.qrBcur = viewModel.bcurParts
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
+        let storyboard = UIStoryboard(name: "Qrcode", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: "MagnifyQRViewController") { [weak self] coder in
+            MagnifyQRViewController(coder: coder, configuration: MagnifyQRConfiguration(qrBcur: self?.viewModel.bcurParts))
         }
+        vc.modalPresentationStyle = .overFullScreen
+        present(vc, animated: false, completion: nil)
     }
 
     func dialogSwapEnabledViewController() {

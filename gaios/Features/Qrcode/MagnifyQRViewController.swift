@@ -2,9 +2,29 @@ import Foundation
 import UIKit
 import gdk
 import ScreenShield
+
 protocol MagnifyQRViewControllerDelegate: AnyObject {
     func close()
     func next()
+}
+
+enum CloseButtonVariant {
+    case topCross
+    case bottomButton(title: String, style: ButtonStyle)
+}
+
+enum TextDisplayVariant {
+    case none
+    case formattedAddress(text: String)
+}
+
+struct MagnifyQRConfiguration {
+    var qrTxt: String?
+    var qrBcur: BcurEncodedData?
+    var textDisplay: TextDisplayVariant = .none
+    var closeButton: CloseButtonVariant = .topCross
+    var customHeaderView: UIView?
+    var customFooterView: UIView?
 }
 
 class MagnifyQRViewController: UIViewController {
@@ -12,69 +32,33 @@ class MagnifyQRViewController: UIViewController {
     @IBOutlet weak var bgLayer: UIView!
     @IBOutlet weak var qrCodeView: QRCodeView!
     @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var btnClose: UIButton!
-    @IBOutlet weak var btnNavClose: UIButton!
+    @IBOutlet weak var bottomCloseBtn: UIButton!
+    @IBOutlet weak var topCrossCloseBtn: UIButton!
     @IBOutlet weak var navView: UIView!
-    @IBOutlet weak var plainTxt: UILabel!
     @IBOutlet weak var groupedTxt: UITextView!
 
-    @IBOutlet weak var mnemonicWarnView: UIView!
-    @IBOutlet weak var warnIcon1: UIImageView!
-    @IBOutlet weak var warnTitle1: UILabel!
-    @IBOutlet weak var warnHint1: UILabel!
-    @IBOutlet weak var warnIcon2: UIImageView!
-    @IBOutlet weak var warnTitle2: UILabel!
-    @IBOutlet weak var warnHint2: UILabel!
-    @IBOutlet weak var mnemonicHeadView: UIStackView!
-    @IBOutlet weak var lblMnemonicTitle: UILabel!
-    @IBOutlet weak var lblMnemonicHint: UILabel!
+    @IBOutlet weak var headerContainerStack: UIStackView!
+    @IBOutlet weak var footerContainerStack: UIStackView!
 
-    var qrTxt: String?
-    var qrBcur: BcurEncodedData?
-    var textNoURI: String?
-    var showBtn = false
-    var textBtn = "id_close"
-    var showTxt = false
-    var isMnemonic = false
-    var showClose = false
+    private let configuration: MagnifyQRConfiguration
+
     weak var delegate: MagnifyQRViewControllerDelegate?
     private let videoCaptureDump = VideoCaptureDump()
+
+    init?(coder: NSCoder, configuration: MagnifyQRConfiguration) {
+        self.configuration = configuration
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setStyle()
         setContent()
-
-        // let tapRecognizer =
-        // UITapGestureRecognizer(target: self, action: #selector(onTap))
-        // view.addGestureRecognizer(tapRecognizer)
-
-        plainTxt.isHidden = true
-        groupedTxt.isHidden = true
-        btnClose.isHidden = !showBtn
-        btnNavClose.isHidden = false
-        if showTxt {
-            if qrTxt == textNoURI {
-                if let textNoURI = textNoURI {
-                    AddressDisplay.configure(
-                        address: textNoURI,
-                        textView: groupedTxt,
-                        style: .default,
-                        truncate: false,
-                        appearance: .light,
-                        wordsPerRow: 5)
-                    groupedTxt.isHidden = false
-                }
-            } else {
-                plainTxt.text = qrTxt
-                plainTxt.isHidden = false
-            }
-        }
-        btnClose.isHidden = !showClose
-        navView.isHidden = showClose
-        mnemonicWarnView.isHidden = !isMnemonic
-        mnemonicHeadView.isHidden = !isMnemonic
         addObserverUserDidTakeScreenshot()
     }
 
@@ -88,56 +72,68 @@ class MagnifyQRViewController: UIViewController {
         // ScreenShield.shared.protectFromScreenRecording()
     }
 
-    public override func viewDidDisappear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let bcur = configuration.qrBcur {
+            qrCodeView.configure(frames: bcur.parts)
+        } else if let text = configuration.qrTxt {
+            qrCodeView.configure(frames: [text])
+        }
+        videoCaptureDump.install(on: self)
+
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         removeObserverUserDidTakeScreenshot()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        if let bcur = qrBcur {
-            qrCodeView.configure(frames: bcur.parts)
-        } else if let text = qrTxt {
-            qrCodeView.configure(frames: [text])
-        }
-        videoCaptureDump.install(on: self)
-        
-    }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         videoCaptureDump.uninstall()
     }
+
     func setContent() {
-        btnClose.setTitle("id_close".localized, for: .normal)
-        if isMnemonic {
-            btnClose.setTitle("id_back".localized, for: .normal)
+        if let header = configuration.customHeaderView {
+            headerContainerStack.addArrangedSubview(header)
+            headerContainerStack.isHidden = false
+        } else {
+            headerContainerStack.isHidden = true
         }
-        warnTitle1.text = "id_safe_environment".localized
-        warnTitle2.text = "id_sensitive_information".localized
-        warnHint1.text = "id_make_sure_you_are_alone_and_no".localized
-        warnHint2.text = "id_whomever_can_access_your".localized
-        lblMnemonicTitle.text = "id_recovery_phrase".localized
-        lblMnemonicHint.text = "id_the_recovery_phrase_can_be_used".localized
+
+        if let footer = configuration.customFooterView {
+            footerContainerStack.addArrangedSubview(footer)
+            footerContainerStack.isHidden = false
+        } else {
+            footerContainerStack.isHidden = true
+        }
+
+        switch configuration.textDisplay {
+        case .none:
+            groupedTxt.isHidden = true
+        case .formattedAddress(let address):
+            AddressDisplay.configure(
+                address: address,
+                textView: groupedTxt,
+                style: .default,
+                truncate: false,
+                appearance: .light,
+                wordsPerRow: 5
+            )
+            groupedTxt.isHidden = false
+        }
+        switch configuration.closeButton {
+        case .topCross:
+            bottomCloseBtn.isHidden = true
+        case let .bottomButton(title, style):
+            navView.isHidden = true
+            bottomCloseBtn.setStyle(style)
+            bottomCloseBtn.setTitle(title, for: .normal)
+        }
     }
 
     func setStyle() {
-        btnClose.setStyle(.primary)
-        if isMnemonic {
-            btnClose.setStyle(.outlined)
-        }
-        btnNavClose.setImage(UIImage(named: "cancel")!.maskWithColor(color: .black), for: .normal)
-        plainTxt.lineBreakMode = .byTruncatingTail
-        plainTxt.textColor = .black
-        warnIcon1.image = UIImage(named: "ic_info_home")!.withTintColor(UIColor.gAccent())
-        warnIcon2.image = UIImage(named: "ic_info_warn")!.withTintColor(UIColor.gAccent())
-        [lblMnemonicTitle, warnTitle1, warnTitle2].forEach {
-            $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .medium)
-            $0?.textColor = .black
-        }
-        [lblMnemonicHint, warnHint1, warnHint2].forEach {
-            $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
-            $0?.textColor = .black.withAlphaComponent(0.6)
-        }
+        topCrossCloseBtn.setImage(UIImage(named: "cancel")!.maskWithColor(color: .black), for: .normal)
     }
 
     @objc func onTap(sender: UITapGestureRecognizer) {

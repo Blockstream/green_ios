@@ -54,16 +54,16 @@ class LTExportJadeViewController: UIViewController {
         btnQREnlarge.tintColor = UIColor.gAccent()
         nextButton.setStyle(.primary)
     }
-    
+
     func setupAlertCard() {
         let nib = UINib(nibName: "AlertCardCell", bundle: nil)
         guard let cell = nib.instantiate(withOwner: nil, options: nil).first as? AlertCardCell else { return }
         cell.configure(AlertCardCellModel(type: .lightningOnJade), onLeft: nil, onRight: nil, onDismiss: nil)
         cell.translatesAutoresizingMaskIntoConstraints = false
         cell.contentView.translatesAutoresizingMaskIntoConstraints = false
-        
+
         view.addSubview(cell)
-        
+
         NSLayoutConstraint.activate([
             cell.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: -5),
             cell.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 5),
@@ -93,12 +93,12 @@ class LTExportJadeViewController: UIViewController {
     }
 
     @objc func showQRFullScreen() {
-        let stb = UIStoryboard(name: "Qrcode", bundle: nil)
-        if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
-            vc.qrBcur = bcur
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
+        let storyboard = UIStoryboard(name: "Qrcode", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: "MagnifyQRViewController") { [weak self] coder in
+            MagnifyQRViewController(coder: coder, configuration: MagnifyQRConfiguration(qrBcur: self?.bcur))
         }
+        vc.modalPresentationStyle = .overFullScreen
+        present(vc, animated: false, completion: nil)
     }
 
     @IBAction func btnQREnlarge(_ sender: Any) {

@@ -833,6 +833,10 @@
 		C79C85A62FD9881A00501B33 /* LightningTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A52FD9881A00501B33 /* LightningTask.swift */; };
 		C79C85A82FD98CEE00501B33 /* NotificationDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A72FD98CEE00501B33 /* NotificationDeviceManager.swift */; };
 		C79C85AA2FD9A94F00501B33 /* LightningModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A92FD9A94F00501B33 /* LightningModel.swift */; };
+		C7E400EB2FE9599400188624 /* ShowMnemonicHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E400EA2FE9599400188624 /* ShowMnemonicHeaderView.swift */; };
+		C7E400EE2FE959B400188624 /* ShowMnemonicHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7E400ED2FE959B400188624 /* ShowMnemonicHeaderView.xib */; };
+		C7E400F32FE959E800188624 /* ShowMnemonicFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7E400F22FE959E800188624 /* ShowMnemonicFooterView.xib */; };
+		C7E400F52FE95AE600188624 /* ShowMnemonicFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E400F42FE95AE600188624 /* ShowMnemonicFooterView.swift */; };
 		FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7522374F1A0035F95A /* UIButton.swift */; };
 		FF29CA7822374F8D0035F95A /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7722374F8D0035F95A /* UILabel.swift */; };
 /* End PBXBuildFile section */
@@ -1844,6 +1848,10 @@
 		C79C85A52FD9881A00501B33 /* LightningTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningTask.swift; sourceTree = "<group>"; };
 		C79C85A72FD98CEE00501B33 /* NotificationDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDeviceManager.swift; sourceTree = "<group>"; };
 		C79C85A92FD9A94F00501B33 /* LightningModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningModel.swift; sourceTree = "<group>"; };
+		C7E400EA2FE9599400188624 /* ShowMnemonicHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMnemonicHeaderView.swift; sourceTree = "<group>"; };
+		C7E400ED2FE959B400188624 /* ShowMnemonicHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowMnemonicHeaderView.xib; sourceTree = "<group>"; };
+		C7E400F22FE959E800188624 /* ShowMnemonicFooterView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowMnemonicFooterView.xib; sourceTree = "<group>"; };
+		C7E400F42FE95AE600188624 /* ShowMnemonicFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMnemonicFooterView.swift; sourceTree = "<group>"; };
 		FF29CA7122374E8B0035F95A /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		FF29CA7522374F1A0035F95A /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
 		FF29CA7722374F8D0035F95A /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
@@ -2635,6 +2643,7 @@
 		3463EBC226AEE60E00F3F2D9 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				C7E400E82FE9591500188624 /* ShowMnemonicViews */,
 				34F615222E424A7F007D38F9 /* TFACells */,
 				812DBDC1297261F1002992D6 /* WatchOnlySettingsCell.swift */,
 				812DBDBF29725F8A002992D6 /* WatchOnlySettingsCellModel.swift */,
@@ -4604,6 +4613,17 @@
 			path = Lightning;
 			sourceTree = "<group>";
 		};
+		C7E400E82FE9591500188624 /* ShowMnemonicViews */ = {
+			isa = PBXGroup;
+			children = (
+				C7E400EA2FE9599400188624 /* ShowMnemonicHeaderView.swift */,
+				C7E400ED2FE959B400188624 /* ShowMnemonicHeaderView.xib */,
+				C7E400F42FE95AE600188624 /* ShowMnemonicFooterView.swift */,
+				C7E400F22FE959E800188624 /* ShowMnemonicFooterView.xib */,
+			);
+			path = ShowMnemonicViews;
+			sourceTree = "<group>";
+		};
 		FF29CA7022374D670035F95A /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -5007,6 +5027,7 @@
 				3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */,
 				8135873F2DBFCC8C0000116B /* HWDialogs.storyboard in Resources */,
 				34610C5B2B864B84005157C8 /* BleUnavailable.storyboard in Resources */,
+				C7E400EE2FE959B400188624 /* ShowMnemonicHeaderView.xib in Resources */,
 				81C2F2042B879B1C000845EA /* GoogleService-Prod-Info.plist in Resources */,
 				34E52D7D2F2CA67700DB444A /* SwapFeeCell.xib in Resources */,
 				34D761342A384EF800DE57F5 /* DenominationExchangeFlow.storyboard in Resources */,
@@ -5098,6 +5119,7 @@
 				34C8BD6A2BED132A00AE9CC4 /* ReEnable2fa.storyboard in Resources */,
 				8150EE1D2BB7248C00E70A12 /* greenlight_device_key.txt in Resources */,
 				34F0EC312D78402E0017C276 /* PriceChartCell.xib in Resources */,
+				C7E400F32FE959E800188624 /* ShowMnemonicFooterView.xib in Resources */,
 				34B385D629B888610097220B /* HWFlow.storyboard in Resources */,
 				3433D02B2EE80D58004D7DC7 /* ActionCell.xib in Resources */,
 				3457F4A72923943C00EF33B5 /* Dialogs.storyboard in Resources */,
@@ -5322,6 +5344,7 @@
 				34204722291C12DB00EDE945 /* AssetSelectViewModel.swift in Sources */,
 				34465B9B2D075785002E5033 /* GenuineCheckDialogViewController.swift in Sources */,
 				349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */,
+				C7E400EB2FE9599400188624 /* ShowMnemonicHeaderView.swift in Sources */,
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				34A883A82BA82C2D004A1826 /* TxDetailsActionCell.swift in Sources */,
 				818BA7182A30838F00DFB03A /* PairingSuccessViewController.swift in Sources */,
@@ -5748,6 +5771,7 @@
 				34F51A7F2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift in Sources */,
 				81332CC32D55082D00F3520D /* Gdk.swift in Sources */,
 				81DE63462DDE41AF00AB79DB /* DialogActionsViewController.swift in Sources */,
+				C7E400F52FE95AE600188624 /* ShowMnemonicFooterView.swift in Sources */,
 				34F0EC3A2D79A73F0017C276 /* Api.swift in Sources */,
 				3458AB12292D1F25006EC7FB /* AnyAssetCell.swift in Sources */,
 				34B0D0032CE2553100A90080 /* ActionsSheetViewController.swift in Sources */,

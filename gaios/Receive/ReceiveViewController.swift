@@ -8,7 +8,7 @@ import hw
 
 class ReceiveViewController: KeyboardViewController {
 
-    /// scroll + stackview
+    // scroll + stackview
     // Backup
     @IBOutlet weak var viewBackup: UIView!
     @IBOutlet weak var bgBackup: UIView!
@@ -366,16 +366,17 @@ class ReceiveViewController: KeyboardViewController {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
     func onMagnify() {
-        let stb = UIStoryboard(name: "Qrcode", bundle: nil)
-        if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
-            vc.qrTxt = vm.state.text
-            vc.textNoURI = vm.state.text
-            vc.showTxt = true
-            vc.showBtn = true
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: false, completion: nil)
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        let storyboard = UIStoryboard(name: "Qrcode", bundle: nil)
+        let config = MagnifyQRConfiguration(
+            qrTxt: vm.state.text,
+            textDisplay: .formattedAddress(text: vm.state.text ?? "")
+        )
+        let vc = storyboard.instantiateViewController(identifier: "MagnifyQRViewController") { coder in
+            MagnifyQRViewController(coder: coder, configuration: config)
         }
+        vc.modalPresentationStyle = .overFullScreen
+        self.present(vc, animated: false, completion: nil)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
     @MainActor
     func error(_ err: String) {
@@ -478,7 +479,7 @@ extension ReceiveViewController {
         }
     }
     func configureUI() {
-        /// scroll + stackview
+        // scroll + stackview
         // Backup
         bgBackup.layer.cornerRadius = 5.0
         [btnLeftBackup, btnRightBackup].forEach { $0?.setStyle(.outlinedWhite) }

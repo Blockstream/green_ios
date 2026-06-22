@@ -103,7 +103,7 @@
                                 </subviews>
                             </stackView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Db6-fP-c63">
-                                <rect key="frame" x="10" y="264.33333333333326" width="373" height="449.66666666666674"/>
+                                <rect key="frame" x="10" y="264.33333333333326" width="373" height="437.66666666666674"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="rVS-Ko-fRd">
                                     <size key="itemSize" width="128" height="95"/>
@@ -274,10 +274,10 @@
                                 </connections>
                             </collectionView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ywh-qc-vDF" userLabel="Next">
-                                <rect key="frame" x="25" y="724" width="343" height="50"/>
+                                <rect key="frame" x="25" y="712" width="343" height="56"/>
                                 <color key="backgroundColor" name="customMatrixGreen"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="xc1-PY-jOn"/>
+                                    <constraint firstAttribute="height" constant="56" id="xc1-PY-jOn"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                 <state key="normal" title="btn_qr">
@@ -298,7 +298,7 @@
                             <constraint firstItem="Db6-fP-c63" firstAttribute="leading" secondItem="yzP-cE-6RF" secondAttribute="leading" constant="10" id="NBV-2Q-YjQ"/>
                             <constraint firstItem="Db6-fP-c63" firstAttribute="top" secondItem="flk-HS-Rhn" secondAttribute="bottom" constant="30" id="RMf-xE-Tw8"/>
                             <constraint firstItem="Ywh-qc-vDF" firstAttribute="leading" secondItem="yzP-cE-6RF" secondAttribute="leading" constant="25" id="Wvh-oc-txK"/>
-                            <constraint firstItem="yzP-cE-6RF" firstAttribute="bottom" secondItem="Ywh-qc-vDF" secondAttribute="bottom" constant="10" id="cCX-jI-F1h"/>
+                            <constraint firstItem="yzP-cE-6RF" firstAttribute="bottom" secondItem="Ywh-qc-vDF" secondAttribute="bottom" constant="16" id="cCX-jI-F1h"/>
                             <constraint firstItem="flk-HS-Rhn" firstAttribute="top" secondItem="D68-1b-HwH" secondAttribute="bottom" constant="10" id="fPw-Oe-4uX"/>
                             <constraint firstItem="flk-HS-Rhn" firstAttribute="leading" secondItem="yzP-cE-6RF" secondAttribute="leading" constant="25" id="ja3-rG-ZaK"/>
                             <constraint firstItem="yzP-cE-6RF" firstAttribute="trailing" secondItem="Db6-fP-c63" secondAttribute="trailing" constant="10" id="s35-nb-ApN"/>

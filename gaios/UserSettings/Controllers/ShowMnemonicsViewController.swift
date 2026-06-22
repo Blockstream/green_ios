@@ -98,15 +98,22 @@ class ShowMnemonicsViewController: UIViewController {
         btnShowQR.setStyle(.primary)
     }
     func magnifyQR() {
-        let stb = UIStoryboard(name: "Qrcode", bundle: nil)
-        if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
-            vc.qrTxt = self.items.joined(separator: " ")
-            vc.isMnemonic = true
-            vc.showClose = true
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: false, completion: nil)
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        let headerView = Bundle.main.loadNibNamed("ShowMnemonicHeaderView", owner: nil, options: nil)?.first as? ShowMnemonicHeaderView
+        let footerView = Bundle.main.loadNibNamed("ShowMnemonicFooterView", owner: nil, options: nil)?.first as? ShowMnemonicFooterView
+        let config = MagnifyQRConfiguration(
+            qrTxt: self.items.joined(separator: " "),
+            textDisplay: .none,
+            closeButton: .bottomButton(title: "id_back".localized, style: .outlined),
+            customHeaderView: headerView,
+            customFooterView: footerView
+        )
+        let storyboard = UIStoryboard(name: "Qrcode", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: "MagnifyQRViewController") { coder in
+            MagnifyQRViewController(coder: coder, configuration: config)
         }
+        vc.modalPresentationStyle = .overFullScreen
+        self.present(vc, animated: false, completion: nil)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 
     @IBAction func btnShowQR(_ sender: Any) {

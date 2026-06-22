@@ -180,16 +180,17 @@ class LNInvoiceViewController: UIViewController {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
     func magnifyQR() {
-        let stb = UIStoryboard(name: "Qrcode", bundle: nil)
-        if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
-            vc.qrTxt = viewModel.bolt11
-            vc.textNoURI = viewModel.bolt11
-            vc.showTxt = true
-            vc.showBtn = true
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: false, completion: nil)
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        let storyboard = UIStoryboard(name: "Qrcode", bundle: nil)
+        let config = MagnifyQRConfiguration(
+            qrTxt: viewModel.bolt11,
+            textDisplay: .formattedAddress(text: viewModel.bolt11 ?? "")
+        )
+        let vc = storyboard.instantiateViewController(identifier: "MagnifyQRViewController") { coder in
+            MagnifyQRViewController(coder: coder, configuration: config)
         }
+        vc.modalPresentationStyle = .overFullScreen
+        self.present(vc, animated: false, completion: nil)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
     @objc func longPressed(sender: UILongPressGestureRecognizer) {
         if sender.state == UIGestureRecognizer.State.began {

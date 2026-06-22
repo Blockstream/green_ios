@@ -74,9 +74,11 @@ class SetGauthViewController: UIViewController {
     }
 
     func magnifyQR() {
-        let stb = UIStoryboard(name: "Qrcode", bundle: nil)
-        if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController, let txt = gauthData {
-            vc.qrTxt = txt
+        if let txt = gauthData {
+            let storyboard = UIStoryboard(name: "Qrcode", bundle: nil)
+            let vc = storyboard.instantiateViewController(identifier: "MagnifyQRViewController") { coder in
+                MagnifyQRViewController(coder: coder, configuration: MagnifyQRConfiguration(qrTxt: txt))
+            }
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: false, completion: nil)
             UINotificationFeedbackGenerator().notificationOccurred(.success)
