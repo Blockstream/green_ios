@@ -257,6 +257,12 @@ class ReceiveViewController: KeyboardViewController {
         btnShare.isHidden = network.lightning || vm.state.type == .lwkSwap
         btnConfirm.isEnabled = vm.isConfirmEnabled
         btnConfirm.setStyle( btnConfirm.isEnabled ? .primary : .primaryDisabled)
+        switch vm.state.type {
+        case .address:
+            btnConfirm.setTitle("id_confirm".localized, for: .normal)
+        case .bolt11, .lwkSwap:
+            btnConfirm.setTitle("id_create_invoice".localized, for: .normal)
+        }
         footerLabel.isHidden = vm.state.type != .lwkSwap
     }
     func addAttributedString(_ str: String) {
