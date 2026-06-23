@@ -28,13 +28,15 @@ class ManageAssetViewModel {
     }
     var subaccounts: [Account] {
         if assetId == AssetInfo.lightningId {
-            return state.subaccounts.filter { $0.networkId.lightning }.sorted()
+            return state.subaccounts
+            .filter { $0.networkId.lightning && !$0.hidden }
+                .sorted()
         } else if assetId == AssetInfo.btcId || assetId == AssetInfo.testId {
-            return state.subaccounts.filter { $0.networkId.bitcoin }.sorted()
+            return state.subaccounts.filter { $0.networkId.bitcoin && !$0.hidden }.sorted()
         } else if assetId == AssetInfo.lbtcId || assetId == AssetInfo.ltestId {
-            return state.subaccounts.filter { $0.networkId.liquid }.sorted()
+            return state.subaccounts.filter { $0.networkId.liquid && !$0.hidden }.sorted()
         } else {
-            return state.subaccounts.filter { $0.networkId.liquid }.sorted()
+            return state.subaccounts.filter { $0.networkId.liquid && !$0.hidden }.sorted()
         }
     }
     func getBoltzKey() throws -> Credentials {

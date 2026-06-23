@@ -1,9 +1,29 @@
 import UIKit
 
+private final class PrimaryLoadingButtonState {
+    let indicator: UIActivityIndicatorView
+    let storedImages: [(state: UIControl.State, image: UIImage?)]
+
+    init(button: UIButton, indicator: UIActivityIndicatorView) {
+        self.indicator = indicator
+        self.storedImages = [
+            (.normal, button.image(for: .normal)),
+            (.disabled, button.image(for: .disabled)),
+            (.highlighted, button.image(for: .highlighted)),
+            (.selected, button.image(for: .selected))
+        ]
+    }
+}
+
+private enum ButtonAssociatedKeys {
+    static var primaryLoadingState: UInt8 = 0
+}
+
 enum ButtonStyle {
     case primary
     case primaryGray
     case primaryDisabled
+    case primaryLoading
     case outlined
     case outlinedGray
     case outlinedWhite
@@ -34,6 +54,20 @@ extension UIButton {
         }
     }
 
+    private var primaryLoadingState: PrimaryLoadingButtonState? {
+        get {
+            objc_getAssociatedObject(self, &ButtonAssociatedKeys.primaryLoadingState) as? PrimaryLoadingButtonState
+        }
+        set {
+            objc_setAssociatedObject(
+                self,
+                &ButtonAssociatedKeys.primaryLoadingState,
+                newValue,
+                .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+            )
+        }
+    }
+
     func insets(for content: UIEdgeInsets, image: CGFloat) {
 
         self.contentEdgeInsets = UIEdgeInsets(
@@ -49,6 +83,62 @@ extension UIButton {
             bottom: 0,
             right: -image
         )
+    }
+
+    private func clearPrimaryLoadingStyle() {
+        guard let state = primaryLoadingState else { return }
+
+        state.indicator.stopAnimating()
+        state.indicator.removeFromSuperview()
+        state.storedImages.forEach { storedState in
+            setImage(storedState.image, for: storedState.state)
+        }
+        primaryLoadingState = nil
+    }
+
+    private func applyPrimaryLoadingStyle() {
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.hidesWhenStopped = true
+        indicator.color = titleColor(for: .disabled) ?? titleColor(for: .normal) ?? tintColor
+
+        let state = PrimaryLoadingButtonState(button: self, indicator: indicator)
+        primaryLoadingState = state
+
+        let indicatorSize = indicator.intrinsicContentSize
+        let imageSpacing: CGFloat = 8
+        let placeholderSize = CGSize(
+            width: max(indicatorSize.width, 20) + imageSpacing,
+            height: max(indicatorSize.height, 20)
+        )
+        let placeholderImage = UIGraphicsImageRenderer(size: placeholderSize).image { _ in
+            UIColor.clear.setFill()
+            UIRectFill(CGRect(origin: .zero, size: placeholderSize))
+        }
+
+        [UIControl.State.normal, .disabled, .highlighted, .selected].forEach { state in
+            setImage(placeholderImage, for: state)
+        }
+
+        addSubview(indicator)
+        layoutIfNeeded()
+
+        if let imageView = imageView {
+            NSLayoutConstraint.activate([
+                indicator.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+                indicator.centerYAnchor.constraint(equalTo: imageView.centerYAnchor)
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+                indicator.centerYAnchor.constraint(equalTo: centerYAnchor),
+                indicator.centerXAnchor.constraint(
+                    equalTo: centerXAnchor,
+                    constant: -imageSpacing / 2
+                )
+            ])
+        }
+
+        indicator.startAnimating()
     }
 }
 
@@ -96,6 +186,7 @@ final class CheckButton: UIButton {
 extension UIButton {
 
     func setStyle(_ type: ButtonStyle) {
+        clearPrimaryLoadingStyle()
         titleLabel?.font = UIFont.systemFont(ofSize: 15.0, weight: .medium)
         cornerRadius = 8.0
         switch type {
@@ -113,6 +204,13 @@ extension UIButton {
             setTitleColor(UIColor.customGrayLight(), for: .normal)
             tintColor = UIColor.customGrayLight()
             isEnabled = false
+        case .primaryLoading:
+            backgroundColor = UIColor.gWarnCardBgBlue()
+            setTitleColor(UIColor.gAccent(), for: .normal)
+            setTitleColor(UIColor.gAccent(), for: .disabled)
+            tintColor = UIColor.gBlackBg()
+            isEnabled = false
+            applyPrimaryLoadingStyle()
         case .outlined:
             backgroundColor = UIColor.clear
             setTitleColor(UIColor.gAccent(), for: .normal)

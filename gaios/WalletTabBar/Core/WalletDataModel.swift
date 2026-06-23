@@ -353,7 +353,9 @@ actor WalletDataModel {
         if !wallet.isEphemeral && mainWallet.boardType != .v2c && !mainWallet.isWatchonly {
             accountItems += [.lightning]
         }
-        accountItems += [.ampID]
+        if !(mainWallet.isJade && wallet.isWatchonly) {
+            accountItems += [.ampID]
+        }
         if wallet.hasMultisig {
             accountItems += [.twoFactorAuthication, .pgpKey]
         }

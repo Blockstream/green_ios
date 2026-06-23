@@ -93,6 +93,31 @@ extension UIViewController {
             object: nil
         )
     }
+
+    func updateBottomSheetTableViewHeight(_ tableView: UITableView,
+                                          heightConstraint: NSLayoutConstraint,
+                                          inside cardView: UIView,
+                                          maxHeightRatio: CGFloat = 0.9) {
+        view.layoutIfNeeded()
+
+        let screenHeight = view.window?.bounds.height
+            ?? (view.bounds.height > 0 ? view.bounds.height : UIScreen.main.bounds.height)
+        let maxCardHeight = screenHeight * maxHeightRatio
+        let nonTableContentHeight = max(0, cardView.bounds.height - tableView.bounds.height)
+        let maxTableHeight = max(0, maxCardHeight - nonTableContentHeight)
+        let contentHeight = tableView.contentSize.height
+        let targetHeight = min(contentHeight, maxTableHeight)
+        let shouldScroll = contentHeight > targetHeight
+
+        heightConstraint.constant = targetHeight
+
+        if shouldScroll == false {
+            tableView.setContentOffset(.zero, animated: false)
+        }
+
+        tableView.isScrollEnabled = shouldScroll
+        tableView.showsVerticalScrollIndicator = shouldScroll
+    }
 }
 @nonobjc extension UIViewController {
     func add(_ child: UIViewController, frame: CGRect? = nil) {

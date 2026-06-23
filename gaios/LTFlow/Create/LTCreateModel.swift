@@ -27,7 +27,7 @@ struct LTCreateViewModel {
                 try? walletManager.removeDatadir(workingDir.path())
             }
         let backend = try walletManager.glNetworkBackend()
-        try await backend.login(credentials: lightningCredentials, parentXpub: xpubHashId)
+        try await backend.login(credentials: lightningCredentials, restore: true, parentXpub: xpubHashId)
         // Get lightning session
         guard let session = await wallet.wallet.lightningSession else {
             throw GaError.GenericError("Invalid lightning session")
@@ -39,13 +39,11 @@ struct LTCreateViewModel {
                 credentials: lightningCredentials,
                 for: mainWallet.keychainLightning
             )
-        
         // Register device to receive notifications
         let token = UserDefaults(suiteName: Bundle.main.appGroup)?.string(forKey: "token") ?? ""
         if !token.isEmpty, let xpubHashId = mainWallet.xpubHashId {
             try? await session.registerNotification(fcmToken: token, xpubHashId: xpubHashId)
         }
-        
         // Update subaccounts and UI
         await wallet.triggerRefresh(
                 features: [.subaccounts]

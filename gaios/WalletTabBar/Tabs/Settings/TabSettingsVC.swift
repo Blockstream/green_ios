@@ -151,13 +151,20 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
                 pushLTCreateViewController()
             }
         case .ampID:
-            if !viewModel.hasSubaccountAmp() {
-                presentDialogCreateAmp()
-            } else if viewModel.getSubaccountsAmp().count == 1, let subaccount = viewModel.getSubaccountsAmp().first {
-                presentDialogAmpId(subaccount)
-            } else {
-                accountsScreen()
+            let model = DialogAmpViewModel()
+            let storyboard = UIStoryboard(name: "AmpFlow", bundle: nil)
+            let vc = storyboard.instantiateViewController(identifier: "DialogAmpViewController") { coder in
+                DialogAmpViewController(coder: coder, model: model)
             }
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+//            if !viewModel.hasSubaccountAmp() {
+//                presentDialogCreateAmp()
+//            } else if viewModel.getSubaccountsAmp().count == 1, let subaccount = viewModel.getSubaccountsAmp().first {
+//                presentDialogAmpId(subaccount)
+//            } else {
+//                accountsScreen()
+//            }
         case .autoLogout:
             showAutoLogout()
         case .twoFactorAuthication:

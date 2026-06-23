@@ -41,7 +41,7 @@ extension WalletManager {
                 .login(credentials: credentials, device: nil)
         }
         // login boltz
-        if let lwkBoltzBackend, let boltzCredentials {
+        if let boltzCredentials {
             loginLwkBoltz(
                 boltzCredentials: boltzCredentials,
                 xpubHashId: parentWalletId!.xpubHashId
@@ -52,6 +52,7 @@ extension WalletManager {
             _ = try await loginGl(
                 backend: backend,
                 credentials: lightningCredentials,
+                restore: false,
                 parentXpub: parentWalletId!.xpubHashId,
             )
         }
@@ -98,14 +99,12 @@ extension WalletManager {
             throw GaError.GenericError("Wallet not found")
         }
         do {
+            let hasGdkCache = Gdk.shared.hasGdkCache(
+                walletHashId: walletHashId
+            )
             let res = try await backend.login(credentials: credentials, device: device)
-            if network.electrum {
-                let hasGdkCache = Gdk.shared.hasGdkCache(
-                    walletHashId: walletHashId
-                )
-                let refresh = fullRestore || (!creation && !hasGdkCache)
-                try? await discoveryAndSetupDefaultsAccounts(backend: backend, walletHashId: walletHashId, refresh: refresh)
-            }
+            let refresh = fullRestore || (!creation && !hasGdkCache)
+            try? await discoveryAndSetupDefaultsAccounts(backend: backend, walletHashId: walletHashId, refresh: refresh, hasGdkCache: hasGdkCache)
             _ = try? await backend.session.loadSettings()
             return res
         } catch TwoFactorCallError.failure(let txt) {
@@ -119,14 +118,11 @@ extension WalletManager {
             throw error
         }
     }
-    func discoveryAndSetupDefaultsAccounts(backend: GdkNetworkBackend, walletHashId: String, refresh: Bool) async throws {
-        let hasGdkCache = Gdk.shared.hasGdkCache(
-            walletHashId: walletHashId
-        )
+    func discoveryAndSetupDefaultsAccounts(backend: GdkNetworkBackend, walletHashId: String, refresh: Bool, hasGdkCache: Bool) async throws {
         let networkAccounts = try await backend.getAccounts(refresh: refresh)
         let walletIsFunded = !networkAccounts.filter {
             $0.bip44Discovered == true
-        }.isEmpty
+        }.isEmpty 
         if walletIsFunded && refresh {
             // Archive no-history default account
             if let firstAccount = networkAccounts.first, firstAccount.pointer == 0 {
@@ -171,11 +167,13 @@ extension WalletManager {
     public func loginGl(
         backend: GlNetworkBackend,
         credentials: Credentials,
+        restore: Bool,
         parentXpub: String
     )
     async throws -> LoginUserResult? {
         try await backend.login(
             credentials: credentials,
+            restore: restore,
             parentXpub: parentXpub)
         guard let walletId = try await getWalletIdentifier(
             credentials: credentials
@@ -216,6 +214,7 @@ extension WalletManager {
             return try await loginGl(
                 backend: backend,
                 credentials: lightningCredentials,
+                restore: fullRestore,
                 parentXpub: walletId.xpubHashId)
         } else if let backend = backend as? LwkNetworkBackend {
             logger.info("Connecting to lwk backend \(backend.network.network)")
@@ -231,6 +230,10 @@ extension WalletManager {
         backend: LwkNetworkBackend,
         credentials: Credentials)
     async throws -> LoginUserResult? {
+        guard credentials.mnemonic != nil else {
+            // disable for hardware wallet
+            return nil
+        }
         guard let walletId = try await getWalletIdentifier(
             credentials: credentials
         ) else {

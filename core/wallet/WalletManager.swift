@@ -69,9 +69,27 @@ public class WalletManager {
     public var updatedRegistryAt: Double?
 
     // Resolvers
-    public var popupResolver: PopupResolverDelegate?
-    public var hwProtocol: HWProtocol?
-    public var hwInterfaceResolver: HwInterfaceResolver?
+    public var popupResolver: PopupResolverDelegate? {
+        didSet {
+            for network in networkBackends.keys {
+                gdkNetworkBackendOrNil(network)?.session.popupResolver = popupResolver
+            }
+        }
+    }
+    public var hwProtocol: HWProtocol? {
+        didSet {
+            for network in networkBackends.keys {
+                gdkNetworkBackendOrNil(network)?.session.hwProtocol = hwProtocol
+            }
+        }
+    }
+    public var hwInterfaceResolver: HwInterfaceResolver? {
+        didSet {
+            for network in networkBackends.keys {
+                gdkNetworkBackendOrNil(network)?.session.hwInterfaceResolver = hwInterfaceResolver
+            }
+        }
+    }
 
     // Constructor
     public init(

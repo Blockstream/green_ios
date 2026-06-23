@@ -1,4 +1,4 @@
-core/backend/gl/LightningSessionManager.swiftimport Foundation
+import Foundation
 import GreenlightSDK
 import greenaddress
 import lightning

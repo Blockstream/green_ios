@@ -33,7 +33,9 @@ public final class LwkNetworkBackend: NetworkBackend {
     private let isAmp = true
     private let amp2Server: Amp2?
 
-    private let storage = KeychainStorage(account: "Lwk", service: "NetworkBackend")
+    func storage(xpub: String) -> KeychainStorage {
+        return KeychainStorage(account: xpub, service: "NetworkBackend")
+    }
 
     init(
         dataDir: String,
@@ -62,8 +64,13 @@ public final class LwkNetworkBackend: NetworkBackend {
         self.isLoggedIn = true
         print("LWK login complete for \(network.networkId)")
 
+        let xpub = try localSigner.keyoriginXpub(bip: .newBip87())
+        let storage = storage(xpub: xpub)
         accounts = []
-        if let accounts: [Account] = try? storage.read()?.decode() {
+        if var accounts: [Account] = try? storage.read()?.decode() {
+            for a in accounts.enumerated() {
+                accounts[a.offset].networkInjected = network
+            }
             self.accounts = accounts
         }
         blockHeaderPolling()
@@ -210,6 +217,8 @@ public final class LwkNetworkBackend: NetworkBackend {
             receivingId: wId,
             type: params.type,
             networkInjected: network)
+        let xpub = try signer.keyoriginXpub(bip: .newBip87())
+        let storage = storage(xpub: xpub)
         try storage.write(try [account].encoded())
         let accountBackend = try createAccountBackend(account: account)
         accounts = [account]
