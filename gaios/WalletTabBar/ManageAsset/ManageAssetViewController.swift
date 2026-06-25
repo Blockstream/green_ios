@@ -62,6 +62,7 @@ class ManageAssetViewController: UIViewController {
             }
             tableView?.reloadData()
             reloadTitle()
+            reloadNavigation()
         default:
             break
         }

@@ -92,6 +92,13 @@ class ManageAssetViewModel {
                             await self?.walletDataModel.triggerRefresh(features: [.nestedTxs(subaccount: selectedSubaccount.id, assetId: assetId)])
                         }
                     }
+                case .subaccounts:
+                    if let currentSubaccountId = self?.selectedSubaccount?.id {
+                        self?.selectedSubaccount = self?.subaccounts.first(where: { $0.id == currentSubaccountId })
+                    }
+                    if self?.selectedSubaccount == nil && self?.subaccounts.count == 1 {
+                        self?.selectedSubaccount = self?.subaccounts.first
+                    }
                 default:
                     break
                 }
