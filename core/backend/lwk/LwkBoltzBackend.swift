@@ -3,6 +3,24 @@ import LiquidWalletKit
 
 import greenaddress
 import hw
+public enum BoltzBackendError: Error, LocalizedError {
+    case invalidMnemonic
+    case missingXpub
+    case sessionNotInitialized
+    case failedToFetchSwapsInfo
+    case invalidSession
+
+    public var errorDescription: String? {
+        switch self {
+        case .invalidMnemonic: return "Invalid mnemonic"
+        case .missingXpub: return "No xpub defined"
+        case .sessionNotInitialized: return "No LWK session"
+        case .failedToFetchSwapsInfo: return "Fails to fetch swaps info"
+        case .invalidSession: return "Invalid session"
+        }
+    }
+}
+
 public final class LwkBoltzBackend {
 
     static public let BOLTZ_BIP85_INDEX: UInt32 = 26589
@@ -29,7 +47,7 @@ public final class LwkBoltzBackend {
 
     public func loginUser(_ params: Credentials, xpubHashId: String) async throws {
         guard let secret = params.mnemonic else {
-            throw LwkError.Generic(msg: "Invalid mnemonic")
+            throw BoltzBackendError.invalidMnemonic
         }
         if client == nil {
             client = try getClient()
@@ -64,11 +82,10 @@ public final class LwkBoltzBackend {
         let builder = BoltzSessionBuilder(
             network: network,
             client: client,
-            timeout: 30_000,
+            timeout: 30,
             mnemonic: mnemonic,
             logging: self,
             polling: true,
-            timeoutAdvance: 10_000,
             referralId: "blockstream",
             bitcoinElectrumClientUrl: bitcoinElectrumUrl,
             randomPreimages: true
@@ -82,7 +99,7 @@ public final class LwkBoltzBackend {
 
     func webhook(status: [String]?) throws -> WebHook {
         guard let xpubHashId else {
-            throw LwkError.Generic(msg: "No xpub defined")
+            throw BoltzBackendError.missingXpub
         }
         return WebHook(url: "\(webhookBaseUrl())/webhook/boltz/\(xpubHashId)", status: status ?? [])
     }
@@ -90,7 +107,7 @@ public final class LwkBoltzBackend {
     // Reverse Submarine Swaps (Lightning -> Chain)
     nonisolated public func invoice(amount: UInt64, description: String?, claimAddress: LiquidWalletKit.Address) async throws -> InvoiceResponse {
         guard let boltzSession = boltzSession else {
-            throw LwkError.Generic(msg: "No lwk session")
+            throw BoltzBackendError.sessionNotInitialized
         }
         let invoiceStatuses = ["transaction.mempool", "transaction.confirmed", "invoice.settled"]
         let res = try boltzSession.invoice(
@@ -115,7 +132,7 @@ public final class LwkBoltzBackend {
         refundAddress: LiquidWalletKit.Address
     ) async throws -> PreparePayResponse {
         guard let boltzSession = boltzSession else {
-            throw LwkError.Generic(msg: "No lwk session")
+            throw BoltzBackendError.sessionNotInitialized
         }
         let preparePayStatuses = ["invoice.paid", "swap.expired", "invoice.failedToPay", "transaction.lockupFailed"]
         let res = try boltzSession.preparePay(
@@ -135,7 +152,7 @@ public final class LwkBoltzBackend {
 
     nonisolated public func lbtcToBtc(amount: UInt64, refundAddress: String, claimAddress: String, xpubHashId: String) async throws -> LockupResponse {
         guard let boltzSession = boltzSession else {
-            throw LwkError.Generic(msg: "No lwk session")
+            throw BoltzBackendError.sessionNotInitialized
         }
         //let chainSwapStatuses = ["transaction.confirmed", "transaction.server.confirmed", "transaction.claimed", "transaction.lockupFailed"]
         let res = try boltzSession.lbtcToBtc(
@@ -155,7 +172,7 @@ public final class LwkBoltzBackend {
     }
     nonisolated public func btcToLbtc(amount: UInt64, refundAddress: String, claimAddress: String, xpubHashId: String) async throws -> LockupResponse {
         guard let boltzSession = boltzSession else {
-            throw LwkError.Generic(msg: "No lwk session")
+            throw BoltzBackendError.sessionNotInitialized
         }
         //let chainSwapStatuses = ["transaction.confirmed", "transaction.server.confirmed", "transaction.claimed", "transaction.lockupFailed"]
         let res = try boltzSession.btcToLbtc(
@@ -173,6 +190,54 @@ public final class LwkBoltzBackend {
             txHash: nil)
         return res
     }
+    nonisolated public func lnToBtc(
+        amount: UInt64,
+        description: String?,
+        claimAddress: BitcoinAddress
+    ) async throws -> InvoiceResponse {
+        guard let boltzSession = boltzSession else {
+            throw BoltzBackendError.sessionNotInitialized
+        }
+        let invoiceStatuses = ["transaction.mempool", "transaction.confirmed", "invoice.settled"]
+        let res = try boltzSession.lnToBtc(
+            amount: amount,
+            description: description,
+            claimAddress: claimAddress,
+            webhook: try webhook(status: invoiceStatuses))
+        let bolt11 = try res.bolt11Invoice().description
+        _ = try await BoltzController.shared.create(
+            id: try res.swapId(),
+            data: try res.serialize(),
+            isPending: true,
+            xpubHashId: xpubHashId,
+            invoice: bolt11,
+            swapType: .reverseSwap,
+            txHash: nil)
+        return res
+    }
+    nonisolated public func btcToLn(
+        lightningPayment: LightningPayment,
+        refundAddress: BitcoinAddress
+    ) async throws -> PreparePayResponse {
+        guard let boltzSession = boltzSession else {
+            throw BoltzBackendError.sessionNotInitialized
+        }
+        let preparePayStatuses = ["invoice.paid", "swap.expired", "invoice.failedToPay", "transaction.lockupFailed"]
+        let res = try boltzSession.btcToLn(
+            lightningPayment: lightningPayment,
+            refundAddress: refundAddress,
+            webhook: try webhook(status: preparePayStatuses))
+        _ = try await BoltzController.shared.create(
+            id: try res.swapId(),
+            data: try res.serialize(),
+            isPending: true,
+            xpubHashId: xpubHashId,
+            invoice: try lightningPayment.bolt11Invoice()?.description,
+            swapType: .submarineSwap,
+            txHash: nil)
+        return res
+    }
+
     /*
      nonisolated public func completePay(pay: PreparePayResponse) async throws -> Bool {
      try pay.completePay()
@@ -196,7 +261,7 @@ public final class LwkBoltzBackend {
     nonisolated public func fetchReverseSwapsInfo() async throws -> BoltzReverseSwapInfoLBTC? {
         guard let jsonString = try boltzSession?.fetchSwapsInfo() else {
             lwkLogger.error("fetchReverseSwapsInfo failed")
-            throw LwkError.Generic(msg: "Fails to fetch swaps info")
+            throw BoltzBackendError.failedToFetchSwapsInfo
         }
         lwkLogger.info("fetchReverseSwapsInfo \(jsonString)")
         let data = Data(jsonString.utf8)
@@ -210,24 +275,23 @@ public final class LwkBoltzBackend {
     nonisolated public func fetchSubmarineSwapsInfo() async throws -> BoltzSubmarineSwapInfoLBTC? {
         guard let jsonString = try boltzSession?.fetchSwapsInfo() else {
             lwkLogger.error("fetchSubmarineSwapsInfo failed")
-            throw LwkError.Generic(msg: "Fails to fetch swaps info")
+            throw BoltzBackendError.failedToFetchSwapsInfo
         }
         lwkLogger.info("fetchSubmarineSwapsInfo \(jsonString)")
         let data = Data(jsonString.utf8)
         let dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
         let submarine = dict?["submarine"] as? [String: Any]
         let lbtc = submarine?["L-BTC"] as? [String: Any]
-        let btc = lbtc?["BTC"] as? [String: Any]
-        return BoltzSubmarineSwapInfoLBTC.from(btc ?? [:]) as? BoltzSubmarineSwapInfoLBTC
+        let pair = lbtc?["BTC"] as? [String: Any]
+        return try JSONDecoder().decode(BoltzSubmarineSwapInfoLBTC.self, from: JSONSerialization.data(withJSONObject: pair ?? [:]))
     }
 
     nonisolated public func restoreSwaps(bitcoinAddress: String, liquidAddress: String, xpubHashId: String) async throws {
         guard let boltzSession = boltzSession else {
-            throw LwkError.Generic(msg: "Invalid session")
+            throw BoltzBackendError.invalidSession
         }
         let liquidAddress = try LiquidWalletKit.Address(s: liquidAddress)
         let list = try boltzSession.swapRestore()
-        // Reverse Submarine Swaps: avoid to restore reverse submarine swaps for lack of informations to correctly restore them.
         // Submarine Swaps: restore swaps with lockup transaction and refund liquid address
         lwkLogger.info("Restoring submarine swaps using address \(liquidAddress)")
         let submarineSwaps = try boltzSession.restorableSubmarineSwaps(swapList: list, refundAddress: liquidAddress)
@@ -236,13 +300,13 @@ public final class LwkBoltzBackend {
             let swapId = try pay.swapId()
             let data = try pay.serialize()
             lwkLogger.info("Restoring \(swapId)")
-            if let swapDbId = try? await BoltzController.shared.fetchID(byId: swapId) {
-                try? await BoltzController.shared.update(
+            if let swapDbId = try await BoltzController.shared.fetchID(byId: swapId) {
+                try await BoltzController.shared.update(
                     with: swapDbId,
                     newIsPending: true,
                     newTxHash: try? pay.lockupTxid())
             } else {
-                _ = try? await BoltzController.shared.create(
+                _ = try await BoltzController.shared.create(
                     id: swapId,
                     data: data,
                     isPending: true,
@@ -250,6 +314,29 @@ public final class LwkBoltzBackend {
                     invoice: nil,
                     swapType: SwapType.submarineSwap,
                     txHash: try? pay.lockupTxid())
+            }
+        }
+        lwkLogger.info("Restoring reverse swaps using address \(liquidAddress)")
+        let reverseSwaps = try boltzSession.restorableReverseSwaps(swapList: list, claimAddress: liquidAddress)
+        for swap in reverseSwaps {
+            let invoice = try boltzSession.restoreInvoice(data: swap)
+            let swapId = try invoice.swapId()
+            let data = try invoice.serialize()
+            lwkLogger.info("Restoring \(swapId)")
+            if let swapDbId = try await BoltzController.shared.fetchID(byId: swapId) {
+                try await BoltzController.shared.update(
+                    with: swapDbId,
+                    newIsPending: true,
+                    newTxHash: nil)
+            } else {
+                _ = try await BoltzController.shared.create(
+                    id: swapId,
+                    data: data,
+                    isPending: true,
+                    xpubHashId: xpubHashId,
+                    invoice: nil,
+                    swapType: SwapType.reverseSwap,
+                    txHash: nil)
             }
         }
         lwkLogger.info("Restoring swaps using address \(bitcoinAddress)")
@@ -261,13 +348,13 @@ public final class LwkBoltzBackend {
             let swapId = try lockup.swapId()
             let data = try lockup.serialize()
             lwkLogger.info("Restoring \(swapId)")
-            if let swapDbId = try? await BoltzController.shared.fetchID(byId: swapId) {
-                try? await BoltzController.shared.update(
+            if let swapDbId = try await BoltzController.shared.fetchID(byId: swapId) {
+                try await BoltzController.shared.update(
                     with: swapDbId,
                     newIsPending: true,
                     newTxHash: try? lockup.lockupTxid())
             } else {
-                _ = try? await BoltzController.shared.create(
+                _ = try await BoltzController.shared.create(
                     id: swapId,
                     data: data,
                     isPending: true,
@@ -275,6 +362,52 @@ public final class LwkBoltzBackend {
                     invoice: nil,
                     swapType: SwapType.chainSwap,
                     txHash: try? lockup.lockupTxid())
+            }
+        }
+        lwkLogger.info("Restoring BTC submarine swaps using address \(bitcoinAddress)")
+        let btcSubmarineSwaps = try boltzSession.restorableSubmarineBtcSwaps(swapList: list, refundAddress: bitcoinAddress)
+        for swap in btcSubmarineSwaps {
+            let pay = try boltzSession.restorePreparePay(data: swap)
+            let swapId = try pay.swapId()
+            let data = try pay.serialize()
+            lwkLogger.info("Restoring \(swapId)")
+            if let swapDbId = try await BoltzController.shared.fetchID(byId: swapId) {
+                try await BoltzController.shared.update(
+                    with: swapDbId,
+                    newIsPending: true,
+                    newTxHash: try? pay.lockupTxid())
+            } else {
+                _ = try await BoltzController.shared.create(
+                    id: swapId,
+                    data: data,
+                    isPending: true,
+                    xpubHashId: xpubHashId,
+                    invoice: nil,
+                    swapType: SwapType.submarineSwap,
+                    txHash: try? pay.lockupTxid())
+            }
+        }
+        lwkLogger.info("Restoring BTC reverse submarine swaps using address \(bitcoinAddress)")
+        let btcReverseSwaps = try boltzSession.restorableReverseBtcSwaps(swapList: list, claimAddress: bitcoinAddress)
+        for swap in btcReverseSwaps {
+            let invoice = try boltzSession.restoreInvoice(data: swap)
+            let swapId = try invoice.swapId()
+            let data = try invoice.serialize()
+            lwkLogger.info("Restoring \(swapId)")
+            if let swapDbId = try await BoltzController.shared.fetchID(byId: swapId) {
+                try await BoltzController.shared.update(
+                    with: swapDbId,
+                    newIsPending: true,
+                    newTxHash: nil)
+            } else {
+                _ = try await BoltzController.shared.create(
+                    id: swapId,
+                    data: data,
+                    isPending: true,
+                    xpubHashId: xpubHashId,
+                    invoice: nil,
+                    swapType: SwapType.reverseSwap,
+                    txHash: nil)
             }
         }
     }

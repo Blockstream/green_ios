@@ -163,7 +163,7 @@ public final class LightningSessionManager {
             throw TransactionError.invalid(localizedDescription: "id_invoice_expired")
         }
         let amount = lightningInvoice?.amountMilliSatoshis()?.satoshi ?? UInt64(addressee.satoshi ?? 0)
-        if let maxPayable = nodeState()?.maxPayableMsat.satoshi {
+        if let maxPayable = nodeState()?.maxSendableSatoshi {
             if amount > maxPayable {
                 throw TransactionError.invalid(localizedDescription: "id_insufficient_funds", maxPayable: maxPayable)
             }
@@ -268,5 +268,15 @@ extension LightningSessionManager: GreenlightSDK.LogListener {
         case .trace:
             lightningLogger.trace("\(entry.message, privacy: .public)")
         }
+    }
+}
+
+extension NodeState {
+    /// Caps the maximum sendable amount to reserve a small buffer for Lightning routing fees.
+    /// If we try to send exactly 100% of the balance, the payment fails because nothing is left to pay the network.
+    /// We reserve ~0.5% for larger amounts and a minimum of 5 sats for smaller amounts to cover these fees.
+    public var maxSendableSatoshi: UInt64 {
+        let maxPayable = maxPayableMsat.satoshi
+        return min(maxPayable * 1000 / 1005, maxPayable > 5 ? maxPayable - 5 : 0)
     }
 }

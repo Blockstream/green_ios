@@ -98,6 +98,9 @@ public class WalletsStorage {
         wallet.removeAuthentication(.AuthKeyLightning)
         ephs.removeAll(where: { $0.id == wallet.id})
         wallets.removeAll(where: { $0.id == wallet.id})
+        if let xpubHashId = wallet.xpubHashId {
+            try? await BoltzController.shared.deleteAll(for: xpubHashId)
+        }
     }
 
     public func removeAll() async {

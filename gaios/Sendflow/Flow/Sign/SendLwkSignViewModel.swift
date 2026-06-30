@@ -46,14 +46,16 @@ class SendLwkSignViewModel {
     }
     // Submarine-swap subtitle phrased per payment target so users get the
     // correct destination kind on the review screen (invoice / LNURL / offer).
-    var submarineSubtitle: String {
+    var submarineSubtitle: String? {
         switch draft.paymentTarget {
+        case .lightningInvoice:
+            return "You are paying this Lightning invoice with Liquid bitcoin"
         case .lnUrl:
             return "You are paying this LNURL with Liquid bitcoin"
         case .lightningOffer:
             return "You are paying this Lightning offer with Liquid bitcoin"
         default:
-            return "You are paying this Lightning invoice with Liquid bitcoin"
+            return nil
         }
     }
     // True when paying a lightning destination via the Lightning rail (the
@@ -86,14 +88,18 @@ class SendLwkSignViewModel {
             return try? lockupResponse.swapId()
         } else if let swapPayResponse = draft.swapPayResponse {
             return try? swapPayResponse.swapId()
+        } else if let invoiceResponse = draft.invoiceResponse {
+            return try? invoiceResponse.swapId()
         } else {
             return nil
         }
     }
+
     var recipientSatoshi: UInt64? {
         if draft.swapPayResponse != nil {
-            // try? draft.swapPayResponse?.uriAmount().satoshi
-            return draft.satoshi
+            let baseAmount = draft.satoshi ?? draft.swapPosition?.to.amount ?? 0
+            let setupFee = draft.lightningSetupFee ?? 0
+            return baseAmount > setupFee ? (baseAmount - setupFee) : 0
         } else if let swap = draft.swapPosition {
             return swap.to.amount
         } else {
@@ -113,7 +119,7 @@ class SendLwkSignViewModel {
 
     
     var txFee: UInt64? { tx.fee }
-    var totalFee: UInt64? { (providerFee ?? 0) + (claimNetworkFee ?? 0) + (tx.fee ?? 0) }
+    var totalFee: UInt64? { (swapFee ?? 0) + (claimNetworkFee ?? 0) + (tx.fee ?? 0) + (lightningSetupFee ?? 0)  }
     var txSatoshi: UInt64? {
         let feeAsset = NetworkId.electrumLiquid.gdkNetwork.getFeeAsset()
         if let amount = tx.amounts[feeAsset] {
@@ -122,11 +128,13 @@ class SendLwkSignViewModel {
         return nil
     }
 
-    var providerFee: UInt64? {
+    var swapFee: UInt64? {
         if draft.lockupResponse != nil {
             return try? draft.lockupResponse?.boltzFee()
         } else if let swapPay = draft.swapPayResponse {
             return try? swapPay.boltzFee()
+        } else if draft.invoiceResponse != nil {
+            return draft.swapPosition?.boltzFee
         }
         return nil
     }
@@ -138,12 +146,18 @@ class SendLwkSignViewModel {
             let swapFee = try? swapPay.fee()
             let boltzFee = try? swapPay.boltzFee()
             return (swapFee ?? 0) - (boltzFee ?? 0)
+        } else if draft.invoiceResponse != nil {
+            return draft.swapPosition?.networkFee ?? 0
         }
         return nil
     }
 
     var networkFee: UInt64? {
         return (claimNetworkFee ?? 0) + (tx.fee ?? 0)
+    }
+    
+    var lightningSetupFee: UInt64? {
+        return draft.lightningSetupFee
     }
     /*var totalAmount: Balance? {
         let feeAsset = subaccount.gdkSession?.gdkNetwork.getFeeAsset() ?? "btc"
@@ -172,6 +186,9 @@ class SendLwkSignViewModel {
     var isSubmarineSwap: Bool {
         draft.swapPayResponse != nil
     }
+    var isInternalSwap: Bool {
+        draft.swapPosition != nil
+    }
     var isSwapTransaction: Bool {
         isCrossChainSwap || isSubmarineSwap || swapId != nil
     }
@@ -187,6 +204,7 @@ class SendLwkSignViewModel {
         }
         return nil
     }
+
     var assetIdFrom: String {
         if let swap = draft.swapPosition {
             return swap.from.assetId
@@ -233,5 +251,18 @@ class SendLwkSignViewModel {
     }
     func convertToText(satoshi: UInt64) -> String? {
         return isFiat ? convertToFiat(satoshi: satoshi) : convertToDenom(satoshi: satoshi)
+    }
+
+    func hasMultipleSubaccounts(for account: Account) -> Bool {
+        guard let wm = WalletManager.current else { return false }
+        if account.networkId.liquid {
+            return wm.liquidSubaccounts.count > 1
+        } else if account.networkId.bitcoin {
+            return wm.bitcoinSubaccounts.count > 1
+        } else if account.networkId.lightning {
+            return wm.lightningSubaccounts.count > 1
+        }
+        
+        return false
     }
 }

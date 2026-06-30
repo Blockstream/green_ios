@@ -133,10 +133,12 @@ public actor SwapMonitor {
             }
         } catch LwkError.ObjectConsumed {
             lwkLogger.error("\(swapId, privacy: .public) object consumed")
-            return .failed
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+            return .continue
         } catch {
-            lwkLogger.error("\(swapId, privacy: .public) unrecoverable error: \(error.localizedDescription, privacy: .public)")
-            return .failed
+            lwkLogger.error("\(swapId, privacy: .public) generic error: \(error.localizedDescription, privacy: .public)")
+            try await Task.sleep(nanoseconds: 5_000_000_000)
+            return .continue
         }
     }
 

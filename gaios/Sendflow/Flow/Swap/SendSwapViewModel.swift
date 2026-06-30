@@ -9,34 +9,50 @@ final class SendSwapViewModel {
 
     private var state: SwapPositionState
     private let channel = AsyncChannel<SwapPositionState>()
-    private let quoteBuilder: QuoteBuilder?
+    private var quoteBuilder: QuoteBuilder?
     private var quoteTask: Task<Void, Never>?
     private var wm: WalletManager
 
     var selectedPosition: SwapPositionEnum?
+    var lastEditedPosition: SwapPositionEnum = .from
     let delegate: SendSwapViewModelDelegate?
     var bitcoinFeeEstimator: FeeEstimator?
     var liquidFeeEstimator: FeeEstimator?
     var gdkTransaction: core.Transaction?
 
-    init(wm: WalletManager, subaccount: Account?, assetId: String?, delegate: SendSwapViewModelDelegate?) {
+    // TODO: Make it common, duplicated from the Receive flow
+    private var lnMinSatoshis: UInt64 {
+        return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigLnMinSatoshis) as? UInt64 ?? 5_000
+    }
+    private var lnMaxSatoshis: UInt64 {
+        return AnalyticsManager.shared.getRemoteConfigValue(key: AnalyticsManager.countlyRemoteConfigLnMaxSatoshis) as? UInt64 ?? 400_000
+    }
+    private var isLimitsFetched = false
+
+    init(
+        wm: WalletManager,
+        subaccount: Account?,
+        assetId: String?,
+        initialAsset: SwapAssetType?,
+        delegate: SendSwapViewModelDelegate?
+    ) {
         self.wm = wm
-        if let boltzSession = wm.lwkBoltzBackend?.boltzSession {
-            self.quoteBuilder = QuoteBuilder(boltzSession: boltzSession)
-        } else {
-            self.quoteBuilder = nil
-        }
-        let subaccount = subaccount ?? SendSwapViewModel.getBitcoinSubaccounts().first
-        let assetId = assetId ?? AssetInfo.btcId
+        let direction = SendSwapViewModel.getSwapDirections(for: initialAsset)
+        let defaultAccountAndAssetFrom = SendSwapViewModel.getDefaultAccountAndAsset(for: direction.from)
+        let accountFrom = subaccount ?? defaultAccountAndAssetFrom.account
+        let assetIdFrom = assetId ?? defaultAccountAndAssetFrom.assetId
         let positionFrom = SwapPosition(
             side: .from,
-            account: subaccount,
-            assetId: assetId,
+            type: direction.from,
+            account: accountFrom,
+            assetId: assetIdFrom,
             amount: nil)
+        let defaultAccountAndAssetTo = SendSwapViewModel.getDefaultAccountAndAsset(for: direction.to)
         let positionTo = SwapPosition(
             side: .to,
-            account: SendSwapViewModel.getDefaultTo(assetId).0,
-            assetId: SendSwapViewModel.getDefaultTo(assetId).1,
+            type: direction.to,
+            account: defaultAccountAndAssetTo.account,
+            assetId: defaultAccountAndAssetTo.assetId,
             amount: nil)
         let denomination = wm.prominentSession?.settings?.denomination
         self.state = SwapPositionState(from: positionFrom, to: positionTo, priority: .Medium, denomination: denomination ?? .Sats)
@@ -65,29 +81,63 @@ final class SendSwapViewModel {
     func stateUpdates() -> AsyncChannel<SwapPositionState> {
         channel
     }
+    func currentState() -> SwapPositionState {
+        state
+    }
+    static func getDefaultAccountAndAsset(for assetType: SwapAssetType) -> (account: Account?, assetId: String) {
+        let accounts: [Account]
+        let assetId: String
+        switch assetType {
+        case .bitcoin:
+            accounts = getBitcoinSubaccounts()
+            assetId = AssetInfo.btcId
+        case .lightning:
+            accounts = getLightningSubaccounts()
+            assetId = AssetInfo.lightningId
+        case .liquid:
+            accounts = getLiquidSubaccounts()
+            assetId = AssetInfo.lbtcId
+        }
+        
+        let funded = accounts.first { account in
+            guard let wm = WalletManager.current else { return false }
+            return (try? account.isFunded(wm)) ?? false
+        }
+        return (funded ?? accounts.first, assetId)
+    }
+    static func getSwapDirections(for assetType: SwapAssetType?) -> (from: SwapAssetType, to: SwapAssetType) {
+        switch assetType {
+        case .lightning: return (.lightning, .bitcoin)
+        case .liquid: return (.liquid, .bitcoin)
+        default: return (.bitcoin, .liquid)
+        }
+    }
+    static func getBitcoinSubaccounts() -> [Account] {
+        WalletManager.current?.bitcoinSubaccounts.sorted() ?? []
+    }
+    static func getLiquidSubaccounts() -> [Account] {
+        WalletManager.current?.liquidSubaccounts.sorted() ?? []
+    }
+    static func getLightningSubaccounts() -> [Account] {
+        WalletManager.current?.lightningSubaccounts ?? []
+    }
     private func publish() {
         let currentState = state
         Task {
             await channel.send(currentState)
         }
     }
-    func currentState() -> SwapPositionState {
-        state
+    private func checkSwapPairSupport(from: SwapAssetType, to: SwapAssetType) -> Bool {
+        return from != to && (from == .bitcoin || to == .bitcoin)
     }
-    static func getDefaultTo(_ assetIdFrom: String) -> (Account?, String) {
-        if assetIdFrom == AssetInfo.btcId { // inverted is correct
-            return (getLiquidSubaccounts().first, AssetInfo.lbtcId)
-        } else if assetIdFrom == AssetInfo.lbtcId { // inverted is correct
-            return (getBitcoinSubaccounts().first, AssetInfo.btcId)
-        } else {
-            return (nil, "")
+    private func formatErrorMessageSatoshi(satoshi: UInt64?) -> String {
+        var str = "N/A"
+        if let satoshi = satoshi, let balance = Balance.fromSatoshi(satoshi, assetId: AssetInfo.btcId) {
+            let (value, denom) = balance.toDenom(state.denomination)
+            let (fiat, currency) = balance.toFiat()
+            str = "\(value) \(denom) (≈ \(fiat) \(currency))"
         }
-    }
-    static func getBitcoinSubaccounts() -> [Account] {
-        (WalletManager.current?.bitcoinSubaccounts ?? []).sorted()
-    }
-    static func getLiquidSubaccounts() -> [Account] {
-        (WalletManager.current?.liquidSubaccounts ?? []).sorted()
+        return str
     }
     func dialogAccountsModel(_ position: SwapPositionEnum) -> DialogAccountsViewModel {
         self.selectedPosition = position
@@ -99,12 +149,13 @@ final class SendSwapViewModel {
             accounts = SendSwapViewModel.getLiquidSubaccounts()
         }
         return DialogAccountsViewModel(
-            title: "id_account_selector".localized,
+            title: "Account Selector".localized,
             hint: "id_choose_which_account_you_want".localized,
             isSelectable: true,
             assetId: assetId,
             accounts: accounts,
-            hideBalance: false)
+            hideBalance: false,
+            hasCloseButton: true)
     }
     func shouldShowSelector(_ assetId: String) -> Bool {
         if assetId == AssetInfo.btcId {
@@ -120,6 +171,7 @@ final class SendSwapViewModel {
         state.priority = priority
         state.feeRate = feeRate
         publish()
+        scheduleQuote(for: lastEditedPosition)
     }
 
     func updateAccount(account: Account, for position: SwapPositionEnum) {
@@ -143,8 +195,10 @@ final class SendSwapViewModel {
     }
     func swapPositions(for position: SwapPositionEnum) {
         let tempPosition = state.from
+        state.from.type = state.to.type
         state.from.assetId = state.to.assetId
         state.from.account = state.to.account
+        state.to.type = tempPosition.type
         state.to.assetId = tempPosition.assetId
         state.to.account = tempPosition.account
         let isLiquid = state.from.account?.gdkNetwork.liquid ?? false
@@ -165,6 +219,7 @@ final class SendSwapViewModel {
         }
     }
     func updateAmount(_ value: UInt64?, for position: SwapPositionEnum) {
+        lastEditedPosition = position
         switch position {
         case .from:
             state.from.amount = value
@@ -177,15 +232,26 @@ final class SendSwapViewModel {
     // call the quote on main thread
     func scheduleQuote(for position: SwapPositionEnum) {
         quoteTask?.cancel()
+        
+        let inputAmount = position == .from ? state.from.amount ?? 0 : state.to.amount ?? 0
+        if inputAmount == 0 {
+            switch position {
+            case .from: state.to.amount = nil
+            case .to: state.from.amount = nil
+            }
+            state.networkFee = nil
+            state.boltzFee = nil
+            state.error = nil
+            publish()
+            return
+        }
+
         quoteTask = Task { [weak self] in
             defer { self?.quoteTask = nil }
             do {
                 try await Task.sleep(nanoseconds: 250_000_000) // debounce
                 guard !Task.isCancelled else { return }
-                try await Task.detached(priority: .userInitiated) { [weak self] in
-                    guard let self = self, !Task.isCancelled else { return }
-                    try await self.performQuote(for: position)
-                }.value
+                try await self?.performQuote(for: position)
             } catch is CancellationError {
                 // Graceful exit on cancellation (typing continues)
             } catch {
@@ -194,47 +260,60 @@ final class SendSwapViewModel {
             }
         }
     }
-    // perform the quote on background thread
+    // perform the quote (Implicitly on MainActor, offloads heavy work automatically)
     func performQuote(for position: SwapPositionEnum) async throws {
-        let (fromAmount, fromAsset, toAmount, toAsset) = await MainActor.run {
-            (state.from.amount, state.from.swapAsset, state.to.amount, state.to.swapAsset)
+        let fromAmount = state.from.amount
+        let fromAsset = state.from.swapAsset
+        let toAmount = state.to.amount
+        let toAsset = state.to.swapAsset
+        
+        guard checkSwapPairSupport(from: state.from.type, to: state.to.type) else {
+            throw SwapFlowError.unsupportedSwapPair
         }
-        guard let builder = quoteBuilder else {
-            throw SendFlowError.serviceUnavailable
+        guard let session = await wm.awaitLwkSession()?.boltzSession else {
+            throw SwapFlowError.serviceUnavailable
         }
+        let builder = quoteBuilder ?? QuoteBuilder(boltzSession: session)
+        self.quoteBuilder = builder
+        
+        let inputAmount = position == .from ? fromAmount ?? 0 : toAmount ?? 0
         try Task.checkCancellation()
-        let res = try await quoteBuilder?.quote(
-            amount: position == .from ? fromAmount ?? 0 : toAmount ?? 0,
+        let quote = try await builder.quote(
+            amount: inputAmount,
             mode: position,
             from: fromAsset,
             to: toAsset)
         try Task.checkCancellation()
-        try await MainActor.run { [weak self] in
-            switch position {
-            case .from:
-                self?.state.to.amount = fromAmount == nil ? nil : res?.receiveAmount
-            case .to:
-                self?.state.from.amount = toAmount == nil ? nil : res?.sendAmount
-            }
-            self?.state.error = nil
-            self?.state.networkFee = res?.networkFee
-            if let selectedAmount = self?.state.from.amount {
-                if let res, selectedAmount < res.min {
-                    let minAmount = self?.convertToDenomTrimmed(satoshi: res.min)
-                    let defaultMinAmount = "\(res.min) sats"
-                    throw SendFlowError.invalidAmount("Min limit: \((minAmount ?? defaultMinAmount).removingTrailingZeros())")
-                } else if let res, selectedAmount > res.max {
-                    let maxAmount = self?.convertToDenomTrimmed(satoshi: res.max)
-                    let defaultMaxAmount = "\(res.max) sats"
-                    throw SendFlowError.invalidAmount("Max limit: \((maxAmount ?? defaultMaxAmount).removingTrailingZeros())")
-                } else if let account = self?.state.from.account,
-                          let backend = try self?.wm.accountBackend(account),
-                          backend.assets.policyAsset() ?? 0 < selectedAmount {
-                    throw SendFlowError.insufficientFunds
-                }
-            }
-            self?.publish()
+        let calculatedSendAmount = position == .to ? quote?.sendAmount: fromAmount
+        let calculatedReceiveAmount = position == .from ? quote?.receiveAmount: toAmount
+        
+        let currentInputAmount = position == .from ? state.from.amount ?? 0 : state.to.amount ?? 0
+        guard currentInputAmount == inputAmount else {
+            throw CancellationError()
         }
+        
+        switch position {
+        case .from:
+            self.state.to.amount = calculatedReceiveAmount
+        case .to:
+            self.state.from.amount = calculatedSendAmount
+        }
+        self.state.networkFee = quote?.networkFee
+        self.state.boltzFee = quote?.boltzFee
+
+        if inputAmount > 0 {
+            guard let boltzMin = quote?.min, let boltzMax = quote?.max else {
+                throw SwapFlowError.serviceUnavailable
+            }
+            try validateSwapAmount(
+                sendAmount: calculatedSendAmount ?? 0,
+                receiveAmount: calculatedReceiveAmount ?? 0,
+                boltzMin: boltzMin,
+                boltzMax: boltzMax
+            )
+        }
+        self.state.error = nil
+        self.publish()
     }
     func convertToDenomTrimmed(satoshi: UInt64) -> String? {
         if let (amount, ticker) = Balance.fromSatoshi(satoshi, assetId: state.from.assetId)?.toValue(state.denomination) {
@@ -255,7 +334,7 @@ final class SendSwapViewModel {
             return "id_custom".localized
         default:
             let network = state.from.account?.networkId
-            return state.priority.time(isLiquid: network?.liquid ?? false)
+            return "(~\(state.priority.time(isLiquid: network?.liquid ?? false)))"
         }
     }
     func selectAccount(for position: SwapPositionEnum) {
@@ -298,11 +377,12 @@ final class SendSwapViewModel {
         let currentState = self.state
         do {
             let (draft, gdkTx) = try await Task.detached(priority: .userInitiated) { [weak self] in
-                guard let self = self else { throw SendFlowError.failedToBuildTransaction }
+                guard let self = self else { throw SwapFlowError.failedToBuildTransaction }
                 return try await self.handleCrossChainSwap(state: currentState)
             }.value
             delegate?.sendSwapViewModelDidTransaction(self, draft: draft, gdkTransaction: gdkTx)
         } catch {
+            logger.error("Swap Build Error in handleCrossChainSwap: \(String(describing: error), privacy: .public)")
             state.error = error
             publish()
             delegate?.sendSwapViewModelDidFail(self, error: error)
@@ -311,48 +391,81 @@ final class SendSwapViewModel {
     // build cross chain lockup on background thread
     private nonisolated func handleCrossChainSwap(state: SwapPositionState) async throws -> (TransactionDraft, core.Transaction) {
         guard let accountFrom = state.from.account, let accountTo = state.to.account, let amount = state.from.amount else {
-            throw SendFlowError.invalidPaymentTarget
+            throw SwapFlowError.invalidPaymentTarget
         }
         guard let xpub = WalletsStorage.shared.current?.xpubHashId, let lwk = await wm.awaitLwkSession() else {
-            throw SendFlowError.invalidPaymentTarget
+            throw SwapFlowError.invalidPaymentTarget
         }
-        if let account = await self.state.from.account {
-            let backend = try await self.wm.accountBackend(account)
-            if backend.assets.policyAsset() ?? 0 < amount {
-                throw SendFlowError.insufficientFunds
+        if state.route == .lnToBtc {
+            let invoiceResponse = try await TransactionBuilder.buildLnToBtcSwap(from: accountFrom, to: accountTo, amount: amount, lwk: lwk, xpub: xpub)
+            let bolt11Str = try invoiceResponse.bolt11Invoice().description
+            var tx = core.Transaction([:], accountId: accountFrom.id)
+            tx.addressees = [Addressee.from(address: bolt11Str, satoshi: Int64(amount), assetId: nil)]
+            var draft = TransactionBuilder.buildTransactionDraft(
+                paymentTarget: try .lightningInvoice(Bolt11Invoice(s: bolt11Str)),
+                subaccount: accountFrom,
+                assetId: state.from.assetId,
+                swapPosition: state
+            )
+            draft.invoiceResponse = invoiceResponse
+            return (draft, tx)
+        } else if state.route == .btcToLn {
+            let receiveAmount = state.to.amount ?? amount
+            let (preparePayResponse, setupFee) = try await TransactionBuilder.buildBtcToLnSwap(
+                from: accountFrom,
+                to: accountTo,
+                receiveAmount: receiveAmount,
+                lwk: lwk,
+                xpub: xpub
+            )
+            let tx = try await TransactionBuilder.buildGdkTransaction(preparePayResponse: preparePayResponse, subaccount: accountFrom, feeRate: state.feeRate)
+            if let error = tx.error {
+                throw SwapFlowError.gdkError(error)
             }
-        }
-        let lockupResponse = try await TransactionBuilder.buildCrossChainSwap(from: accountFrom, to: accountTo, amount: amount, lwk: lwk, xpub: xpub)
-        let tx = try await TransactionBuilder.buildGdkTransaction(lockupResponse: lockupResponse, subaccount: accountFrom, feeRate: state.feeRate)
-        if let error = tx.error {
-            throw SendFlowError.gdkError(error)
-        }
-        let address = try lockupResponse.lockupAddress()
-        let paymentTarget: PaymentTarget
-        if accountFrom.networkId.liquid {
-            paymentTarget = try PaymentTarget.liquidAddress(Address(s: address))
+            let address = try preparePayResponse.lockupAddress()
+            var draft = TransactionBuilder.buildTransactionDraft(
+                paymentTarget: try .bitcoinAddress(BitcoinAddress(s: address)),
+                subaccount: accountFrom,
+                assetId: state.from.assetId,
+                swapPosition: state
+            )
+            draft.swapPayResponse = preparePayResponse
+            draft.lightningSetupFee = setupFee > 0 ? setupFee : nil
+            draft.satoshi = receiveAmount
+            return (draft, tx)
         } else {
-            paymentTarget = try PaymentTarget.bitcoinAddress(BitcoinAddress(s: address))
+            let lockupResponse = try await TransactionBuilder.buildCrossChainSwap(from: accountFrom, to: accountTo, amount: amount, lwk: lwk, xpub: xpub)
+            let tx = try await TransactionBuilder.buildGdkTransaction(lockupResponse: lockupResponse, subaccount: accountFrom, feeRate: state.feeRate)
+            if let error = tx.error {
+                throw SwapFlowError.gdkError(error)
+            }
+            let address = try lockupResponse.lockupAddress()
+            let paymentTarget: PaymentTarget
+            if accountFrom.networkId.liquid {
+                paymentTarget = try PaymentTarget.liquidAddress(LiquidWalletKit.Address(s: address))
+            } else {
+                paymentTarget = try PaymentTarget.bitcoinAddress(BitcoinAddress(s: address))
+            }
+            let draft = TransactionBuilder.buildTransactionDraft(
+                paymentTarget: paymentTarget,
+                subaccount: accountFrom,
+                assetId: state.from.assetId,
+                lockupResponse: lockupResponse,
+                swapPosition: state)
+            return (draft, tx)
         }
-        let draft = TransactionBuilder.buildTransactionDraft(
-            paymentTarget: paymentTarget,
-            subaccount: accountFrom,
-            assetId: state.from.assetId,
-            lockupResponse: lockupResponse,
-            swapPosition: state)
-        return (draft, tx)
     }
     func newText(position: SwapPositionEnum, newDenom: DenominationType) -> String {
         var amountStr = ""
         switch position {
         case .from:
-            let satoshi = state.from.amount
-            if let (amount, _) = Balance.fromSatoshi(satoshi ?? 0, assetId: state.from.assetId)?.toValue(newDenom, locale: false) {
+            let satoshi = state.from.amount ?? 0
+            if satoshi > 0, let (amount, _) = Balance.fromSatoshi(satoshi, assetId: state.from.assetId)?.toValue(newDenom, locale: false) {
                 amountStr = amount
             }
         case .to:
-            let satoshi = state.to.amount
-            if let (amount, _) = Balance.fromSatoshi(satoshi ?? 0, assetId: state.to.assetId)?.toValue(newDenom, locale: false) {
+            let satoshi = state.to.amount ?? 0
+            if satoshi > 0, let (amount, _) = Balance.fromSatoshi(satoshi, assetId: state.to.assetId)?.toValue(newDenom, locale: false) {
                 amountStr = amount
             }
         }
@@ -362,16 +475,83 @@ final class SendSwapViewModel {
         var amountStr = ""
         switch position {
         case .from:
-            let satoshi = state.from.amount
-            if let (amount, _) = Balance.fromSatoshi(satoshi ?? 0, assetId: state.from.assetId)?.toFiat(locale: false) {
+            let satoshi = state.from.amount ?? 0
+            if satoshi > 0, let (amount, _) = Balance.fromSatoshi(satoshi, assetId: state.from.assetId)?.toFiat(locale: false) {
                 amountStr = amount
             }
         case .to:
-            let satoshi = state.to.amount
-            if let (amount, _) = Balance.fromSatoshi(satoshi ?? 0, assetId: state.to.assetId)?.toFiat(locale: false) {
+            let satoshi = state.to.amount ?? 0
+            if satoshi > 0, let (amount, _) = Balance.fromSatoshi(satoshi, assetId: state.to.assetId)?.toFiat(locale: false) {
                 amountStr = amount
             }
         }
         return amountStr
+    }
+    func updateAssetType(_ assetType: SwapAssetType, for position: SwapPositionEnum) {
+        let oppositeType = position == .from ? state.to.type : state.from.type
+        if assetType == oppositeType {
+            swapPositions(for: lastEditedPosition)
+            return
+        }
+        let currentType = position == .from ? state.from.type : state.to.type
+        if assetType == currentType { return }
+        let defaultAccountAndAsset = SendSwapViewModel.getDefaultAccountAndAsset(for: assetType)
+        switch position {
+        case .from:
+            state.from.type = assetType
+            state.from.assetId = defaultAccountAndAsset.assetId
+            state.from.account = defaultAccountAndAsset.account
+            state.from.amount = nil
+        case .to:
+            state.to.type = assetType
+            state.to.assetId = defaultAccountAndAsset.assetId
+            state.to.account = defaultAccountAndAsset.account
+            state.to.amount = nil
+        }
+
+        let isLiquid = state.from.account?.gdkNetwork.liquid ?? false
+        let feeEstimator = isLiquid ? liquidFeeEstimator : bitcoinFeeEstimator
+        state.feeRate = feeEstimator?.feeRate(at: state.priority)
+        publish()
+        let oppositePosition = position == .from ? SwapPositionEnum.to : SwapPositionEnum.from
+        scheduleQuote(for: oppositePosition)
+    }
+    private func validateSwapAmount(sendAmount: UInt64, receiveAmount: UInt64, boltzMin: UInt64, boltzMax: UInt64) throws {
+        if state.route == .lnToBtc {
+            if let maxPayable = state.from.account?.lightningSession?.nodeState()?.maxSendableSatoshi {
+                if sendAmount > maxPayable { throw SwapFlowError.insufficientFunds }
+            }
+        } else if let account = state.from.account, let backend = try? wm.accountBackend(account) {
+            let availableBalance = UInt64(backend.assets[state.from.assetId] ?? 0)
+            if sendAmount > availableBalance { throw SwapFlowError.insufficientFunds }
+        }
+        var effectiveMinError: Error? = nil
+        var effectiveMaxError: Error? = nil
+
+        var minLimit = boltzMin
+        var maxLimit = boltzMax
+        var limitAmount = sendAmount
+        var errorPosition: SwapPositionEnum = .from
+
+        if state.route == .btcToLn {
+            let nodeState = state.to.account?.lightningSession?.nodeState()
+            let maxReceivable = nodeState?.maxReceivableSinglePaymentMsat.satoshi ?? 0
+
+            limitAmount = receiveAmount
+            errorPosition = .to
+            maxLimit = [boltzMax, lnMaxSatoshis, maxReceivable].filter { $0 > 0 }.min() ?? boltzMax
+            minLimit = maxReceivable > 0 ? boltzMin : max(boltzMin, lnMinSatoshis)
+        }
+
+        if limitAmount > maxLimit {
+            effectiveMaxError = SwapFlowError.invalidAmount(msg: String(format: "Maximum is %@".localized, formatErrorMessageSatoshi(satoshi: maxLimit)), position: errorPosition)
+        }
+
+        if limitAmount < minLimit {
+            effectiveMinError = SwapFlowError.invalidAmount(msg: String(format: "Minimum is %@".localized, formatErrorMessageSatoshi(satoshi: minLimit)), position: errorPosition)
+        }
+
+        if let error = effectiveMaxError { throw error }
+        if let error = effectiveMinError { throw error }
     }
 }

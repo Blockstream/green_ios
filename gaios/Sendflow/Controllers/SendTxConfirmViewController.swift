@@ -87,7 +87,7 @@ class SendTxConfirmViewController: UIViewController {
         lblAccount1.text = ""
         lblAccount2.text = ""
 
-        lblSumFeeKey.text = "Total fees".localized
+        lblSumFeeKey.text = "Total Fees".localized
         lblSumFeeValue.text = ""
         lblSumTotalKey.text = "id_total_spent".localized
         lblSumTotalValue.text = ""
@@ -463,7 +463,7 @@ class SendTxConfirmViewController: UIViewController {
     @IBAction func btnInfoFee(_ sender: Any) {
         var scope = SendFeeScope.info
         if viewModel.txType == .lwkSwap {
-            scope = .lwkSwap(networkFee: "NA sats", providerFee: "NA sats", total: "NA sats", fiat: "NA fiat")
+            scope = .lwkSwap(networkFee: "NA sats", lightningSetupFee: "NA sats", swapFee: "NA sats", total: "NA sats", fiat: "NA fiat")
         }
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendFeeInfoViewController") as? SendFeeInfoViewController {

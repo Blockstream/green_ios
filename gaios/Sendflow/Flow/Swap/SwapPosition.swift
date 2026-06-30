@@ -6,6 +6,13 @@ import LiquidWalletKit
 enum SwapPositionEnum: Sendable {
     case from
     case to
+
+    var title: String {
+        switch self {
+        case .from: "Swap from"
+        case .to: "Swap to"
+        }
+    }
 }
 
 struct SwapPositionState: Sendable {
@@ -17,34 +24,45 @@ struct SwapPositionState: Sendable {
     var denomination: DenominationType
     var feeRate: UInt64?
     var networkFee: UInt64?
+    var boltzFee: UInt64?
 }
 enum SwapChainName: String {
     case mainnet = "mainnet"
     case liquid = "liquid"
     case lightning = "lightning"
 }
+enum SwapRoute: Sendable {
+    case chain
+    case btcToLn
+    case lnToBtc
+}
 extension SwapPositionState {
+    var route: SwapRoute {
+        if from.type == .lightning {
+            return .lnToBtc
+        } else if to.type == .lightning {
+            return .btcToLn
+        } else {
+            return .chain
+        }
+    }
+    
     var currency: String? {
         Balance.fromSatoshi(Int64(0), assetId: AssetInfo.btcId)?.toFiat().1
     }
     var availableFrom: String? {
-        guard let available = from.available else { return nil }
-        if isFiat {
-            return fiatText(available, assetId: from.assetId)
-        } else {
-            return btcText(available, assetId: from.assetId, denomination: denomination)
-        }
+        guard let available = from.available,
+              let text = formatAmount(available, assetId: from.assetId, asFiat: isFiat) else { return nil }
+        return "Available: \(text)"
     }
+
     var availableTo: String? {
-        guard let available = to.available else { return nil }
-        if isFiat {
-            return fiatText(available, assetId: to.assetId)
-        } else {
-            return btcText(available, assetId: to.assetId, denomination: denomination)
-        }
+        guard let available = to.available,
+              let text = formatAmount(available, assetId: to.assetId, asFiat: isFiat) else { return nil }
+        return "Available: \(text)"
     }
     var amountFrom: String? {
-        guard let satoshi = from.amount else { return nil }
+        guard let satoshi = from.amount, satoshi > 0 else { return nil }
         if isFiat {
             return fiat(Int64(satoshi), assetId: from.assetId)
         } else {
@@ -52,7 +70,7 @@ extension SwapPositionState {
         }
     }
     var amountTo: String? {
-        guard let satoshi = to.amount else { return nil }
+        guard let satoshi = to.amount, satoshi > 0 else { return nil }
         if isFiat {
             return fiat(Int64(satoshi), assetId: to.assetId)
         } else {
@@ -60,20 +78,18 @@ extension SwapPositionState {
         }
     }
     var subamountFrom: String? {
-        guard let satoshi = from.amount else { return nil }
-        if !isFiat {
-            return fiatText(Int64(satoshi), assetId: from.assetId)
-        } else {
-            return btcText(Int64(satoshi), assetId: from.assetId, denomination: denomination)
+        let satoshi = from.amount ?? 0
+        guard let text = formatAmount(Int64(satoshi), assetId: from.assetId, asFiat: !isFiat) else {
+            return nil
         }
+        return "≈ \(text)"
     }
     var subamountTo: String? {
-        guard let satoshi = to.amount else { return nil }
-        if !isFiat {
-            return fiatText(Int64(satoshi), assetId: to.assetId)
-        } else {
-            return btcText(Int64(satoshi), assetId: to.assetId, denomination: denomination)
+        let satoshi = to.amount ?? 0
+        guard let text = formatAmount(Int64(satoshi), assetId: to.assetId, asFiat: !isFiat) else {
+            return nil
         }
+        return "≈ \(text)"
     }
     func fiat(_ satoshi: Int64, assetId: String) -> String? {
         return Balance.fromSatoshi(satoshi, assetId: assetId)?.toFiat(locale: false).0
@@ -87,78 +103,111 @@ extension SwapPositionState {
     func btcText(_ satoshi: Int64, assetId: String, denomination: DenominationType) -> String? {
         return Balance.fromSatoshi(satoshi, assetId: assetId)?.toText(denomination)
     }
+    private func formatAmount(_ amount: Int64, assetId: String, asFiat: Bool) -> String? {
+        return asFiat
+            ? fiatText(amount, assetId: assetId)
+            : btcText(amount, assetId: assetId, denomination: denomination)
+    }
 }
 
 struct SwapPosition: Sendable {
     var side: SwapPositionEnum
+    var type: SwapAssetType
     var account: Account?
     var assetId: String
     var amount: UInt64?
 }
 extension SwapPosition {
+
+    init(position: SwapPositionEnum, type: SwapAssetType, account: Account?, assetId: String) {
+        self.side = position
+        self.type = type
+        self.account = account
+        self.assetId = assetId
+    }
+
     var title: String {
         switch side {
-        case .from:
-            return "From".localized + ": "
-        case .to:
-            return "To".localized + ": "
+        case .from: "From".localized
+        case .to: "To".localized
         }
     }
     var swapAsset: SwapAsset {
-        if assetId == AssetInfo.btcId {
-            return .onchain
-        } else {
-            return .liquid
+        switch type {
+        case .bitcoin: .onchain
+        case .lightning: .lightning
+        case .liquid: .liquid
         }
     }
     var accountName: String {
         return account?.localizedName ?? ""
     }
     var assetName: String {
-        if assetId == AssetInfo.btcId {
-            return "Bitcoin"
-        } else if assetId == AssetInfo.lbtcId {
-            return "Liquid Bitcoin"
-        } else {
-            return "N/A"
-        }
+        return type.title
     }
     var chain: String {
-        if assetId == AssetInfo.btcId {
-            return SwapChainName.mainnet.rawValue
-        } else if assetId == AssetInfo.lbtcId {
-            return SwapChainName.liquid.rawValue
-        } else {
-            return ""
+        switch type {
+        case .bitcoin: SwapChainName.mainnet.rawValue
+        case .lightning: SwapChainName.lightning.rawValue
+        case .liquid: SwapChainName.liquid.rawValue
         }
     }
     func assetSymbol(_ inputDenomination: DenominationType) -> String {
-        if assetId == AssetInfo.btcId {
-            return DenominationType.denominationsBTC[inputDenomination] ?? ""
-        } else if assetId == AssetInfo.lbtcId {
-            return DenominationType.denominationsLBTC[inputDenomination] ?? ""
-        } else {
-            return "N/A"
+        switch type {
+        case .bitcoin, .lightning: DenominationType.denominationsBTC[inputDenomination] ?? ""
+        case .liquid: DenominationType.denominationsLBTC[inputDenomination] ?? ""
         }
     }
     var assetIcon: UIImage {
-        if assetId == AssetInfo.btcId {
-            return UIImage(named: "ic_swap_bitcoin")!
-        } else if assetId == AssetInfo.lbtcId {
-            return UIImage(named: "ic_swap_liquid")!
-        } else {
-            return UIImage()
-        }
+        return type.icon ?? UIImage()
     }
     var available: Int64? {
-        if let account {
-            return try? WalletManager.current?.accountBackend(account).assets[assetId]
+        switch type {
+        case .bitcoin, .liquid:
+            if let account {
+                return try? WalletManager.current?.accountBackend(account).assets[assetId]
+            }
+            return nil
+        case .lightning:
+            if let maxPayable = account?.lightningSession?.nodeState()?.maxSendableSatoshi {
+                return Int64(maxPayable)
+            }
+            return nil
         }
-        return nil
     }
-    init(position: SwapPositionEnum, account: Account?, assetId: String) {
-        self.side = position
-        self.account = account
-        self.assetId = assetId
+}
+
+enum SwapFlowError: Error, Sendable, Equatable {
+    case invalidAmount(msg: String, position: SwapPositionEnum?)
+    case insufficientFunds
+    case gdkError(String)
+    case serviceUnavailable
+    case unsupportedSwapPair
+    case failedToBuildTransaction
+    case invalidPaymentTarget
+
+    func description() -> String {
+        switch self {
+        case .invalidAmount(let msg, _):
+            return msg.localized
+        case .insufficientFunds:
+            return "id_insufficient_funds".localized
+        case .gdkError(let msg):
+            return msg.localized
+        case .serviceUnavailable:
+            return "Service temporary unavailable".localized
+        case .unsupportedSwapPair:
+            return "Swap pair is not supported yet".localized
+        case .failedToBuildTransaction:
+            return "Failed to build transaction".localized
+        case .invalidPaymentTarget:
+            return "id_invalid_address".localized
+        }
+    }
+
+    var position: SwapPositionEnum? {
+        if case .invalidAmount(_, let pos) = self { return pos }
+        if case .insufficientFunds = self { return .from }
+        return nil
     }
 }

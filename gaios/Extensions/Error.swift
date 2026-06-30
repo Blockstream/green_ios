@@ -12,6 +12,9 @@ extension Error {
         if let error = self as? SendFlowError {
             return error.description().localized
         }
+        if let swapError = self as? SwapFlowError {
+            return swapError.description().localized
+        }
         if let authError = self as? AuthenticationTypeHandler.AuthError {
             return authError.localizedDescription
         }

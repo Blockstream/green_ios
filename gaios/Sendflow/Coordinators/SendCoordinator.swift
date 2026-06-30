@@ -51,7 +51,14 @@ final class SendCoordinator {
 
     func startSwap(subaccount: Account?, assetId: String?) {
         selectedDenomination = wallet.wm.settings?.denomination ?? .Sats
-        let model = SendSwapViewModel(wm: wallet.wm, subaccount: subaccount, assetId: assetId, delegate: self)
+        let initialAsset = resolveInitialAssetType(for: subaccount, with: assetId)
+        let model = SendSwapViewModel(
+            wm: wallet.wm,
+            subaccount: subaccount,
+            assetId: assetId,
+            initialAsset: initialAsset,
+            delegate: self
+        )
         let vc = sendSwapViewController(model: model)
         nav.pushViewController(vc, animated: true)
     }
@@ -215,6 +222,16 @@ extension SendCoordinator {
         return paymentTarget
             .eligibleRails()
             .flatMap { subaccounts(for: $0, wm: wm, amount: amount) }
+    }
+    
+    func resolveInitialAssetType(for subaccount: Account?, with assetId: String?) -> SwapAssetType? {
+        if let subaccount = subaccount, subaccount.isLightning {
+            return .lightning
+        }
+        if assetId == AssetInfo.lbtcId { return .liquid }
+        if assetId == AssetInfo.btcId { return .bitcoin }
+        if assetId == AssetInfo.lightningId { return .lightning }
+        return nil
     }
 
     func navigate(to route: SendRoute) async {
@@ -915,6 +932,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             }
             return .success(model)
         case .failure(let error):
+            logger.error("SendTransaction Error: \(String(describing: error), privacy: .public)")
             nav.topViewController?.stopLoader()
             let model = SendFailureViewModel(delegate: self,
                                              error: error,
@@ -989,6 +1007,11 @@ extension SendCoordinator: DialogAccountsViewControllerDelegate {
     func didSelectAccount(_ walletItem: Account?) {
         if let subaccount = walletItem, let position = sendSwapViewModel?.selectedPosition {
             sendSwapViewModel?.updateAccount(account: subaccount, for: position)
+        }
+        nav.viewControllers.forEach { vc in
+            if let sendSwapVC = vc as? SendSwapViewController {
+                sendSwapVC.resumeEditing()
+            }
         }
     }
 }

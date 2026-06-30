@@ -170,9 +170,9 @@ class TxDetailsViewModel {
         }
 
         // message
-        if transaction.isLightning && transaction.message != nil {
+        if transaction.isLightning, let message = transaction.message, !message.isEmpty {
             items.append(TxDetailsInfoCellModel(title: "id_message".localized,
-                                                hint: transaction.message ?? "",
+                                                hint: message,
                                                 type: .message,
                                                 hideBalance: hideBalance))
         }

@@ -315,10 +315,9 @@ final class SendAmountViewModel {
     }
     var maxSendAmount: UInt64? {
         if subaccount.isLightning {
-            return subaccount.lightningSession?
-                .nodeState()?.maxPayableMsat.satoshi
+            return subaccount.lightningSession?.nodeState()?.maxSendableSatoshi
         } else {
-            return UInt64(backend?.assets.policyAsset() ?? 0)
+            return UInt64(backend?.assets[assetId] ?? 0)
         }
     }
     var currency: String {

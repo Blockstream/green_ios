@@ -7,29 +7,37 @@ import lightning
 
 class SendLwkSignViewController: UIViewController {
 
-    @IBOutlet weak var addressCard: UIView!
-    @IBOutlet weak var amountCard: UIView!
-    @IBOutlet weak var notesCard: UIView!
     @IBOutlet weak var cardAssetFrom: UIView!
     @IBOutlet weak var iconAssetFrom: UIImageView!
     @IBOutlet weak var lblToAssetTitleFrom: UILabel!
     @IBOutlet weak var lblAssetNameFrom: UILabel!
-    @IBOutlet weak var lblAccount1From: UILabel!
+    @IBOutlet weak var lblAccountNameFrom: UILabel!
 
+    @IBOutlet weak var assetToStackView: UIStackView!
     @IBOutlet weak var cardAssetTo: UIView!
     @IBOutlet weak var iconAssetTo: UIImageView!
     @IBOutlet weak var lblToAssetTitleTo: UILabel!
     @IBOutlet weak var lblAssetNameTo: UILabel!
-    @IBOutlet weak var lblAccount1To: UILabel!
-    @IBOutlet weak var lblAddressTitle: UILabel!
+    @IBOutlet weak var lblAccountNameTo: UILabel!
 
-    @IBOutlet weak var lblAmountTitle: UILabel!
+    @IBOutlet weak var addressStackView: UIStackView!
+    @IBOutlet weak var addressCard: UIView!
+    @IBOutlet weak var lblAddressTitle: UILabel!
     @IBOutlet weak var addressTextView: UITextView!
+    
+    @IBOutlet weak var amountCard: UIView!
+    @IBOutlet weak var lblAmountTitle: UILabel!
     @IBOutlet weak var lblAmountValue: UILabel!
     @IBOutlet weak var lblAmountFiat: UILabel!
-    @IBOutlet weak var squareSliderView: SquareSliderView!
+    @IBOutlet weak var lblAmountSubtitle: UILabel!
+    
+    @IBOutlet weak var noteView: UIStackView!
+    @IBOutlet weak var lblNoteTitle: UILabel!
+    @IBOutlet weak var lblNoteTxt: UILabel!
+    @IBOutlet weak var notesCard: UIView!
 
     @IBOutlet weak var lblSumFeeKey: UILabel!
+    @IBOutlet weak var btnInfoFee: UIButton!
     @IBOutlet weak var lblSumFeeValue: UILabel!
     @IBOutlet weak var lblSumAmountKey: UILabel!
     @IBOutlet weak var lblSumAmountValue: UILabel!
@@ -38,12 +46,7 @@ class SendLwkSignViewController: UIViewController {
     @IBOutlet weak var lblSumTotalValue: UILabel!
     @IBOutlet weak var totalsView: UIStackView!
     @IBOutlet weak var lblConversion: UILabel!
-    @IBOutlet weak var lblAmountSubtitle: UILabel!
-
-    @IBOutlet weak var noteView: UIStackView!
-    @IBOutlet weak var lblNoteTitle: UILabel!
-    @IBOutlet weak var lblNoteTxt: UILabel!
-    @IBOutlet weak var btnInfoFee: UIButton!
+    @IBOutlet weak var squareSliderView: SquareSliderView!
 
     var viewModel: SendLwkSignViewModel!
 
@@ -72,17 +75,16 @@ class SendLwkSignViewController: UIViewController {
 
     func setContent() {
         title = "id_confirm_transaction".localized
-        lblToAssetTitleFrom.text = "id_asset".localized.capitalized
         lblToAssetTitleTo.text = "id_to".localized.capitalized
         lblAmountFiat.text = ""
         lblAssetNameFrom.text = ""
-        lblAccount1From.text = ""
         lblAssetNameTo.text = ""
-        lblAccount1To.text = ""
+        lblAccountNameFrom.text = ""
+        lblAccountNameTo.text = ""
         lblAddressTitle.text = "id_recipient".localized.capitalized
         lblAmountTitle.text = "id_amount".localized.capitalized
         lblAmountValue.text = ""
-        lblSumFeeKey.text = "Total fees".localized
+        lblSumFeeKey.text = "Total Fees".localized
         lblSumFeeValue.text = ""
         lblSumAmountKey.text = "id_amount".localized
         lblSumAmountValue.text = ""
@@ -91,26 +93,36 @@ class SendLwkSignViewController: UIViewController {
         lblNoteTitle.text = "id_note".localized
         lblNoteTxt.text = ""
         squareSliderView.isHidden = false
-        lblAmountSubtitle.isHidden = viewModel.isCrossChainSwap && !viewModel.usesLightningRail
-        lblAmountSubtitle.text = viewModel.submarineSubtitle.localized
+        lblAmountSubtitle.isHidden = viewModel.submarineSubtitle == nil
+        lblAmountSubtitle.text = viewModel.submarineSubtitle?.localized
     }
 
     func setStyle() {
-        lblAmountValue.setStyle(.title)
         [cardAssetFrom, cardAssetTo, addressCard, amountCard, notesCard].forEach {
             $0?.cornerRadius = 4.0
             $0?.setStyle(CardStyle.defaultStyle)
         }
         [lblToAssetTitleFrom, lblToAssetTitleTo, lblAddressTitle, lblAmountTitle, lblNoteTitle].forEach {
-            $0?.setStyle(.sectionTitle)
+            $0?.setStyle(.txtSectionHeader)
         }
-        [lblSumFeeKey, lblSumFeeValue, lblSumAmountKey, lblSumAmountValue, lblNoteTxt, lblConversion, lblAccount1From, lblAccount1To, lblAmountFiat].forEach {
+        [lblAccountNameFrom, lblAccountNameTo].forEach {
+            $0.setStyle(.txtSmaller)
+            $0.textColor = .gGrayTxt()
+        }
+        [lblSumFeeKey, lblSumFeeValue, lblSumAmountKey, lblSumAmountValue, lblNoteTxt, lblConversion, lblAmountFiat].forEach {
             $0?.setStyle(.txtCard)
         }
-        [lblSumTotalKey, lblSumTotalValue, lblAssetNameFrom, lblAssetNameTo].forEach {
-            $0?.setStyle(.txtBigger)
+        [lblSumTotalKey, lblSumTotalValue].forEach {
+            $0.setStyle(.txt)
+            $0.font = UIFont.systemFont(ofSize: $0.font.pointSize, weight: .semibold)
         }
-        lblAmountSubtitle.setStyle(.txt)
+        [lblAssetNameFrom, lblAssetNameTo].forEach {
+            $0?.setStyle(.titleCard)
+        }
+        lblAmountValue.font = UIFont.systemFont(ofSize: 28.0, weight: .medium)
+        lblAmountValue.textColor = .white
+        lblAmountSubtitle.setStyle(.txtSmaller)
+        lblAmountSubtitle.textColor = .gGrayTxt()
         btnInfoFee.setImage(UIImage(named: "ic_lightning_info_err")!.maskWithColor(color: UIColor.gW40()), for: .normal)
     }
 
@@ -127,14 +139,13 @@ class SendLwkSignViewController: UIViewController {
     }
 
     func reloadLightningPayment() {
-        lblToAssetTitleTo.isHidden = true
+        lblToAssetTitleFrom.text = "id_asset".localized
         cardAssetFrom.isHidden = false
-        cardAssetTo.isHidden = true
-        addressCard.isHidden = false
-        lblAddressTitle.isHidden = false
+        assetToStackView.isHidden = true
+        addressStackView.isHidden = false
         lblAssetNameFrom.text = viewModel.assetFrom?.name ?? viewModel.assetIdFrom
-        lblAccount1From.text = "" // viewModel.subaccountFrom.localizedName.uppercased()
         iconAssetFrom.image = viewModel.assetImageFrom
+        lblAccountNameFrom.isHidden = true
         totalsView.isHidden = true
         lblConversion.isHidden = true
         lblAmountSubtitle.isHidden = true
@@ -150,22 +161,28 @@ class SendLwkSignViewController: UIViewController {
         noteView.isHidden = viewModel.isNoteHidden
         lblNoteTxt.text = viewModel.note
     }
-    func reloadCrossChainSwap() {
+    func reloadInternalSwap() {
+        lblToAssetTitleFrom.text = "From".localized
         lblAmountValue.text = convertToDenom(viewModel.recipientSatoshi ?? 0)
         lblAmountFiat.text = "≈ \(convertToFiat(viewModel.recipientSatoshi ?? 0) ?? "")"
         lblSumAmountKey.text = "id_total_spent".localized
         lblSumTotalKey.text = "Total to Receive".localized
         cardAssetFrom.isHidden = false
-        cardAssetTo.isHidden = false
-        lblToAssetTitleTo.isHidden = false
-        addressCard.isHidden = true
-        lblAddressTitle.isHidden = true
+        assetToStackView.isHidden = false
+        addressStackView.isHidden = true
         lblAssetNameFrom.text = viewModel.assetFrom?.name ?? viewModel.assetIdFrom
         lblAssetNameTo.text = viewModel.assetTo?.name ?? viewModel.assetIdTo
-        lblAccount1From.text = viewModel.subaccountFrom.localizedName.uppercased()
-        lblAccount1To.text = viewModel.subaccountTo?.localizedName.uppercased() ?? ""
         iconAssetFrom.image = viewModel.assetImageFrom
         iconAssetTo.image = viewModel.assetImageTo
+        
+        lblAccountNameFrom.text = viewModel.subaccountFrom.localizedName.uppercased()
+        lblAccountNameFrom.isHidden = !viewModel.hasMultipleSubaccounts(for: viewModel.subaccountFrom)
+        if let toAccount = viewModel.subaccountTo {
+            lblAccountNameTo.text = toAccount.localizedName.uppercased()
+            lblAccountNameTo.isHidden = !viewModel.hasMultipleSubaccounts(for: toAccount)
+        } else {
+            lblAccountNameTo.isHidden = true
+        }
         lblSumAmountValue.text = convertToDenom(viewModel.satoshiWithFee ?? 0)
         lblSumFeeValue.text = convertToDenom(viewModel.totalFee ?? 0)
         lblSumTotalValue.text = convertToDenom(viewModel.recipientSatoshi ?? 0)
@@ -183,16 +200,15 @@ class SendLwkSignViewController: UIViewController {
         return viewModel.convertToFiat(satoshi: satoshi)
     }
     func reloadSubmarineSwap() {
+        lblToAssetTitleFrom.text = "id_asset".localized
         lblAmountValue.text = convertToDenom(viewModel.recipientSatoshi ?? 0)
         lblAmountFiat.text = "≈ \(convertToFiat(viewModel.recipientSatoshi ?? 0) ?? "")"
-        lblToAssetTitleTo.isHidden = true
         cardAssetFrom.isHidden = false
-        cardAssetTo.isHidden = true
-        addressCard.isHidden = false
-        lblAddressTitle.isHidden = false
+        assetToStackView.isHidden = true
+        addressStackView.isHidden = false
         lblAssetNameFrom.text = viewModel.assetFrom?.name ?? viewModel.assetIdFrom
-        lblAccount1From.text = viewModel.subaccountFrom.localizedName.uppercased()
         iconAssetFrom.image = viewModel.assetImageFrom
+        lblAccountNameFrom.isHidden = true
         lblSumFeeValue.text = convertToDenom(viewModel.totalFee ?? 0)
         lblSumAmountValue.text = convertToDenom(viewModel.recipientSatoshi ?? 0)
         lblSumTotalValue.text = convertToDenom(viewModel.satoshiWithFee ?? 0)
@@ -211,10 +227,10 @@ class SendLwkSignViewController: UIViewController {
         lblNoteTxt.text = viewModel.note
     }
     func reload() {
-        if viewModel.usesLightningRail {
+        if viewModel.isInternalSwap || viewModel.isCrossChainSwap {
+            reloadInternalSwap()
+        } else if viewModel.usesLightningRail {
             reloadLightningPayment()
-        } else if viewModel.isCrossChainSwap {
-            reloadCrossChainSwap()
         } else {
             reloadSubmarineSwap()
         }
@@ -237,7 +253,8 @@ class SendLwkSignViewController: UIViewController {
     func sendFeeInfoViewController() -> SendFeeInfoViewController {
         let scope = SendFeeScope.lwkSwap(
             networkFee: convertToDenom(viewModel.networkFee ?? 0) ?? "",
-            providerFee: convertToDenom(viewModel.providerFee ?? 0) ?? "",
+            lightningSetupFee: viewModel.lightningSetupFee != nil ? (convertToDenom(viewModel.lightningSetupFee ?? 0)) : nil,
+            swapFee: convertToDenom(viewModel.swapFee ?? 0) ?? "",
             total: convertToDenom(viewModel.totalFee ?? 0) ?? "",
             fiat: "≈ " + (convertToFiat(viewModel.totalFee ?? 0) ?? ""))
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
@@ -267,13 +284,12 @@ class SendLwkSignViewController: UIViewController {
 
     func dialogEditViewController() -> DialogEditViewController? {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogEditViewController") as? DialogEditViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.prefill = viewModel.tx.memo ?? ""
-            vc.delegate = self
-            return vc
+        let vc = storyboard.instantiateViewController(identifier: "DialogEditViewController") { coder in
+            DialogEditViewController(coder: coder, prefill: self.viewModel.tx.memo ?? "")
         }
-        return nil
+        vc.modalPresentationStyle = .overFullScreen
+        vc.delegate = self
+        return vc
     }
 
     func send() {

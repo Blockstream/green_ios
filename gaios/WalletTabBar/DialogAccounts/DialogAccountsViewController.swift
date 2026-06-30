@@ -18,6 +18,7 @@ class DialogAccountsViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableHeight: NSLayoutConstraint!
     @IBOutlet weak var lblInfo: UILabel!
+    @IBOutlet weak var closeBtn: UIButton!
     weak var delegate: DialogAccountsViewControllerDelegate?
 
     var viewModel: DialogAccountsViewModel
@@ -94,6 +95,14 @@ class DialogAccountsViewController: UIViewController {
         cardView.setStyle(.bottomsheet)
         handle.cornerRadius = 1.5
         lblInfo.setStyle(.txtCard)
+        
+        if let closeBtn = closeBtn {
+            closeBtn.tintColor = .gGrayTxt()
+            closeBtn.backgroundColor = .gGrayCard()
+            closeBtn.layer.cornerRadius = closeBtn.frame.height / 2
+            closeBtn.isHidden = !viewModel.showCloseButton
+            closeBtn.addTarget(self, action: #selector(closeButtonTapped(_:)), for: .touchUpInside)
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -124,6 +133,10 @@ class DialogAccountsViewController: UIViewController {
             self.dismiss(animated: false, completion: nil)
             self.delegate?.didSelectAccount(walletItem)
         })
+    }
+    
+    @IBAction func closeButtonTapped(_ sender: UIButton) {
+        dismiss()
     }
 }
 

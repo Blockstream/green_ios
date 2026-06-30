@@ -91,7 +91,8 @@ class SquareSliderView: UIView {
 
         let offset: CGFloat = 12
         let iconView = UIImageView(frame: CGRect(x: offset, y: offset, width: fH - (2 * offset), height: fH - (2 * offset)))
-        iconView.image = UIImage(named: "ic_square_slider")
+        iconView.image = UIImage(named: "arrow-fat-lines-right-fill")?.withRenderingMode(.alwaysTemplate)
+        iconView.tintColor = .black
 
         self.slideThumb.backgroundColor = UIColor.gAccent()
         self.slideThumb.addSubview(iconView)

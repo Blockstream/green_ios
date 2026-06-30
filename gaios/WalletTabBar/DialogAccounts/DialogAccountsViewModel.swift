@@ -11,19 +11,22 @@ class DialogAccountsViewModel {
     var assetId: String?
     var accounts: [Account]
     var hideBalance: Bool
+    var showCloseButton: Bool
 
     init(title: String,
          hint: String,
          isSelectable: Bool,
          assetId: String?,
          accounts: [Account],
-         hideBalance: Bool) {
+         hideBalance: Bool,
+         hasCloseButton: Bool = false) {
         self.title = title
         self.hint = hint
         self.isSelectable = isSelectable
         self.accounts = accounts
         self.hideBalance = hideBalance
         self.assetId = assetId
+        self.showCloseButton = hasCloseButton
     }
 
     var accountCellModels: [AccountCellModel] {

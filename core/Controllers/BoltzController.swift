@@ -8,6 +8,18 @@ public actor BoltzController {
     let container: NSPersistentContainer
     private let context: NSManagedObjectContext
 
+    /// BoltzController lives in `core.framework`. `NSPersistentContainer(name:)` by default
+    /// looks in the main app bundle, so we must explicitly load the compiled `.momd` from core.
+    private static func managedObjectModel() -> NSManagedObjectModel {
+        let bundle = Bundle(for: BoltzController.self)
+        guard let modelURL = bundle.url(forResource: "BoltzDataModel", withExtension: "momd"),
+              let model = NSManagedObjectModel(contentsOf: modelURL) else {
+            fatalError("BoltzDataModel.momd not found in core.framework")
+        }
+        logger.info("Boltz Core Data model loaded from \(bundle.bundlePath)")
+        return model
+    }
+
     public init() {
         // Locate the Shared App Group Container
         guard let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(Self.appGroupIdentifier)") else {
@@ -29,18 +41,16 @@ public actor BoltzController {
         storeDescription.setOption(FileProtectionType.completeUntilFirstUserAuthentication as NSObject,
                                        forKey: NSPersistentStoreFileProtectionKey)
         // Create container
-        container = NSPersistentContainer(name: self.modelName)
+        let managedObjectModel = Self.managedObjectModel()
+        container = NSPersistentContainer(name: self.modelName, managedObjectModel: managedObjectModel)
         container.persistentStoreDescriptions = [storeDescription]
-        container.loadPersistentStores { (storeDescription, error) in
+        container.loadPersistentStores { storeDescription, error in
             if let error = error as NSError? {
-                // Handle the error appropriately, usually by crashing in development
-                // but logging and failing gracefully in production.
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
             logger.info("Successfully loaded persistent store: \(storeDescription.url?.lastPathComponent ?? "Unknown")")
         }
         self.context = container.newBackgroundContext()
-        // Handle Conflicts
         self.context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         self.context.automaticallyMergesChangesFromParent = true
     }
@@ -112,17 +122,8 @@ public actor BoltzController {
         return item
     }
 
-    public func upsert(id: String, data: String, isPending: Bool, xpubHashId: String, invoice: String? = nil, swapType: SwapType, txHash: String?) async throws {
-        if let persistentID = try? await BoltzController.shared.fetchID(byId: id) {
-            try? await update(with: persistentID, newData: data, newIsPending: isPending, newTxHash: txHash)
-        } else {
-            _ = try? await create(id: id, data: data, isPending: true, xpubHashId: xpubHashId, invoice: invoice, swapType: swapType, txHash: txHash)
-        }
-    }
-
     /// Fetch object of a 'BoltzSwap' from his id.
     public func get(with id: NSManagedObjectID) async throws -> BoltzSwap? {
-        // objectWithID: efficiently uses in-memory information or the store as needed
         try await context.perform {
             try self.context.existingObject(with: id) as? BoltzSwap
         }
@@ -171,6 +172,23 @@ public actor BoltzController {
             }
         }
     }
+    
+    /// Deletes all swaps associated with a specific wallet.
+    public func deleteAll(for xpubHashId: String) async throws {
+        try await context.perform {
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "BoltzSwap")
+            fetchRequest.predicate = NSPredicate(format: "xpubHashId == %@", xpubHashId)
+            let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+            deleteRequest.resultType = .resultTypeObjectIDs
+            
+            let result = try self.context.execute(deleteRequest) as? NSBatchDeleteResult
+            if let objectIDArray = result?.result as? [NSManagedObjectID] {
+                let changes = [NSDeletedObjectsKey: objectIDArray]
+                NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [self.context])
+            }
+        }
+    }
+    
     public func getSwap(txHash: String) async throws -> BoltzSwap? {
         let ids: [NSManagedObjectID] = try await fetchIDs([
             NSPredicate(format: "txHash == %@", txHash)

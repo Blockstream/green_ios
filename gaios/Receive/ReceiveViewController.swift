@@ -434,7 +434,7 @@ class ReceiveViewController: KeyboardViewController {
             vm.selectReverseSwapMode()
             AnalyticsManager.shared.swapToggle(wallet: WalletsStorage.shared.current,
                                                from: SwapChainName.lightning.rawValue,
-                                               to: SwapChainName.liquid.rawValue)
+                                               to: vm.state.subaccount.gdkNetwork.liquid ? SwapChainName.liquid.rawValue : SwapChainName.mainnet.rawValue)
         }
     }
     @IBAction func btnCancelAmount(_ sender: Any) {
@@ -475,10 +475,11 @@ class ReceiveViewController: KeyboardViewController {
             startLoader()
             requestNewPayment()
             btnConfirm.setStyle(.primaryDisabled)
-            AnalyticsManager.shared
-                .swapReceive(wallet: WalletsStorage.shared.current,
-                                                from: SwapChainName.lightning.rawValue,
-                                                to: SwapChainName.liquid.rawValue)
+            AnalyticsManager.shared.swapReceive(
+                wallet: WalletsStorage.shared.current,
+                from: SwapChainName.lightning.rawValue,
+                to: vm.state.subaccount.gdkNetwork.liquid ? SwapChainName.liquid.rawValue : SwapChainName.mainnet.rawValue
+            )
         }
     }
 }

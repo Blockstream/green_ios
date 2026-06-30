@@ -12,7 +12,7 @@ enum SendFeeInfoAction {
 
 enum SendFeeScope {
     case info
-    case lwkSwap(networkFee: String, providerFee: String, total: String, fiat: String)
+    case lwkSwap(networkFee: String, lightningSetupFee: String?, swapFee: String, total: String, fiat: String)
 }
 
 class SendFeeInfoViewController: UIViewController {
@@ -23,16 +23,23 @@ class SendFeeInfoViewController: UIViewController {
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var lblTitle: UILabel!
+    @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnFeeInfo: UIButton!
 
     @IBOutlet weak var lwkPanel: UIView!
+    @IBOutlet weak var lblNetworkFeeTitle: UILabel!
+    @IBOutlet weak var lblNetworkFeeValue: UILabel!
+    @IBOutlet weak var lblNetworkFeeHint: UILabel!
+    
+    @IBOutlet weak var lightningSetupFeeStack: UIStackView!
+    @IBOutlet weak var lblLightningSetupFeeTitle: UILabel!
+    @IBOutlet weak var lblLightningSetupFeeValue: UILabel!
+    @IBOutlet weak var lblLightningSetupFeeHint: UILabel!
+    
     @IBOutlet weak var lblSwapFeeTitle: UILabel!
     @IBOutlet weak var lblSwapFeeValue: UILabel!
     @IBOutlet weak var lblSwapFeeHint: UILabel!
-    @IBOutlet weak var lblChainFeeTitle: UILabel!
-    @IBOutlet weak var lblChainFeeValue: UILabel!
-    @IBOutlet weak var lblChainFeeHint: UILabel!
     @IBOutlet weak var lblTotalTitle: UILabel!
     @IBOutlet weak var lblTotalValue1: UILabel!
     @IBOutlet weak var lblTotalValue2: UILabel!
@@ -73,10 +80,6 @@ class SendFeeInfoViewController: UIViewController {
             tappableBg.addGestureRecognizer(tapToClose)
     }
 
-    deinit {
-        print("deinit")
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -97,21 +100,30 @@ class SendFeeInfoViewController: UIViewController {
             lblTitle.text = "id_network_fee".localized
             lblHint.text = "id_fees_are_not_collected_by".localized
             lwkPanel.isHidden = true
-        case .lwkSwap(let networkFee, let providerFee, let total, let fiat):
-            lblTitle.text = "Total".localized
+            closeButton.isHidden = true
+        case .lwkSwap(let networkFee, let lightningSetupFee, let swapFee, let total, let fiat):
+            lblTitle.text = "Total Fees".localized
             lblHint.isHidden = true
             lwkPanel.isHidden = false
-            lblSwapFeeTitle.text = "Network Fee".localized
-            lblSwapFeeValue.text = networkFee
-            lblSwapFeeHint.text = "Paid for transaction confirmation".localized
-            lblChainFeeTitle.text = "Swap Fee".localized
-            lblChainFeeValue.text = providerFee
-            lblChainFeeHint.text = "Covers swap service".localized
+            
+            lblNetworkFeeTitle.text = "Network Fee".localized
+            lblNetworkFeeHint.text = "Covers transaction confirmation".localized
+            lblNetworkFeeValue.text = networkFee
+            
+            lightningSetupFeeStack.isHidden = lightningSetupFee == nil
+            lblLightningSetupFeeTitle.text = "Lightning Setup Fee".localized
+            lblLightningSetupFeeHint.text = "Covers your first Lightning payment".localized
+            lblLightningSetupFeeValue.text = lightningSetupFee
+            
+            lblSwapFeeTitle.text = "Swap Fee".localized
+            lblSwapFeeHint.text = "Covers swap service".localized
+            lblSwapFeeValue.text = swapFee
+
             lblTotalTitle.text = "Total".localized
             lblTotalValue1.text = total
             lblTotalValue2.text = fiat
         }
-        btnFeeInfo.setStyle(.underline(txt: "id_read_more".localized, color: .gAccent()))
+        btnFeeInfo.setStyle(.underline(txt: "Learn More".localized, color: .gAccent()))
         btnFeeInfo.setImage(UIImage(named: "ic_squared_out_small")?.maskWithColor(color: .gAccent()), for: .normal)
     }
 
@@ -119,11 +131,14 @@ class SendFeeInfoViewController: UIViewController {
         cardView.setStyle(.bottomsheet)
         handle.cornerRadius = 1.5
         lblHint.setStyle(.txtCard)
-        [lblSwapFeeTitle, lblChainFeeTitle].forEach { $0?.setStyle(.txt) }
-        [lblSwapFeeHint, lblChainFeeHint, lblSwapFeeValue, lblChainFeeValue].forEach { $0?.setStyle(.txtCard) }
+        [lblNetworkFeeTitle, lblLightningSetupFeeTitle, lblSwapFeeTitle].forEach { $0?.setStyle(.txt) }
+        [lblNetworkFeeHint, lblLightningSetupFeeHint, lblSwapFeeHint, lblNetworkFeeValue, lblLightningSetupFeeValue, lblSwapFeeValue].forEach { $0?.setStyle(.txtCard) }
         lblTotalTitle.setStyle(.txtBigger)
         lblTotalValue1.setStyle(.txtBigger)
         lblTotalValue2.setStyle(.txtCard)
+        closeButton.tintColor = .gGrayTxt()
+        closeButton.backgroundColor = .gGrayCard()
+        closeButton.layer.cornerRadius = closeButton.frame.height / 2
     }
 
     func dismiss(_ action: SendFeeInfoAction) {
@@ -155,5 +170,9 @@ class SendFeeInfoViewController: UIViewController {
 
     @IBAction func btnFeeInfo(_ sender: Any) {
         dismiss(.more)
+    }
+    
+    @IBAction func closeButtonTapped(_ sender: Any) {
+        dismiss(.cancel)
     }
 }

@@ -112,6 +112,22 @@ actor TransactionBuilder {
             return tx
         }.value
     }
+    static func buildGdkTransaction(preparePayResponse: PreparePayResponse, subaccount: Account, feeRate: UInt64?) async throws -> core.Transaction {
+        return try await Task.detached(priority: .userInitiated) {
+            guard let session = subaccount.gdkSession else { throw SendFlowError.invalidSession }
+            let address = try preparePayResponse.lockupAddress()
+            let uriAmount = try preparePayResponse.uriAmount()
+            var tx = Transaction([:], accountId: subaccount.id)
+            let fallBackFeeRate = try await session.getFeeEstimates()?.first ?? session.gdkNetwork.defaultFee
+            tx.feeRate = feeRate ?? fallBackFeeRate
+            let unspent = try await session.getUnspentOutputs(GetUnspentOutputsParams(subaccount: subaccount.pointer, numConfs: 0))
+            tx.utxos = unspent
+            let assetId = session.networkId.gdkNetwork.getFeeAssetOrNull()
+            tx.addressees = [Addressee.from(address: address, satoshi: Int64(uriAmount), assetId: assetId)]
+            tx = try await session.createTransaction(tx: tx)
+            return tx
+        }.value
+    }
     static func sendGdkTransaction(tx: core.Transaction, session: SessionManager) async throws -> SendTransactionSuccess {
         return try await Task.detached(priority: .userInitiated) {
             var tx = tx
@@ -251,6 +267,35 @@ actor TransactionBuilder {
             }
             // Create the swap
             return try await lwk.btcToLbtc(amount: amount, refundAddress: refundAddress, claimAddress: claimAddress, xpubHashId: xpub)
+        }.value
+    }
+    static func buildBtcToLnSwap(from: Account, to: Account, receiveAmount: UInt64, lwk: LwkBoltzBackend, xpub: String) async throws -> (pay: PreparePayResponse, openingFee: UInt64) {
+        return try await Task.detached(priority: .userInitiated) {
+            guard let lightningSession = to.lightningSession else {
+                throw SendFlowError.failedToBuildTransaction
+            }
+            let invoice = try await lightningSession.createInvoice(satoshi: receiveAmount, description: "")
+            guard let invoiceBolt11 = invoice.invoice.bolt11 else {
+                throw SendFlowError.failedToBuildTransaction
+            }
+            let lightningPayment = try LightningPayment.fromBolt11Invoice(invoice: Bolt11Invoice(s: invoiceBolt11))
+            guard let rawRefundAddress = try await from.gdkSession?.getReceiveAddress(subaccount: from.pointer).address,
+                  let refundAddress = try? BitcoinAddress(s: rawRefundAddress) else {
+                throw SendFlowError.failedToBuildTransaction
+            }
+
+            let preparePayResponse = try await lwk.btcToLn(lightningPayment: lightningPayment, refundAddress: refundAddress)
+            return (preparePayResponse, invoice.openingFeeSatoshi)
+        }.value
+    }
+    static func buildLnToBtcSwap(from: Account, to: Account, amount: UInt64, lwk: LwkBoltzBackend, xpub: String) async throws -> InvoiceResponse {
+        return try await Task.detached(priority: .userInitiated) {
+            guard let rawClaimAddress = try await to.gdkSession?.getReceiveAddress(subaccount: to.pointer).address,
+                  let claimAddress = try? BitcoinAddress(s: rawClaimAddress) else {
+                throw SendFlowError.failedToBuildTransaction
+            }
+
+            return try await lwk.lnToBtc(amount: amount, description: "", claimAddress: claimAddress)
         }.value
     }
 

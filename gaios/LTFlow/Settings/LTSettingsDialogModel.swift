@@ -10,6 +10,7 @@ enum LTSettingsDialogCellType: CaseIterable {
     case channelsBalance
     case inboundLiquidity
     case maxPayble
+    case maxSinglePaymentAmount
     case onchainBalanceSatoshi
     case blockHeight
 }
@@ -80,9 +81,13 @@ class LTSettingsDialogViewModel {
     var maxPaybleText: String {
         return asStr(satoshi: nodeInfo?.maxPayableMsat.satoshi)
     }
+    
+    var maxSinglePayment: UInt64? {
+        return nodeInfo?.maxSendableSatoshi
+    }
 
-    var maxSinglePaymentAmount: String {
-        return asStr(satoshi: nodeInfo?.maxPayableMsat.satoshi)
+    var maxSinglePaymentText: String {
+        return asStr(satoshi: nodeInfo?.maxSendableSatoshi)
     }
 
     var maxReceivable: String {
@@ -133,6 +138,12 @@ class LTSettingsDialogViewModel {
                 subtitle: nil,
                 value: maxPaybleText,
                 hiddenIcon: false)
+        case .maxSinglePaymentAmount:
+            return LTSettingDialogCellModel(
+                title: "Max Single Payment Amount".localized,
+                subtitle: nil,
+                value: maxSinglePaymentText,
+                hiddenIcon: false)
         case .onchainBalanceSatoshi:
             return LTSettingDialogCellModel(
                 title: "Onchain Balance".localized,
@@ -160,6 +171,8 @@ class LTSettingsDialogViewModel {
             return asNumStr(satoshi: inboundLiquidity)
         case .maxPayble:
             return asNumStr(satoshi: maxPayble)
+        case .maxSinglePaymentAmount:
+            return asNumStr(satoshi: maxSinglePayment)
         case .onchainBalanceSatoshi:
             return asNumStr(satoshi: onchainBalanceSatoshi)
         case .blockHeight:

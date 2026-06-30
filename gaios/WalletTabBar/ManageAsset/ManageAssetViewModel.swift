@@ -179,9 +179,10 @@ class ManageAssetViewModel {
         wm.prominentSession?.settings?.pricing["currency"]
     }
     func canSwap() -> Bool {
+        // baseIds already includes lightningId so Lightning asset page can open Swap.
         if mainWallet.isWatchonly ||
             (mainWallet.isHW && mainWallet.boardType == .v2c ||
-             !AssetInfo.baseIds.contains(assetId) || assetId == AssetInfo.lightningId) {
+             !AssetInfo.baseIds.contains(assetId)) {
             return false
         }
         return true

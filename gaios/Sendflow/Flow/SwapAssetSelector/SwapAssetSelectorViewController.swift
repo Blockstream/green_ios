@@ -1,35 +1,34 @@
 import Foundation
 import UIKit
-import core
 
-
-protocol DialogInputDenominationViewControllerDelegate: AnyObject {
-    func didSelectInput(denomination: DenominationType)
-    func didSelectFiat()
-    func didCancel()
+protocol SendSwapAssetSelectorViewControllerDelegate: AnyObject {
+    @MainActor
+    func didSelectAsset(_ selector: SwapAssetSelectorViewController, didSelect asset: SwapAssetType)
+    @MainActor
+    func didCancel(_ selector: SwapAssetSelectorViewController)
 }
 
-extension DialogInputDenominationViewControllerDelegate {
-    func didCancel() {}
+extension SendSwapAssetSelectorViewControllerDelegate {
+    func didCancel(_ selector: SwapAssetSelectorViewController) {}
 }
 
-class DialogInputDenominationViewController: UIViewController {
-
+class SwapAssetSelectorViewController: UIViewController {
     @IBOutlet weak var tappableBg: UIView!
     @IBOutlet weak var handle: UIView!
-    @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     @IBOutlet weak var cardView: UIView!
+    @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var lblTitle: UILabel!
+    @IBOutlet weak var closeBtn: UIButton!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
+    
+    let viewModel: SwapAssetSelectorViewModel
+    private var obs: NSKeyValueObservation?
+    weak var delegate: SendSwapAssetSelectorViewControllerDelegate?
 
-    var viewModel: DialogInputDenominationViewModel!
-    var obs: NSKeyValueObservation?
-    weak var delegate: DialogInputDenominationViewControllerDelegate?
-
-    init?(coder: NSCoder, model: DialogInputDenominationViewModel) {
-        self.viewModel = model
+    init?(coder: NSCoder, viewModel: SwapAssetSelectorViewModel) {
+        self.viewModel = viewModel
         super.init(coder: coder)
     }
     required init?(coder: NSCoder) {
@@ -52,12 +51,18 @@ class DialogInputDenominationViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        register()
+        registerCells()
         setContent()
         setStyle()
+        
+        view.backgroundColor = .clear
         view.addSubview(blurredView)
         view.sendSubviewToBack(blurredView)
         view.alpha = 0.0
+        
+        tableView.dataSource = self
+        tableView.delegate = self
+        
         anchorBottom.constant = -cardView.frame.size.height
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
         swipeDown.direction = .down
@@ -70,10 +75,6 @@ class DialogInputDenominationViewController: UIViewController {
         }
     }
 
-    deinit {
-        print("deinit")
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -84,31 +85,25 @@ class DialogInputDenominationViewController: UIViewController {
         }
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
     @objc func didTap(gesture: UIGestureRecognizer) {
-
         dismiss()
     }
 
     func setContent() {
-        lblTitle.text = "id_enter_amount_in".localized
+        lblTitle.text = viewModel.swapDirection.title.localized
     }
 
     func setStyle() {
         cardView.setStyle(.bottomsheet)
         handle.cornerRadius = 1.5
-        lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
+        lblTitle.setStyle(.subTitle)
+        closeBtn.tintColor = .gGrayTxt()
+        closeBtn.backgroundColor = .gGrayCard()
+        closeBtn.layer.cornerRadius = closeBtn.frame.height / 2
     }
 
-    func register() {
-        ["DialogInputDenominationCell"].forEach {
+    func registerCells() {
+        [SwapAssetCell.identifier].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
@@ -121,19 +116,13 @@ class DialogInputDenominationViewController: UIViewController {
         }, completion: { _ in
             self.dismiss(animated: false, completion: {
                 if isCancel {
-                    self.delegate?.didCancel()
+                    self.delegate?.didCancel(self)
                 }
             })
         })
     }
 
-    func onFooterTap() {
-        delegate?.didSelectFiat()
-        dismiss(isCancel: false)
-    }
-
     @objc func didSwipe(gesture: UIGestureRecognizer) {
-
         if let swipeGesture = gesture as? UISwipeGestureRecognizer {
             switch swipeGesture.direction {
             case .down:
@@ -143,51 +132,36 @@ class DialogInputDenominationViewController: UIViewController {
             }
         }
     }
-
+    @IBAction func closeButtonTapped(_ sender: UIButton) {
+        dismiss()
+    }
 }
 
-extension DialogInputDenominationViewController: UITableViewDelegate, UITableViewDataSource {
+extension SwapAssetSelectorViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.denominations.count
+        return viewModel.assetTypes.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: DialogInputDenominationCell.identifier) as? DialogInputDenominationCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: SwapAssetCell.identifier) as? SwapAssetCell {
             cell.selectionStyle = .none
-            let denom = viewModel.denominations[indexPath.row]
-            cell.configure(denomination: denom,
-                           balance: viewModel.balance,
-                           network: viewModel.network,
-                           isSelected: denom == viewModel.denomination && viewModel.isFiat == false)
+            let type = viewModel.assetTypes[indexPath.row]
+            let cellModel = SwapAssetCellModel(title: type.title, icon: type.icon)
+            cell.configure(with: cellModel)
+            
             return cell
         }
         return UITableViewCell()
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        delegate?.didSelectInput(denomination: viewModel.denominations[indexPath.row])
+        let selectedAsset = viewModel.assetTypes[indexPath.row]
+        delegate?.didSelectAsset(self, didSelect: selectedAsset)
         dismiss(isCancel: false)
-    }
-
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return UITableView.automaticDimension
-    }
-
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let fiatCurrency = Balance.fromSatoshi(UInt64(0), assetId: AssetInfo.btcId)?.toFiat().1
-        if let fView = Bundle.main.loadNibNamed("DialogInputDenominationFooter", owner: self, options: nil)?.first as? DialogInputDenominationFooter {
-            fView.configure(title: fiatCurrency ?? "",
-                            balance: viewModel.balance,
-                            isSelected: viewModel.isFiat, onTap: { [weak self] in
-                self?.onFooterTap()
-            })
-            return fView
-        }
-        return nil
     }
 }
