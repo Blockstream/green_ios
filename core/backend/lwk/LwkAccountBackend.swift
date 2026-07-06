@@ -60,7 +60,8 @@ public class LwkAccountBackend: AccountBackend {
         let txs: [Transaction] = try wollet.transactions().map { walletTx in
             var tx = Transaction([:], accountId: account.id)
             tx.blockHeight = walletTx.height() ?? 0
-            tx.createdAtTs = Int64(walletTx.timestamp() ?? 0) * 1_000_000
+            // Use a max timestamp sentinel so undated LWK txs sort first.
+            tx.createdAtTs = Int64(walletTx.timestamp() ?? UInt32.max) * 1_000_000
             tx.inputs = []
             tx.outputs = []
             tx.fee = walletTx.fee()
