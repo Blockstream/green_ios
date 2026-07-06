@@ -36,10 +36,11 @@ struct PaymentTargetParser: Sendable {
         return tx != nil
     }
     nonisolated func isPset(_ text: String) async -> Bool {
+        // GDK owns psbtGetDetails; LWK liquid backends must not be selected here.
         guard let wm = WalletManager.current,
-              let networkId = wm.activeLiquidNetworkIds.first
+              let networkId = wm.activeGdkLiquidNetworkIds.first
         else { return false }
-        let backend = try! wm.gdkNetworkBackend(networkId)
+        guard let backend = try? wm.gdkNetworkBackend(networkId) else { return false }
         let params = PsbtGetDetailParams(psbt: text, utxos: [:])
         let tx = try? await backend.session.psbtGetDetails(params: params)
         return tx != nil

@@ -87,10 +87,10 @@ class LwkNetworkClient {
     ) async throws -> T {
         var lastError: Error?
         for backend in ClientBackend.allCases {
-            let client = try await getClient(for: backend)
-            // Check structured concurrency cancellation state before running next provider fallback
-            try Task.checkCancellation()
             do {
+                let client = try await getClient(for: backend)
+                // Check structured concurrency cancellation state before running next provider fallback
+                try Task.checkCancellation()
                 print("\(op) via \(backend.rawValue)")
                 switch client {
                 case .esplora(let instance):

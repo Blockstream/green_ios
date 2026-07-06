@@ -8,7 +8,7 @@ extension WalletManager: ConverterProvider {
     }
 
     public func convertLiquidAmount(params: Balance) throws -> Balance? {
-        guard let networkId = activeLiquidNetworkIds.first else {
+        guard let networkId = activeGdkLiquidNetworkIds.first else {
             throw GaError.GenericError("No liquid network")
         }
         let gdkNetworkBackend = try gdkNetworkBackend(networkId)

@@ -30,8 +30,8 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, C
         case .bip86Taproot: return "Taproot"
         case .lightning: return "Lightning"
         case .standard: return "2FA Protected"
-        case .ampAccount: return "AMP"
-        case .amp2Account: return "AMP2"
+        case .ampAccount: return "AMP Legacy"
+        case .amp2Account: return "AMP"
         case .twoOfThree: return "2of3 with 2FA"
         case .unknown: return self.rawValue
         }
@@ -40,8 +40,8 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, C
     public var title: String {
         switch self {
         case .standard: return "2FA Protected"
-        case .ampAccount: return "AMP"
-        case .amp2Account: return "AMP2"
+        case .ampAccount: return "AMP Legacy"
+        case .amp2Account: return "AMP"
         case .twoOfThree: return "2of3 with 2FA"
         case .bip44Legacy: return "Legacy"
         case .bip49SegwitWrapped: return "Legacy SegWit"

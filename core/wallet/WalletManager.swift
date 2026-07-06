@@ -357,8 +357,8 @@ public class WalletManager {
                 .greenMainnet,
                 .electrumLiquid,
                 .greenLiquid,
-                .lightningMainnet,
-                .lwkMainnet
+                // AMP2 mainnet server config is not available yet; keep LWK testnet-only.
+                .lightningMainnet
             ]
         } else {
             return [

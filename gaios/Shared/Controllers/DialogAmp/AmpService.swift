@@ -51,11 +51,17 @@ class AmpService: Sendable {
     }
 
     func createAmp2Account() async throws {
-        _ = try await lwkNetworkBackend?
+        guard wm.testnet else {
+            throw GaError.GenericError("AMP2 is currently available on testnet only")
+        }
+        guard let lwkNetworkBackend else {
+            throw GaError.GenericError("No LWK backend")
+        }
+        _ = try await lwkNetworkBackend
             .createAccount(
                 params: CreateSubaccountParams(name: "", type: .amp2Account)
             )
-        _ = try await lwkNetworkBackend?.getAccounts(refresh: false)
+        _ = try await lwkNetworkBackend.getAccounts(refresh: false)
     }
 
     func createAmpLegacyAccount() async throws {

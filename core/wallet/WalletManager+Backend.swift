@@ -125,6 +125,12 @@ extension WalletManager {
             .compactMap { try? networkBackend($0)}
             .filter { $0.isLoggedIn }
     }
+    // Some Liquid call sites still require GDK sessions, not generic Liquid backends.
+    public var activeGdkLiquidBackends: [GdkNetworkBackend] {
+        [liquidSinglesigNetworkId, liquidMultisigNetworkId]
+            .compactMap { gdkNetworkBackendOrNil($0)}
+            .filter { $0.isLoggedIn }
+    }
     public var activeGdkSinglesigBackends: [GdkNetworkBackend] {
         singlesigNetworkIds
             .compactMap { gdkNetworkBackendOrNil($0)}

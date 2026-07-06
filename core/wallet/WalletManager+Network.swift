@@ -27,6 +27,9 @@ extension WalletManager {
     public var activeLiquidNetworkIds: [NetworkId] {
         activeLiquidBackends.map { $0.networkId }
     }
+    public var activeGdkLiquidNetworkIds: [NetworkId] {
+        activeGdkLiquidBackends.map { $0.networkId }
+    }
     public var activeBitcoinNetworkIds: [NetworkId] {
         activeBitcoinBackends.map { $0.networkId }
     }
