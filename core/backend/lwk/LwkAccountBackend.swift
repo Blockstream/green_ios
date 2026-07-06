@@ -57,10 +57,9 @@ public class LwkAccountBackend: AccountBackend {
         if params.first > 0 {
             return Transactions(list: [])
         }
-        let currentBlockHeight = networkBackend?.block?.height ?? 0
         let txs: [Transaction] = try wollet.transactions().map { walletTx in
             var tx = Transaction([:], accountId: account.id)
-            tx.blockHeight = walletTx.height() ?? currentBlockHeight ?? 0
+            tx.blockHeight = walletTx.height() ?? 0
             tx.createdAtTs = Int64(walletTx.timestamp() ?? 0) * 1_000_000
             tx.inputs = []
             tx.outputs = []
