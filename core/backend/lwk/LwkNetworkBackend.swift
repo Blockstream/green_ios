@@ -5,7 +5,7 @@ import hw
 
 public final class LwkNetworkBackend: NetworkBackend {
 
-    public static let TIP_POLL_INTERVAL_MS: Int64 = 60_000
+    public static let TIP_POLL_INTERVAL_MS: UInt64 = 10_000
     public static let AMP_SERVER_URL_TESTNET = "https://amp.enterprise.blockstream.com"
     public static let AMP_SERVER_KEYORIGIN_XPUB_TESTNET = "[b805d768/87h/1h/0h]tpubDCYEgnLyCH2okSittQNNB8JHLwPgmoEAoKcMrJDHP9dFVamsadPAFJQ77C1htgR8ksie3VksLXoryng9AUaPZSF8FwTwEv6CaHp8j2YCrds"
     public static let AMP_SERVER_URL_MAINNET = ""
@@ -101,9 +101,8 @@ public final class LwkNetworkBackend: NetworkBackend {
                     print("LWK tip poll failed: \(error.localizedDescription)")
                 }
 
-                // 60,000 MS / 60 Seconds equivalent in nanoseconds
                 do {
-                    try await Task.sleep(nanoseconds: 60_000 * 1_000_000)
+                    try await Task.sleep(nanoseconds: Self.TIP_POLL_INTERVAL_MS * 1_000_000)
                 } catch {
                     break
                 }
