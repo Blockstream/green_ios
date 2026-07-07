@@ -104,7 +104,20 @@ public class LwkAccountBackend: AccountBackend {
         }
         let builder = networkBackend.lwkNetwork.txBuilder()
         if recipient.isGreedy ?? false {
-            throw GaError.GenericError("isGreedy not yet supported")
+            let address = try LiquidWalletKit.Address(s: recipient.address)
+            if networkBackend.isPolicyAsset(assetId: recipientAsset) {
+                try builder.drainLbtcWallet()
+                try builder.drainLbtcTo(address: address)
+            } else {
+                guard let satoshi = try wollet.balance()[recipientAsset], satoshi > 0 else {
+                    throw GaError.GenericError("No balance available for send all")
+                }
+                try builder.addRecipient(
+                    address: address,
+                    satoshi: satoshi,
+                    asset: recipientAsset
+                )
+            }
         } else if let satoshi = recipient.satoshi {
             try builder.addRecipient(
                 address: LiquidWalletKit.Address(s: recipient.address),
@@ -134,6 +147,12 @@ public class LwkAccountBackend: AccountBackend {
         tx.amounts = customSatoshiMap
         tx.fee = balance.fee()
         tx.outputs = outputs
+        if recipient.isGreedy ?? false {
+            guard outputs.count == 1, let recipientSatoshi = outputs.first?.satoshi, recipientSatoshi > 0 else {
+                throw GaError.GenericError("Invalid send all recipient amount")
+            }
+            tx.addressees[0].satoshi = recipientSatoshi
+        }
         tx.transaction = transaction.bytes().hex
         tx.hash = transaction.txid().description
         tx.pset = pset.description
