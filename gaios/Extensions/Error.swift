@@ -89,6 +89,15 @@ extension Error {
             }
         }
         if let error = self as? LwkError {
+            if case .Generic(let msg) = error {
+                // TODO: Replace with typed LWK error cases once exposed by the Swift bindings.
+                if msg.starts(with: "InvalidAmount") {
+                    return "id_invalid_amount"
+                }
+                if msg.starts(with: "InsufficientFunds") {
+                    return "id_insufficient_funds"
+                }
+            }
             return error.description()
         }
         return self.localizedDescription
