@@ -28,10 +28,10 @@ public struct GdkSettings: Codable {
     public let electrumTls: Bool?
     public let gapLimit: Int?
 
-    public static let btcElectrumSrvDefaultEndPoint = "blockstream.info:700"
-    public static let liquidElectrumSrvDefaultEndPoint = "blockstream.info:995"
-    public static let testnetElectrumSrvDefaultEndPoint = "blockstream.info:993"
-    public static let liquidTestnetElectrumSrvDefaultEndPoint = "blockstream.info:465"
+    public static let btcElectrumSrvDefaultEndPoint = "bitcoin-mainnet.blockstream.info:50002"
+    public static let liquidElectrumSrvDefaultEndPoint = "elements-mainnet.blockstream.info:50002"
+    public static let testnetElectrumSrvDefaultEndPoint = "bitcoin-testnet.blockstream.info:50002"
+    public static let liquidTestnetElectrumSrvDefaultEndPoint = "elements-testnet.blockstream.info:50002"
     public static let defaultGapLimit = 20
 
     public init(tor: Bool?, proxy: Bool?, socks5Hostname: String?, socks5Port: String?, personalNodeEnabled: Bool?, btcElectrumSrv: String?, liquidElectrumSrv: String?, testnetElectrumSrv: String?, liquidTestnetElectrumSrv: String?, electrumTls: Bool?, gapLimit: Int?) {
