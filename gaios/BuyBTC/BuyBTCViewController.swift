@@ -59,6 +59,7 @@ class BuyBTCViewController: KeyboardViewController {
     var selectedIndex = 0
     var providerState: ProviderState = .hidden
     weak var verifyOnDeviceViewController: HWDialogVerifyOnDeviceViewController?
+    private var quoteTask: Task<Void, Never>?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -229,7 +230,8 @@ class BuyBTCViewController: KeyboardViewController {
         navigationItem.rightBarButtonItems = items
     }
     func loadQuotes() {
-        Task { [weak self] in
+        quoteTask?.cancel()
+        quoteTask = Task { [weak self] in
             await self?.load()
         }
     }
@@ -248,17 +250,23 @@ class BuyBTCViewController: KeyboardViewController {
         btnNext.setStyle(.primaryDisabled)
         quotes = []
         selectedIndex = 0
+        lblNoQuotes.text = "id_no_quotes_available_for_this".localized
+        
         guard let amountStr = amountTextField.text else { return }
         if amountStr.isEmpty {
             providerState = .hidden
             reload()
             return
         }
-        let task = Task.detached { [weak self] in
-            await self?.viewModel.getDefaultProvider()
-            return try await self?.viewModel.quote(amountStr)
+        let result: Result<[MeldQuoteItem]?, Error>
+        do {
+            await self.viewModel.getDefaultProvider()
+            let quotes = try await self.viewModel.quote(amountStr)
+            result = .success(quotes)
+        } catch {
+            result = .failure(error)
         }
-        let result = await task.result
+        if Task.isCancelled { return }
         switch result {
         case .success(let quotes):
             providerState = quotes?.count ?? 0 > 0 ? .valid : .noquote
@@ -266,6 +274,7 @@ class BuyBTCViewController: KeyboardViewController {
         case .failure(let error):
             logger.error("Buy quote error: \(error.localizedDescription, privacy: .public)")
             providerState = .noquote
+            lblNoQuotes.text = error.description().localized
             reload()
         }
     }

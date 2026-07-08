@@ -32,8 +32,9 @@ extension MeldQuoteItem {
 }
 
 struct MeldQuoteResponse: Codable {
-    let quotes: [MeldQuoteItem]
+    let quotes: [MeldQuoteItem]?
     let message: String?
+    let code: String?
 }
 
 struct MeldSessionParams: Codable {
@@ -182,10 +183,18 @@ struct Meld {
     func quote(_ params: MeldQuoteParams) async throws -> [MeldQuoteItem] {
         let url = "\(meldApiUrl)/payments/crypto/quote"
         let res: MeldQuoteResponse = try await Meld.call(url: url, method: "POST", params: params)
-        if let message = res.message {
-            throw GaError.GenericError(message)
+        let errorContext = "\(res.code ?? "") \(res.message ?? "")".lowercased()
+        if !errorContext.trimmingCharacters(in: .whitespaces).isEmpty {
+            switch errorContext {
+            case _ where errorContext.contains("invalid_amount_too_low") || errorContext.contains("minimum"):
+                throw GaError.GenericError("Amount too low".localized)
+            case _ where errorContext.contains("invalid_amount_too_high") || errorContext.contains("maximum"):
+                throw GaError.GenericError("Amount too high".localized)
+            default:
+                throw GaError.GenericError(res.message ?? res.code ?? "Unknown error")
+            }
         }
-        let quotes = res.quotes
+        let quotes = res.quotes ?? []
         return quotes.sorted { $0.destinationAmount < $1.destinationAmount }
     }
 
