@@ -158,7 +158,7 @@ class DialogAmpViewController: UIViewController {
     @IBAction func btnCreate(_ sender: Any) {
         btnCreate.setStyle(.primaryLoading)
         btnCreate.setTitle("Creating AMP Account...".localized, for: .normal)
-        vm.onCreate(.both)
+        vm.onCreate(vm.defaultCreateType)
     }
     @IBAction func btnLearnMore(_ sender: Any) {
         SafeNavigationManager.shared.navigate(ExternalUrls.ampCreateInfo)

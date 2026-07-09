@@ -9,7 +9,6 @@ enum RefreshAmpFeature: Sendable, Hashable {
 enum CreateAmpType {
     case v2
     case legacy
-    case both
 }
 @MainActor
 class AmpService: Sendable {
@@ -39,20 +38,28 @@ class AmpService: Sendable {
         try? wm.lwkNetworkBackend(lwkNetworkId)
     }
 
+    /// AMP2 is limited to software testnet wallets for now.
+    /// Hardware, watch-only, and mainnet keep the AMP0 path only.
+    var canCreateAmp2: Bool {
+        guard wm.testnet, let mainWallet else { return false }
+        return !mainWallet.isHW && !mainWallet.isWatchonly
+    }
+
     init(onUpdate: (@MainActor @Sendable (RefreshAmpFeature?) -> Void)? = nil) {
         self.onUpdate = onUpdate
     }
     func getAmpAccounts() -> [Account] {
-        return lwkNetworkBackend?.accounts.filter { $0.isAmp } ?? []
+        guard canCreateAmp2 else { return [] }
+        return lwkNetworkBackend?.accounts.filter { $0.type == .amp2Account } ?? []
     }
 
     func getLegacyAmpAccounts() -> [Account] {
-        return gdkGreenLiquidNetworkBackend?.accounts.filter { $0.isAmp } ?? []
+        return gdkGreenLiquidNetworkBackend?.accounts.filter { $0.type == .ampAccount } ?? []
     }
 
     func createAmp2Account() async throws {
-        guard wm.testnet else {
-            throw GaError.GenericError("AMP2 is currently available on testnet only")
+        guard canCreateAmp2 else {
+            throw GaError.GenericError("AMP2 is currently available on testnet software wallets only")
         }
         guard let lwkNetworkBackend else {
             throw GaError.GenericError("No LWK backend")
@@ -105,20 +112,12 @@ class AmpService: Sendable {
         createTask = Task { [weak self] in
             guard let self else { return }
             do {
-                    switch type {
-                    case .legacy:
-                        try await self.createAmpLegacyAccount()
-                    case .v2:
-                        try await self.createAmp2Account()
-                    case .both:
-                        // we create only amp 2 by default
-                        // amp 2 not supported on jade
-                        if !(mainWallet?.isJade ?? false) {
-                            try await self.createAmp2Account()
-                        } else {
-                            try await self.createAmpLegacyAccount()
-                        }
-                    }
+                switch type {
+                case .legacy:
+                    try await self.createAmpLegacyAccount()
+                case .v2:
+                    try await self.createAmp2Account()
+                }
                 guard !Task.isCancelled else { return }
                 self.onUpdate?(.success)
             } catch is CancellationError {

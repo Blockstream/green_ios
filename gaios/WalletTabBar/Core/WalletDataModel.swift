@@ -353,7 +353,9 @@ actor WalletDataModel {
         if !wallet.isEphemeral && mainWallet.boardType != .v2c && !mainWallet.isWatchonly {
             accountItems += [.lightning]
         }
-        if !(mainWallet.isJade && wallet.isWatchonly) {
+        // AMP ID entry: AMP2 on software testnet; AMP0 (new sheet) elsewhere.
+        // Watch-only wallets keep AMP hidden for this branch.
+        if !mainWallet.isWatchonly {
             accountItems += [.ampID]
         }
         if wallet.hasMultisig {

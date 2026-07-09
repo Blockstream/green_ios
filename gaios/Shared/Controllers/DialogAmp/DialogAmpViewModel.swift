@@ -14,12 +14,13 @@ private enum AmpSectionType {
         }
     }
 
-    var title: String {
+    func title(amp2Enabled: Bool) -> String {
         switch self {
         case .v2:
             return "AMP".localized
         case .legacy:
-            return "AMP Legacy".localized
+            // When AMP2 is unavailable, AMP0 is just "AMP" (no Legacy label).
+            return amp2Enabled ? "AMP Legacy".localized : "AMP".localized
         }
     }
 }
@@ -44,19 +45,36 @@ class DialogAmpViewModel: Sendable {
         return service?.getLegacyAmpAccounts() ?? []
     }
 
-    var isJade: Bool {
-        return service?.mainWallet?.isJade ?? false
+    /// Software testnet only. Mainnet / Jade / watch-only stay on AMP0.
+    var canCreateAmp2: Bool {
+        return service?.canCreateAmp2 ?? false
+    }
+
+    private var hasAmp2Account: Bool {
+        return !getAmpAccounts().isEmpty
+    }
+
+    private var hasLegacyAmpAccount: Bool {
+        return !getLegacyAmpAccounts().isEmpty
     }
 
     private var hasAnyAmpAccount: Bool {
-        return (getAmpAccounts().count + getLegacyAmpAccounts().count) > 0
+        return hasAmp2Account || hasLegacyAmpAccount
+    }
+
+    /// Default primary-button create: AMP2 when allowed, otherwise AMP0.
+    var defaultCreateType: CreateAmpType {
+        return canCreateAmp2 ? .v2 : .legacy
     }
 
     private var sectionTypes: [AmpSectionType] {
-        if isJade {
-            return getLegacyAmpAccounts().isEmpty ? [] : [.legacy]
+        guard hasAnyAmpAccount else { return [] }
+        if canCreateAmp2 {
+            // AMP2 primary path + AMP0 as de-emphasized legacy.
+            return [.v2, .legacy]
         }
-        return hasAnyAmpAccount ? [.v2, .legacy] : []
+        // AMP0-only wallets keep the new sheet, without an AMP2 section.
+        return [.legacy]
     }
 
     var sectionCount: Int {
@@ -75,35 +93,29 @@ class DialogAmpViewModel: Sendable {
         hasAnyAmpAccount ? "Share your AMP ID with your security token issuer for authorization to move funds.".localized : "AMP accounts allow you to send, receive and store managed assets issued on the Liquid Network.".localized
     }
     func cellAmpModels() -> [DialogAmpCellModel] {
-        if getAmpAccounts().count + getLegacyAmpAccounts().count == 0 {
+        guard canCreateAmp2 else { return [] }
+        if !hasAnyAmpAccount {
             return []
-        } else if getAmpAccounts().count == 0 {
+        } else if !hasAmp2Account {
             return [DialogAmpCellModel(name: "AMP Liquid".localized, hash: nil)]
         } else {
-            var list = [DialogAmpCellModel]()
-            getAmpAccounts().forEach {
-                list
-                    .append(
-                        DialogAmpCellModel(name: $0.name, hash: $0.receivingId)
-                    )
+            return getAmpAccounts().map { account in
+                DialogAmpCellModel(name: account.name, hash: account.receivingId)
             }
-            return list
         }
     }
     func cellAmpLegacyModels() -> [DialogAmpCellModel] {
-        if getAmpAccounts().count + getLegacyAmpAccounts().count == 0 {
+        if !hasAnyAmpAccount {
             return []
-        } else if getLegacyAmpAccounts().count == 0 {
+        } else if !hasLegacyAmpAccount {
+            // Only offer legacy create when AMP2 is the primary path.
+            guard canCreateAmp2 else { return [] }
             return [DialogAmpCellModel(name: "AMP Liquid (Legacy)".localized, hash: nil)]
         } else {
-            var list = [DialogAmpCellModel]()
-            getLegacyAmpAccounts().forEach {
-                list
-                    .append(
-                        DialogAmpCellModel(name: $0.name, hash: $0.receivingId)
-                    )
+            return getLegacyAmpAccounts().map { account in
+                let name = account.name.isEmpty ? "AMP".localized : account.name
+                return DialogAmpCellModel(name: name, hash: account.receivingId)
             }
-            return list
         }
     }
 
@@ -126,7 +138,7 @@ class DialogAmpViewModel: Sendable {
     }
 
     func sectionTitle(_ section: Int) -> String {
-        return sectionType(at: section)?.title ?? ""
+        return sectionType(at: section)?.title(amp2Enabled: canCreateAmp2) ?? ""
     }
 
     func cellModel(_ indexPath: IndexPath) -> DialogAmpCellModel {
