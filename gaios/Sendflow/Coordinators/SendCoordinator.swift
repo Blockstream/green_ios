@@ -831,7 +831,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             case .success(let model):
                 AnalyticsManager.shared.endSendTransaction(
                     account: WalletsStorage.shared.current,
-                    walletItem: transaction.accountInjected,
+                    walletItem: vm.subaccount,
                     transactionSgmt: segment,
                     withMemo: false)
                 // Swap analytics must never be emitted for pure lightning payments.
@@ -854,7 +854,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             case .failure(let model):
                 AnalyticsManager.shared.failedTransaction(
                     account: WalletsStorage.shared.current,
-                    walletItem: transaction.accountInjected,
+                    walletItem: vm.subaccount,
                     transactionSgmt: segment,
                     withMemo: false,
                     prettyError: model.error.description().localized,
@@ -868,7 +868,8 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
     func handleSend(vm: SendLwkSignViewModel, transaction: core.Transaction) async -> SendRoute {
         let isHW = mainWallet.isHW
         let xpubHashId = mainWallet.xpubHashId
-        let isLightning = transaction.accountInjected?.isLightning ?? false
+        let subaccount = vm.subaccount
+        let isLightning = subaccount.isLightning
         gdkTransaction = transaction
         nav.topViewController?.startLoader(message: "id_sending".localized)
         if isHW && !isLightning {
@@ -876,16 +877,13 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
                 tx: transaction,
                 draft: draft,
                 denomination: .Sats,
-                subaccount: transaction.accountInjected,
+                subaccount: subaccount,
                 isMultiAddressees: false,
                 isQRMode: false)
             let vc = sendHWViewController(model: model)
             await nav.presentAsync(vc, animated: true)
         }
         let task = Task.detached {
-            guard let subaccount = transaction.accountInjected else {
-                throw TransactionError.invalid(localizedDescription: "No subaccount selected")
-            }
             let sendTransactionSuccess = try await Self.sendTransaction(
                 transaction,
                 subaccount: subaccount,
@@ -920,7 +918,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             nav.topViewController?.stopLoader()
             let model = SendFailureViewModel(delegate: self,
                                              error: error,
-                                             hideErrors: transaction.accountInjected?.networkId.lightning ?? false)
+                                             hideErrors: subaccount.networkId.lightning)
             return .failure(model)
         }
     }
