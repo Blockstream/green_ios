@@ -883,18 +883,14 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             await nav.presentAsync(vc, animated: true)
         }
         let task = Task.detached {
-            guard let subaccount = transaction.accountInjected, var session = subaccount.gdkSession else {
+            guard let subaccount = transaction.accountInjected else {
                 throw TransactionError.invalid(localizedDescription: "No subaccount selected")
             }
-            if isHW && !isLightning {
-                if let wm = BleHwManager.shared.walletManager, BleHwManager.shared.isConnected() && BleHwManager.shared.isLogged() {
-                    session = try await wm
-                        .gdkAccountBackend(subaccount).session
-                }
-            }
-            let sendTransactionSuccess = try await TransactionBuilder.sendGdkTransaction(
-                tx: transaction,
-                session: session)
+            let sendTransactionSuccess = try await Self.sendTransaction(
+                transaction,
+                subaccount: subaccount,
+                isHW: isHW,
+                isLightning: isLightning)
             if let swapId = vm.swapId, let persistentId = try? await BoltzController.shared.fetchID(byId: swapId) {
                 try? await BoltzController.shared.update(with: persistentId, newTxHash: sendTransactionSuccess.txHash)
             } else if let invoice = try? vm.bolt11.description {
@@ -927,6 +923,35 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
                                              hideErrors: transaction.accountInjected?.networkId.lightning ?? false)
             return .failure(model)
         }
+    }
+
+    // Send through the backend that owns the selected account; Lightning accounts
+    // do not have a GDK session.
+    private static func sendTransaction(
+        _ transaction: core.Transaction,
+        subaccount: Account,
+        isHW: Bool,
+        isLightning: Bool
+    ) async throws -> SendTransactionSuccess {
+        if isLightning {
+            guard let lightningSession = subaccount.lightningSession else {
+                throw TransactionError.invalid(localizedDescription: "Invalid Lightning session")
+            }
+            return try await lightningSession.sendTransaction(tx: transaction)
+        }
+
+        guard var session = subaccount.gdkSession else {
+            throw TransactionError.invalid(localizedDescription: "No subaccount selected")
+        }
+        if isHW,
+           let wm = BleHwManager.shared.walletManager,
+           BleHwManager.shared.isConnected(),
+           BleHwManager.shared.isLogged() {
+            session = try await wm.gdkAccountBackend(subaccount).session
+        }
+        return try await TransactionBuilder.sendGdkTransaction(
+            tx: transaction,
+            session: session)
     }
 }
 extension SendCoordinator: SendSwapViewModelDelegate {
