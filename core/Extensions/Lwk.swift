@@ -53,3 +53,21 @@ extension PaymentState {
         }
     }
 }
+
+extension WalletTxOut {
+    func toInputOutput(isOutput: Bool) -> TxInputOutput {
+        let secrets = unblinded()
+        let isInternal = extInt() == Chain.internal
+        return TxInputOutput(
+            address: address().description,
+            isChange: isOutput && isInternal,
+            satoshi: secrets.value().int64(),
+            isRelevant: true,
+            isInternal: isInternal,
+            isOutput: isOutput,
+            assetId: secrets.asset(),
+            amountBlinder: secrets.valueBf(),
+            assetBlinder: secrets.assetBf()
+        )
+    }
+}

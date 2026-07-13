@@ -292,7 +292,7 @@ class LoginViewController: UIViewController {
             failure(error: error, enableFailingCounter: true)
         }
     }
-    
+
     @MainActor
     func success(withPIN: Bool) {
         self.startLoader(message: "id_loading_wallet".localized)

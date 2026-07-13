@@ -138,16 +138,27 @@ public class WalletManager {
         isHidden: Bool? = nil,
         newAccountName: String? = nil
     ) async throws -> Account {
-        // Disable account editing for lightning accounts
-        if account.isLightning { return account }
-        if account.isLwk { return account }
-
-        try await gdkAccountBackend(account).updateAccount(
-            name: newAccountName,
-            hidden: isHidden)
+        // Disabled account editing for lightning accounts
+        if account.isLightning {
+            throw GaError.GenericError("Disabled account editing for lightning accounts")
+        }
+        // Update gdk account
+        if let gdkAccountBackend = gdkAccountBackendOrNil(account) {
+            try await gdkAccountBackend.updateAccount(
+                name: newAccountName,
+                hidden: isHidden)
+        }
+        // Update lwk account, stored locally
+        if let lwkBackend = lwkNetworkBackendOrNil(account.networkId) {
+            try await lwkBackend.updateAccount(
+                account: account,
+                name: newAccountName,
+                hidden: isHidden)
+        }
+        // Refresh accounts
         _ = try await updateAccounts()
-        return try await gdkNetworkBackend(account.networkId)
-            .getAccount(account: account)
+        // Fetch updated account
+        return try await getAccount(account: account)
     }
 
     public func getAccounts(refresh: Bool = false) async throws -> [Account] {
@@ -164,8 +175,8 @@ public class WalletManager {
             .getAccounts(refresh: refresh)
     }
 
-    public func getAccount(account: Account) async throws -> Account? {
-        return try await gdkNetworkBackend(account.networkId)
+    public func getAccount(account: Account) async throws -> Account {
+        return try await networkBackend(account.networkId)
             .getAccount(account: account)
     }
 
@@ -331,9 +342,10 @@ public class WalletManager {
     }
 
     public func isPaused() -> Bool {
-        connectedGdkNetworkBackends.count != loggedInNetworkBackends.count
+        networkBackends
+            .filter { $0.value.isConnected && !$0.value.isLoggedIn }
+            .count > 0
     }
-
 
     public func selectableAssets() -> [String]? {
         let hasSubaccountAmp = !accounts.filter(

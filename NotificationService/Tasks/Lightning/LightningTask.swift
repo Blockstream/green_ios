@@ -29,7 +29,7 @@ public class LightningTask: NewNotificationDelegate {
         logger.info("LightningTask: Connecting to node")
         try await glNetworkBackend.login(
             credentials: Credentials(mnemonic: secret),
-            restore: false,
+            isForceConnectAllowed: true,
             parentXpub: xpubHashId)
         logger.info("LightningTask: Connected")
         let startTime = Date()

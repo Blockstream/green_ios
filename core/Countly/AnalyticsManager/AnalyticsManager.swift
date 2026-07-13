@@ -137,14 +137,8 @@ public class AnalyticsManager {
 
     public weak var delegate: AnalyticsManagerDelegate?
 
-    public var activeNetworks: [NetworkId]? {
-        let wm = WalletManager.current
-        return wm?.activeNetworkIds
-            .filter {
-                net in !(
-                    wm?.accounts.filter { !$0.hidden && $0.networkId == net
-                    }.isEmpty ?? false)
-            }
+    public var activeNetworks: Set<NetworkId>? {
+        WalletManager.current?.activeNetworkIds
     }
 
     public var analyticsNetworks: AnalyticsManager.NtwTypeDescriptor? {

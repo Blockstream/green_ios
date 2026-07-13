@@ -136,15 +136,7 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
                 load()
                 dismiss(action)
             } catch {
-                switch error {
-                case GaError.ReconnectError(let msg),
-                    GaError.TimeoutError(let msg),
-                    GaError.SessionLost(let msg),
-                    GaError.GenericError(let msg):
-                    self.showError(msg ?? "id_error")
-                default:
-                    self.showError(error.localizedDescription)
-                }
+                self.showError(error.description().localized)
             }
         }
         stopAnimating()

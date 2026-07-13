@@ -95,7 +95,7 @@ public final class GlNetworkBackend: NetworkBackend {
 
     public func login(
         credentials: Credentials,
-        restore: Bool,
+        isForceConnectAllowed: Bool,
         parentXpub: String
     ) async throws {
 
@@ -109,7 +109,7 @@ public final class GlNetworkBackend: NetworkBackend {
         let workingDir = try LightningSessionManager
             .workingDir(xpub: parentXpub)
             .path()
-        let newLightningCredentials = try await session.loginUser(params: glCredentials, workingDir: workingDir, isForceConnectAllowed: !restore)
+        let newLightningCredentials = try await session.loginUser(params: glCredentials, workingDir: workingDir, isForceConnectAllowed: isForceConnectAllowed)
         if let newLightningCredentials {
             LightningRepository.shared
                 .upsert(

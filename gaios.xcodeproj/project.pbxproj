@@ -649,6 +649,10 @@
 		818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */; };
 		8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81837789224E6D4700DC0FB1 /* PgpViewController.swift */; };
 		8183BECC2C41991D0020FD11 /* GreenGDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8183BECB2C41991D0020FD11 /* GreenGDK.swift */; };
+		8185E4CF30053C4C004B2481 /* TxInputOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8185E4CE30053C42004B2481 /* TxInputOutput.swift */; };
+		8185E4D130055FFB004B2481 /* TxOutputUnblindedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8185E4D030055FF0004B2481 /* TxOutputUnblindedData.swift */; };
+		8185E4D330056006004B2481 /* TxInputUnblindedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8185E4D230056006004B2481 /* TxInputUnblindedData.swift */; };
+		8185E4D530056083004B2481 /* TxUnblidedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8185E4D43005607D004B2481 /* TxUnblidedData.swift */; };
 		8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8187B47E21E9026900235A35 /* InfoPlist.strings */; };
 		8189230429F67F5500551824 /* WOViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8189230329F67F5500551824 /* WOViewModel.swift */; };
 		8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8189BEFF2236F2270091B466 /* ScreenLocker.swift */; };
@@ -1640,6 +1644,10 @@
 		818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AuthenticatorFactors.storyboard; sourceTree = "<group>"; };
 		81837789224E6D4700DC0FB1 /* PgpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PgpViewController.swift; sourceTree = "<group>"; };
 		8183BECB2C41991D0020FD11 /* GreenGDK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GreenGDK.swift; path = libgdk/share/gdk/GreenGDK.swift; sourceTree = SOURCE_ROOT; };
+		8185E4CE30053C42004B2481 /* TxInputOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInputOutput.swift; sourceTree = "<group>"; };
+		8185E4D030055FF0004B2481 /* TxOutputUnblindedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxOutputUnblindedData.swift; sourceTree = "<group>"; };
+		8185E4D230056006004B2481 /* TxInputUnblindedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInputUnblindedData.swift; sourceTree = "<group>"; };
+		8185E4D43005607D004B2481 /* TxUnblidedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxUnblidedData.swift; sourceTree = "<group>"; };
 		81865F42299D5AA5002CBA87 /* Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Codable.swift; sourceTree = "<group>"; };
 		81865F48299F7D24002CBA87 /* MigratorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorManager.swift; sourceTree = "<group>"; };
 		8187B47D21E9026900235A35 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -4452,6 +4460,10 @@
 		81D1F9A52FDAC0A200ADF015 /* models */ = {
 			isa = PBXGroup;
 			children = (
+				8185E4D43005607D004B2481 /* TxUnblidedData.swift */,
+				8185E4D030055FF0004B2481 /* TxOutputUnblindedData.swift */,
+				8185E4D230056006004B2481 /* TxInputUnblindedData.swift */,
+				8185E4CE30053C42004B2481 /* TxInputOutput.swift */,
 				81DED41F2FE838010037725D /* Block.swift */,
 				810298C52FE1750400D41B76 /* ConnectionParams.swift */,
 				81DC54342885BD8300DC37C9 /* Balance.swift */,
@@ -5833,18 +5845,22 @@
 				81D1F9EC2FDAE06E00ADF015 /* Events.swift in Sources */,
 				81D1F9ED2FDAE06E00ADF015 /* Settings.swift in Sources */,
 				81D1F9EE2FDAE06E00ADF015 /* GdkNetwork.swift in Sources */,
+				8185E4D530056083004B2481 /* TxUnblidedData.swift in Sources */,
 				81D1F9EF2FDAE06E00ADF015 /* Asset.swift in Sources */,
 				81A5F7A92FE0C27E000B8F1B /* GdkNetworks.swift in Sources */,
 				81D1F9F02FDAE06E00ADF015 /* Address.swift in Sources */,
 				81D1F9F12FDAE06E00ADF015 /* Transaction.swift in Sources */,
+				8185E4D330056006004B2481 /* TxInputUnblindedData.swift in Sources */,
 				810298D22FE18E7100D41B76 /* WalletManager.swift in Sources */,
 				81D1F9F22FDAE06E00ADF015 /* Transactions.swift in Sources */,
+				8185E4D130055FFB004B2481 /* TxOutputUnblindedData.swift in Sources */,
 				81A5F7AF2FE0CFCF000B8F1B /* DictionaryEncoder.swift in Sources */,
 				81D1F9F32FDAE06E00ADF015 /* Account.swift in Sources */,
 				810298C22FE173E900D41B76 /* AccountBackend.swift in Sources */,
 				81D1F9F42FDAE06E00ADF015 /* EventType.swift in Sources */,
 				81DED41C2FE8341A0037725D /* LwkNetworkClient.swift in Sources */,
 				81DED41D2FE8341A0037725D /* LwkNetworkBackend.swift in Sources */,
+				8185E4CF30053C4C004B2481 /* TxInputOutput.swift in Sources */,
 				81DED41E2FE8341A0037725D /* LwkAccountBackend.swift in Sources */,
 				81D1F9F52FDAE06E00ADF015 /* Connection.swift in Sources */,
 				81D1F9F62FDAE06E00ADF015 /* PinData.swift in Sources */,

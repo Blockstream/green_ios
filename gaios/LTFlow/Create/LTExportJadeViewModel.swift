@@ -8,7 +8,7 @@ class LTExportJadeViewModel {
     private var mainWallet: Wallet? { WalletsStorage.shared.current }
     private var privateKey: Data?
     private var wallet: WalletDataModel
-    
+
     init(wallet: WalletDataModel) {
         self.wallet = wallet
     }
@@ -50,7 +50,7 @@ class LTExportJadeViewModel {
             try? walletManager.removeDatadir(workingDir.path())
         }
         let backend = try walletManager.glNetworkBackend()
-        try await backend.login(credentials: lightningCredentials, restore: true, parentXpub: xpubHashId)
+        try await backend.login(credentials: lightningCredentials, isForceConnectAllowed: true, parentXpub: xpubHashId)
         _ = try await backend.getAccounts(refresh: false)
         // Add auth into keychain
         try AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: lightningCredentials, for: mainWallet.keychainLightning)

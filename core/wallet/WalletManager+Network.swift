@@ -49,12 +49,8 @@ extension WalletManager {
         return activeNetworkIds.contains(networkId) && backend?.isLoggedIn ?? false
     }
 
-
     public var activeNetworkIds: Set<NetworkId> {
-        let pairs = networkBackends.compactMap { (key, value) -> NetworkId? in
-            if value.isConnected { return key }
-            return nil
-        }
+        let pairs = networkBackends.filter { $0.value.isLoggedIn }.keys
         return Set(pairs)
     }
 

@@ -14,20 +14,18 @@ public struct Account: Codable, Equatable, Comparable, Sendable {
         case extendedPubkey = "slip132_extended_pubkey"
         case userPath = "user_path"
     }
-    
-    public let gdkName: String
+    public var gdkName: String
     public let pointer: UInt32
     public let receivingId: String?
     public let type: AccountType
     public let bip44Discovered: Bool?
     public let recoveryXpub: String?
-    public let hidden: Bool
+    public var hidden: Bool
     public let coreDescriptors: [String]?
     public let extendedPubkey: String?
     public let userPath: [Int]?
-    
     public var networkInjected: GdkNetwork?
-    
+
     public init(
         gdkName: String,
         pointer: UInt32,
@@ -39,24 +37,25 @@ public struct Account: Codable, Equatable, Comparable, Sendable {
         coreDescriptors: [String]? = nil,
         extendedPubkey: String? = nil,
         userPath: [Int]? = nil,
-        networkInjected: GdkNetwork?) {
-            self.gdkName = gdkName
-            self.pointer = pointer
-            self.receivingId = receivingId
-            self.type = type
-            self.bip44Discovered = bip44Discovered
-            self.recoveryXpub = recoveryXpub
-            self.hidden = hidden
-            self.coreDescriptors = coreDescriptors
-            self.extendedPubkey = extendedPubkey
-            self.userPath = userPath
-            self.networkInjected = networkInjected
-        }
-    
+        networkInjected: GdkNetwork)
+    {
+        self.gdkName = gdkName
+        self.pointer = pointer
+        self.receivingId = receivingId
+        self.type = type
+        self.bip44Discovered = bip44Discovered
+        self.recoveryXpub = recoveryXpub
+        self.hidden = hidden
+        self.coreDescriptors = coreDescriptors
+        self.extendedPubkey = extendedPubkey
+        self.userPath = userPath
+        self.networkInjected = networkInjected
+    }
+
     mutating func setup(network: GdkNetwork) async {
         self.networkInjected = network
     }
-    
+
     public var network: GdkNetwork { networkInjected!}
     public var gdkNetwork: GdkNetwork { networkInjected!}
     private var policyAssetId: String? { networkInjected?.policyAsset }

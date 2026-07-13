@@ -173,7 +173,7 @@ extension WalletManager {
     async throws -> LoginUserResult? {
         try await backend.login(
             credentials: credentials,
-            restore: restore,
+            isForceConnectAllowed: !restore,
             parentXpub: parentXpub)
         guard let walletId = try await getWalletIdentifier(
             credentials: credentials
@@ -190,7 +190,6 @@ extension WalletManager {
         backend: NetworkBackend,
         credentials: Credentials,
         lightningCredentials: Credentials?,
-        boltzCredentials: Credentials?,
         device: HWDevice?,
         fullRestore: Bool,
         creation: Bool)
@@ -284,7 +283,6 @@ extension WalletManager {
                             backend: backend,
                             credentials: credentials,
                             lightningCredentials: lightningCredentials,
-                            boltzCredentials: boltzCredentials,
                             device: device,
                             fullRestore: fullRestore,
                             creation: creation)

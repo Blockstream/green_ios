@@ -26,13 +26,10 @@ class AccountArchiveViewModel {
                 )
             }
     }
-    func unarchiveSubaccount(_ subaccount: Account) async throws {
-        guard let session = try WalletManager.current?.gdkNetworkBackend(subaccount.networkId).session else {
-            return
-        }
-        let params = UpdateSubaccountParams(subaccount: subaccount.pointer, hidden: false)
-        try? await session.updateSubaccount(params)
-        try? await loadSubaccounts()
+    func unarchiveSubaccount(_ account: Account) async throws {
+        let backend = try wm.networkBackend(account.networkId)
+        _ = try await wm.updateAccount(account: account, isHidden: false)
+        try await loadSubaccounts()
     }
     var hideBalance: Bool {
         get {

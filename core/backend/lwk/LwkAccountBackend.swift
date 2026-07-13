@@ -62,9 +62,14 @@ public class LwkAccountBackend: AccountBackend {
             tx.blockHeight = walletTx.height() ?? 0
             // Use a max timestamp sentinel so undated LWK txs sort first.
             tx.createdAtTs = Int64(walletTx.timestamp() ?? UInt32.max) * 1_000_000
-            tx.inputs = []
-            tx.outputs = []
+            tx.inputs = walletTx
+                .inputs()
+                .compactMap { $0?.toInputOutput(isOutput: false) }
+            tx.outputs = walletTx
+                .outputs()
+                .compactMap { $0?.toInputOutput(isOutput: true) }
             tx.fee = walletTx.fee()
+            tx.feeRate = 0
             tx.hash = walletTx.txid().description
             tx.amounts = walletTx.balance()
             if let explorerUrl = networkBackend?.network.explorerUrl {
@@ -92,7 +97,9 @@ public class LwkAccountBackend: AccountBackend {
     }
 
     public func createTransaction(params: Transaction) async throws -> Transaction {
-        precondition(params.addressees.count == 1, "Only 1 addressee is supported")
+        guard params.addressees.count == 1 else {
+            throw GaError.GenericError("Only 1 addressee is supported")
+        }
         guard let recipient = params.addressees.first else {
             throw GaError.GenericError("No recipient address provided")
         }
@@ -130,12 +137,12 @@ public class LwkAccountBackend: AccountBackend {
         let pset = try builder.finish(wollet: wollet)
         let balance = try wollet.psetDetails(pset: pset).balance()
         let transaction = try pset.extractTx()
-        let outputs: [TransactionInputOutput] = balance.recipients().map {
-            return TransactionInputOutput(
+        let outputs: [TxInputOutput] = balance.recipients().map {
+            return TxInputOutput(
                 address: $0.address()?.description,
-                assetId: $0.asset(),
                 isChange: false,
-                satoshi: $0.value() != nil ? Int64($0.value()!) : 0
+                satoshi: $0.value() != nil ? Int64($0.value()!) : 0,
+                assetId: $0.asset()
             )
         }
         var customSatoshiMap = balance.balances()

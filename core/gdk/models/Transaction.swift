@@ -117,88 +117,6 @@ public struct Addressee: Codable {
     }*/
 }
 
-public struct TransactionInputOutput: Codable {
-    enum CodingKeys: String, CodingKey {
-        case address
-        case domain
-        case assetId = "asset_id"
-        case isChange = "is_change"
-        case satoshi
-        case amountBlinder = "amountblinder"
-        case assetBlinder = "assetblinder"
-        case ptIdx = "pt_idx"
-        case isRelevant = "is_relevant"
-        
-    }
-    public let address: String?
-    public let domain: String?
-    public let assetId: String?
-    public let isChange: Bool?
-    public let satoshi: Int64
-    public let amountBlinder: String?
-    public let assetBlinder: String?
-    public let ptIdx: Int64?
-    public let isRelevant: Bool?
-
-    public init(address: String? = nil, domain: String? = nil, assetId: String? = nil, isChange: Bool? = nil, satoshi: Int64, amountBlinder: String? = nil, assetBlinder: String? = nil, ptIdx: Int64? = nil, isRelevant: Bool? = true) {
-        self.address = address
-        self.domain = domain
-        self.assetId = assetId
-        self.isChange = isChange
-        self.satoshi = satoshi
-        self.amountBlinder = amountBlinder
-        self.assetBlinder = assetBlinder
-        self.ptIdx = ptIdx
-        self.isRelevant = isRelevant
-    }
-/*
-    public static func fromLnInvoice(_ invoice: LnInvoice, fallbackAmount: Int64?) -> TransactionInputOutput {
-        return TransactionInputOutput(
-            address: invoice.bolt11,
-            domain: nil,
-            assetId: nil,
-            isChange: false,
-            satoshi: -Int64((invoice.amountSatoshi ?? UInt64(fallbackAmount ?? 0))),
-            amountBlinder: nil,
-            assetBlinder: nil,
-            ptIdx: nil,
-            isRelevant: nil
-        )
-    }
-    public static func fromLnUrlPay(_ requestData: LnUrlPayRequestData, input: String, satoshi: Int64?) -> TransactionInputOutput {
-        return TransactionInputOutput(
-            address: input,
-            domain: requestData.domain,
-            assetId: nil,
-            isChange: false,
-            satoshi: -Int64(requestData.sendableSatoshi(userSatoshi: UInt64(satoshi ?? 0)) ?? 0),
-            amountBlinder: nil,
-            assetBlinder: nil,
-            ptIdx: nil,
-            isRelevant: nil
-        )
-    }
-*/
-    public func hasBlindingData() -> Bool {
-        return assetId != "" && satoshi != 0 && amountBlinder != "" && assetBlinder != ""
-    }
-
-    public func txoBlindingString() -> String? {
-        if !hasBlindingData() {
-            return nil
-        }
-        return String(format: "%lu,%@,%@,%@", satoshi, assetId ?? "", amountBlinder ?? "", assetBlinder ?? "")
-    }
-
-    public func txoBlindingData(isUnspent: Bool) -> TxoBlindingData {
-        return TxoBlindingData.init(vin: !isUnspent ? ptIdx : nil,
-                                    vout: isUnspent ? ptIdx : nil,
-                                    asset_id: assetId,
-                                    assetblinder: assetBlinder,
-                                    satoshi: satoshi,
-                                    amountblinder: amountBlinder)
-    }
-}
 
 public enum TransactionType: String, Codable {
     case incoming
@@ -342,19 +260,19 @@ public struct Transaction: Comparable {
     }
 
     // tx outputs in create transaction
-    public var transactionOutputs: [TransactionInputOutput]? {
+    public var transactionOutputs: [TxInputOutput]? {
         get {
             let params: [[String: Any]]? = get("transaction_outputs")
-            return params?.compactMap { TransactionInputOutput.from($0) as? TransactionInputOutput }
+            return params?.compactMap { TxInputOutput.from($0) as? TxInputOutput }
         }
         set { details["transaction_outputs"] = newValue?.map { $0.toDict() } }
     }
 
     // tx inputs in create transaction
-    public var transactionInputs: [TransactionInputOutput]? {
+    public var transactionInputs: [TxInputOutput]? {
         get {
             let params: [[String: Any]]? = get("transaction_inputs")
-            return params?.compactMap { TransactionInputOutput.from($0) as? TransactionInputOutput }
+            return params?.compactMap { TxInputOutput.from($0) as? TxInputOutput }
         }
         set { details["transaction_inputs"] = newValue?.map { $0.toDict() } }
     }
@@ -371,19 +289,19 @@ public struct Transaction: Comparable {
     }
 
     // tx outputs in get transaction
-    public var outputs: [TransactionInputOutput]? {
+    public var outputs: [TxInputOutput]? {
         get {
             let params: [[String: Any]]? = get("outputs")
-            return params?.compactMap { TransactionInputOutput.from($0) as? TransactionInputOutput }
+            return params?.compactMap { TxInputOutput.from($0) as? TxInputOutput }
         }
         set { details["outputs"] = newValue?.map { $0.toDict() } }
     }
 
     // tx inputs in get transaction
-    public var inputs: [TransactionInputOutput]? {
+    public var inputs: [TxInputOutput]? {
         get {
             let params: [[String: Any]]? = get("inputs")
-            return params?.compactMap { TransactionInputOutput.from($0) as? TransactionInputOutput }
+            return params?.compactMap { TxInputOutput.from($0) as? TxInputOutput }
         }
         set { details["inputs"] = newValue?.map { $0.toDict() } }
     }
@@ -496,35 +414,42 @@ public struct Transaction: Comparable {
         return DateFormatter.localizedString(from: date, dateStyle: dateStyle, timeStyle: timeStyle)
     }
 
-    public func unblindingData() -> BlindingData {
-        let inputs = self.inputs?
-            .filter { $0.hasBlindingData() }
-            .compactMap { $0.txoBlindingData(isUnspent: false) }
-        let outputs = self.outputs?
-            .filter { $0.hasBlindingData() }
-            .compactMap { $0.txoBlindingData(isUnspent: true) }
-        return BlindingData(version: 0,
-                            txid: hash ?? "",
-                            type: type,
-                            inputs: inputs ?? [],
-                            outputs: outputs ?? [])
+    public func unblindingData() -> TxUnblindedData {
+        let unblindedInputs = self.inputs?
+            .filter { $0.hasUnblindingData() }
+            .compactMap {
+                TxInputUnblindedData(
+                    vin: $0.ptIdx ?? 0,
+                    assetId: $0.assetId ?? "",
+                    satoshi: $0.satoshi ?? 0,
+                    assetblinder: $0.assetBlinder ?? "",
+                    amountblinder: $0.amountBlinder ?? ""
+                )
+            }
+        let unblindedOutputs = self.outputs?
+            .filter { $0.hasUnblindingData() }
+            .compactMap {
+                TxOutputUnblindedData(
+                    vout: $0.ptIdx ?? 0,
+                    assetId: $0.assetId ?? "",
+                    satoshi: $0.satoshi ?? 0,
+                    assetblinder: $0.assetBlinder ?? "",
+                    amountblinder: $0.amountBlinder ?? ""
+                )
+            }
+        return TxUnblindedData(
+            version: 0,
+            txid: hash ?? "",
+            type: type,
+            inputs: unblindedInputs ?? [],
+            outputs: unblindedOutputs ?? [])
     }
 
     public func unblindingUrlString(address: String? = nil) -> String {
-        var blindingUrlString = [String]()
-        blindingUrlString += inputs?
-            .filter { address == nil || address == $0.address }
-            .compactMap { $0.txoBlindingString() } ?? []
-        blindingUrlString += outputs?
-            .filter { address == nil || address == $0.address }
-            .compactMap { $0.txoBlindingString() } ?? []
-        blindingUrlString += transactionInputs?
-            .filter { address == nil || address == $0.address }
-            .compactMap { $0.txoBlindingString() } ?? []
-        blindingUrlString += transactionOutputs?
-            .filter { address == nil || address == $0.address }
-            .compactMap { $0.txoBlindingString() } ?? []
-        return "\(networkIdInjected?.gdkNetwork.txExplorerUrl ?? "")\(hash ?? "")#blinded=\(blindingUrlString.joined(separator: ","))"
+        let inputTexts = inputs?.compactMap { $0.getUnblindedString() } ?? []
+        let outputTexts = outputs?.compactMap { $0.getUnblindedString() } ?? []
+        let blindingUrlString = (inputTexts + outputTexts).joined(separator: ",")
+        return "\(networkIdInjected?.gdkNetwork.txExplorerUrl ?? "")\(hash ?? "")#blinded=\(blindingUrlString)"
     }
 
     public static func == (lhs: Transaction, rhs: Transaction) -> Bool {
@@ -613,21 +538,4 @@ public struct Transaction: Comparable {
             return 0
         }
     }
-}
-
-public struct TxoBlindingData: Codable {
-    let vin: Int64?
-    let vout: Int64?
-    let asset_id: String?
-    let assetblinder: String?
-    let satoshi: Int64
-    let amountblinder: String?
-}
-
-public struct BlindingData: Codable {
-    let version: Int
-    let txid: String
-    let type: TransactionType
-    let inputs: [TxoBlindingData]
-    let outputs: [TxoBlindingData]
 }

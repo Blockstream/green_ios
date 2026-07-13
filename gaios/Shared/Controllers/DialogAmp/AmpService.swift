@@ -87,9 +87,9 @@ class AmpService: Sendable {
             ) else {
                 throw GaError.GenericError("No wallet credentials data found")
             }
-            try await gdkGreenLiquidNetworkBackend.session.register(credentials: credentials)
+            try await gdkGreenLiquidNetworkBackend.session.register(credentials: credentials, hw: wm.hwDevice)
             _ = try await gdkGreenLiquidNetworkBackend
-                .login(credentials: credentials, device: nil)
+                .login(credentials: credentials, device: wm.hwDevice)
             // hide default 2FA subaccounts
             let accounts = try await gdkGreenLiquidNetworkBackend.getAccounts(
                 refresh: false

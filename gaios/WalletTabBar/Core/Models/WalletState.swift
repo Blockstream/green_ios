@@ -1,7 +1,6 @@
 import Foundation
 @preconcurrency import core
 import greenaddress
-@preconcurrency 
 
 struct WalletState: Sendable {
     var subaccounts: [Account] = WalletManager.current?.accounts.sorted() ?? []

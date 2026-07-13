@@ -27,7 +27,7 @@ struct LTCreateViewModel {
                 try? walletManager.removeDatadir(workingDir.path())
             }
         let backend = try walletManager.glNetworkBackend()
-        try await backend.login(credentials: lightningCredentials, restore: true, parentXpub: xpubHashId)
+        try await backend.login(credentials: lightningCredentials, isForceConnectAllowed: true, parentXpub: xpubHashId)
         // Get lightning session
         guard let session = await wallet.wallet.lightningSession else {
             throw GaError.GenericError("Invalid lightning session")

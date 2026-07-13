@@ -33,10 +33,6 @@ public final class LwkNetworkBackend: NetworkBackend {
     private let isAmp = true
     private let amp2Server: Amp2?
 
-    func storage(xpub: String) -> KeychainStorage {
-        return KeychainStorage(account: xpub, service: "NetworkBackend")
-    }
-
     init(
         dataDir: String,
         network: GdkNetwork
@@ -49,7 +45,23 @@ public final class LwkNetworkBackend: NetworkBackend {
         self.amp2Server = try? LwkNetworkBackend.createAmp2Client(network)
     }
 
-    // MARK: - Login Overrides
+    func storage() throws -> KeychainStorage {
+        guard let fingerprint = try signer?.fingerprint() else {
+            throw GaError.GenericError("LWK signer not initialised; login first")
+        }
+        return KeychainStorage(account: fingerprint, service: "NetworkBackend")
+    }
+
+    func getAccounts() async throws -> [Account] {
+        if var accounts: [Account] = try? storage().read()?.decode() {
+            for a in accounts.enumerated() {
+                accounts[a.offset].networkInjected = network
+            }
+            return accounts
+        }
+        return []
+    }
+
     func login(
         credentials: Credentials
     ) async throws {
@@ -62,17 +74,8 @@ public final class LwkNetworkBackend: NetworkBackend {
         )
         self.signer = localSigner
         self.isLoggedIn = true
+        self.accounts = try await getAccounts()
         print("LWK login complete for \(network.networkId)")
-
-        let xpub = try localSigner.keyoriginXpub(bip: .newBip87())
-        let storage = storage(xpub: xpub)
-        accounts = []
-        if var accounts: [Account] = try? storage.read()?.decode() {
-            for a in accounts.enumerated() {
-                accounts[a.offset].networkInjected = network
-            }
-            self.accounts = accounts
-        }
         blockHeaderPolling()
         try await syncSwallowing()
     }
@@ -114,7 +117,7 @@ public final class LwkNetworkBackend: NetworkBackend {
         // Gathering backends safely via native iteration structures
         // Note: accountBackends tracking maps via custom ThreadSafeDictionary built in NetworkBackend
         for account in accounts {
-            let backend = try await accountBackend(account)
+            let backend = try accountBackend(account)
             if let lwkBackend = backend as? LwkAccountBackend {
                 if let update = try await client.fullScanToIndex(wollet: lwkBackend.wollet) {
                     print(
@@ -135,7 +138,6 @@ public final class LwkNetworkBackend: NetworkBackend {
             print("LWK sync on login failed: \(error.localizedDescription)")
         }
     }
-
 
     public func accountBackend(_ account: Account) throws -> AccountBackend {
         if let accountBackend = accountBackends[account.id] {
@@ -183,7 +185,7 @@ public final class LwkNetworkBackend: NetworkBackend {
             throw GaError.GenericError("Invalid amp2 server")
         }
         let userXpub = try signer.keyoriginXpub(bip: .newBip87())
-        var descriptor = try signer.wpkhSlip77Descriptor()
+        let descriptor = try signer.wpkhSlip77Descriptor()
         let descriptorBlindingKey = try extractSlip77(
             from: descriptor.description
         )
@@ -195,9 +197,6 @@ public final class LwkNetworkBackend: NetworkBackend {
     }
 
     public func createAccount(params: CreateSubaccountParams) async throws -> Account {
-        guard let signer else {
-            throw GaError.GenericError("LWK signer not initialised; login first")
-        }
         guard params.type == .amp2Account else {
             throw GaError.GenericError("Unsupported LWK account type: \(params.type)")
         }
@@ -215,10 +214,9 @@ public final class LwkNetworkBackend: NetworkBackend {
             pointer: try lwkPointer(type: params.type),
             receivingId: wId,
             type: params.type,
+            coreDescriptors: [amp2Descriptor.descriptor().description],
             networkInjected: network)
-        let xpub = try signer.keyoriginXpub(bip: .newBip87())
-        let storage = storage(xpub: xpub)
-        try storage.write(try [account].encoded())
+        try await updateAccount(account: account)
         let accountBackend = try createAccountBackend(account: account)
         accounts = [account]
         accountBackends[account.id] = accountBackend
@@ -226,14 +224,13 @@ public final class LwkNetworkBackend: NetworkBackend {
     }
 
     public func createAccountBackend(account: Account) throws -> AccountBackend {
-        guard let signer, account.type == .amp2Account else {
+        guard let signer, account.type == .amp2Account, let descriptor = account.coreDescriptors?.first else {
            throw GaError.GenericError("Invalid wallet or signer")
         }
-        let descriptor = try amp2Descriptor().descriptor()
         let datadir = "\(dataDir)/lwk/\(network.network)/0"
         let wolletBuilder = WolletBuilder(
             network: lwkNetwork,
-            descriptor: descriptor)
+            descriptor: try WolletDescriptor(descriptor: descriptor))
         try wolletBuilder.withLegacyFsStore(datadir: datadir)
         let wollet = try wolletBuilder.build()
         return LwkAccountBackend(
@@ -297,5 +294,14 @@ public final class LwkNetworkBackend: NetworkBackend {
 
     public func getAccount(account: Account) async throws -> Account {
         accounts.filter { $0.id == account.id }.first!
+    }
+
+    public func updateAccount(account: Account, name: String? = nil, hidden: Bool? = nil) async throws {
+        var account = account
+        account.gdkName = name ?? account.gdkName
+        account.hidden = hidden ?? account.hidden
+        let storage = try storage()
+        try storage.write(try [account].encoded())
+        self.accounts = [account]
     }
 }

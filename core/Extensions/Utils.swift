@@ -78,4 +78,36 @@ extension UInt64 {
                 UInt8((self >> 32) & 0xff), UInt8((self >> 40) & 0xff),
                 UInt8((self >> 48) & 0xff), UInt8((self >> 56) & 0xff)]
     }
+    func int64() -> Int64 {
+        return Int64(self)
+    }
+}
+extension Optional where Wrapped == UInt64 {
+    func int64() -> Int64? {
+        if let uint64 = self {
+            return Int64(uint64)
+        } else {
+            return nil
+        }
+    }
+}
+extension String {
+    var hexToData: Data? {
+        data(using: .utf8)
+    }
+    var hexToDataReversed: Data? {
+        guard let data = data(using: .utf8)?.reversed() else {
+            return nil
+        }
+        return Data(data)
+    }
+}
+
+extension Optional where Wrapped == String {
+    var hexToData: Data? {
+        self?.hexToData()
+    }
+    var hexToDataReversed: Data? {
+        self?.hexToDataReversed
+    }
 }

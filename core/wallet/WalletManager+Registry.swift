@@ -38,13 +38,13 @@ extension WalletManager {
 }
 extension WalletManager: AssetsProvider {
     public func getAssets(params: GetAssetsParams) -> GetAssetsResult? {
-        let networkId = activeLiquidNetworkIds.first ?? .electrumLiquid
+        let networkId = activeGdkLiquidNetworkIds.first ?? .electrumLiquid
         let gdkNetworkBackend = gdkNetworkBackendOrNil(networkId)
         return gdkNetworkBackend?.session.getAssets(params: params)
     }
 
     public func refreshAssets(icons: Bool, assets: Bool) async throws {
-        let networkId = activeLiquidNetworkIds.first ?? .electrumLiquid
+        let networkId = activeGdkLiquidNetworkIds.first ?? .electrumLiquid
         let gdkNetworkBackend = gdkNetworkBackendOrNil(networkId)
         try await gdkNetworkBackend?.session
             .refreshAssets(icons: icons, assets: assets)

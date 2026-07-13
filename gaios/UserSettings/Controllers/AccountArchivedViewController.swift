@@ -22,8 +22,8 @@ class AccountArchivedViewController: UIViewController {
 
     var wm: WalletManager { WalletManager.current! }
 
-    var subaccounts: [Account] {
-        wm.accounts.filter { $0.hidden }
+    var allSubaccounts: [Account] {
+        wm.allAccounts.filter { $0.hidden }
     }
 
     weak var delegate: AccountArchivedViewControllerDelegate?
@@ -50,7 +50,7 @@ class AccountArchivedViewController: UIViewController {
         lblTitle.text = "id_account_archived".localized
         lblHint.text = "id_this_account_will_no_longer_be".localized
         btnContinue.setTitle("id_continue".localized, for: .normal)
-        btnArchive.setTitle(String(format: "id_see_archived_accounts_s".localized, String(subaccounts.count)), for: .normal)
+        btnArchive.setTitle(String(format: "id_see_archived_accounts_s".localized, String(allSubaccounts.count)), for: .normal)
     }
 
     func setStyle() {
