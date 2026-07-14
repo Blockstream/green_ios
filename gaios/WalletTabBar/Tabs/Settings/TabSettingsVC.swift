@@ -213,6 +213,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
         let vc = storyboard.instantiateViewController(identifier: "JadeBoltzSwapViewController") { coder in
             JadeBoltzSwapViewController(coder: coder, viewModel: viewModel)
         }
+        vc.delegate = self
         navigationController?.pushViewController(vc, animated: true)
     }
 }
@@ -405,5 +406,11 @@ extension TabSettingsVC: DialogRenameViewControllerDelegate {
         viewModel.refresh(features: [.settings, .balance, .txs(reset: true)])
     }
     func didCancel() {
+    }
+}
+
+extension TabSettingsVC: JadeBoltzSwapViewControllerDelegate {
+    func onSwapsUpdated() {
+        viewModel.refresh(features: [.settings])
     }
 }

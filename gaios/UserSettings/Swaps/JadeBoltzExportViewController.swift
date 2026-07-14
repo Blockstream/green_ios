@@ -122,7 +122,7 @@ extension JadeBoltzExportViewController: QrScannerViewControllerDelegate {
         }
     }
     func storeKey(value: ScanResult) async {
-        startLoader()
+        startLoader(message: "Enabling swaps...")
         let task = Task.detached { [weak self] in
             await self?.viewModel.performReply(
                 publicKey: value.bcur?.publicΚey ?? "",

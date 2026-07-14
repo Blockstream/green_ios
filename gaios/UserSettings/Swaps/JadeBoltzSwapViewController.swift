@@ -4,6 +4,10 @@ import core
 
 import hw
 
+protocol JadeBoltzSwapViewControllerDelegate: AnyObject {
+    func onSwapsUpdated()
+}
+
 class JadeBoltzSwapViewController: UIViewController {
     @IBOutlet weak var viewEnabled: UIView!
     @IBOutlet weak var lblTitleEnabled: UILabel!
@@ -19,6 +23,7 @@ class JadeBoltzSwapViewController: UIViewController {
     @IBOutlet weak var lblDisableWarn: UILabel!
     
     let viewModel: JadeBoltzSwapViewModel
+    weak var delegate: JadeBoltzSwapViewControllerDelegate?
 
     init?(coder: NSCoder, viewModel: JadeBoltzSwapViewModel) {
         self.viewModel = viewModel
@@ -95,6 +100,7 @@ class JadeBoltzSwapViewController: UIViewController {
             self.stopLoader()
             self.reload()
             DropAlert().success(message: "Swaps are disabled")
+            delegate?.onSwapsUpdated()
             self.navigationController?.popToRootViewController(animated: true)
         case .failure(let err):
             self.stopLoader()
@@ -129,11 +135,12 @@ class JadeBoltzSwapViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     @IBAction func btnLearnMore(_ sender: Any) {
-        SafeNavigationManager.shared.navigate(ExternalUrls.swapJadeGetMoreSettings)
+        SafeNavigationManager.shared.navigate(ExternalUrls.enableOnchainSwapsWithJade)
     }
 }
 extension JadeBoltzSwapViewController: JadeBoltzExportViewControllerDelegate {
     func onExportSucceed() {
+        delegate?.onSwapsUpdated()
         navigationController?.popToRootViewController(animated: true)
     }
 }
