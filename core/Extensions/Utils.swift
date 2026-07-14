@@ -111,3 +111,27 @@ extension Optional where Wrapped == String {
         self?.hexToDataReversed
     }
 }
+
+extension Optional where Wrapped == Array<Any> {
+    public var isNilOrEmpty: Bool {
+        if let strongSelf = self, !strongSelf.isEmpty {
+            return false
+        }
+        return true
+    }
+    public var isNotEmpty: Bool {
+        return !isNilOrEmpty
+    }
+}
+
+extension Optional where Wrapped == Array<String> {
+    public var isNilOrEmpty: Bool {
+        if let strongSelf = self, !strongSelf.isEmpty {
+            return false
+        }
+        return true
+    }
+    public var isNotEmpty: Bool {
+        return !isNilOrEmpty
+    }
+}

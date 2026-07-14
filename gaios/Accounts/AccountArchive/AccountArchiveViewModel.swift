@@ -8,8 +8,8 @@ class AccountArchiveViewModel {
     var wm: WalletManager { WalletManager.current! }
 
     /// load visible subaccounts
-    var subaccounts: [Account] {
-        wm.accounts
+    var allSubaccounts: [Account] {
+        wm.allAccounts.filter { $0.hidden }
     }
     var list: [Account] = []
     /// cell models

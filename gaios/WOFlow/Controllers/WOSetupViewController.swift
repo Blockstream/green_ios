@@ -168,7 +168,7 @@ class WOSetupViewController: KeyboardViewController {
         self.startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon)
         Task {
             do {
-                let vm = WOViewModel(wallet: wallet)
+                var vm = WOViewModel(wallet: wallet)
                 try await vm.loginMultisig(password: self.passwordTextField.text)
                 success(wallet: wallet)
             } catch {

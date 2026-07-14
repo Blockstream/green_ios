@@ -3,10 +3,6 @@ import core
 import greenaddress
 import Foundation
 
-enum WOImportType: CaseIterable {
-    case slip132
-    case descriptor
-}
 class WODetailsCompactViewController: KeyboardViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -21,8 +17,9 @@ class WODetailsCompactViewController: KeyboardViewController {
     @IBOutlet weak var lblUserPwd: UILabel!
     @IBOutlet weak var btnUserPwd: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
-    var networks = [NetworkId]()
     private var placeholderLabel: UILabel! // Placeholder for textView
+
+    var networks = [NetworkId]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,56 +103,30 @@ class WODetailsCompactViewController: KeyboardViewController {
     }
 
     func onImport() async {
-        self.startLoader(message: "id_logging_in".localized)
-        let isListOfPubKeys = ["xpub", "ypub", "zpub", "tpub", "upub", "vpub"].contains(textView.text.prefix(4).lowercased())
-        let keys = textView.text
-            .split(whereSeparator: { $0 == "\n" || $0 == " " || (isListOfPubKeys && $0 == ",") })
-                .map { $0.trimmingCharacters(in: CharacterSet.whitespaces) }
-        let allNetworks: [NetworkId] = [.electrumMainnet, .electrumLiquid, .electrumTestnet, .electrumTestnetLiquid]
-        let btcNetworks: [NetworkId] = [.electrumMainnet, .electrumTestnet]
-        if isListOfPubKeys {
-            for key in keys {
-                if btcNetworks.filter({ Wally.isPubKey(key, for: $0) }).isEmpty {
-                    stopLoader()
-                    showError("Invalid key \(key)")
-                    return
-                }
-            }
-        } else {
-            for desc in keys {
-                if allNetworks.filter({ Wally.isDescriptor(desc, for: $0) }).isEmpty {
-                    stopLoader()
-                    showError("Invalid descriptor \(desc)")
-                    return
-                }
-            }
+        let input: WOImportInput
+        do {
+            input = try WOViewModel.validateImport(text: textView.text)
+        } catch {
+            showError(error.description().localized)
+            return
         }
-        let credentials = Credentials(coreDescriptors: isListOfPubKeys ? nil : keys, slip132ExtendedPubkeys: isListOfPubKeys ? keys : nil)
-        let network = isListOfPubKeys ? keys.compactMap { Wally.getNetwork(xpub: $0) }.first : keys.compactMap { Wally.getNetwork(descriptor: $0) }.first
-        var wallet = WOViewModel.newAccountSinglesig(for: (network ?? NetworkId.electrumMainnet).gdkNetwork)
-        let viewModel = WOViewModel(wallet: wallet)
-        let task = Task {
-            let wm = WalletsRepository.shared.getOrAdd(for: wallet)
-            let session = try wm
-                .gdkNetworkBackend(network ?? .electrumMainnet)
-                .session
-            try await session.connect()
-            let loginUserResult = try await session.loginUser(credentials)
-            _ = try await wm.getAccounts()
-            wm.isWatchonly = true
-            wallet.xpubHashId = loginUserResult.xpubHashId
-            try await viewModel.setupSinglesig(credentials: credentials)
-            WalletsStorage.shared.current = wallet
-        }
-        switch await task.result {
-        case .success:
-            logger.info("--> SUCCESS: \(network.debugDescription) \(wallet.name)")
+        startLoader(message: "id_logging_in".localized)
+        let wallet = WOViewModel.newAccountSinglesig(for: input.network.gdkNetwork)
+        var viewModel = WOViewModel(wallet: wallet)
+        do {
+            try await viewModel.importSinglesig(credentials: input.credentials, network: input.network)
+            logger
+                .info(
+                    "--> SUCCESS: \(input.network.name()) \(viewModel.wallet.name)"
+                )
             stopLoader()
-            success(wallet: wallet)
-        case .failure(let err):
-            logger.error("--> ERROR: \(network.debugDescription) \(wallet.name)")
-            stopLoader()
-            DropAlert().error(message: err.description().localized)
+            success(wallet: viewModel.wallet)
+        } catch {
+            logger
+                .error(
+                    "--> ERROR: \(input.network.name()) \(viewModel.wallet.name)"
+                )
+            failure(error, account: viewModel.wallet)
         }
     }
 
@@ -168,18 +139,8 @@ class WODetailsCompactViewController: KeyboardViewController {
 
     @MainActor
     func failure(_ error: Error, account: Wallet) {
-        var prettyError = "id_login_failed"
-        switch error {
-        case TwoFactorCallError.failure(let localizedDescription):
-            prettyError = localizedDescription
-        case LoginError.connectionFailed:
-            prettyError = "id_connection_failed"
-        case LoginError.failed:
-            prettyError = "id_login_failed"
-        default:
-            break
-        }
         stopLoader()
+        let prettyError = error.description().localized
         DropAlert().error(message: prettyError.localized)
         AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: prettyError)
         WalletsRepository.shared.delete(for: account)
@@ -266,9 +227,9 @@ extension WODetailsCompactViewController: UIDocumentPickerDelegate {
             let txt = try String(contentsOfFile: url.path, encoding: .utf8)
             let data = txt.data(using: .utf8)!
             let content = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] ?? [:]
-            if let keys = parseGenericJson(content), !keys.isEmpty {
+            if let keys = WOViewModel.parseGenericJson(content), !keys.isEmpty {
                 textView.text = keys.joined(separator: ", ")
-            } else if let keys = parseElectrumJson(content), !keys.isEmpty {
+            } else if let keys = WOViewModel.parseElectrumJson(content), !keys.isEmpty {
                 textView.text = keys.joined(separator: ", ")
             }
             if textView.text.isEmpty {
@@ -282,27 +243,6 @@ extension WODetailsCompactViewController: UIDocumentPickerDelegate {
             refresh()
             updatePlaceholderVisibility()
         }
-    }
-
-    func parseGenericJson(_ content: [String: Any]) -> [String]? {
-        // Colcard format
-        return content.compactMap { $0.value as? [String: Any] }
-            .compactMap { bip -> String? in
-            let name = bip?["name"] as? String
-            if let name = name, let type = AccountType(rawValue: name), AccountType.allCases.contains(type) {
-                let pub = bip?["_pub"] as? String
-                let xpub = bip?["xpub"] as? String
-                return pub ?? xpub ?? nil
-            }
-            return nil
-        }
-    }
-
-    func parseElectrumJson(_ content: [String: Any]) -> [String]? {
-        // Electrum format
-        return content.filter { $0.key == "keystore" }
-            .compactMap { $0.value as? [String: Any] }
-            .compactMap { $0["xpub"] as? String }
     }
 
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {

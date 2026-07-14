@@ -96,19 +96,11 @@ class QRUnlockJadeViewModel {
         try AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoCredentials, credentials: credentials, for: account.keychain)
     }
 
-    func login() async throws -> WalletManager {
-        AnalyticsManager.shared.loginWalletStart()
-        let wm = WalletsRepository.shared.getOrAdd(for: account)
+    func getCredentials(wm: WalletManager) async throws -> Credentials {
         if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: account.keychain) {
-            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
-            let res = try await wm.loginWatchonly(credentials: credentials)
-            account.xpubHashId = res?.xpubHashId
-            account.walletHashId = res?.walletHashId
+            return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
         } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: account.keychain) {
-            let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
-            let res = try await wm.loginWatchonly(credentials: credentials)
-            account.xpubHashId = res?.xpubHashId
-            account.walletHashId = res?.walletHashId
+            return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
         } else {
             let session = wm.prominentSession
             let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain)
@@ -117,11 +109,26 @@ class QRUnlockJadeViewModel {
             let data = try AuthenticationTypeHandler.getPinData(method: method, for: account.keychain)
             try await session.connect()
             let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
-            let credentials = try await session.decryptWithPin(decrypt)
-            let res = try await wm.loginWatchonly(credentials: credentials)
-            account.xpubHashId = res?.xpubHashId
-            account.walletHashId = res?.walletHashId
+            return try await session.decryptWithPin(decrypt)
         }
+    }
+
+    func login() async throws -> WalletManager {
+        AnalyticsManager.shared.loginWalletStart()
+        let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
+        let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: account.keychain)
+        let wm = WalletsRepository.shared.getOrAdd(for: account)
+        let credentials = try await getCredentials(wm: wm)
+        let res = try await wm.login(
+            credentials: credentials,
+            lightningCredentials: lightningCredentials,
+            boltzCredentials: boltzCredentials,
+            device: nil,
+            fullRestore: false,
+            creation: false
+        )
+        account.xpubHashId = res?.xpubHashId
+        account.walletHashId = res?.walletHashId
         AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly)
         return wm
     }

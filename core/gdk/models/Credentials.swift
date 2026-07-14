@@ -49,4 +49,8 @@ public struct Credentials: Codable {
     public static func watchonlySinglesig(coreDescriptors: [String]? = nil, slip132ExtendedPubkeys: [String]? = nil) -> Credentials {
         return Credentials(coreDescriptors: coreDescriptors, slip132ExtendedPubkeys: slip132ExtendedPubkeys)
     }
+
+    public var isWatchonly: Bool {
+        return !username.isNilOrEmpty || !coreDescriptors.isNilOrEmpty || !slip132ExtendedPubkeys.isNilOrEmpty
+    }
 }
