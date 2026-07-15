@@ -125,10 +125,10 @@ class QRUnlockJadeViewModel {
             boltzCredentials: boltzCredentials,
             device: nil,
             fullRestore: false,
-            creation: false
+            creation: false,
+            parentXpub: account.xpubHashId
         )
-        account.xpubHashId = res?.xpubHashId
-        account.walletHashId = res?.walletHashId
+        account.applyLoginResult(res, credentials: credentials)
         AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly)
         return wm
     }

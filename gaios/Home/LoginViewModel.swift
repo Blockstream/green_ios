@@ -78,9 +78,9 @@ class LoginViewModel {
             boltzCredentials: boltzCredentials,
             device: nil,
             fullRestore: false,
-            creation: false)
-        account.xpubHashId = res?.xpubHashId
-        account.walletHashId = res?.walletHashId
+            creation: false,
+            parentXpub: credentials.isWatchonly ? account.xpubHashId : nil)
+        account.applyLoginResult(res, credentials: credentials)
         WalletsStorage.shared.current = account
         return wm
     }

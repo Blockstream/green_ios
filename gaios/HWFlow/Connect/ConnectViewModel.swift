@@ -1,7 +1,7 @@
 import Foundation
 import CoreBluetooth
 import core
-
+import greenaddress
 import hw
 import AsyncBluetooth
 
@@ -215,6 +215,9 @@ class ConnectViewModel: NSObject {
     func loginJadeWatchonly(method: AuthenticationTypeHandler.AuthType) async throws {
         updateState?(.watchonly)
         AnalyticsManager.shared.loginWalletStart()
+        guard account.xpubHashId != nil else {
+            throw GaError.GenericError("Wallet not found")
+        }
         let wm = WalletManager(networkId: account.networkId)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = HwPopupResolver()
@@ -222,14 +225,14 @@ class ConnectViewModel: NSObject {
         let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
         let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: account.keychain)
         updateState?(.login)
-        let res = try await wm.login(
+        _ = try await wm.login(
             credentials: credentials,
             lightningCredentials: lightningCredentials,
             boltzCredentials: boltzCredentials,
             device: nil,
             fullRestore: false,
-            creation: false)
-            //parentWalletId: account.walletIdentifier)
+            creation: false,
+            parentXpub: account.xpubHashId)
         WalletsStorage.shared.current = account
         if storeConnection {
             WalletsRepository.shared.add(for: account, wm: wm)

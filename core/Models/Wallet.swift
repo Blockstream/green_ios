@@ -159,8 +159,13 @@ public struct Wallet: Codable, Equatable {
         }
     }
 
-    public var walletIdentifier: WalletIdentifier? {
-        return WalletIdentifier(walletHashId: walletHashId ?? "", xpubHashId: xpubHashId ?? "")
+    public mutating func applyLoginResult(_ result: LoginUserResult?, credentials: Credentials) {
+        guard let result else { return }
+        if credentials.isWatchonly, xpubHashId != nil {
+            return
+        }
+        xpubHashId = result.xpubHashId
+        walletHashId = result.walletHashId
     }
     public var keychainLightning: String {
         return "\(keychain)-lightning-shortcut"

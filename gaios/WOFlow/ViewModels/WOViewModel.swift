@@ -127,10 +127,10 @@ class WOViewModel {
             boltzCredentials: nil,
             device: nil,
             fullRestore: false,
-            creation: false
+            creation: false,
+            parentXpub: wallet.xpubHashId
         )
-        wallet.xpubHashId = res?.xpubHashId
-        wallet.walletHashId = res?.walletHashId
+        wallet.applyLoginResult(res, credentials: credentials)
         WalletsStorage.shared.current = wallet
         AnalyticsManager.shared.loginWalletEnd(account: wallet, loginType: .watchOnly)
     }

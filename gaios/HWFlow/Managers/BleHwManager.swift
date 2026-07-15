@@ -205,8 +205,7 @@ class BleHwManager {
                    fullRestore: fullRestore,
                    creation: false
                 )
-                account.xpubHashId = res?.xpubHashId
-                account.walletHashId = res?.walletHashId
+                account.applyLoginResult(res, credentials: credentials)
             }
         } catch {
             let text = toBleError(error, network: nil).localizedDescription

@@ -100,8 +100,7 @@ class OnboardViewModel {
             device: nil,
             fullRestore: true,
             creation: false)
-        account.xpubHashId = res?.xpubHashId
-        account.walletHashId = res?.walletHashId
+        account.applyLoginResult(res, credentials: credentials)
         // add lightning auth into keychain only if it successfully restored
         if wallet.lightningSession?.logged == true {
             try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: lightningCredentials, for: account.keychainLightning)
@@ -139,8 +138,7 @@ class OnboardViewModel {
             device: nil,
             fullRestore: false,
             creation: true)
-        account.xpubHashId = res?.xpubHashId
-        account.walletHashId = res?.walletHashId
+        account.applyLoginResult(res, credentials: credentials)
         return (account, wallet)
     }
 
