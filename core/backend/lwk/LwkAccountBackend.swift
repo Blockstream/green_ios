@@ -81,11 +81,13 @@ public class LwkAccountBackend: AccountBackend {
             let feeAsset = (
                 networkBackend?.networkId ?? defaultNetworkId
             ).gdkNetwork.getFeeAsset()
-            if let lbtc = tx.amounts[feeAsset], abs(lbtc) == walletTx.fee() && walletTx.type() == "outgoing" {
+            let onlyFeePaid = tx.amounts.allSatisfy { $0.key == feeAsset || $0.value == 0 }
+            if let lbtc = tx.amounts[feeAsset], lbtc == -Int64(walletTx.fee()) && onlyFeePaid {
                 tx.type = .redeposit
             } else {
                 tx.type = TransactionType(rawValue: walletTx.type()) ?? .unknown
             }
+
             return tx
         }
         for tx in txs {

@@ -140,7 +140,7 @@ public struct TxInputOutput: Codable {
     }
 
     public func getUnblindedString() -> String? {
-        if hasUnblindingData() {
+        if !hasUnblindingData() {
             return nil
         }
         return String(format: "%lu,%@,%@,%@", satoshi ?? "", assetId ?? "", amountBlinder ?? "", assetBlinder ?? "")

@@ -26,8 +26,7 @@ class TransactionCellModel {
         self.tx = tx
         self.blockHeight = blockHeight
         self.date = tx.date(dateStyle: .medium, timeStyle: .none)
-        self.subaccount = wm?.accounts.filter { $0.id == tx.accountId }.first
-        if let subaccount = self.subaccount {
+        if let subaccount = tx.accountInjected {
             self.amounts = amounts(self.tx, subaccount)
         }
         switch tx.type {
