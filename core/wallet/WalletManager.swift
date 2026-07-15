@@ -222,7 +222,6 @@ public class WalletManager {
         }
     }
 
-
     // Get Session Manager
 
     public func getGdkSession(for network: NetworkId) -> SessionManager? {

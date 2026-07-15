@@ -69,11 +69,12 @@ extension WalletManager {
         network: GdkNetwork? = nil,
         credentials: Credentials,
     ) async throws -> WalletIdentifier? {
-        let connParams = createConnectionParams(
-            network: network ?? prominentNetwork
-        )
+        let network = network ?? prominentNetwork
         return try prominentNetworkBackend.session
-            .getWalletIdentifier(netParams: connParams, credentials: credentials)
+            .getWalletIdentifier(
+                gdkNetwork: network.network,
+                credentials: credentials
+            )
     }
 
     public func removeDatadir(_ dir: String) throws {

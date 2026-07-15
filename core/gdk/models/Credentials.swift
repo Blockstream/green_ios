@@ -51,9 +51,14 @@ public struct Credentials: Codable {
     }
 
     public var isWatchonly: Bool {
-        return !username.isNilOrEmpty || !coreDescriptors.isNilOrEmpty || !slip132ExtendedPubkeys.isNilOrEmpty
+        return isMultisigWatchonly || isSinglesigWatchonly
     }
-
+    public var isMultisigWatchonly: Bool {
+        return !username.isNilOrEmpty
+    }
+    public var isSinglesigWatchonly: Bool {
+        return !coreDescriptors.isNilOrEmpty || !slip132ExtendedPubkeys.isNilOrEmpty
+    }
     public var isHardware: Bool {
         return !masterXpub.isNilOrEmpty
     }

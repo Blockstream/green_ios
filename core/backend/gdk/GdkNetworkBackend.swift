@@ -60,7 +60,7 @@ public final class GdkNetworkBackend: NetworkBackend {
         )
     }
 
-    public func login(
+    private func loginUser(
         credentials: Credentials?,
         device: HWDevice?
     ) async throws -> LoginUserResult {
@@ -182,6 +182,139 @@ public final class GdkNetworkBackend: NetworkBackend {
 
     public func createRedepositTransaction(params: CreateRedepositTransactionParams) async throws -> Transaction {
         try await session.createRedepositTransaction(params: params)
+    }
+
+    public func login(
+        credentials: Credentials,
+        device: HWDevice?,
+        fullRestore: Bool,
+        creation: Bool,
+        prominentNetworkId: NetworkId
+    )
+    async throws -> LoginUserResult? {
+        // Disable gdk login on multisig on new wallet
+        if creation && network.multisig {
+            return nil
+        }
+        // Disable gdl liquid login, if hw doesn't support it
+        if network.liquid && device?.supportsLiquid ?? 1 == 0 {
+            logger.error("WM login disable liquid if is unsupported on hw")
+            return nil
+        }
+        // Access by multisig watchonly credentials
+        if credentials.isMultisigWatchonly {
+            if network.multisig && networkId == prominentNetworkId {
+                if !credentials.username.isNilOrEmpty {
+                    let credentials = Credentials(
+                        username: credentials.username,
+                        password: credentials.password
+                    )
+                    return try await loginUser(credentials: credentials, device: nil)
+                }
+            }
+            return nil
+        }
+        // Access by singlesig watchonly credentials
+        if credentials.isSinglesigWatchonly {
+            if network.singlesig {
+                let descriptors = credentials.coreDescriptors?.filter(
+                    { Wally.isDescriptor($0, for: network.networkId)
+                    })
+                let slip132Keys = credentials.slip132ExtendedPubkeys?.filter({ Wally.isPubKey($0, for: network.networkId) })
+                if !descriptors.isNilOrEmpty || !slip132Keys.isNilOrEmpty {
+                    let credentials = Credentials(
+                        coreDescriptors: descriptors,
+                        slip132ExtendedPubkeys: slip132Keys
+                    )
+                    return try await loginUser(credentials: credentials, device: nil)
+                }
+            }
+            return nil
+        }
+        // Read previous wallet cache
+        guard let walletIdentifier = try session.getWalletIdentifier(gdkNetwork: network.network, credentials: credentials) else {
+            throw GaError.GenericError("Wallet not found")
+        }
+        let hasGdkCache = Gdk.shared.hasGdkCache(
+            walletHashId: walletIdentifier.walletHashId
+        )
+        // Access by software/hardware credentials
+        do {
+            let res = try await loginUser(credentials: credentials, device: device)
+            let refresh = fullRestore || (!creation && !hasGdkCache)
+            try? await discoveryAndSetupDefaultsAccounts(
+                walletHashId: walletIdentifier.walletHashId,
+                refresh: refresh,
+                hasGdkCache: hasGdkCache || network.multisig)
+            _ = try? await session.loadSettings()
+            return res
+        } catch TwoFactorCallError.failure(let txt) {
+            if txt.contains("HWW must enable host unblinding for singlesig wallets") {
+                throw LoginError.hostUnblindingDisabled(txt)
+            } else if txt == "id_login_failed" && network.electrum {
+                throw LoginError.failed(txt)
+            }
+            return nil
+        } catch {
+            throw error
+        }
+    }
+
+    func discoveryAndSetupDefaultsAccounts(walletHashId: String, refresh: Bool, hasGdkCache: Bool) async throws {
+        let networkAccounts = try await getAccounts(refresh: refresh)
+        let walletIsFunded = !networkAccounts.filter {
+            $0.bip44Discovered == true
+        }.isEmpty
+        if walletIsFunded && refresh {
+            // Archive no-history default account
+            if let firstAccount = networkAccounts.first, firstAccount.pointer == 0 {
+                let accountBackend = accountBackend(
+                    firstAccount
+                ) as? GdkAccountBackend
+                let hasHistory = await accountBackend?.hasHistory() ?? false
+                logger.info("WM \(self.network.network) Archive no-history default account")
+                if !hasHistory {
+                    _ = try await updateAccount(
+                        account: firstAccount,
+                        name: firstAccount.type.title,
+                        hidden: true
+                    )
+                }
+            }
+        } else if !hasGdkCache { // Newly discovered Wallet
+            // Archive GDK default account
+            logger.info("WM \(self.network.network) Archive GDK default account")
+            if let defaultAccount = networkAccounts.first {
+                _ = try await updateAccount(
+                    account: defaultAccount,
+                    name: defaultAccount.type.title,
+                    hidden: true
+                )
+            }
+        }
+        // Create GDK bip84Segwit account
+        let defaultAccountBip84 = networkAccounts.filter(
+            {$0.type == .bip84Segwit
+            }).first
+        if defaultAccountBip84 == nil {
+            logger.info("WM \(self.network.network) Create GDK bip84Segwit account")
+            let accountType = AccountType.bip84Segwit
+            _ = try await createAccount(
+                params: CreateSubaccountParams(
+                    name: accountType.description,
+                    type: accountType
+                )
+            )
+        }
+    }
+    public func updateAccount(account: Account, name: String? = nil, hidden: Bool? = nil) async throws {
+        let accountBackend = accountBackend(
+            account
+        ) as? GdkAccountBackend
+        try await accountBackend?.updateAccount(
+            name: name ?? account.name,
+            hidden: hidden ?? account.hidden
+        )
     }
 }
 

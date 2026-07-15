@@ -108,7 +108,8 @@ class ManageAssetViewController: UIViewController {
             return
         }
         var actions: [AccountSettingsType] = []
-        if !(WalletManager.current?.isWatchonly ?? false) {
+        let isWatchonly = WalletManager.current?.isWatchonly ?? false
+        if !isWatchonly {
             actions.append(.rename(current: subaccount.localizedName))
         }
         actions.append(.watchonly)
@@ -119,7 +120,7 @@ class ManageAssetViewController: UIViewController {
                                                     actions: actions,
                                                     isFunded: viewModel.isFunded == true,
                                                     // count subaccounts by network
-                                                    isArchivable: viewModel.subaccounts.count > 1)
+                                                    isArchivable: !isWatchonly && viewModel.subaccounts.count > 1)
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)

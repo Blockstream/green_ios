@@ -16,150 +16,9 @@ extension WalletManager {
     func getWalletIdentifier(credentials: Credentials, networkId: NetworkId) throws -> WalletIdentifier? {
         return try prominentSession
             .getWalletIdentifier(
-                netParams: createConnectionParams(
-                    network: networkId.gdkNetwork
-                ),
+                gdkNetwork: networkId.gdkNetwork.network,
                 credentials: credentials
             )
-    }
-
-    public func loginGdk(
-        backend: GdkNetworkBackend,
-        credentials: Credentials,
-        device: HWDevice?,
-        fullRestore: Bool,
-        creation: Bool)
-    async throws -> LoginUserResult? {
-        let network = backend.network
-        // Disable gdk login on multisig on new wallet
-        if creation && network.multisig {
-            return nil
-        }
-        // Disable gdl liquid login, if hw doesn't support it
-        if network.liquid && device?.supportsLiquid ?? 1 == 0 {
-            logger.error("WM login disable liquid if is unsupported on hw")
-            return nil
-        }
-        // Access by multisig watchonly credentials
-        if credentials.isWatchonly && network.multisig {
-            if !credentials.username.isNilOrEmpty {
-                let credentials = Credentials(
-                    username: credentials.username,
-                    password: credentials.password
-                )
-                return try await backend.login(credentials: credentials, device: nil)
-            }
-            return nil
-        }
-        // Access by singlesig watchonly credentials
-        if credentials.isWatchonly && network.singlesig {
-            let descriptors = credentials.coreDescriptors?.filter(
-                { Wally.isDescriptor($0, for: network.networkId)
-                })
-            let slip132Keys = credentials.slip132ExtendedPubkeys?.filter({ Wally.isPubKey($0, for: network.networkId) })
-            if !descriptors.isNilOrEmpty || !slip132Keys.isNilOrEmpty {
-                let credentials = Credentials(
-                    coreDescriptors: descriptors,
-                    slip132ExtendedPubkeys: slip132Keys
-                )
-                return try await backend.login(credentials: credentials, device: nil)
-            }
-            return nil
-        }
-        // Read previous wallet cache
-        guard let walletHashId = try await getWalletIdentifier(
-            network: network,
-            credentials: credentials
-        )?.walletHashId else {
-            throw GaError.GenericError("Wallet not found")
-        }
-        let hasGdkCache = Gdk.shared.hasGdkCache(
-            walletHashId: walletHashId
-        )
-        // Access by software/hardware credentials
-        do {
-            let res = try await backend.login(credentials: credentials, device: device)
-            let refresh = fullRestore || (!creation && !hasGdkCache)
-            try? await discoveryAndSetupDefaultsAccounts(backend: backend, walletHashId: walletHashId, refresh: refresh, hasGdkCache: hasGdkCache)
-            _ = try? await backend.session.loadSettings()
-            return res
-        } catch TwoFactorCallError.failure(let txt) {
-            if txt.contains("HWW must enable host unblinding for singlesig wallets") {
-                throw LoginError.hostUnblindingDisabled(txt)
-            } else if txt == "id_login_failed" && network.electrum {
-                throw LoginError.failed(txt)
-            }
-            return nil
-        } catch {
-            throw error
-        }
-    }
-    func discoveryAndSetupDefaultsAccounts(backend: GdkNetworkBackend, walletHashId: String, refresh: Bool, hasGdkCache: Bool) async throws {
-        let networkAccounts = try await backend.getAccounts(refresh: refresh)
-        let walletIsFunded = !networkAccounts.filter {
-            $0.bip44Discovered == true
-        }.isEmpty 
-        if walletIsFunded && refresh {
-            // Archive no-history default account
-            if let firstAccount = networkAccounts.first, firstAccount.pointer == 0 {
-                let hasHistory = try await gdkAccountBackend(firstAccount).hasHistory()
-                logger.info("WM \(backend.network.network) Archive no-history default account")
-                if !hasHistory {
-                    _ = try await updateAccount(
-                        account: firstAccount,
-                        isHidden: true,
-                        newAccountName: firstAccount.type.title
-                    )
-                }
-            }
-        } else if !hasGdkCache { // Newly discovered Wallet
-            // Archive GDK default account
-            logger.info("WM \(backend.network.network) Archive GDK default account")
-            if let defaultAccount = networkAccounts.first {
-                _ = try await updateAccount(
-                    account: defaultAccount,
-                    isHidden: true,
-                    newAccountName: defaultAccount.type.title
-                )
-            }
-        }
-        // Create GDK bip84Segwit account
-        let defaultAccountBip84 = networkAccounts.filter(
-            {$0.type == .bip84Segwit
-            }).first
-        if defaultAccountBip84 == nil {
-            logger.info("WM \(backend.network.network) Create GDK bip84Segwit account")
-            let accountType = AccountType.bip84Segwit
-            _ = try await createAccount(
-                network: backend.network,
-                params: CreateSubaccountParams(
-                    name: accountType.description,
-                    type: accountType
-                )
-            )
-        }
-    }
-
-    public func loginGl(
-        backend: GlNetworkBackend,
-        credentials: Credentials,
-        restore: Bool,
-        parentXpub: String
-    )
-    async throws -> LoginUserResult? {
-        try await backend.login(
-            credentials: credentials,
-            isForceConnectAllowed: !restore,
-            parentXpub: parentXpub)
-        guard let walletId = try await getWalletIdentifier(
-            credentials: credentials
-        ) else {
-            return nil
-        }
-        return LoginUserResult(
-            xpubHashId: walletId.xpubHashId,
-            walletHashId: walletId.walletHashId
-        )
     }
 
     public func loginNetworkBackend(
@@ -175,20 +34,19 @@ extension WalletManager {
             .connect(params: createConnectionParams(network: backend.network))
         if let backend = backend as? GdkNetworkBackend {
             logger.info("Connecting to gdk backend \(backend.network.network)")
-            return try await loginGdk(
-                backend: backend,
+            return try await backend.login(
                 credentials: credentials,
                 device: device,
                 fullRestore: fullRestore,
-                creation: creation
+                creation: creation,
+                prominentNetworkId: prominentNetworkId
             )
         } else if let backend = backend as? GlNetworkBackend, let lightningCredentials {
             logger.info("Connecting to gl backend \(backend.network.network)")
             guard let parentXpub = resolvedParentXpub else {
                 return nil
             }
-            return try await loginGl(
-                backend: backend,
+            return try await backend.login(
                 credentials: lightningCredentials,
                 restore: fullRestore,
                 parentXpub: parentXpub)
@@ -198,35 +56,11 @@ extension WalletManager {
             if credentials.isWatchonly {
                 return nil
             }
-            return try await loginLwk(
-                backend: backend,
+            return try await backend.login(
                 credentials: credentials
             )
         }
         return nil
-    }
-
-    public func loginLwk(
-        backend: LwkNetworkBackend,
-        credentials: Credentials)
-    async throws -> LoginUserResult? {
-        guard credentials.mnemonic != nil else {
-            // disable for hardware wallet
-            return nil
-        }
-        guard let walletId = try await getWalletIdentifier(
-            credentials: credentials
-        ) else {
-            return nil
-        }
-        try await backend
-            .login(
-                credentials: credentials
-            )
-        return LoginUserResult(
-            xpubHashId: walletId.xpubHashId,
-            walletHashId: walletId.walletHashId
-        )
     }
 
     public func loginLwkBoltz(boltzCredentials: Credentials, xpubHashId: String) {

@@ -50,7 +50,12 @@ class LTExportJadeViewModel {
             try? walletManager.removeDatadir(workingDir.path())
         }
         let backend = try walletManager.glNetworkBackend()
-        try await backend.login(credentials: lightningCredentials, isForceConnectAllowed: true, parentXpub: xpubHashId)
+        _ = try await backend
+            .login(
+                credentials: lightningCredentials,
+                restore: false,
+                parentXpub: xpubHashId
+            )
         _ = try await backend.getAccounts(refresh: false)
         // Add auth into keychain
         try AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: lightningCredentials, for: mainWallet.keychainLightning)

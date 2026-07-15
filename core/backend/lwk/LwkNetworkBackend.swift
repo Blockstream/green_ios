@@ -62,7 +62,7 @@ public final class LwkNetworkBackend: NetworkBackend {
         return []
     }
 
-    func login(
+    private func loginUser(
         credentials: Credentials
     ) async throws {
         guard let mnemonicString = credentials.mnemonic else {
@@ -78,6 +78,27 @@ public final class LwkNetworkBackend: NetworkBackend {
         print("LWK login complete for \(network.networkId)")
         blockHeaderPolling()
         try await syncSwallowing()
+    }
+
+    public func login(
+        credentials: Credentials)
+    async throws -> LoginUserResult? {
+        guard credentials.mnemonic != nil else {
+            // disable for hardware wallet
+            return nil
+        }
+        try await loginUser(
+                credentials: credentials
+            )
+        let walletId = try Gdk
+            .getWalletIdentifier(
+                gdkNetwork: NetworkId.electrumMainnet.network,
+                credentials: credentials
+            )
+        return LoginUserResult(
+            xpubHashId: walletId.xpubHashId,
+            walletHashId: walletId.walletHashId
+        )
     }
 
     private func blockHeaderPolling() {

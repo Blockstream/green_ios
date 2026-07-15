@@ -116,9 +116,9 @@ public class SessionManager {
         return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
 
-    public func getWalletIdentifier(netParams: ConnectionParams, credentials: Credentials) throws -> WalletIdentifier? {
+    public func getWalletIdentifier(gdkNetwork: String, credentials: Credentials) throws -> WalletIdentifier? {
         let res = try self.session?.getWalletIdentifier(
-            net_params: netParams.asDictionary(),
+            net_params: ["name": gdkNetwork],
             details: credentials.asDictionary())
         return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }

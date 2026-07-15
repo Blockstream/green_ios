@@ -93,7 +93,7 @@ public final class GlNetworkBackend: NetworkBackend {
         throw GaError.GenericError("Not implemented")
     }
 
-    public func login(
+    private func loginUser(
         credentials: Credentials,
         isForceConnectAllowed: Bool,
         parentXpub: String
@@ -116,6 +116,27 @@ public final class GlNetworkBackend: NetworkBackend {
                     for: parentXpub,
                     credentials: newLightningCredentials)
         }
+    }
+
+    public func login(
+        credentials: Credentials,
+        restore: Bool,
+        parentXpub: String
+    )
+    async throws -> LoginUserResult? {
+        try await loginUser(
+            credentials: credentials,
+            isForceConnectAllowed: !restore,
+            parentXpub: parentXpub)
+        let walletId = try Gdk
+            .getWalletIdentifier(
+                gdkNetwork: NetworkId.electrumMainnet.network,
+                credentials: credentials
+            )
+        return LoginUserResult(
+            xpubHashId: walletId.xpubHashId,
+            walletHashId: walletId.walletHashId
+        )
     }
 }
 

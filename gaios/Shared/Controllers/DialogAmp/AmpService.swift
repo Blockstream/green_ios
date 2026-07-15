@@ -89,7 +89,13 @@ class AmpService: Sendable {
             }
             try await gdkGreenLiquidNetworkBackend.session.register(credentials: credentials, hw: wm.hwDevice)
             _ = try await gdkGreenLiquidNetworkBackend
-                .login(credentials: credentials, device: wm.hwDevice)
+                .login(
+                    credentials: credentials,
+                    device: wm.hwDevice,
+                    fullRestore: true,
+                    creation: false,
+                    prominentNetworkId: wm.prominentNetworkId
+                )
             // hide default 2FA subaccounts
             let accounts = try await gdkGreenLiquidNetworkBackend.getAccounts(
                 refresh: false

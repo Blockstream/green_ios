@@ -46,4 +46,16 @@ public class Gdk {
         }
         return false
     }
+
+    public static func getWalletIdentifier(gdkNetwork: String, credentials: Credentials) throws -> WalletIdentifier {
+        let session = GDKSession()
+        let res = try session.getWalletIdentifier(
+            net_params: ["name": gdkNetwork],
+            details: credentials.asDictionary())
+        guard let res else {
+            throw GaError.GenericError("Failed to get wallet identifier")
+        }
+        return try res.decode(WalletIdentifier.self)
+    }
 }
+

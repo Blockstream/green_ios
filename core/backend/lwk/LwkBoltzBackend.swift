@@ -56,7 +56,7 @@ public final class LwkBoltzBackend {
             return AnyClient.fromEsplora(client: esploraClient)
         }
     }
-    
+
     func createBoltzSession(client: AnyClient, mnemonic: Mnemonic) throws -> BoltzSession {
         let bitcoinElectrumUrl = network.isMainnet()
         ? "ssl://bitcoin-mainnet.blockstream.info:50002"
