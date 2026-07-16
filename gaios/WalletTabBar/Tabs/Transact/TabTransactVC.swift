@@ -379,6 +379,9 @@ extension TabTransactVC: UITableViewDataSourcePrefetching {
     func getLiquidAmpSubaccounts() -> [Account] {
         WalletManager.current?.liquidAmpSubaccounts.sorted() ?? []
     }
+    func getLiquidAmpLegacySubaccounts() -> [Account] {
+        WalletManager.current?.liquidAmpLegacySubaccounts.sorted() ?? []
+    }
     func getLightningSubaccounts() -> [Account] {
         if let backend = WalletManager.current?.glNetworkBackendOrNil(), backend.isLoggedIn {
             return [backend.account]
@@ -391,6 +394,8 @@ extension TabTransactVC: UITableViewDataSourcePrefetching {
             return getLiquidSubaccounts()
         case .anyAmp:
             return getLiquidAmpSubaccounts()
+        case .anyAmpLegacy:
+            return getLiquidAmpLegacySubaccounts()
         case .asset(let assetId):
             if let asset = WalletManager.current?.info(for: assetId) {
                 if asset.isLightning {
@@ -421,6 +426,15 @@ extension TabTransactVC: AssetSelectViewControllerDelegate {
                 accountsScreen(assetId: AssetInfo.lbtcId, subaccounts: accounts)
             }
         case .anyAmp:
+            let accounts = getAccounts(ref)
+            if accounts.count == 0 {
+                DropAlert().warning(message: "Create an account".localized)
+            } else if accounts.count == 1 {
+                didSelectAccount(accounts.first)
+            } else {
+                accountsScreen(assetId: AssetInfo.lbtcId, subaccounts: accounts)
+            }
+        case .anyAmpLegacy:
             let accounts = getAccounts(ref)
             if accounts.count == 0 {
                 DropAlert().warning(message: "Create an account".localized)

@@ -198,7 +198,8 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                 let list = AssetAmountList(dict)
                 vc.viewModel = AssetSelectViewModel(assets: list,
                                                     enableAnyLiquidAsset: viewModel.onlyBtc ? false : true,
-                                                    enableAnyAmpAsset: false)
+                                                    enableAnyAmpAsset: false,
+                                                    enableAnyAmpLegacyAsset: false)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }
@@ -322,6 +323,9 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
             reloadSections([.asset, .policy], animated: true)
         case .anyAmp:
             viewModel?.anyLiquidAmpAsset = true
+            reloadSections([.asset, .policy], animated: true)
+        case .anyAmpLegacy:
+            viewModel?.anyLiquidAmpLegacyAsset = true
             reloadSections([.asset, .policy], animated: true)
         case .asset(let assetId):
             viewModel?.asset = assetId

@@ -140,7 +140,7 @@ public struct Account: Codable, Equatable, Comparable, Sendable {
                 return "\(typeString) \(accountNumber)"
             }
         case .standard: return "2FA Protected"
-        case .ampAccount: return "AMP"
+        case .ampAccount: return "AMP Liquid"
         case .amp2Account: return "AMP Liquid"
         case .twoOfThree: return "2of3"
         case .lightning: return "Lighning" // Kept exact typo from your source string

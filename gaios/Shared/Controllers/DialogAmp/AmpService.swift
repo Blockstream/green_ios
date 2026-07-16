@@ -38,6 +38,11 @@ class AmpService: Sendable {
         try? wm.lwkNetworkBackend(lwkNetworkId)
     }
 
+    private func notifyWalletDataRefresh(networkId: NetworkId) {
+        // AMP2 creation is performed via LWK and does not emit GDK newSubaccount events.
+        wm.newNotificationDelegate?.didReceive(event: .refreshAssets, networkId: networkId)
+    }
+
     /// AMP2 is limited to software testnet wallets for now.
     /// Hardware, watch-only, and mainnet keep the AMP0 path only.
     var canCreateAmp2: Bool {
@@ -68,7 +73,8 @@ class AmpService: Sendable {
             .createAccount(
                 params: CreateSubaccountParams(name: "", type: .amp2Account)
             )
-        _ = try await lwkNetworkBackend.getAccounts(refresh: false)
+        _ = try await lwkNetworkBackend.getAccounts(refresh: true)
+        notifyWalletDataRefresh(networkId: lwkNetworkId)
     }
 
     func createAmpLegacyAccount() async throws {
@@ -110,7 +116,8 @@ class AmpService: Sendable {
             .createAccount(
                 params: CreateSubaccountParams(name: "", type: .ampAccount)
             )
-        _ = try await gdkGreenLiquidNetworkBackend.getAccounts(refresh: false)
+        _ = try await gdkGreenLiquidNetworkBackend.getAccounts(refresh: true)
+         notifyWalletDataRefresh(networkId: gdkGreenLiquidNetworkId)
     }
 
     func onCreate(_ type: CreateAmpType) {

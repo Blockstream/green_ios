@@ -56,6 +56,8 @@ struct ReceiveState {
             return UIImage(named: "default_asset_liquid_icon")!
         case .anyAmp:
             return UIImage(named: "default_asset_amp_icon")!
+        case .anyAmpLegacy:
+            return UIImage(named: "default_asset_amp_icon")!
         case .asset(let assetId):
             return WalletManager.current?.image(for: assetId)
         }
@@ -63,9 +65,11 @@ struct ReceiveState {
     var assetName: String {
         switch anyOrAsset {
         case .anyLiquid:
-            return "id_receive_any_liquid_asset".localized
+            return "Any Liquid Asset".localized
         case .anyAmp:
-            return "id_receive_any_amp_asset".localized
+            return "Any AMP Asset".localized
+        case .anyAmpLegacy:
+            return "Any AMP Legacy Asset".localized
         case .asset(let assetId):
             return assetInfo?.name ?? assetId
         }

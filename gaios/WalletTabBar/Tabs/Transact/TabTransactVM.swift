@@ -70,16 +70,16 @@ class TabTransactVM: TabViewModel {
     }
 
     func assetSelectViewModel(subaccounts: [Account]) -> AssetSelectViewModel {
-        let hasSubaccountAmp = !subaccounts.filter(
-            { $0.type == .ampAccount || $0.type == .amp2Account
-            }).isEmpty
+        let hasSubaccountAmp = !subaccounts.filter({ $0.type == .amp2Account }).isEmpty
+        let hasSubaccountAmpLegacy = !subaccounts.filter({ $0.type == .ampAccount }).isEmpty
         let hasLiquid = !subaccounts.filter({ $0.networkId.liquid }).isEmpty
         let assetIds = selectableAssets(subaccounts: subaccounts)
         let list = AssetAmountList.from(assetIds: assetIds ?? [])
         return AssetSelectViewModel(
             assets: list,
             enableAnyLiquidAsset: hasLiquid,
-            enableAnyAmpAsset: hasSubaccountAmp)
+            enableAnyAmpAsset: hasSubaccountAmp,
+            enableAnyAmpLegacyAsset: hasSubaccountAmpLegacy)
     }
 
     func dialogAccountsViewModel(assetId: String, subaccounts: [Account], hideBalance: Bool = false) -> DialogAccountsViewModel {

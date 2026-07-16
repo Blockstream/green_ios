@@ -7,6 +7,7 @@ class AssetSelectViewModel {
     var reload: (() -> Void)?
     private var enableAnyLiquidAsset: Bool
     private var enableAnyAmpAsset: Bool
+    private var enableAnyAmpLegacyAsset: Bool
 
     var assetSelectCellModels: [AssetSelectCellModel] = []
     var assetSelectCellModelsFilter: [AssetSelectCellModel] = []
@@ -38,13 +39,18 @@ class AssetSelectViewModel {
         var data: [AnyOrAsset] = []
         if enableAnyLiquidAsset == true { data.append(.anyLiquid) }
         if enableAnyAmpAsset == true { data.append(.anyAmp) }
+        if enableAnyAmpLegacyAsset == true { data.append(.anyAmpLegacy) }
         return data
     }
 
-    init(assets: AssetAmountList, enableAnyLiquidAsset: Bool, enableAnyAmpAsset: Bool) {
+    init(assets: AssetAmountList,
+         enableAnyLiquidAsset: Bool,
+         enableAnyAmpAsset: Bool,
+         enableAnyAmpLegacyAsset: Bool) {
         self.assets = assets
         self.enableAnyLiquidAsset = enableAnyLiquidAsset
         self.enableAnyAmpAsset = enableAnyAmpAsset
+        self.enableAnyAmpLegacyAsset = enableAnyAmpLegacyAsset
         assetSelectCellModels = self.assets?.amounts.map { AssetSelectCellModel(assetId: $0.0, satoshi: $0.1) } ?? []
         assetSelectCellModelsFilter = assetSelectCellModels
         reload?()

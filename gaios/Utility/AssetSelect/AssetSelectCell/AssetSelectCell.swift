@@ -32,13 +32,19 @@ class AssetSelectCell: UITableViewCell {
 
         // Any liquid asset
         if model.anyLiquid {
-            self.lblAsset.text = "id_receive_any_liquid_asset".localized
+            self.lblAsset.text = "Any Liquid Asset".localized
             self.imgView?.image = UIImage(named: "default_asset_liquid_icon")!
             return
         }
         // Any AMP asset
         if model.anyAmp {
-            self.lblAsset.text = "id_receive_any_amp_asset".localized
+            self.lblAsset.text = "Any AMP Asset".localized
+            self.imgView?.image = UIImage(named: "default_asset_amp_icon")!
+            return
+        }
+        // Any AMP legacy asset
+        if model.anyAmpLegacy {
+            self.lblAsset.text = "Any AMP Legacy Asset".localized
             self.imgView?.image = UIImage(named: "default_asset_amp_icon")!
             return
         }

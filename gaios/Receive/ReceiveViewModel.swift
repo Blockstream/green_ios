@@ -267,12 +267,17 @@ final class ReceiveViewModel: Sendable {
     func getLiquidAmpSubaccounts() -> [Account] {
         WalletManager.current?.liquidAmpSubaccounts.sorted() ?? []
     }
+    func getLiquidAmpLegacySubaccounts() -> [Account] {
+        WalletManager.current?.liquidAmpLegacySubaccounts.sorted() ?? []
+    }
     func getAccounts() -> [Account] {
         switch state.anyOrAsset {
         case .anyLiquid:
             return getLiquidSubaccounts()
         case .anyAmp:
             return getLiquidAmpSubaccounts()
+        case .anyAmpLegacy:
+            return getLiquidAmpLegacySubaccounts()
         case .asset(let assetId):
             let asset = wm.info(for: assetId)
             if state.type == .lwkSwap {
@@ -305,7 +310,7 @@ final class ReceiveViewModel: Sendable {
         if state.type == .lwkSwap { return true }
         if wm.lwkBoltzBackend?.logged ?? false {
             switch state.anyOrAsset {
-            case .anyLiquid, .anyAmp:
+            case .anyLiquid, .anyAmp, .anyAmpLegacy:
                 return false
             default:
                 return true

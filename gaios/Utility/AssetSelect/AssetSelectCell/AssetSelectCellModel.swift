@@ -7,6 +7,7 @@ class AssetSelectCellModel {
     var asset: AssetInfo?
     var icon: UIImage?
     var anyAmp: Bool = false
+    var anyAmpLegacy: Bool = false
     var anyLiquid: Bool = false
 
     init(assetId: String, satoshi: Int64) {
@@ -15,6 +16,9 @@ class AssetSelectCellModel {
     }
     init(anyAmp: Bool) {
         self.anyAmp = anyAmp
+    }
+    init(anyAmpLegacy: Bool) {
+        self.anyAmpLegacy = anyAmpLegacy
     }
     init(anyLiquid: Bool) {
         self.anyLiquid = anyLiquid

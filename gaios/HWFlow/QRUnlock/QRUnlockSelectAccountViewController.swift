@@ -219,6 +219,9 @@ extension QRUnlockSelectAccountViewController: AssetSelectViewControllerDelegate
         case .anyAmp:
             viewModel?.asset = AssetInfo.lbtcId
             reloadSections([.asset, .policy], animated: true)
+        case .anyAmpLegacy:
+            viewModel?.asset = AssetInfo.lbtcId
+            reloadSections([.asset, .policy], animated: true)
         case .asset(let assetId):
             viewModel?.asset = assetId
             reloadSections([.asset, .policy], animated: true)

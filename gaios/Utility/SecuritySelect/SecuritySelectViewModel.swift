@@ -14,10 +14,13 @@ class SecuritySelectViewModel {
     var asset: String?
     var anyLiquidAsset: Bool = false
     var anyLiquidAmpAsset: Bool = false
+    var anyLiquidAmpLegacyAsset: Bool = false
     var onlyBtc: Bool = false
     var assetCellModel: AssetSelectCellModel? {
         if anyLiquidAmpAsset {
             return AssetSelectCellModel(anyAmp: true)
+        } else if anyLiquidAmpLegacyAsset {
+            return AssetSelectCellModel(anyAmpLegacy: true)
         } else if anyLiquidAsset {
             return AssetSelectCellModel(anyLiquid: true)
         } else if let asset = asset {
@@ -27,10 +30,15 @@ class SecuritySelectViewModel {
     }
     var wm: WalletManager { WalletManager.current! }
 
-    init(asset: String? = nil, anyLiquidAsset: Bool = false, anyLiquidAmpAsset: Bool = false, onlyBtc: Bool = false) {
+    init(asset: String? = nil,
+         anyLiquidAsset: Bool = false,
+         anyLiquidAmpAsset: Bool = false,
+         anyLiquidAmpLegacyAsset: Bool = false,
+         onlyBtc: Bool = false) {
         self.asset = asset
         self.anyLiquidAsset = anyLiquidAsset
         self.anyLiquidAmpAsset = anyLiquidAmpAsset
+        self.anyLiquidAmpLegacyAsset = anyLiquidAmpLegacyAsset
         self.onlyBtc = onlyBtc
     }
 
@@ -57,7 +65,7 @@ class SecuritySelectViewModel {
     }
 
     func isAdvancedEnable() -> Bool {
-        if anyLiquidAmpAsset { // any amp liquid asset
+        if anyLiquidAmpAsset || anyLiquidAmpLegacyAsset { // any amp liquid asset
             return false
         } else if anyLiquidAsset { // any liquid asset
             return hasLiquidMultisig
@@ -73,6 +81,7 @@ class SecuritySelectViewModel {
     func resetSelection() {
         anyLiquidAsset = false
         anyLiquidAmpAsset = false
+        anyLiquidAmpLegacyAsset = false
     }
 
     func hasLightning() -> Bool {
@@ -86,7 +95,7 @@ class SecuritySelectViewModel {
     }
 
     func policiesForAsset(extended: Bool) -> [PolicyCellType] {
-        if anyLiquidAmpAsset { // any amp liquid asset
+        if anyLiquidAmpAsset || anyLiquidAmpLegacyAsset { // any amp liquid asset
             return [.Amp]
         } else if anyLiquidAsset { // any liquid asset
             return listLiquid(extended: extended)
@@ -100,7 +109,7 @@ class SecuritySelectViewModel {
     }
 
     func create(policy: PolicyCellType, params: CreateSubaccountParams) async throws -> SubaccountAction {
-        let isLiquid = anyLiquidAsset || anyLiquidAmpAsset || asset != "btc"
+        let isLiquid = anyLiquidAsset || anyLiquidAmpAsset || anyLiquidAmpLegacyAsset || asset != "btc"
         let network = policy.getNetwork(testnet: wm.testnet, liquid: isLiquid)!
         let session = try wm.gdkNetworkBackend(network).session
         if !session.logged {

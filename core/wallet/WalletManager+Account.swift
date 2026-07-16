@@ -11,7 +11,13 @@ extension WalletManager {
         accounts.filter { $0.type == .lightning }
     }
     public var liquidAmpSubaccounts: [Account] {
-        liquidSubaccounts.filter { $0.type == .ampAccount || $0.type == .amp2Account }
+        liquidSubaccounts.filter { $0.type == .amp2Account }
+    }
+    public var liquidAmpLegacySubaccounts: [Account] {
+        liquidSubaccounts.filter { $0.type == .ampAccount }
+    }
+    public var liquidAnyAmpSubaccounts: [Account] {
+        liquidAmpSubaccounts + liquidAmpLegacySubaccounts
     }
     // List of accounts with funds
     public func subaccountsFor(assetId: String) -> [Account] {
@@ -22,7 +28,7 @@ extension WalletManager {
             return bitcoinSubaccounts
         default:
             if getAsset(assetId).amp ?? false {
-                return liquidAmpSubaccounts
+                return liquidAnyAmpSubaccounts
             } else {
                 return liquidSubaccounts
             }

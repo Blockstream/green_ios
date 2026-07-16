@@ -22,10 +22,13 @@ class AnyAssetCell: UITableViewCell {
 
         switch ref {
         case .anyLiquid:
-            self.lblAny.text = "id_receive_any_liquid_asset".localized
+            self.lblAny.text = "Any Liquid Asset".localized
             imgView.image = UIImage(named: "default_asset_liquid_icon")!
         case .anyAmp:
-            self.lblAny.text = "id_receive_any_amp_asset".localized
+            self.lblAny.text = "Any AMP Asset".localized
+            imgView.image = UIImage(named: "default_asset_amp_icon")!
+        case .anyAmpLegacy:
+            self.lblAny.text = "Any AMP Legacy Asset".localized
             imgView.image = UIImage(named: "default_asset_amp_icon")!
         default:
             break

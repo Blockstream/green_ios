@@ -1,7 +1,6 @@
 import UIKit
 import core
 
-
 protocol AssetSelectViewControllerDelegate: AnyObject {
     func didSelectAnyOrAsset(_ ref: AnyOrAsset)
 }
@@ -9,10 +8,11 @@ protocol AssetSelectViewControllerDelegate: AnyObject {
 enum AnyOrAsset {
     case anyLiquid
     case anyAmp
+    case anyAmpLegacy
     case asset(String)
     var assetId: String {
         switch self {
-        case .anyLiquid, .anyAmp:
+        case .anyLiquid, .anyAmp, .anyAmpLegacy:
             return AssetInfo.lbtcId
         case .asset(let assetId):
             return assetId
@@ -102,29 +102,14 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
                 cell.lblAsset.accessibilityIdentifier = AccessibilityIds.CommonElements.cellAssetSelect(indexPath.row)
                 return cell
             }
-        } else if indexPath.row == cnt {
-            if let cell = tableView.dequeueReusableCell(withIdentifier: AnyAssetCell.identifier, for: indexPath) as? AnyAssetCell {
-                cell.configure(anyAssetTypes[0])
+        } else {
+            let anyIndex = indexPath.row - cnt
+            if anyAssetTypes.indices.contains(anyIndex),
+               let cell = tableView.dequeueReusableCell(withIdentifier: AnyAssetCell.identifier, for: indexPath) as? AnyAssetCell {
+                cell.configure(anyAssetTypes[anyIndex])
                 cell.selectionStyle = .none
                 cell.lblAny.accessibilityIdentifier = AccessibilityIds.CommonElements.cellAssetSelect(indexPath.row)
                 return cell
-            }
-        } else if indexPath.row == cnt+1 {
-            if let cell = tableView.dequeueReusableCell(withIdentifier: AnyAssetCell.identifier, for: indexPath) as? AnyAssetCell {
-                cell.configure(anyAssetTypes[1])
-                cell.selectionStyle = .none
-                cell.lblAny.accessibilityIdentifier = AccessibilityIds.CommonElements.cellAssetSelect(indexPath.row)
-                return cell
-            }
-        }
-        if anyAssetTypes.count == 1 {
-            if cnt == indexPath.row {
-                if let cell = tableView.dequeueReusableCell(withIdentifier: AnyAssetCell.identifier, for: indexPath) as? AnyAssetCell {
-                    cell.configure(anyAssetTypes[0])
-                    cell.selectionStyle = .none
-                    cell.lblAny.accessibilityIdentifier = AccessibilityIds.CommonElements.cellAssetSelect(indexPath.row)
-                    return cell
-                }
             }
         }
         return UITableViewCell()
@@ -158,10 +143,11 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
             let assetCellModel = viewModel?.assetSelectCellModelsFilter[indexPath.row] as? AssetSelectCellModel
             let asset = assetCellModel?.asset?.assetId
             self.didSelectAnyOrAsset(.asset(asset ?? ""))
-        } else if indexPath.row == cnt {
-            self.didSelectAnyOrAsset(AnyOrAsset.anyLiquid)
-        } else if indexPath.row == cnt+1 {
-            self.didSelectAnyOrAsset(AnyOrAsset.anyAmp)
+        } else {
+            let anyAssetTypes: [AnyOrAsset] = viewModel.anyAssetTypes()
+            let anyIndex = indexPath.row - cnt
+            guard anyAssetTypes.indices.contains(anyIndex) else { return }
+            self.didSelectAnyOrAsset(anyAssetTypes[anyIndex])
         }
     }
 }

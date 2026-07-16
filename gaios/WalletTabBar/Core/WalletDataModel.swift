@@ -3,7 +3,6 @@ import AsyncAlgorithms
 
 import core
 import greenaddress
-@preconcurrency 
 
 actor WalletDataModel {
 
@@ -486,7 +485,7 @@ extension WalletDataModel: NewNotificationDelegate {
             break
         case .refreshAssets:
             logger.info("WalletDataModel refreshAssets")
-            await triggerRefresh(features: [.balance, .txs(reset: true)])
+            await triggerRefresh(features: [.subaccounts, .balance, .txs(reset: true)])
         case .invoicePaid:
             logger.info("WalletDataModel invoicePaid")
             await triggerRefresh(features: [.balance, .txs(reset: true)])

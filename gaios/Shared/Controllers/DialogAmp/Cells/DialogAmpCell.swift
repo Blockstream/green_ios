@@ -35,6 +35,8 @@ class DialogAmpCell: UITableViewCell {
         self.onCopy = onCopy
         lblTitle.text = model.name
         lblHint.attributedText = attributedHashText(model.hash)
+        lblHint.numberOfLines = 1
+        lblHint.lineBreakMode = .byTruncatingTail
         btnCreate.setStyle(.primary)
         btnCreate.setTitle("id_create".localized, for: .normal)
         btnCopy.isHidden = model.hash == nil
@@ -45,7 +47,7 @@ class DialogAmpCell: UITableViewCell {
         guard let hash else { return nil }
 
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineBreakMode = .byCharWrapping
+        paragraphStyle.lineBreakMode = .byTruncatingTail
 
         return NSAttributedString(
             string: "ID:\u{00A0}\(hash)",
