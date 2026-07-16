@@ -38,9 +38,12 @@ class LoginViewModel {
             let pin = withPIN ?? pinData.plaintextBiometric
             let decryptData = DecryptWithPinParams(pin: pin ?? "", pinData: pinData)
             let wm = WalletsRepository.shared.getOrAdd(for: wallet)
-            let session = wm.prominentNetworkBackend.session
-            try await session.connect()
-            return try await session.decryptWithPin(decryptData)
+            let session = wm.prominentNetworkBackend?.session
+            try await session?.connect()
+            guard let res = try await session?.decryptWithPin(decryptData) else {
+                throw LoginError.failed("Invalid session")
+            }
+            return res
         }
         return Credentials(mnemonic: pinData.plaintextBiometric, pinData: pinData)
     }

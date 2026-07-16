@@ -170,7 +170,7 @@ class TabSettingsVM: TabViewModel {
             try await session.register(credentials: nil, hw: device)
             _ = try await session.loginUser(device)
         } else {
-            if let credentials = try await wm.prominentSession.getCredentials(password: "") {
+            if let credentials = try await wm.prominentSession?.getCredentials(password: "") {
                 try await session.register(credentials: credentials, hw: nil)
                 _ = try await session.loginUser(credentials)
             }

@@ -159,7 +159,7 @@ class SecuritySelectViewModel {
 
     func loginCredentials(session: SessionManager) async throws {
         let prominentSession = wm.prominentSession
-        guard let credentials = try await prominentSession.getCredentials(password: "") else {
+        guard let credentials = try await prominentSession?.getCredentials(password: "") else {
             throw GaError.GenericError("No credential provided")
         }
         try await session.register(credentials: credentials)

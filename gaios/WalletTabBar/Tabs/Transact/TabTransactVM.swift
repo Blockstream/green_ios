@@ -32,7 +32,7 @@ class TabTransactVM: TabViewModel {
         state.balanceDisplayMode
     }
     var defaultCurrency: String? {
-        if let settings = wm.prominentSession.settings {
+        if let settings = wm.prominentSession?.settings {
             return settings.pricing["currency"]
         }
         return nil

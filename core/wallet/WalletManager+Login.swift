@@ -14,7 +14,7 @@ extension WalletManager {
     }
 
     func getWalletIdentifier(credentials: Credentials, networkId: NetworkId) throws -> WalletIdentifier? {
-        return try prominentSession
+        return try prominentSession?
             .getWalletIdentifier(
                 gdkNetwork: networkId.gdkNetwork.network,
                 credentials: credentials

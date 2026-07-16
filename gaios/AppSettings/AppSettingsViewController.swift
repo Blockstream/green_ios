@@ -104,7 +104,7 @@ class AppSettingsViewController: KeyboardViewController {
                 // no change
             }
         }
-        let session = WalletManager.current?.prominentSession.session
+        let session = WalletManager.current?.prominentSession?.session
         AnalyticsManager.shared.setupSession(session: session)
 //        delegate?.didSet(tor: viewModel.isTorOn)
 //        delegate?.didSet(testnet: viewModel.isTestnetOn)

@@ -1,7 +1,7 @@
 import Foundation
 import core
 import UIKit
-
+import greenaddress
 import hw
 
 enum QRUnlockScope: Equatable {
@@ -102,11 +102,13 @@ class QRUnlockJadeViewModel {
         } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: wallet.keychain) {
             return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: wallet.keychain)
         } else {
-            let session = wm.prominentSession
             let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: wallet.keychain)
             AnalyticsManager.shared.loginWalletStart()
             let method: AuthenticationTypeHandler.AuthType = enableBio ? .AuthKeyBiometric : .AuthKeyPIN
             let data = try AuthenticationTypeHandler.getPinData(method: method, for: wallet.keychain)
+            guard let session = wm.prominentSession else {
+                throw GaError.GenericError("Failed to get session")
+            }
             try await session.connect()
             let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
             return try await session.decryptWithPin(decrypt)

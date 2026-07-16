@@ -69,7 +69,7 @@ class BuyBTCViewModel {
         }
         self.asset = self.account.gdkNetwork.getFeeAsset()
         self.meld = Meld()
-        self.inputDenomination = WalletManager.current?.prominentSession.settings?.denomination ?? .Sats
+        self.inputDenomination = WalletManager.current?.prominentSession?.settings?.denomination ?? .Sats
         self.hideBalance = hideBalance
         self.currency = currency
         self.loadTiers()

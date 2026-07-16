@@ -88,7 +88,7 @@ class AmpService: Sendable {
             try await gdkGreenLiquidNetworkBackend.connect(params: connParams)
         }
         if !gdkGreenLiquidNetworkBackend.isLoggedIn {
-            guard let credentials = try await wm.prominentSession.getCredentials(
+            guard let credentials = try await wm.prominentSession?.getCredentials(
                 password: ""
             ) else {
                 throw GaError.GenericError("No wallet credentials data found")

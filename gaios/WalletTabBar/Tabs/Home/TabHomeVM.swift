@@ -32,7 +32,7 @@ class TabHomeVM: TabViewModel {
         state.balanceDisplayMode
     }
     var defaultCurrency: String? {
-        if let settings = wm.prominentSession.settings {
+        if let settings = wm.prominentSession?.settings {
             return settings.pricing["currency"]
         }
         return nil
@@ -44,7 +44,7 @@ class TabHomeVM: TabViewModel {
         try? await walletDataModel.hideBalance(value)
     }
     func relogin() async throws {
-        guard let credentials = try? await wm.prominentSession.getCredentials(password: "") else {
+        guard let credentials = try? await wm.prominentSession?.getCredentials(password: "") else {
             throw GaError.NotAuthorizedError("")
         }
         let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: mainWallet.keychainLightning)

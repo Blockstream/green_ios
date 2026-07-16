@@ -81,7 +81,7 @@ class ManualBackupViewController: UIViewController {
             }
         case .quiz:
             Task {
-                if let credentials = try? await wm.prominentSession.getCredentials(password: "") {
+                if let credentials = try? await wm.prominentSession?.getCredentials(password: "") {
                     if let mnemonic = credentials.mnemonic {
                         if let vc = WalletNavigator.phraseNoteDown(phrase: mnemonic) {
                             navigationController?.pushViewController(vc, animated: true)

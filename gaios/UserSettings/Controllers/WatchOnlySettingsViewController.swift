@@ -102,8 +102,10 @@ extension WatchOnlySettingsViewController: UITableViewDelegate, UITableViewDataS
         case .Multisig:
             if let item = viewModel.getCellModel(at: indexPath),
                let wm = WalletManager.current,
-               let network = item.network {
-                if let session = try? wm.gdkNetworkBackend(NetworkId(network: network)!).session {
+               let network = item.network,
+               let networkId = NetworkId(network: network)
+            {
+                if let session = try? wm.gdkNetworkBackend(networkId).session {
                     openWatchOnly(session: session)
                 }
             }

@@ -3,11 +3,11 @@ import greenaddress
 
 extension WalletManager {
     public func bcurEncode(params: BcurEncodeParams) async throws -> BcurEncodedData? {
-        try await prominentNetworkBackend.session.bcurEncode(params: params)
+        try await prominentNetworkBackend?.session.bcurEncode(params: params)
     }
 
     public func bcurDecode(params: BcurDecodeParams, bcurResolver: BcurResolver) async throws -> BcurDecodedData? {
-        try await prominentNetworkBackend.session.bcurDecode(params: params, bcurResolver: bcurResolver)
+        try await prominentNetworkBackend?.session.bcurDecode(params: params, bcurResolver: bcurResolver)
     }
 
     public func jadeBip8539Request(index: UInt32) async throws -> (Data?, BcurEncodedData?) {
@@ -70,7 +70,7 @@ extension WalletManager {
         credentials: Credentials,
     ) async throws -> WalletIdentifier? {
         let network = network ?? prominentNetwork
-        return try prominentNetworkBackend.session
+        return try prominentNetworkBackend?.session
             .getWalletIdentifier(
                 gdkNetwork: network.network,
                 credentials: credentials

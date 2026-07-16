@@ -145,8 +145,8 @@ class EditProtectionViewController: UIViewController {
     func enableBiometricAuthentication() async throws {
         if let wm = WalletManager.current {
             let session = wm.prominentSession
-            let credentials = try await session.getCredentials(password: "")
-            if let credentials = credentials {
+            let credentials = try await session?.getCredentials(password: "")
+            if let credentials, let session {
                 try await mainWallet?.addBiometrics(session: session, credentials: credentials)
             }
         }

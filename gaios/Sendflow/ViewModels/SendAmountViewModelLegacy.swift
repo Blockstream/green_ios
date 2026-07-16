@@ -84,7 +84,7 @@ class SendAmountViewModelLegacy {
     init(createTx: CreateTx, transaction: Transaction? = nil) {
         self.createTx = createTx
         self.transaction = transaction
-        self.denominationType = wm?.prominentSession.settings?.denomination ?? .BTC
+        self.denominationType = wm?.prominentSession?.settings?.denomination ?? .BTC
         let session = (accountBackend as? GdkAccountBackend)?.session
         if let session {
             self.feeEstimator = FeeEstimator(session: session)

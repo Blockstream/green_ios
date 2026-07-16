@@ -170,7 +170,7 @@ class ManageAssetViewModel {
         ) > 0
     }
     func currency() -> String? {
-        wm.prominentSession.settings?.pricing["currency"]
+        wm.prominentSession?.settings?.pricing["currency"]
     }
     func canSwap() -> Bool {
         if mainWallet.isWatchonly ||

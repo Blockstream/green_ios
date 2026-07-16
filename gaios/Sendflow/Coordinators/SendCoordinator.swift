@@ -43,14 +43,14 @@ final class SendCoordinator {
     }
 
     func start(input: String?, subaccount: Account?, assetId: String?) {
-        selectedDenomination = wallet.wm.prominentNetworkBackend.session.settings?.denomination ?? .Sats
+        selectedDenomination = wallet.wm.settings?.denomination ?? .Sats
         let model = SendAddressViewModel(mainWallet: mainWallet, wallet: wallet, text: input, subaccount: subaccount, assetId: assetId, delegate: self)
         let vc = sendAddressViewController(model: model)
         nav.pushViewController(vc, animated: true)
     }
 
     func startSwap(subaccount: Account?, assetId: String?) {
-        selectedDenomination = wallet.wm.prominentNetworkBackend.session.settings?.denomination ?? .Sats
+        selectedDenomination = wallet.wm.settings?.denomination ?? .Sats
         let model = SendSwapViewModel(wm: wallet.wm, subaccount: subaccount, assetId: assetId, delegate: self)
         let vc = sendSwapViewController(model: model)
         nav.pushViewController(vc, animated: true)

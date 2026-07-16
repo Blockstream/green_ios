@@ -40,17 +40,18 @@ public class WalletManager {
     public var prominentNetwork: GdkNetwork {
         prominentNetworkId.gdkNetwork
     }
-    public var prominentNetworkBackend: GdkNetworkBackend {
-        try! gdkNetworkBackend(prominentNetworkId)
+    public var prominentNetworkBackend: GdkNetworkBackend? {
+        try? gdkNetworkBackend(prominentNetworkId)
     }
-    public var prominentSession: SessionManager {
-        try! gdkNetworkBackend(prominentNetworkId).session
+    public var prominentSession: SessionManager? {
+        try? gdkNetworkBackend(prominentNetworkId).session
     }
 
     public var mainnet: Bool { prominentNetwork.mainnet}
     public var testnet: Bool { !prominentNetwork.mainnet}
-    public var connected: Bool { prominentNetworkBackend.isConnected }
-    public var logged: Bool { prominentNetworkBackend.isLoggedIn }
+    public var connected: Bool { prominentNetworkBackend?.isConnected ?? false }
+    public var logged: Bool { prominentNetworkBackend?.isLoggedIn ?? false }
+    public var settings: Settings? { prominentNetworkBackend?.session.settings }
 
     // Cached list of subaccounts and balances
     public var allAccounts: [Account] {
@@ -285,8 +286,10 @@ public class WalletManager {
             }
         }
         // align settings across network backends
-        guard let settings = try await backend.session.loadSettings() else { return }
-        for b in loggedInGdkNetworkBackends where b.key != backend.networkId && settings != b.value.session.settings {
+        guard let settings = try await backend?.session.loadSettings() else {
+            return
+        }
+        for b in loggedInGdkNetworkBackends where b.key != backend?.networkId && settings != b.value.session.settings {
             _ = try? await b.value.session
                 .changeSettings(settings: settings)
             _ = try? await b.value.session.loadSettings()

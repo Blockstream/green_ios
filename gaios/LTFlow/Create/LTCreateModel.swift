@@ -14,7 +14,7 @@ struct LTCreateViewModel {
     }
 
     func enableLightning() async throws {
-        guard let credentials = try await wallet.wm.prominentSession.getCredentials(password: "") else {
+        guard let credentials = try await wallet.wm.prominentSession?.getCredentials(password: "") else {
             throw GaError.GenericError("Invalid credentials")
         }
         guard let xpubHashId = mainWallet.xpubHashId else {

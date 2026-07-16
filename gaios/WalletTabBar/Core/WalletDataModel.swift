@@ -165,7 +165,7 @@ actor WalletDataModel {
     }
 
     var defaultCurrency: String? {
-        if let settings = wm.prominentSession.settings {
+        if let settings = wm.prominentSession?.settings {
             return settings.pricing["currency"]
         }
         return nil
@@ -312,7 +312,7 @@ actor WalletDataModel {
             }
         }
         // Load missing princing
-        if Balance.fromSatoshi(Int64(0), assetId: wm.prominentSession.gdkNetwork.getFeeAsset() ?? "btc")?.toFiat().0 == "n/a" {
+        if Balance.fromSatoshi(Int64(0), assetId: wm.prominentSession?.gdkNetwork.getFeeAsset() ?? "btc")?.toFiat().0 == "n/a" {
             cards.append(AlertCardType.fiatMissing)
         }
         // Load system messages

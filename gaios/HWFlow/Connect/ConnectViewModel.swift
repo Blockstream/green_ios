@@ -204,6 +204,9 @@ class ConnectViewModel: NSObject {
             let wm = WalletManager(networkId: wallet.networkId)
             let session = wm.prominentSession
             let data = try AuthenticationTypeHandler.getPinData(method: method, for: wallet.keychain)
+            guard let session = wm.prominentSession else {
+                throw GaError.GenericError("Failed to get session")
+            }
             try await session.connect()
             let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
             return try await session.decryptWithPin(decrypt)

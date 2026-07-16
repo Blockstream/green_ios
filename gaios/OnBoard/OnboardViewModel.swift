@@ -57,7 +57,9 @@ class OnboardViewModel {
     }
 
     func addPinData(wm: WalletManager, wallet: Wallet, credentials: Credentials, pin: String) async throws -> Credentials {
-        let session = wm.prominentSession
+        guard let session = wm.prominentSession else {
+            throw GaError.GenericError("Failed to get session")
+        }
         try await session.connect()
         let encryptParams = EncryptWithPinParams(pin: pin, credentials: credentials)
         let encrypted = try await session.encryptWithPin(encryptParams)
@@ -150,7 +152,9 @@ class OnboardViewModel {
     }
 
     func setupPinWallet(credentials: Credentials, pin: String, wallet: Wallet, wm: WalletManager) async throws -> (Wallet, WalletManager) {
-        let session = wm.prominentSession
+        guard let session = wm.prominentSession else {
+            throw GaError.GenericError("Failed to get session")
+        }
         try await session.connect()
         try await wallet.addPin(session: session, pin: pin, credentials: credentials)
         var wallet = wallet

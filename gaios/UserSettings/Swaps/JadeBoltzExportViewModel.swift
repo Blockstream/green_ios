@@ -22,7 +22,9 @@ class JadeBoltzExportViewModel {
 
     func performRequest() async {
         do {
-            let session = wm.prominentSession
+            guard let session = wm.prominentSession else {
+                throw HWError.Abort("No session")
+            }
             let (privateKey, bcurParts) = try await request(session: session)
             self.privateKey = privateKey
             self.bcurParts = bcurParts
@@ -37,7 +39,7 @@ class JadeBoltzExportViewModel {
             onError?(HWError.Abort("Invalid private key"))
             return
         }
-            let lightningMnemonic = await wm.prominentSession.jadeBip8539Reply(
+            let lightningMnemonic = await wm.prominentSession?.jadeBip8539Reply(
                 privateKey: privateKey,
                 publicKey: publicKey.hexToData(),
                 encrypted: encrypted.hexToData())

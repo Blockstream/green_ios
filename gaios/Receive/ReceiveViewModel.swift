@@ -54,7 +54,7 @@ final class ReceiveViewModel: Sendable {
             subaccount: subaccount,
             type: type,
             anyOrAsset: anyOrAsset,
-            inputDenomination: walletDataModel.wm.prominentSession.settings?.denomination ?? .Sats
+            inputDenomination: walletDataModel.wm.prominentSession?.settings?.denomination ?? .Sats
         )
         self.onUpdate = onUpdate
     }
