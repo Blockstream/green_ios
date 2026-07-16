@@ -945,7 +945,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
            let wm = BleHwManager.shared.walletManager,
            BleHwManager.shared.isConnected(),
            BleHwManager.shared.isLogged() {
-            session = try await wm.gdkAccountBackend(subaccount).session
+            session = try wm.gdkAccountBackend(subaccount).session
         }
         return try await TransactionBuilder.sendGdkTransaction(
             tx: transaction,

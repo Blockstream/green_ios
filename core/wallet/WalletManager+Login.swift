@@ -127,7 +127,7 @@ extension WalletManager {
         if let boltzCredentials, let gdkResult = prominentResult {
             loginLwkBoltz(boltzCredentials: boltzCredentials, xpubHashId: gdkResult.xpubHashId)
         }
-        //try? await self.syncSettings(restore: fullRestore)
+        try? await self.syncSettings(restore: fullRestore)
         return prominentResult
     }
 }

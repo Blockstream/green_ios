@@ -164,21 +164,19 @@ final class SendAmountViewModel {
 
     private func submarineSwapLimits() async -> BoltzSwapInfoLimits? {
         if submarineSwapInfo == nil {
-            // TODO
-            //submarineSwapInfo = try? await wallet.wallet
-            //    .gdkNetworkBackend(.lwkMainnet)
-            //    .fetchSubmarineSwapsInfo()
+            submarineSwapInfo = try? await wallet.wallet
+                .awaitLwkSession()?
+                .fetchSubmarineSwapsInfo()
         }
         return submarineSwapInfo?.limits
     }
 
     private func submarineSwapQuote(receiveAmount: UInt64) async throws -> Quote? {
         if submarineQuoteBuilder == nil {
-            // TODO
-           // guard let boltzSession = await wallet.wallet.awaitLwkSession()?.boltzSession else {
-            //    return nil
-            //}
-            //submarineQuoteBuilder = QuoteBuilder(boltzSession: boltzSession)
+            guard let boltzSession = await wallet.wallet.awaitLwkSession()?.boltzSession else {
+                return nil
+            }
+            submarineQuoteBuilder = QuoteBuilder(boltzSession: boltzSession)
         }
         return try await submarineQuoteBuilder?.quote(
             amount: receiveAmount,

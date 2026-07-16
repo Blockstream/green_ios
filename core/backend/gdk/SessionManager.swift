@@ -54,7 +54,7 @@ public class SessionManager {
     }
 
     public func connect() async throws {
-        if connected {
+        guard !connected else {
             return
         }
         let settings = GdkSettings.read()
@@ -78,7 +78,7 @@ public class SessionManager {
     }
 
     public func connect(network: String) async throws {
-        if connected {
+        guard !connected else {
             return
         }
         logger.info("Connecting to session \(self.networkId.rawValue)")

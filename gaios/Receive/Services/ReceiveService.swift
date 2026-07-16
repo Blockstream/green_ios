@@ -1,8 +1,8 @@
 import Foundation
-@preconcurrency import core
+import core
 import LiquidWalletKit
 import greenaddress
-@preconcurrency import lightning
+import lightning
 
 actor ReceiveService {
     struct AddressRequest: Sendable {

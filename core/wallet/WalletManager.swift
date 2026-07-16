@@ -274,8 +274,9 @@ public class WalletManager {
     }
 
     func syncSettings(restore: Bool) async throws {
-        // Prefer Multisig for initial sync as those networks are synced across devices
+        // use prominent network backend by default
         var backend = prominentNetworkBackend
+        // on restore use multisig backend if available to import settings
         if restore {
             let networkBackend = loggedInGdkNetworkBackends
                 .filter { $0.key.multisig }.values.first
@@ -283,10 +284,11 @@ public class WalletManager {
                 backend = networkBackend
             }
         }
-        let settings = try await backend.session.loadSettings()
+        // align settings across network backends
+        guard let settings = try await backend.session.loadSettings() else { return }
         for b in loggedInGdkNetworkBackends where b.key != backend.networkId && settings != b.value.session.settings {
             _ = try? await b.value.session
-                .changeSettings(settings: settings!)
+                .changeSettings(settings: settings)
             _ = try? await b.value.session.loadSettings()
         }
     }

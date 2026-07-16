@@ -20,8 +20,8 @@ class SetPhoneViewController: KeyboardViewController {
     var sms = false
     var phoneCall = false
     var network = NetworkId.greenMainnet
-    var session: SessionManager {
-        (WalletManager.current?.gdkNetworkBackendOrNil(network)?.session)!
+    var session: SessionManager? {
+        WalletManager.current?.gdkNetworkBackendOrNil(network)?.session
     }
     var isSmsBackup = false
 
@@ -220,6 +220,7 @@ class SetPhoneViewController: KeyboardViewController {
         self.startAnimating()
         Task {
             do {
+                guard let session else { return }
                 let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: countryCode + phone, isSmsBackup: isSmsBackup)
                 let params = ChangeSettingsTwoFactorParams(method: method, config: config)
                 try await session.changeSettingsTwoFactor(params)

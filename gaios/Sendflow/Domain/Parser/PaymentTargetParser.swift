@@ -1,6 +1,6 @@
 import LiquidWalletKit
 import Foundation
-@preconcurrency import core
+import core
 
 import greenaddress
 import GreenlightSDK
@@ -30,7 +30,9 @@ struct PaymentTargetParser: Sendable {
         guard let wm = WalletManager.current,
               let networkId = wm.activeBitcoinNetworkIds.first
         else { return false }
-        let backend = try! wm.gdkNetworkBackend(networkId)
+        guard let backend = try? wm.gdkNetworkBackend(networkId) else {
+            return false
+        }
         let params = PsbtGetDetailParams(psbt: text, utxos: [:])
         let tx = try? await backend.session.psbtGetDetails(params: params)
         return tx != nil

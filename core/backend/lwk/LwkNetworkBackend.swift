@@ -322,7 +322,11 @@ public final class LwkNetworkBackend: NetworkBackend {
         account.gdkName = name ?? account.gdkName
         account.hidden = hidden ?? account.hidden
         let storage = try storage()
-        try storage.write(try [account].encoded())
-        self.accounts = [account]
+        if let index = accounts.firstIndex(where: { $0.id == account.id }) {
+            accounts[index] = account
+        } else {
+            accounts.append(account)
+        }
+        try storage.write(try accounts.encoded())
     }
 }

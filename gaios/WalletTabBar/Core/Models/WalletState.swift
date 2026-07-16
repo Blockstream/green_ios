@@ -1,5 +1,5 @@
 import Foundation
-@preconcurrency import core
+import core
 import greenaddress
 
 struct WalletState: Sendable {

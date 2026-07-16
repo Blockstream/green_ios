@@ -688,7 +688,7 @@ public class WalletManager {
     public func getExpiredSubaccounts() async throws -> [Account] {
         var expiredSubaccounts = [Account]()
         for subaccount in accounts.filter({$0.type == .standard}) {
-            let networkBackend = try gdkNetworkBackend(subaccount.networkId)
+            let networkBackend = gdkNetworkBackend(subaccount.networkId)
             let accountBackend = gdkAccountBackend(subaccount)
             let res = try await accountBackend.getUnspentOutputs(
                 isBump: false,

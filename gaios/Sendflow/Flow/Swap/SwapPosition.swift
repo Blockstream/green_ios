@@ -2,7 +2,6 @@ import Foundation
 import UIKit
 import core
 import LiquidWalletKit
-@preconcurrency 
 
 enum SwapPositionEnum: Sendable {
     case from
