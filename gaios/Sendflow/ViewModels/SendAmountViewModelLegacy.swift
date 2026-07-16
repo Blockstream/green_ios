@@ -276,9 +276,9 @@ class SendAmountViewModelLegacy {
             subaccount: subaccount)
     }
 
-    @MainActor func sendSendTxConfirmViewModel() throws -> SendTxConfirmViewModel? {
+    @MainActor func sendSendTxConfirmViewModel() -> SendTxConfirmViewModel? {
         guard let transaction, let subaccount else {
-            throw GaError.GenericError("Invalid transaction")
+            return nil
         }
         return SendTxConfirmViewModel(
             transaction: transaction,
