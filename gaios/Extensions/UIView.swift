@@ -1,10 +1,6 @@
 import UIKit
 import core
 
-@IBDesignable
-class DesignableView: UIView {
-}
-
 enum PanelStyle {
     case alert
     case bottomsheet

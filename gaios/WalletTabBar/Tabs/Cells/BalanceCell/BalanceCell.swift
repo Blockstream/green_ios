@@ -1,6 +1,19 @@
 import UIKit
 import core
 
+enum BalanceDisplayMode {
+    case denom
+    case fiat
+
+    func next() -> BalanceDisplayMode {
+        switch self {
+        case .denom:
+            return .fiat
+        case .fiat:
+            return .denom
+        }
+    }
+}
 
 struct BalanceItem: Hashable {
     let satoshi: Int64?

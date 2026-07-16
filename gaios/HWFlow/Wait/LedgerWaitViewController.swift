@@ -86,7 +86,6 @@ class LedgerWaitViewController: HWFlowBaseViewController {
         let storyboard = UIStoryboard(name: "BleUnavailable", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "BleUnavailableViewController") as? BleUnavailableViewController {
             vc.state = state
-            vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -134,11 +133,5 @@ class LedgerWaitViewController: HWFlowBaseViewController {
             vc.scanViewModel = scanViewModel
             self.navigationController?.pushViewController(vc, animated: true)
         }
-    }
-}
-
-extension LedgerWaitViewController: BleUnavailableViewControllerDelegate {
-    func onAction(_ action: BleUnavailableAction) {
-        navigationController?.popViewController(animated: true)
     }
 }

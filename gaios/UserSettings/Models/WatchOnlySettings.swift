@@ -17,9 +17,3 @@ enum WOSection: String, Codable, CaseIterable {
         }
     }
 }
-
-struct WOSettingsItem {
-    var title: String
-    var subtitle: String
-    var network: GdkNetwork
-}

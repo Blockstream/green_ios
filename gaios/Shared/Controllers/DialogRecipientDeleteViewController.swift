@@ -6,11 +6,6 @@ protocol DialogRecipientDeleteViewControllerDelegate: AnyObject {
     func didCancel()
 }
 
-enum RecipientDeleteAction {
-    case delete
-    case cancel
-}
-
 class DialogRecipientDeleteViewController: KeyboardViewController {
 
     @IBOutlet weak var lblTitle: UILabel!

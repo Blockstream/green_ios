@@ -2,11 +2,6 @@ import Foundation
 
 import core
 
-struct BalanceRequest: Codable, Hashable {
-    let satoshi: Int64
-    let assetId: String?
-}
-
 extension Balance {
 
     static func isBtc(_ assetId: String?) -> Bool {

@@ -1,9 +1,6 @@
 import Foundation
 import UIKit
 
-protocol BleUnavailableViewControllerDelegate: AnyObject {
-    func onAction(_ action: BleUnavailableAction)
-}
 
 enum BleUnavailableAction {
     case settings
@@ -25,8 +22,6 @@ class BleUnavailableViewController: UIViewController {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnCancel: UIButton!
     @IBOutlet weak var btnSettings: UIButton!
-
-    weak var delegate: BleUnavailableViewControllerDelegate?
 
     var state: BleUnavailableState = .other
 
@@ -74,9 +69,7 @@ class BleUnavailableViewController: UIViewController {
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
         }, completion: { _ in
-            self.dismiss(animated: false, completion: {
-                self.delegate?.onAction(action)
-            })
+            self.dismiss(animated: false)
         })
     }
 

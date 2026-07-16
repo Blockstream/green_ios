@@ -129,7 +129,6 @@ class JadeWaitViewController: HWFlowBaseViewController {
         let storyboard = UIStoryboard(name: "BleUnavailable", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "BleUnavailableViewController") as? BleUnavailableViewController {
             vc.state = state
-            vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -246,11 +245,6 @@ class JadeWaitViewController: HWFlowBaseViewController {
     }
 }
 
-extension JadeWaitViewController: BleUnavailableViewControllerDelegate {
-    func onAction(_ action: BleUnavailableAction) {
-        // navigationController?.popViewController(animated: true)
-    }
-}
 
 extension JadeWaitViewController: QRUnlockInfoAlertViewControllerDelegate {
     func onTap(_ action: QRUnlockInfoAlertAction) {

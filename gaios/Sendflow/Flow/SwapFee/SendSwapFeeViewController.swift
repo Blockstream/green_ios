@@ -2,10 +2,6 @@ import Foundation
 import UIKit
 import core
 
-protocol SendSwapFeeViewControllerDelegate: AnyObject {
-    func select(transactionPriority: TransactionPriority, feeRate: UInt64?)
-}
-
 class SendSwapFeeViewController: UIViewController {
 
     @IBOutlet weak var tappableBg: UIView!

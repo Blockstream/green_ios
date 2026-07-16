@@ -1,11 +1,6 @@
 import Foundation
 import UIKit
 
-protocol DialogAmpViewControllerDelegate: AnyObject {
-//    func didSelectInput(denomination: DenominationType)
-//    func didSelectFiat()
-}
-
 class DialogAmpViewController: UIViewController {
 
     @IBOutlet weak var tappableBg: UIView!
@@ -24,7 +19,6 @@ class DialogAmpViewController: UIViewController {
     var vm: DialogAmpViewModel!
     let hHeader = 44.0
     var obs: NSKeyValueObservation?
-    weak var delegate: DialogAmpViewControllerDelegate?
 
     init?(coder: NSCoder, model: DialogAmpViewModel) {
         self.vm = model

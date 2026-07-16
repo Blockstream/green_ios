@@ -3,24 +3,6 @@ import UIKit
 import core
 import hw
 
-public class CodeAlertController: UIAlertController {
-
-    var willDisappearBlock: ((UIAlertController) -> Void)?
-    var didDisappearBlock: ((UIAlertController) -> Void)?
-
-    public override func viewWillDisappear(_ animated: Bool) {
-        willDisappearBlock?(self)
-        super.viewWillDisappear(animated)
-    }
-
-    public override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        if self.textFields?.first?.text?.count == 6 {
-            didDisappearBlock?(self)
-        }
-    }
-}
-
 class HwPopupResolver: HwInterfaceResolver {
 
     func showMasterBlindingKeyRequest() async {

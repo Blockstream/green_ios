@@ -158,13 +158,6 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
             }
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
-//            if !viewModel.hasSubaccountAmp() {
-//                presentDialogCreateAmp()
-//            } else if viewModel.getSubaccountsAmp().count == 1, let subaccount = viewModel.getSubaccountsAmp().first {
-//                presentDialogAmpId(subaccount)
-//            } else {
-//                accountsScreen()
-//            }
         case .autoLogout:
             showAutoLogout()
         case .twoFactorAuthication:
@@ -213,24 +206,6 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
         }
     }
 
-    func createSubaccountAmp() async {
-        startLoader(message: String(format: "id_creating_your_s_account".localized, "AMP"))
-        let task = Task { [weak self] in
-            try await self?.viewModel.createSubaccountAmp()
-        }
-        switch await task.result {
-        case .success:
-            stopLoader()
-            if let subaccount = viewModel.getSubaccountsAmp().first {
-                presentDialogAmpId(subaccount)
-                viewModel.refresh(features: [.subaccounts])
-            }
-        case .failure(let err):
-            stopLoader()
-            showError(err.description().localized)
-        }
-    }
-
     @MainActor
     func pushJadeBoltzSwapViewController() {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
@@ -239,79 +214,6 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
             JadeBoltzSwapViewController(coder: coder, viewModel: viewModel)
         }
         navigationController?.pushViewController(vc, animated: true)
-    }
-    @MainActor
-    func accountsScreen() {
-        let model = viewModel.dialogAccountsModel()
-        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        let vc = storyboard.instantiateViewController(identifier: "DialogAccountsViewController") { coder in
-            DialogAccountsViewController(coder: coder, viewModel: model)
-        }
-        vc.delegate = self
-        vc.modalPresentationStyle = .overFullScreen
-        present(vc, animated: true)
-    }
-
-    @MainActor
-    func presentDialogCreateAmp() {
-        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogActionsViewController") as? DialogActionsViewController {
-            vc.viewModel = DialogActionsViewModel(
-                title: "id_create_an_amp_account".localized,
-                description: "id_amp_accounts_allow_you_to_send".localized,
-                confirm: "id_create_an_amp_account".localized,
-                link: "id_learn_more".localized)
-            vc.delegate = { action in
-                switch action {
-                case .confirm:
-                    Task { [weak self] in
-                        await self?.createSubaccountAmp()
-                    }
-                case .link:
-                    let url = "https://help.blockstream.com/hc/en-us/articles/900003418286"
-                    if let url = URL(string: url) {
-                        if UIApplication.shared.canOpenURL(url) {
-                            SafeNavigationManager.shared.navigate(url)
-                        }
-                    }
-                }
-            }
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-        }
-    }
-    @MainActor
-    func presentDialogAmpId(_ subaccount: Account) {
-        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogActionsViewController") as? DialogActionsViewController {
-            vc.viewModel = DialogActionsViewModel(
-                title: subaccount.name,
-                description: "id_your_amp_account_is_set_up_and".localized,
-                confirm: "id_copy_amp_id".localized,
-                link: "id_learn_more".localized,
-                isCopyIconShown: true)
-            vc.delegate = { action in
-                switch action {
-                case .confirm:
-                    self.copyAmpId(subaccount)
-                case .link:
-                    let url = "https://help.blockstream.com/hc/en-us/articles/900003418286"
-                    if let url = URL(string: url) {
-                        if UIApplication.shared.canOpenURL(url) {
-                            SafeNavigationManager.shared.navigate(url)
-                        }
-                    }
-                }
-            }
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-        }
-    }
-
-    @MainActor
-    func copyAmpId(_ subaccount: Account) {
-        UIPasteboard.general.string = subaccount.receivingId
-        DropAlert().info(message: "id_copied_to_clipboard".localized)
     }
 }
 extension TabSettingsVC {
@@ -488,13 +390,6 @@ extension TabSettingsVC: AccountArchiveViewControllerDelegate {
     }
 }
 
-extension TabSettingsVC: DialogAccountsViewControllerDelegate {
-    func didSelectAccount(_ walletItem: Account?) {
-        if let walletItem = walletItem {
-            presentDialogAmpId(walletItem)
-        }
-    }
-}
 extension TabSettingsVC: TFAViewControllerDelegate {
     func sendLogout() {
         walletTab.userLogout()

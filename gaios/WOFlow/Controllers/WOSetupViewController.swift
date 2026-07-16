@@ -2,12 +2,6 @@ import Foundation
 import UIKit
 import core
 
-
-enum SecurityOption: String {
-    case single = "SingleSig"
-    case multi = "MultiSig"
-}
-
 class WOSetupViewController: KeyboardViewController {
 
     @IBOutlet weak var lblTitle: UILabel!

@@ -441,7 +441,6 @@ class ConnectViewController: HWFlowBaseViewController {
         let storyboard = UIStoryboard(name: "BleUnavailable", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "BleUnavailableViewController") as? BleUnavailableViewController {
             vc.state = state
-            vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -478,11 +477,6 @@ extension ConnectViewController: EnableBiometricsDialogViewControllerDelegate {
     }
 }
 
-
-extension ConnectViewController: BleUnavailableViewControllerDelegate {
-    func onAction(_ action: BleUnavailableAction) {
-    }
-}
 extension ConnectViewController: ConnectViewModelDelegate {
     func onScan(peripherals: [ScanListItem]) {
         if self.selectedItem != nil { return }
