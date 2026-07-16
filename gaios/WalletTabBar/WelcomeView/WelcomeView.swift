@@ -52,10 +52,6 @@ class WelcomeView: UIView {
         lblWelcomeHint.text = viewModel.hint
         btnNext.setTitle(viewModel.nextButtonTitle, for: .normal)
         self.onTap = onTap
-
-//        let riveView = RiveModel.animationWallet.createRiveView()
-//        animateView.addSubview(riveView)
-//        riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
         addSubview(blurredView)
         sendSubviewToBack(blurredView)
     }

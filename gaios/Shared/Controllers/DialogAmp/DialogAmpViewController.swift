@@ -194,10 +194,6 @@ extension DialogAmpViewController: UITableViewDelegate, UITableViewDataSource {
         }
         return UITableViewCell()
     }
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        delegate?.didSelectInput(denomination: viewModel.denominations[indexPath.row])
-//        dismiss()
-    }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return hHeader
     }

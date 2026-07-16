@@ -35,11 +35,6 @@ class WOLoginViewController: KeyboardViewController {
 
         setContent()
         setStyle()
-
-//        menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
-//        menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
-
         loginMSButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         loginSSButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         usernameTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))

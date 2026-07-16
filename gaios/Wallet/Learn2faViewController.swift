@@ -68,7 +68,6 @@ class Learn2faViewController: UIViewController {
     }
 
     func canceltwoFactorReset() {
-        // AnalyticsManager.shared.recordView(.walletSettings2FACancelDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(WalletsStorage.shared.current, walletType: wallet?.type, twoFactorType: nil))
         Task {
             do {
                 self.startAnimating()
@@ -90,7 +89,6 @@ class Learn2faViewController: UIViewController {
     }
 
     func disputeReset(email: String) {
-        // AnalyticsManager.shared.recordView(.walletSettings2FADispute, sgmt: AnalyticsManager.shared.twoFacSgmt(WalletsStorage.shared.current, walletType: wallet?.type, twoFactorType: nil))
         Task {
             do {
                 self.startAnimating()
@@ -110,7 +108,6 @@ class Learn2faViewController: UIViewController {
     }
 
     func undoReset(email: String) {
-        // AnalyticsManager.shared.recordView(.walletSettings2FAUndoDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(WalletsStorage.shared.current, walletType: wallet?.type, twoFactorType: nil))
         Task {
             do {
                 self.startAnimating()

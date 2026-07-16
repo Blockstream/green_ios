@@ -119,7 +119,6 @@ class BleJadeManager: JadeManager {
     func fetchFirmware(firmware: Firmware) async throws -> Data {
         let version = try await version()
         let binary = try await jade.getBinary(version, firmware)
-        // hash = jade.sha256(binary).hex
         return binary
     }
 

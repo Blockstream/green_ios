@@ -73,15 +73,6 @@ class PromoLayout2Cell: UITableViewCell {
 
     override func draw(_ rect: CGRect) {
         super.draw(rect)
-
-//        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
-//            let gLayer = self.makeGradient(colours: [.clear, .black.withAlphaComponent(0.5)], locations: [0.5, 1.0])
-//            gLayer.startPoint = CGPoint(x: 0.0, y: 0.0)
-//            gLayer.endPoint = CGPoint(x: 0.0, y: 1.0)
-//            gLayer.frame = self.gradient.bounds
-//            gLayer.masksToBounds = true
-//            self.gradient.layer.addSublayer(gLayer)
-//        }
     }
 
     @IBAction func btnAction(_ sender: Any) {

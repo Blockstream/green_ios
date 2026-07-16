@@ -106,9 +106,6 @@ class AppSettingsViewController: KeyboardViewController {
         }
         let session = WalletManager.current?.prominentSession?.session
         AnalyticsManager.shared.setupSession(session: session)
-//        delegate?.didSet(tor: viewModel.isTorOn)
-//        delegate?.didSet(testnet: viewModel.isTestnetOn)
-//        navigationController?.popViewController(animated: true)
     }
     func onLanguage() {
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)

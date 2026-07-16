@@ -453,14 +453,14 @@ extension WalletDataModel: NewNotificationDelegate {
             // Update content if exist an unconfirmed tx
             let btcBlockHeight = wm.bitcoinBlockHeight()
             let liquidBlockHeight = wm.liquidBlockHeight()
-            //let pendings = state.txs?.filter {
-            //    $0.confirmations(block: ($0.isLiquid ? liquidBlockHeight ?? 0: btcBlockHeight ?? 0)) <= (
-            //            $0.isLiquid ? 2 : 6
-            //        )
-            //}
-            //if pendings?.count ?? 0 > 0 {
+            let pendings = state.txs?.filter {
+                $0.confirmations(block: ($0.isLiquid ? liquidBlockHeight ?? 0: btcBlockHeight ?? 0)) <= (
+                        $0.isLiquid ? 2 : 6
+                    )
+            }
+            if pendings?.count ?? 0 > 0 {
                 await triggerRefresh(features: [.balance, .txs(reset: true)])
-            //}
+            }
         case .newSubaccount:
             logger.info("WalletDataModel newSubaccount")
         case .newTransaction:

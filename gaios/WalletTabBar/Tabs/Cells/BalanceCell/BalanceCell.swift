@@ -89,13 +89,9 @@ class BalanceCell: UITableViewCell {
         lblBalanceValue.text = ""
         lblBalanceFiat.text = ""
         btnExchange.isHidden = hideBtnExchange
-        // let assetsCount = model?.cachedBalance.nonZeroAmounts().count ?? 0
         assetsBox.isHidden = true // assetsCount < 2
         btnAssets.isHidden = true
         iconsView.isHidden = false
-        // let uLineAttr = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
-        // let str = NSAttributedString(string: String(format: "id_d_assets_in_total".localized, assetsCount), attributes: uLineAttr)
-        // btnAssets.setAttributedTitle(str, for: .normal)
         self.onAssets = onAssets
         self.onHide = onHide
         self.onConvert = onConvert

@@ -69,9 +69,7 @@ class DialogPassphraseViewController: KeyboardViewController {
             self.view.addGestureRecognizer(swipeDown)
         let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTap))
             tappableBg.addGestureRecognizer(tapToClose)
-
-//        AnalyticsManager.shared.recordView(.requestAmount, sgmt: AnalyticsManager.shared.subAccSeg(WalletsStorage.shared.current, walletItem: wallet?.type))
-    }
+   }
 
     deinit {
         print("deinit")

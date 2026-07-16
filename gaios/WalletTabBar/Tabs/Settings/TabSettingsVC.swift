@@ -398,10 +398,6 @@ extension TabSettingsVC {
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
-//        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-//        if let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorAuthenticationViewController") as? TwoFactorAuthenticationViewController {
-//            navigationController?.pushViewController(vc, animated: true)
-//        }
     }
 
     func presentDenominationExchange() {

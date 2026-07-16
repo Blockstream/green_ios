@@ -281,6 +281,5 @@ extension HWDialogConnectViewController: ConnectViewModelDelegate {
 
 extension HWDialogConnectViewController: BleUnavailableViewControllerDelegate {
     func onAction(_ action: BleUnavailableAction) {
-        // navigationController?.popViewController(animated: true)
     }
 }

@@ -481,7 +481,6 @@ extension ConnectViewController: EnableBiometricsDialogViewControllerDelegate {
 
 extension ConnectViewController: BleUnavailableViewControllerDelegate {
     func onAction(_ action: BleUnavailableAction) {
-        // navigationController?.popViewController(animated: true)
     }
 }
 extension ConnectViewController: ConnectViewModelDelegate {

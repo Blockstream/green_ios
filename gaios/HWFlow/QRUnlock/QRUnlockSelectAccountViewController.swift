@@ -156,15 +156,6 @@ extension QRUnlockSelectAccountViewController: UITableViewDelegate, UITableViewD
         switch QRUnlockSelectAccountSection(rawValue: indexPath.section) {
         case .asset:
             break
-//            let storyboard = UIStoryboard(name: "Utility", bundle: nil)
-//            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-//                let assetIds = WalletManager.current?.registry.all.map { ($0.assetId, Int64(0)) }
-//                let dict = Dictionary(uniqueKeysWithValues: assetIds ?? [])
-//                let list = AssetAmountList(dict)
-//                vc.viewModel = AssetSelectViewModel(assets: list, enableAnyAsset: true)
-//                vc.delegate = self
-//                navigationController?.pushViewController(vc, animated: true)
-//            }
         case .policy:
             let storyboard = UIStoryboard(name: "QRUnlockFlow", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "QRUnlockJadeViewController") as? QRUnlockJadeViewController {

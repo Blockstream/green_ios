@@ -182,26 +182,3 @@ class PromoViewController: UIViewController {
         })
     }
 }
-
-//    func next() {
-//        for future usage
-//        if step > 2 {
-//            if let promo, let source {
-//                PromoManager.shared.promoAction(promo: promo, source: source)
-//            }
-//            if let url = URL(string: promo?.link ?? "") {
-//                SafeNavigationManager.shared.navigate(url)
-//            }
-//            return
-//        }
-//        let playerTimescale = self.player?.currentItem?.asset.duration.timescale ?? 1
-//        let start = offset[step]
-//        let stop = offset[step + 1]
-//        let time =  CMTime(seconds: start, preferredTimescale: playerTimescale)
-//        self.player?.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero) { (finished) in
-//            let cmTimeTo =  CMTime(seconds: stop, preferredTimescale: playerTimescale)
-//            self.player?.currentItem?.forwardPlaybackEndTime = cmTimeTo
-//            self.player?.play()
-//            self.step += 1
-//        }
-//    }

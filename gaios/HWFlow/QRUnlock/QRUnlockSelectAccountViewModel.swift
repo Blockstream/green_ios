@@ -42,11 +42,6 @@ class QRUnlockSelectAccountViewModel {
 
     func isAdvancedEnable() -> Bool {
         return true
-//        if asset?.amp ?? false {
-//            return false
-//        } else {
-//            return true
-//        }
     }
 
     /// cell models
@@ -56,9 +51,6 @@ class QRUnlockSelectAccountViewModel {
     }
 
     func policiesForAsset(for assetId: String, extended: Bool) -> [PolicyCellType] {
-//        if asset?.amp ?? false { // amp liquid asset
-//            return [.Amp]
-//        } else 
         if AssetInfo.btcId == assetId { // btc
             return listBitcoin(extended: extended)
         } else { // liquid
@@ -68,16 +60,17 @@ class QRUnlockSelectAccountViewModel {
 
     func device() -> HWDevice {
         return .defaultJade(fmwVersion: nil)
-        // wm.account.isJade ? .defaultJade(fmwVersion: nil) : .defaultLedger()
     }
 
     func uniqueName(_ type: AccountType, liquid: Bool) -> String {
-        return "TODO"
-//        let network = liquid ? " Liquid " : " "
-//        let counter = wm.subaccounts.filter { $0.type == type && $0.gdkNetwork.liquid == liquid }.count
-//        if counter > 0 {
-//            return "\(type.string)\(network)\(counter+1)"
-//        }
-//        return "\(type.string)\(network)"
+        let network = liquid ? " Liquid " : " "
+
+        let counter = WalletManager.current?.accounts.filter {
+            $0.type == type && $0.gdkNetwork.liquid == liquid
+        }.count ?? 0
+        if counter > 0 {
+            return "\(type.string)\(network)\(counter+1)"
+        }
+        return "\(type.string)\(network)"
     }
 }

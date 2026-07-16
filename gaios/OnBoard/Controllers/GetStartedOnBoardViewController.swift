@@ -197,22 +197,6 @@ extension GetStartedOnBoardViewController: DialogAboutViewControllerDelegate {
     }
 }
 
-//extension GetStartedOnBoardViewController: DialogListViewControllerDelegate {
-//    func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
-//
-//    func didSelectIndex(_ index: Int, with type: DialogType) {
-//        switch NetworkPrefs(rawValue: index) {
-//        case .mainnet:
-//            OnBoardManager.shared.chainType = .mainnet
-//            next()
-//        case .testnet:
-//            OnBoardManager.shared.chainType = .testnet
-//            next()
-//        case .none:
-//            break
-//        }
-//    }
-//}
 extension GetStartedOnBoardViewController: DialogListViewControllerDelegate {
     func didSwitchAtIndex(index: Int, isOn: Bool, type: DialogType) {}
 
