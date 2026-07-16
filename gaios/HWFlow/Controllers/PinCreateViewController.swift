@@ -17,7 +17,7 @@ class PinCreateViewController: HWFlowBaseViewController {
     var testnet = false
     var bleHwManager: BleHwManager?
     var scanViewModel: ScanViewModel?
-    var account: Wallet?
+    var wallet: Wallet?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,11 +90,11 @@ class PinCreateViewController: HWFlowBaseViewController {
 
     @MainActor
     func next() {
-        account?.hidden = !remember
-        if let account = account {
-            WalletsStorage.shared.current = account
-            AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .hardware)
-            AccountNavigator.navLogged(walletId: account.id)
+        wallet?.hidden = !remember
+        if let wallet {
+            WalletsStorage.shared.current = wallet
+            AnalyticsManager.shared.loginWalletEnd(wallet: wallet, loginType: .hardware)
+            WalletNavigator.navLogged(walletId: wallet.id)
         }
     }
 

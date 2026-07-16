@@ -43,15 +43,15 @@ final class SendCoordinator {
     }
 
     func start(input: String?, subaccount: Account?, assetId: String?) {
-        selectedDenomination = wallet.wallet.prominentNetworkBackend.session.settings?.denomination ?? .Sats
+        selectedDenomination = wallet.wm.prominentNetworkBackend.session.settings?.denomination ?? .Sats
         let model = SendAddressViewModel(mainWallet: mainWallet, wallet: wallet, text: input, subaccount: subaccount, assetId: assetId, delegate: self)
         let vc = sendAddressViewController(model: model)
         nav.pushViewController(vc, animated: true)
     }
 
     func startSwap(subaccount: Account?, assetId: String?) {
-        selectedDenomination = wallet.wallet.prominentNetworkBackend.session.settings?.denomination ?? .Sats
-        let model = SendSwapViewModel(wallet: wallet.wallet, subaccount: subaccount, assetId: assetId, delegate: self)
+        selectedDenomination = wallet.wm.prominentNetworkBackend.session.settings?.denomination ?? .Sats
+        let model = SendSwapViewModel(wm: wallet.wm, subaccount: subaccount, assetId: assetId, delegate: self)
         let vc = sendSwapViewController(model: model)
         nav.pushViewController(vc, animated: true)
     }
@@ -171,14 +171,14 @@ final class SendCoordinator {
     }
 }
 extension SendCoordinator {
-    private func subaccounts(for rail: PaymentRail, wallet: WalletManager, amount: UInt64?) -> [Account] {
+    private func subaccounts(for rail: PaymentRail, wm: WalletManager, amount: UInt64?) -> [Account] {
         switch rail {
         case .bitcoin:
-            return wallet.bitcoinSubaccountsWithFunds()
+            return wm.bitcoinSubaccountsWithFunds()
         case .liquid:
-            return wallet.liquidSubaccountsWithFunds()
+            return wm.liquidSubaccountsWithFunds()
         case .lightning:
-            if let subaccount = wallet.glNetworkBackendOrNil()?.account {
+            if let subaccount = wm.glNetworkBackendOrNil()?.account {
                 let maxPayable = subaccount.lightningSession?.nodeState()?.maxPayableMsat.satoshi ?? 0
                 if maxPayable > 0 {
                     if let amount = amount, maxPayable < amount {
@@ -205,7 +205,7 @@ extension SendCoordinator {
     }
 
     func resolveSubaccounts(paymentTarget: PaymentTarget) -> [Account] {
-        guard let wallet = WalletManager.current else { return [] }
+        guard let wm = WalletManager.current else { return [] }
         let amount: UInt64? = {
             if case .lightningInvoice(let invoice) = paymentTarget {
                 return invoice.amountMilliSatoshis()?.satoshi
@@ -214,7 +214,7 @@ extension SendCoordinator {
         }()
         return paymentTarget
             .eligibleRails()
-            .flatMap { subaccounts(for: $0, wallet: wallet, amount: amount) }
+            .flatMap { subaccounts(for: $0, wm: wm, amount: amount) }
     }
 
     func navigate(to route: SendRoute) async {
@@ -262,7 +262,7 @@ extension SendCoordinator {
         return SendAccountAssetViewModel(
             subaccounts: accounts,
             draft: draft,
-            wallet: wallet.wallet,
+            wm: wallet.wm,
             delegate: self
         )
     }
@@ -366,7 +366,7 @@ extension SendCoordinator {
         subaccount: Account
     ) async throws -> SendRoute {
         let xpub = WalletsStorage.shared.current?.xpubHashId
-        let lwk = await wallet.wallet.awaitLwkSession()
+        let lwk = await wallet.wm.awaitLwkSession()
         guard let xpub, let lwk else {
             throw SendFlowError.invalidSession
         }
@@ -459,7 +459,7 @@ extension SendCoordinator {
             }
             try lightningPayment.setBolt12InvoiceAmount(amountSats: satoshi)
         }
-        let lwk = await wallet.wallet.awaitLwkSession()
+        let lwk = await wallet.wm.awaitLwkSession()
         guard let lwk, let xpub = WalletsStorage.shared.current?.xpubHashId else {
             throw SendFlowError.invalidSession
         }
@@ -515,7 +515,7 @@ extension SendCoordinator {
         subaccount: Account,
         satoshi: UInt64
     ) async throws -> SendRoute {
-        let lwk = await wallet.wallet.awaitLwkSession()
+        let lwk = await wallet.wm.awaitLwkSession()
         guard let lwk, let xpub = WalletsStorage.shared.current?.xpubHashId else {
             throw SendFlowError.invalidSession
         }
@@ -701,7 +701,7 @@ extension SendCoordinator: SendAddressViewModelDelegate {
         }
         if let paymentAssetId = paymentTarget.assetId() {
             if assetId != nil && assetId != paymentAssetId && paymentTarget.chain() != .lightning {
-                let asset = wallet.wallet.info(for: paymentAssetId).ticker ?? paymentAssetId
+                let asset = wallet.wm.info(for: paymentAssetId).ticker ?? paymentAssetId
                 vm.delegate?.sendAddressViewModel(vm, didFailWith: SendFlowError.wrongAssetId(asset))
                 return
             }
@@ -751,8 +751,8 @@ extension SendCoordinator: SendSuccessViewModelDelegate {
             .shared
             .request(
                 isSendAll: draft?.sendAll ?? false,
-                account: WalletsStorage.shared.current,
-                walletItem: draft?.subaccount)
+                wallet: WalletsStorage.shared.current,
+                account: draft?.subaccount)
         Task {
             await nav.dismissAsync(animated: true)
             onFinish?()
@@ -830,8 +830,8 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             switch route {
             case .success(let model):
                 AnalyticsManager.shared.endSendTransaction(
-                    account: WalletsStorage.shared.current,
-                    walletItem: vm.subaccount,
+                    wallet: WalletsStorage.shared.current,
+                    account: vm.subaccount,
                     transactionSgmt: segment,
                     withMemo: false)
                 // Swap analytics must never be emitted for pure lightning payments.
@@ -840,12 +840,12 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
                         let from = try vm.draft.lockupResponse?.chainFrom() ?? ""
                         let to = try vm.draft.lockupResponse?.chainTo() ?? ""
                         AnalyticsManager.shared.swapInternal(
-                            account: WalletsStorage.shared.current,
+                            wallet: WalletsStorage.shared.current,
                             from: from,
                             to: to)
                     } else if vm.isSubmarineSwap {
                         AnalyticsManager.shared.swapSend(
-                            account: WalletsStorage.shared.current,
+                            wallet: WalletsStorage.shared.current,
                             from: SwapChainName.liquid.rawValue,
                             to: SwapChainName.lightning.rawValue)
                     }
@@ -853,8 +853,8 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
                 await navigate(to: route)
             case .failure(let model):
                 AnalyticsManager.shared.failedTransaction(
-                    account: WalletsStorage.shared.current,
-                    walletItem: vm.subaccount,
+                    wallet: WalletsStorage.shared.current,
+                    account: vm.subaccount,
                     transactionSgmt: segment,
                     withMemo: false,
                     prettyError: model.error.description().localized,
@@ -909,7 +909,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             if vm.isSwapTransaction, let swapId = vm.swapId {
                 Task { [weak wallet] in
                     if let persistentId = try? await BoltzController.shared.fetchID(byId: swapId) {
-                        await wallet?.wallet.swapMonitor?.monitorSwap(id: persistentId)
+                        await wallet?.wm.swapMonitor?.monitorSwap(id: persistentId)
                     }
                 }
             }

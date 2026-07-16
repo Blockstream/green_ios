@@ -14,13 +14,13 @@ struct LTCreateViewModel {
     }
 
     func enableLightning() async throws {
-        guard let credentials = try await wallet.wallet.prominentSession.getCredentials(password: "") else {
+        guard let credentials = try await wallet.wm.prominentSession.getCredentials(password: "") else {
             throw GaError.GenericError("Invalid credentials")
         }
         guard let xpubHashId = mainWallet.xpubHashId else {
             throw GaError.GenericError("Invalid xpub")
         }
-        let walletManager = await wallet.wallet
+        let walletManager = await wallet.wm
         let lightningCredentials = try walletManager.deriveLightningCredentials(from: credentials)
         // remove previous lightning data
             if let workingDir = try? LightningSessionManager.workingDir(xpub: xpubHashId) {
@@ -34,7 +34,7 @@ struct LTCreateViewModel {
                 parentXpub: xpubHashId
             )
         // Get lightning session
-        guard let session = await wallet.wallet.lightningSession else {
+        guard let session = await wallet.wm.lightningSession else {
             throw GaError.GenericError("Invalid lightning session")
         }
         // Add auth into keychain

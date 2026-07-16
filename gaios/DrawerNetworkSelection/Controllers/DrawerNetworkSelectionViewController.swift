@@ -3,7 +3,7 @@ import UIKit
 import core
 
 protocol DrawerNetworkSelectionDelegate: AnyObject {
-    func didSelectAccount(account: Wallet)
+    func didSelectWallet(wallet: Wallet)
     func didSelectAddWallet()
     func didSelectSettings()
     func didSelectAbout()
@@ -58,7 +58,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
         lblWallets.textColor = UIColor.gGrayTxt()
     }
 
-    func getAccountFromTableView(_ indexPath: IndexPath) -> Wallet? {
+    func getWalletFromTableView(_ indexPath: IndexPath) -> Wallet? {
         switch HomeSection(rawValue: indexPath.section) {
         case .swWallet:
             return WalletsStorage.shared.sws[indexPath.row]
@@ -76,8 +76,8 @@ class DrawerNetworkSelectionViewController: UIViewController {
     }
 
     func onTapOverview(_ indexPath: IndexPath) {
-        if let account = getAccountFromTableView(indexPath) {
-            self.delegate?.didSelectAccount(account: account)
+        if let wallet = getWalletFromTableView(indexPath) {
+            self.delegate?.didSelectWallet(wallet: wallet)
         }
     }
 
@@ -124,9 +124,9 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch HomeSection(rawValue: indexPath.section) {
         case .swWallet:
-            let account = WalletsStorage.shared.sws[indexPath.row]
+            let wallet = WalletsStorage.shared.sws[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
-                cell.configure(item: account,
+                cell.configure(item: wallet,
                                indexPath: indexPath,
                                onTap: { [weak self] indexPath in self?.onTap(indexPath) }
                 )
@@ -135,9 +135,9 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                 return cell
             }
         case .ephWallet:
-            let account = WalletsStorage.shared.ephs[indexPath.row]
+            let wallet = WalletsStorage.shared.ephs[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
-                cell.configure(item: account,
+                cell.configure(item: wallet,
                                indexPath: indexPath,
                                onTap: { [weak self] indexPath in self?.onTap(indexPath) }
                 )
@@ -146,9 +146,9 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                 return cell
             }
         case .hwWallet:
-            let account = WalletsStorage.shared.hwsVisible[indexPath.row]
+            let wallet = WalletsStorage.shared.hwsVisible[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
-                cell.configure(item: account,
+                cell.configure(item: wallet,
                                indexPath: indexPath,
                                onTap: { [weak self] indexPath in self?.onTap(indexPath) }
                 )
@@ -163,9 +163,9 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         return UITableViewCell()
     }
 
-    func isOverviewSelected(_ account: Wallet) -> Bool {
+    func isOverviewSelected(_ wallet: Wallet) -> Bool {
         WalletsRepository.shared
-            .get(for: account.id)?.activeNetworkIds.count ?? 0 > 0
+            .get(for: wallet.id)?.activeNetworkIds.count ?? 0 > 0
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -221,8 +221,8 @@ extension DrawerNetworkSelectionViewController: UIScrollViewDelegate {
 
         for cell in tableView.visibleCells {
             if let c = cell as? WalletListCell,
-               c.account?.id == DrawerAnimationManager.shared.accountId {
-                DrawerAnimationManager.shared.accountId = nil
+               c.wallet?.id == DrawerAnimationManager.shared.walletId {
+                DrawerAnimationManager.shared.walletId = nil
             }
         }
     }

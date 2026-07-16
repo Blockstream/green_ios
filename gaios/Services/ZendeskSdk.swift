@@ -24,11 +24,11 @@ struct ZendeskErrorRequest {
     var type: ZendeskErrorRequestType = .incident
 
     var hw: String? {
-        let account = WalletsStorage.shared.current
-        if account?.isLedger ?? false {
+        let wallet = WalletsStorage.shared.current
+        if wallet?.isLedger ?? false {
             return "ledger_nano_x"
-        } else if account?.isJade ?? false {
-            switch account?.boardType {
+        } else if wallet?.isJade ?? false {
+            switch wallet?.boardType {
             case .v1, .v1_1:
                 return "jade_classic"
             case .v2:

@@ -256,16 +256,16 @@ class SendTxConfirmViewModel {
                 sendTransaction = try await sendTx()
             }
             AnalyticsManager.shared.endSendTransaction(
-                account: WalletsStorage.shared.current,
-                walletItem: subaccount,
+                wallet: WalletsStorage.shared.current,
+                account: subaccount,
                 transactionSgmt: transSgmt,
                 withMemo: withMemo)
             if sendAll { AnalyticsManager.shared.emptiedAccount = subaccount }
             return sendTransaction!
         } catch {
             AnalyticsManager.shared.failedTransaction(
-                account: WalletsStorage.shared.current,
-                walletItem: subaccount,
+                wallet: WalletsStorage.shared.current,
+                account: subaccount,
                 transactionSgmt: transSgmt,
                 withMemo: withMemo,
                 prettyError: error.description(),
@@ -310,11 +310,12 @@ class SendTxConfirmViewModel {
 
     func sendVerifyOnDeviceViewModel(_ address: core.Address) -> HWDialogVerifyOnDeviceViewModel? {
         guard let address = address.address else { return nil }
-        let account = WalletsStorage.shared.current
-        return HWDialogVerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false,
-                                       address: address,
-                                       isRedeposit: true,
-                                       isDismissible: false)
+        let wallet = WalletsStorage.shared.current
+        return HWDialogVerifyOnDeviceViewModel(
+            isLedger: wallet?.isLedger ?? false,
+            address: address,
+            isRedeposit: true,
+            isDismissible: false)
     }
 
     func showSignTransactionViaQR() -> Bool {

@@ -201,7 +201,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                 case .backup:
                     cell.configure(alertCard,
                                    onLeft: {[weak self] in
-                        if let vc = AccountNavigator.backupIntro(.quiz) {
+                        if let vc = WalletNavigator.backupIntro(.quiz) {
                             self?.navigationController?.pushViewController(vc, animated: true)
                         }
                     },
@@ -441,7 +441,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
     func didSelectAssetRowAt(indexPath: IndexPath) {
         let assetAmount = viewModel.assetAmountList?.amounts[indexPath.row]
         let assetId = assetAmount?.0 ?? AssetInfo.btcId
-        let subaccounts = viewModel.wallet.subaccountsFor(assetId: assetId)
+        let subaccounts = viewModel.wm.subaccountsFor(assetId: assetId)
         let vc = manageAssetViewController(assetId: assetId, subaccounts: subaccounts)
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -450,7 +450,7 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
         let storyboard = UIStoryboard(name: "ManageAsset", bundle: nil)
         let viewModel = ManageAssetViewModel(
             walletDataModel: viewModel.walletDataModel,
-            wallet: viewModel.wallet,
+            wm: viewModel.wm,
             mainWallet: viewModel.mainWallet,
             assetId: assetId,
             selectedSubaccount: subaccounts.count == 1 ? subaccounts.first : nil)

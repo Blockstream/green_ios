@@ -13,7 +13,7 @@ class WalletTabBarViewController: UITabBarController {
     private let wView = WelcomeView()
 
     var walletDataModel: WalletDataModel { walletTabBarModel.walletDataModel }
-    var wallet: WalletManager { walletTabBarModel.wallet }
+    var wm: WalletManager { walletTabBarModel.wm }
     var mainWallet: Wallet { walletTabBarModel.mainWallet }
 
     init?(coder: NSCoder, walletTabBarModel: WalletTabBarModel) {
@@ -57,7 +57,7 @@ class WalletTabBarViewController: UITabBarController {
         wView.frame = windowView.bounds
         windowView.addSubview(wView)
         wView.configure(with: WelcomeViewModel(), onTap: {[weak self] in
-            AnalyticsManager.shared.swwCreated(account: self?.mainWallet)
+            AnalyticsManager.shared.swwCreated(wallet: self?.mainWallet)
             self?.wView.removeFromSuperview()
         })
     }
@@ -120,12 +120,12 @@ class WalletTabBarViewController: UITabBarController {
             if mainWallet.isHW {
                 try? await BleHwManager.shared.disconnect()
             }
-            await wallet.disconnect()
-            if wallet.isEphemeral {
+            await wm.disconnect()
+            if wm.isEphemeral {
                 await WalletsStorage.shared.remove(mainWallet)
             }
             WalletsRepository.shared.delete(for: mainWallet.id)
-            AccountNavigator.navLogout(walletId: wallet.isEphemeral ? nil : mainWallet.id)
+            WalletNavigator.navLogout(walletId: wm.isEphemeral ? nil : mainWallet.id)
             self.stopLoader()
         }
     }
@@ -176,7 +176,7 @@ extension WalletTabBarViewController: DrawerNetworkSelectionDelegate {
 
     // accounts drawer: add new waller
     func didSelectAddWallet() {
-        if let vc = AccountNavigator.started() {
+        if let vc = WalletNavigator.started() {
             self.navigationController?.pushViewController(viewController: vc, animated: true) {
                 self.presentedViewController?.dismiss(animated: true)
             }
@@ -184,16 +184,16 @@ extension WalletTabBarViewController: DrawerNetworkSelectionDelegate {
     }
 
     // accounts drawer: select another account
-    func didSelectAccount(account: Wallet) {
+    func didSelectWallet(wallet: Wallet) {
         // don't switch if same account selected
-        if account.id == WalletsStorage.shared.current?.id ?? "" {
+        if wallet.id == WalletsStorage.shared.current?.id ?? "" {
             presentedViewController?.dismiss(animated: true)
-        } else if let wm = WalletsRepository.shared.get(for: account.id), wm.logged {
-            WalletsStorage.shared.current = account
-            AccountNavigator.navLogged(walletId: account.id)
+        } else if let wm = WalletsRepository.shared.get(for: wallet.id), wm.logged {
+            WalletsStorage.shared.current = wallet
+            WalletNavigator.navLogged(walletId: wallet.id)
         } else {
-            WalletsStorage.shared.current = account
-            AccountNavigator.navLogin(walletId: account.id)
+            WalletsStorage.shared.current = wallet
+            WalletNavigator.navLogin(walletId: wallet.id)
         }
     }
 

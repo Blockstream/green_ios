@@ -9,8 +9,8 @@ public class WalletManager {
 
     // Return current WalletManager used for the active user session
     public static var current: WalletManager? {
-        if let account = WalletsStorage.shared.current {
-            return WalletsRepository.shared.get(for: account.id)
+        if let wallet = WalletsStorage.shared.current {
+            return WalletsRepository.shared.get(for: wallet.id)
         }
         return nil
     }

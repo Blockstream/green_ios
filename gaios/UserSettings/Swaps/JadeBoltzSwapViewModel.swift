@@ -9,8 +9,8 @@ struct JadeBoltzSwapViewModel {
     let wm: WalletManager
     let mainWallet: Wallet
 
-    init(wallet: WalletManager, mainWallet: Wallet) {
-        self.wm = wallet
+    init(wm: WalletManager, mainWallet: Wallet) {
+        self.wm = wm
         self.mainWallet = mainWallet
     }
 

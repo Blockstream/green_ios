@@ -206,8 +206,8 @@ class WOLoginViewController: KeyboardViewController {
         }
         switch await task.result {
         case .success:
-            AccountNavigator.navLogged(walletId: wallet.id)
-            AnalyticsManager.shared.importWallet(account: wallet)
+            WalletNavigator.navLogged(walletId: wallet.id)
+            AnalyticsManager.shared.importWallet(wallet: wallet)
         case .failure(let error):
             stopLoader()
             if let error = error as? AuthenticationTypeHandler.AuthError {
@@ -215,7 +215,7 @@ class WOLoginViewController: KeyboardViewController {
             } else {
                 showError(error)
             }
-            AnalyticsManager.shared.failedWalletLogin(account: self.wallet, error: error, prettyError: error.description())
+            AnalyticsManager.shared.failedWalletLogin(wallet: self.wallet, error: error, prettyError: error.description())
             WalletsRepository.shared.delete(for: self.wallet)
         }
     }

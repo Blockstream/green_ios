@@ -13,7 +13,7 @@ class WalletListCell: UITableViewCell {
     var onTap: ((IndexPath) -> Void)?
     var indexPath: IndexPath?
 
-    var account: Wallet?
+    var wallet: Wallet?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -31,12 +31,12 @@ class WalletListCell: UITableViewCell {
         lblHint.text = ""
         lblTitle.setStyle(.txtBigger)
         lblHint.setStyle(.txtCard)
-        account = item
+        wallet = item
         lblHint.text = "id_mobile_wallet".localized
-        if account?.isHW ?? false {
+        if wallet?.isHW ?? false {
             lblHint.text = "id_hardware_wallet".localized
         }
-        if account?.isWatchonly ?? false {
+        if wallet?.isWatchonly ?? false {
             lblHint.text = "id_watchonly".localized
         }
         if let ephemeralId = item.ephemeralId {

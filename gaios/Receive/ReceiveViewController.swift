@@ -103,7 +103,8 @@ class ReceiveViewController: KeyboardViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        BackupHelper.shared.cleanDismissedCache(walletId: vm.mainAccount.id, position: .receive)
+        BackupHelper.shared
+            .cleanDismissedCache(walletId: vm.mainWallet.id, position: .receive)
         onUpdate()
     }
     override func viewDidAppear(_ animated: Bool) {
@@ -337,7 +338,7 @@ class ReceiveViewController: KeyboardViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAmountViewController") as? DialogAmountViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
-            vc.wallet = vm.state.subaccount
+            vc.account = vm.state.subaccount
             vc.prefill = vm.state.satoshi
             present(vc, animated: false, completion: nil)
         }
@@ -366,8 +367,8 @@ class ReceiveViewController: KeyboardViewController {
         let data = AnalyticsManager.ReceiveAddressData(type: vm.isBipAddress(text) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
                                                        media: AnalyticsManager.ReceiveAddressMedia.text,
                                                        method: AnalyticsManager.ReceiveAddressMethod.copy)
-        AnalyticsManager.shared.receiveAddress(account: WalletsStorage.shared.current,
-                                               walletItem: vm.state.subaccount,
+        AnalyticsManager.shared.receiveAddress(wallet: WalletsStorage.shared.current,
+                                               account: vm.state.subaccount,
                                                data: data)
         UIPasteboard.general.string = text
         DropAlert().info(message: "id_address_copied_to_clipboard".localized, delay: 1.0)
@@ -431,7 +432,7 @@ class ReceiveViewController: KeyboardViewController {
             vm.selectAddressMode()
         } else {
             vm.selectReverseSwapMode()
-            AnalyticsManager.shared.swapToggle(account: WalletsStorage.shared.current,
+            AnalyticsManager.shared.swapToggle(wallet: WalletsStorage.shared.current,
                                                from: SwapChainName.lightning.rawValue,
                                                to: SwapChainName.liquid.rawValue)
         }
@@ -475,7 +476,7 @@ class ReceiveViewController: KeyboardViewController {
             requestNewPayment()
             btnConfirm.setStyle(.primaryDisabled)
             AnalyticsManager.shared
-                .swapReceive(account: WalletsStorage.shared.current,
+                .swapReceive(wallet: WalletsStorage.shared.current,
                                                 from: SwapChainName.lightning.rawValue,
                                                 to: SwapChainName.liquid.rawValue)
         }
@@ -631,7 +632,7 @@ extension ReceiveViewController {
         }
     }
     func verifyAddress() async {
-        AnalyticsManager.shared.verifyAddressJade(account: WalletsStorage.shared.current, walletItem: vm.state.subaccount)
+        AnalyticsManager.shared.verifyAddressJade(wallet: WalletsStorage.shared.current, account: vm.state.subaccount)
         if let vm = vm.receiveVerifyOnDeviceViewModel() {
             presentVerifyOnDeviceViewController(viewModel: vm)
         }
@@ -726,8 +727,8 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
                     media: AnalyticsManager.ReceiveAddressMedia.text,
                     method: AnalyticsManager.ReceiveAddressMethod.share)
                 AnalyticsManager.shared.receiveAddress(
-                    account: WalletsStorage.shared.current,
-                    walletItem: vm.state.subaccount,
+                    wallet: WalletsStorage.shared.current,
+                    account: vm.state.subaccount,
                     data: data)
             case .qr:
                 let uri = vm.state.text
@@ -736,8 +737,8 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
                     media: AnalyticsManager.ReceiveAddressMedia.image,
                     method: AnalyticsManager.ReceiveAddressMethod.share)
                 AnalyticsManager.shared.receiveAddress(
-                    account: WalletsStorage.shared.current,
-                    walletItem: vm.state.subaccount,
+                    wallet: WalletsStorage.shared.current,
+                    account: vm.state.subaccount,
                     data: data)
                 Task {
                     let image = await imgToShare()

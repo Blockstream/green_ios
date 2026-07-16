@@ -126,23 +126,23 @@ class PromoManager {
     }
     func promoView(promo: Promo, source: PromoScreen) {
         if let id = promo.id {
-            AnalyticsManager.shared.promoImpression(account: WalletsStorage.shared.current, promoId: id, screen: source.rawValue)
+            AnalyticsManager.shared.promoImpression(wallet: WalletsStorage.shared.current, promoId: id, screen: source.rawValue)
         }
     }
     func onDismiss(promo: Promo, source: PromoScreen) {
         if let id = promo.id {
             dismissPromo(id)
-            AnalyticsManager.shared.promoDismiss(account: WalletsStorage.shared.current, promoId: id, screen: source.rawValue)
+            AnalyticsManager.shared.promoDismiss(wallet: WalletsStorage.shared.current, promoId: id, screen: source.rawValue)
         }
     }
     func promoOpen(promo: Promo, source: PromoScreen) {
         if let id = promo.id {
-            AnalyticsManager.shared.promoOpen(account: WalletsStorage.shared.current, promoId: id, screen: source.rawValue)
+            AnalyticsManager.shared.promoOpen(wallet: WalletsStorage.shared.current, promoId: id, screen: source.rawValue)
         }
     }
     func promoAction(promo: Promo, source: PromoScreen) {
         if let id = promo.id {
-            AnalyticsManager.shared.promoAction(account: WalletsStorage.shared.current, promoId: id, screen: source.rawValue)
+            AnalyticsManager.shared.promoAction(wallet: WalletsStorage.shared.current, promoId: id, screen: source.rawValue)
         }
     }
     @objc func remoteConfigIsReady() {

@@ -32,7 +32,7 @@ class TabHomeVM: TabViewModel {
         state.balanceDisplayMode
     }
     var defaultCurrency: String? {
-        if let settings = wallet.prominentSession.settings {
+        if let settings = wm.prominentSession.settings {
             return settings.pricing["currency"]
         }
         return nil
@@ -44,22 +44,22 @@ class TabHomeVM: TabViewModel {
         try? await walletDataModel.hideBalance(value)
     }
     func relogin() async throws {
-        guard let credentials = try? await wallet.prominentSession.getCredentials(password: "") else {
+        guard let credentials = try? await wm.prominentSession.getCredentials(password: "") else {
             throw GaError.NotAuthorizedError("")
         }
         let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: mainWallet.keychainLightning)
         let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: mainWallet.keychain)
-        _ = try await wallet.login(
+        _ = try await wm.login(
             credentials: credentials,
             lightningCredentials: lightningCredentials,
             boltzCredentials: boltzCredentials,
-            device: wallet.hwDevice,
+            device: wm.hwDevice,
             fullRestore: false,
             creation: false)
-        _ = try await wallet.getAccounts()
+        _ = try await wm.getAccounts()
     }
     func getExpiredSubaccounts() async -> [Account]? {
-        let expired = try? await wallet.getExpiredSubaccounts()
+        let expired = try? await wm.getExpiredSubaccounts()
         if let expired = expired, !expired.isEmpty && !mainWallet.isWatchonly {
             return expired
         }

@@ -7,7 +7,7 @@ import greenaddress
 actor WalletDataModel {
 
     // Singleton
-    let wallet: WalletManager
+    let wm: WalletManager
     var mainWallet: Wallet
 
     // Private
@@ -19,10 +19,10 @@ actor WalletDataModel {
     private var subscribers: [UUID: AsyncStream<SubscriberUpdate>.Continuation] = [:]
     private var eventSubscribers: [UUID: AsyncStream<EventNotificationTypes>.Continuation] = [:]
 
-    init(wallet: WalletManager, mainWallet: Wallet) {
-        self.wallet = wallet
+    init(wm: WalletManager, mainWallet: Wallet) {
+        self.wm = wm
         self.mainWallet = mainWallet
-        wallet.newNotificationDelegate = self
+        wm.newNotificationDelegate = self
     }
 
     // Async Multi-Subscriber Stream in actor-isolated
@@ -78,7 +78,7 @@ actor WalletDataModel {
             logger.info("WalletDataModel performFetchBalance")
             let subaccounts = state.subaccounts
             if subaccounts.isEmpty { return }
-            let balancesForSubaccount = try await wallet.balances(subaccounts: subaccounts)
+            let balancesForSubaccount = try await wm.balances(subaccounts: subaccounts)
             let balances = balancesForSubaccount
                 .flatMap { $0.value }
                 .reduce([String: Int64]()) { (dict, tuple) in
@@ -101,7 +101,7 @@ actor WalletDataModel {
     }
     private func performFetchSubaccounts(refresh: Bool) async {
         do {
-            let subaccounts = try await wallet.getAccounts(refresh: refresh)
+            let subaccounts = try await wm.getAccounts(refresh: refresh)
             await update(.subaccounts) { $0.subaccounts = subaccounts.sorted() }
         } catch {
             logger.error("WalletDataModel performFetchSubaccounts error: \(error.localizedDescription)")
@@ -117,7 +117,7 @@ actor WalletDataModel {
             logger.info("WalletDataModel performFetchTransactions")
             let subaccounts = state.subaccounts
             let currentPage = reset ? 0 : state.currentPage
-            let txsCurrentPage = try await wallet.pagedTransactions(subaccounts: subaccounts, of: currentPage)
+            let txsCurrentPage = try await wm.pagedTransactions(subaccounts: subaccounts, of: currentPage)
             let loadMore = !txsCurrentPage.values.flatMap { $0.list }.isEmpty
             var cache = reset ? [:] : state.txsGdk ?? [:]
             for (account, pagetxs) in txsCurrentPage {
@@ -165,7 +165,7 @@ actor WalletDataModel {
     }
 
     var defaultCurrency: String? {
-        if let settings = wallet.prominentSession.settings {
+        if let settings = wm.prominentSession.settings {
             return settings.pricing["currency"]
         }
         return nil
@@ -238,13 +238,13 @@ actor WalletDataModel {
 
     func fetchGdkAllTransactions(subaccounts: [Account]) async throws -> [Transaction] {
         // get gdk/lightning transactions
-        let txs = try await wallet.allTransactions(subaccounts: subaccounts)
+        let txs = try await wm.allTransactions(subaccounts: subaccounts)
         return txs
     }
 
     func fetchGdkTransactions(subaccounts: [Account], page: Int, reset: Bool, previous: [String: [Transactions]]) async throws -> [String: [Transactions]] {
         // get gdk/lightning transactions
-                let txs = try await wallet.pagedTransactions(subaccounts: subaccounts, of: reset ? 0 : page)
+                let txs = try await wm.pagedTransactions(subaccounts: subaccounts, of: reset ? 0 : page)
                 var cache = reset ? [:] : previous
                 for (account, pagetxs) in txs {
                     cache[account] = (cache[account] ?? []) + [pagetxs]
@@ -281,14 +281,14 @@ actor WalletDataModel {
             remoteAlerts = RemoteAlertManager.shared
                 .alerts(
                     screen: .walletOverview,
-                    networks: Array(wallet.activeNetworkIds)
+                    networks: Array(wm.activeNetworkIds)
                 )
         }
         if let remoteAlert = remoteAlerts?.first {
             cards.append(AlertCardType.remoteAlert(remoteAlert))
         }
         // Failure login session
-        cards += wallet.networkErrors
+        cards += wm.networkErrors
             .filter {
                 switch $0.value {
                 case TwoFactorCallError.failure(localizedDescription: let txt):
@@ -299,7 +299,7 @@ actor WalletDataModel {
             }.map { AlertCardType.login($0.key.network, $0.value) }
         // Load dispute on not wo session
         if !mainWallet.isWatchonly {
-            wallet.activeGdkMultisigBackends.map{$0.session}.forEach { session in
+            wm.activeGdkMultisigBackends.map{$0.session}.forEach { session in
                 if session.logged && session.isResetActive ?? false,
                    let twoFaReset = session.twoFactorConfig?.twofactorReset {
                     let message = TwoFactorResetMessage(twoFactorReset: twoFaReset, network: session.gdkNetwork.network)
@@ -312,18 +312,18 @@ actor WalletDataModel {
             }
         }
         // Load missing princing
-        if Balance.fromSatoshi(Int64(0), assetId: wallet.prominentSession.gdkNetwork.getFeeAsset() ?? "btc")?.toFiat().0 == "n/a" {
+        if Balance.fromSatoshi(Int64(0), assetId: wm.prominentSession.gdkNetwork.getFeeAsset() ?? "btc")?.toFiat().0 == "n/a" {
             cards.append(AlertCardType.fiatMissing)
         }
         // Load system messages
-        let messages = try? await wallet.getSystemMessages()
+        let messages = try? await wm.getSystemMessages()
         messages?.forEach { msg in
             if !msg.text.isEmpty {
                 cards.append(AlertCardType.systemMessage(msg))
             }
         }
         // Load expired 2fa utxos
-        let expired = try? await wallet.getExpiredSubaccounts()
+        let expired = try? await wm.getExpiredSubaccounts()
         if let expired = expired, !expired.isEmpty && !mainWallet.isWatchonly {
             cards.append(.reEnable2fa)
         }
@@ -345,11 +345,11 @@ actor WalletDataModel {
             ]
         }
         var walletItems: [SettingsItem] = [.rename, .unifiedDenominationExchange, .autoLogout, .logout]
-        if wallet.isEphemeral {
+        if wm.isEphemeral {
             walletItems.removeAll(where: { $0 == .rename })
         }
         var accountItems: [SettingsItem] = []
-        if !wallet.isEphemeral && mainWallet.boardType != .v2c && !mainWallet.isWatchonly {
+        if !wm.isEphemeral && mainWallet.boardType != .v2c && !mainWallet.isWatchonly {
             accountItems += [.lightning]
         }
         // AMP ID entry: AMP2 on software testnet; AMP0 (new sheet) elsewhere.
@@ -357,14 +357,14 @@ actor WalletDataModel {
         if !mainWallet.isWatchonly {
             accountItems += [.ampID]
         }
-        if wallet.hasMultisig {
+        if wm.hasMultisig {
             accountItems += [.twoFactorAuthication, .pgpKey]
         }
         accountItems += [.watchOnly, .archievedAccounts, .createAccount]
-        if !wallet.isEphemeral && mainWallet.boardType != .v2c && !mainWallet.isWatchonly {
+        if !wm.isEphemeral && mainWallet.boardType != .v2c && !mainWallet.isWatchonly {
             accountItems += [.swaps]
         }
-        if !wallet.isEphemeral && !mainWallet.isWatchonly && mainWallet.hasBoltzKey {
+        if !wm.isEphemeral && !mainWallet.isWatchonly && mainWallet.hasBoltzKey {
             accountItems += [.rescanSwaps]
         }
         return [
@@ -451,8 +451,8 @@ extension WalletDataModel: NewNotificationDelegate {
         case .newBlock:
             logger.info("WalletDataModel newBlock")
             // Update content if exist an unconfirmed tx
-            let btcBlockHeight = wallet.bitcoinBlockHeight()
-            let liquidBlockHeight = wallet.liquidBlockHeight()
+            let btcBlockHeight = wm.bitcoinBlockHeight()
+            let liquidBlockHeight = wm.liquidBlockHeight()
             //let pendings = state.txs?.filter {
             //    $0.confirmations(block: ($0.isLiquid ? liquidBlockHeight ?? 0: btcBlockHeight ?? 0)) <= (
             //            $0.isLiquid ? 2 : 6
@@ -478,7 +478,7 @@ extension WalletDataModel: NewNotificationDelegate {
             logger.info("WalletDataModel disconnected")
         case .reconnected:
             logger.info("WalletDataModel reconnect")
-            if !wallet.isPaused() {
+            if !wm.isPaused() {
                 await triggerRefresh(features: [.balance, .txs(reset: true)])
             }
         case .tor:

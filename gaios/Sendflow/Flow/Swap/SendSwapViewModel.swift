@@ -19,8 +19,8 @@ final class SendSwapViewModel {
     var liquidFeeEstimator: FeeEstimator?
     var gdkTransaction: core.Transaction?
 
-    init(wallet: WalletManager, subaccount: Account?, assetId: String?, delegate: SendSwapViewModelDelegate?) {
-        self.wm = wallet
+    init(wm: WalletManager, subaccount: Account?, assetId: String?, delegate: SendSwapViewModelDelegate?) {
+        self.wm = wm
         if let boltzSession = wm.lwkBoltzBackend?.boltzSession {
             self.quoteBuilder = QuoteBuilder(boltzSession: boltzSession)
         } else {
@@ -38,7 +38,7 @@ final class SendSwapViewModel {
             account: SendSwapViewModel.getDefaultTo(assetId).0,
             assetId: SendSwapViewModel.getDefaultTo(assetId).1,
             amount: nil)
-        let denomination = wallet.prominentSession.settings?.denomination
+        let denomination = wm.prominentSession.settings?.denomination
         self.state = SwapPositionState(from: positionFrom, to: positionTo, priority: .Medium, denomination: denomination ?? .Sats)
         self.delegate = delegate
         if let networkId = wm.activeBitcoinNetworkIds.first,

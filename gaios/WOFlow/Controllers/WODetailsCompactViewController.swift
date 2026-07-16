@@ -126,24 +126,24 @@ class WODetailsCompactViewController: KeyboardViewController {
                 .error(
                     "--> ERROR: \(input.network.name()) \(viewModel.wallet.name)"
                 )
-            failure(error, account: viewModel.wallet)
+            failure(error, wallet: viewModel.wallet)
         }
     }
 
     @MainActor
     func success(wallet: Wallet) {
         stopLoader()
-        AccountNavigator.navLogged(walletId: wallet.id)
-        AnalyticsManager.shared.importWallet(account: wallet)
+        WalletNavigator.navLogged(walletId: wallet.id)
+        AnalyticsManager.shared.importWallet(wallet: wallet)
     }
 
     @MainActor
-    func failure(_ error: Error, account: Wallet) {
+    func failure(_ error: Error, wallet: Wallet) {
         stopLoader()
         let prettyError = error.description().localized
         DropAlert().error(message: prettyError.localized)
-        AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: prettyError)
-        WalletsRepository.shared.delete(for: account)
+        AnalyticsManager.shared.failedWalletLogin(wallet: wallet, error: error, prettyError: prettyError)
+        WalletsRepository.shared.delete(for: wallet)
     }
     func updatePlaceholderVisibility() {
         placeholderLabel.isHidden = !textView.text.isEmpty
@@ -167,7 +167,7 @@ class WODetailsCompactViewController: KeyboardViewController {
         }
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: false, completion: nil)
-        AnalyticsManager.shared.scanQr(account: nil, screen: .onBoardWOCredentials)
+        AnalyticsManager.shared.scanQr(wallet: nil, screen: .onBoardWOCredentials)
         updatePlaceholderVisibility()
     }
     @IBAction func btnImport(_ sender: Any) {

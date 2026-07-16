@@ -234,7 +234,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
     @MainActor
     func pushJadeBoltzSwapViewController() {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        let viewModel = JadeBoltzSwapViewModel(wallet: viewModel.wallet, mainWallet: viewModel.mainWallet)
+        let viewModel = JadeBoltzSwapViewModel(wm: viewModel.wm, mainWallet: viewModel.mainWallet)
         let vc = storyboard.instantiateViewController(identifier: "JadeBoltzSwapViewController") { coder in
             JadeBoltzSwapViewController(coder: coder, viewModel: viewModel)
         }
@@ -414,7 +414,7 @@ extension TabSettingsVC {
     }
 
     func showAutoLogout() {
-        guard var settings = viewModel.wallet.prominentSession.settings else { return }
+        guard var settings = viewModel.wm.prominentSession.settings else { return }
         let list = [AutoLockType.minute.string, AutoLockType.twoMinutes.string, AutoLockType.fiveMinutes.string, AutoLockType.tenMinutes.string, AutoLockType.sixtyMinutes.string]
         let dialogViewModel = DialogListViewModel(
             title: "id_auto_logout_timeout".localized,

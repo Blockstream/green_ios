@@ -5,7 +5,7 @@ import UIKit
 import hw
 
 protocol QRUnlockJadeViewControllerDelegate: AnyObject {
-    func login(credentials: Credentials, wallet: WalletManager, account: Wallet)
+    func login(credentials: Credentials, wm: WalletManager, wallet: Wallet)
     func abort()
 }
 class QRUnlockJadeViewController: UIViewController {
@@ -303,24 +303,24 @@ extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate
                 return try await self?.vm.login()
             }
             switch await task.result {
-            case .success(let wallet):
-                if let wallet = wallet {
-                    WalletsStorage.shared.current = vm.account
-                    success(wallet: wallet, account: vm.account)
+            case .success(let wm):
+                if let wm {
+                    WalletsStorage.shared.current = vm.wallet
+                    success(wm: wm, wallet: vm.wallet)
                 }
             case .failure(let error):
-                failure(error, wallet: vm.account)
+                failure(error, wallet: vm.wallet)
             }
         }
     }
 
     @MainActor
-    func success(wallet: WalletManager, account: Wallet) {
+    func success(wm: WalletManager, wallet: Wallet) {
         stopLoader()
         dismiss(animated: true) {
             if let credentials = self.credentials {
-                WalletsStorage.shared.current = account
-                self.delegate?.login(credentials: credentials, wallet: wallet, account: account)
+                WalletsStorage.shared.current = wallet
+                self.delegate?.login(credentials: credentials, wm: wm, wallet: wallet)
             }
         }
     }
@@ -340,7 +340,7 @@ extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate
         }
         stopLoader()
         DropAlert().error(message: prettyError.localized)
-        AnalyticsManager.shared.failedWalletLogin(account: wallet, error: error, prettyError: prettyError)
+        AnalyticsManager.shared.failedWalletLogin(wallet: wallet, error: error, prettyError: prettyError)
         WalletsRepository.shared.delete(for: wallet)
     }
 }

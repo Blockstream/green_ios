@@ -279,9 +279,9 @@ extension JadeWaitViewController: QRUnlockJadeViewControllerDelegate {
         // nothing
     }
 
-    func login(credentials: Credentials, wallet: core.WalletManager, account: Wallet) {
-        WalletsStorage.shared.current = account
-        AccountNavigator.navLogged(walletId: account.id)
+    func login(credentials: Credentials, wm: WalletManager, wallet: Wallet) {
+        WalletsStorage.shared.current = wallet
+        WalletNavigator.navLogged(walletId: wallet.id)
     }
 
     func abort() {

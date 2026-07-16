@@ -121,9 +121,9 @@ extension AppNotifications: UNUserNotificationCenterDelegate {
         if let xpub = walletXpub ?? meldXpub,
            let account = getAccount(xpub: xpub) {
             if let wm = WalletsRepository.shared.get(for: account), wm.logged {
-                AccountNavigator.navLogged(walletId: account.id)
+                WalletNavigator.navLogged(walletId: account.id)
             } else {
-                AccountNavigator.navLogin(walletId: account.id)
+                WalletNavigator.navLogin(walletId: account.id)
             }
         }
         completionHandler()

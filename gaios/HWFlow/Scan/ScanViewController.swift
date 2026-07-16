@@ -14,7 +14,7 @@ class ScanViewController: HWFlowBaseViewController {
     private var cancellables = Set<AnyCancellable>()
     var deviceType = DeviceType.Jade
     var scanViewModel: ScanViewModel!
-    var account: Wallet?
+    var wallet: Wallet?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -152,7 +152,7 @@ class ScanViewController: HWFlowBaseViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: container)
     }
     func next() {
-        AnalyticsManager.shared.hwwConnected(account: account)
+        AnalyticsManager.shared.hwwConnected(wallet: wallet)
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "PairingSuccessViewController") as? PairingSuccessViewController {
             vc.bleHwManager = BleHwManager.shared
@@ -248,10 +248,10 @@ extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
         let peripheral = scanViewModel.peripherals[indexPath.row]
         stopScan()
         startAnimating()
-        account = Wallet(name: peripheral.name, network: NetworkId.electrumMainnet, isJade: peripheral.type == .Jade, isLedger: peripheral.type == .Ledger)
+        wallet = Wallet(name: peripheral.name, network: NetworkId.electrumMainnet, isJade: peripheral.type == .Jade, isLedger: peripheral.type == .Ledger)
         Task {
             do {
-                AnalyticsManager.shared.hwwConnect(account: account)
+                AnalyticsManager.shared.hwwConnect(wallet: wallet)
                 BleHwManager.shared.type = peripheral.type
                 BleHwManager.shared.peripheralID = peripheral.identifier
                 try await BleHwManager.shared.connect()
@@ -296,9 +296,9 @@ extension ScanViewController: QRUnlockJadeViewControllerDelegate {
         
     }
     
-    func login(credentials: Credentials, wallet: WalletManager, account: Wallet) {
-        WalletsStorage.shared.current = account
-        AccountNavigator.navLogged(walletId: account.id)
+    func login(credentials: Credentials, wm: WalletManager, wallet: Wallet) {
+        WalletsStorage.shared.current = wallet
+        WalletNavigator.navLogged(walletId: wallet.id)
     }
 
     func abort() {

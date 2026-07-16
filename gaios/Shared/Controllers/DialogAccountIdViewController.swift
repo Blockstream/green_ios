@@ -15,7 +15,7 @@ class DialogAccountIdViewController: UIViewController {
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
 
-    var wallet: Account?
+    var account: Account?
     var buttonConstraint: NSLayoutConstraint?
 
     override func viewDidLoad() {
@@ -26,9 +26,14 @@ class DialogAccountIdViewController: UIViewController {
         cardView.setStyle(.bottomsheet)
         view.alpha = 0.0
 
-        lblAccountId.text = wallet?.receivingId ?? ""
+        lblAccountId.text = account?.receivingId ?? ""
 
-        AnalyticsManager.shared.recordView(.accountID, sgmt: AnalyticsManager.shared.subAccSeg(WalletsStorage.shared.current, walletItem: wallet))
+        AnalyticsManager.shared
+            .recordView(
+                .accountID,
+                sgmt: AnalyticsManager.shared
+                    .subAccSeg(WalletsStorage.shared.current, account: account)
+            )
     }
 
     override func viewDidAppear(_ animated: Bool) {

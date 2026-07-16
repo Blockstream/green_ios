@@ -184,18 +184,18 @@ class BleHwManager {
         }
     }
 
-    func login(account: Wallet, fullRestore: Bool) async throws -> (Wallet, WalletManager) {
+    func login(wallet: Wallet, fullRestore: Bool) async throws -> (Wallet, WalletManager) {
         AnalyticsManager.shared.loginWalletStart()
-        var account = account
-        let walletManager = WalletManager(networkId: account.networkId)
+        var wallet = wallet
+        let walletManager = WalletManager(networkId: wallet.networkId)
         let device = try await getHwProtocol()
         walletManager.popupResolver = await PopupResolver()
         walletManager.hwInterfaceResolver = HwPopupResolver()
         walletManager.hwProtocol = hwProtocol
-        let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
-        let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: account.keychain)
+        let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: wallet.keychainLightning)
+        let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: wallet.keychain)
         do {
-            if let masterXpub = try await getMasterXpub(chain: account.gdkNetwork.chain) {
+            if let masterXpub = try await getMasterXpub(chain: wallet.gdkNetwork.chain) {
                 let credentials = Credentials(masterXpub: masterXpub)
                 let res = try await walletManager.login(
                    credentials: credentials,
@@ -205,24 +205,30 @@ class BleHwManager {
                    fullRestore: fullRestore,
                    creation: false
                 )
-                account.applyLoginResult(res, credentials: credentials)
+                wallet.applyLoginResult(res, credentials: credentials)
             }
         } catch {
             let text = toBleError(error, network: nil).localizedDescription
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: text)
+            AnalyticsManager.shared
+                .failedWalletLogin(
+                    wallet: wallet,
+                    error: error,
+                    prettyError: text
+                )
             throw error
         }
         switch type {
         case .Jade:
-            account.boardType = jade?.version?.boardType
-            account.efusemac = jade?.version?.efusemac
+            wallet.boardType = jade?.version?.boardType
+            wallet.efusemac = jade?.version?.efusemac
         case .Ledger:
             break
         }
         self.walletManager = walletManager
-        AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .hardware)
+        AnalyticsManager.shared
+            .loginWalletEnd(wallet: wallet, loginType: .hardware)
         AnalyticsManager.shared.activeWalletStart()
-        return (account, walletManager)
+        return (wallet, walletManager)
     }
 
     func validateAddress(account: Account, address: Address) async throws -> Bool {
@@ -238,7 +244,7 @@ class BleHwManager {
         }
     }
 
-    func defaultAccount() async throws -> Wallet? {
+    func defaultWallet() async throws -> Wallet? {
         switch type {
         case .Jade:
             return try await jade?.defaultAccount()
@@ -259,7 +265,7 @@ class BleHwManager {
 
     func updateFirmware(firmware: Firmware, binary: Data) async throws -> Bool {
         guard let jade = jade else { throw HWError.Abort("No peripheral found") }
-        AnalyticsManager.shared.otaStartJade(account: WalletsStorage.shared.current, firmware: firmware)
+        AnalyticsManager.shared.otaStartJade(wallet: WalletsStorage.shared.current, firmware: firmware)
         var updated = false
         do {
             updated = try await jade.updateFirmware(firmware: firmware, binary: binary)
@@ -268,7 +274,7 @@ class BleHwManager {
             // return updated
             throw error
         }
-        AnalyticsManager.shared.otaCompleteJade(account: WalletsStorage.shared.current, firmware: firmware)
+        AnalyticsManager.shared.otaCompleteJade(wallet: WalletsStorage.shared.current, firmware: firmware)
         return updated
     }
 
@@ -276,13 +282,13 @@ class BleHwManager {
         if let err = error as? HWError {
             switch err {
             case HWError.Declined:
-                AnalyticsManager.shared.otaRefuseJade(account: WalletsStorage.shared.current)
+                AnalyticsManager.shared.otaRefuseJade(wallet: WalletsStorage.shared.current)
             default:
-                AnalyticsManager.shared.otaFailedJade(account: WalletsStorage.shared.current,
+                AnalyticsManager.shared.otaFailedJade(wallet: WalletsStorage.shared.current,
                                                       error: error.localizedDescription)
             }
         } else {
-            AnalyticsManager.shared.otaFailedJade(account: WalletsStorage.shared.current,
+            AnalyticsManager.shared.otaFailedJade(wallet: WalletsStorage.shared.current,
                                                   error: error.localizedDescription)
         }
     }

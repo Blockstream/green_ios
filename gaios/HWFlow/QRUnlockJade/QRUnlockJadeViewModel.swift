@@ -15,7 +15,7 @@ class QRUnlockJadeViewModel {
     var scope: QRUnlockScope
     var oracle: String?
     var testnet: Bool
-    var account: Wallet
+    var wallet: Wallet
     var jade: QRJadeManager
     var askXpub: Bool
 
@@ -23,7 +23,7 @@ class QRUnlockJadeViewModel {
         self.scope = scope
         self.testnet = testnet
         self.askXpub = askXpub
-        self.account = Wallet(name: "Jade", network: testnet ? .electrumTestnet : .electrumMainnet, isJade: true, watchonly: true)
+        self.wallet = Wallet(name: "Jade", network: testnet ? .electrumTestnet : .electrumMainnet, isJade: true, watchonly: true)
         jade = QRJadeManager(network: testnet ? .electrumTestnet : .electrumMainnet)
     }
 
@@ -93,20 +93,20 @@ class QRUnlockJadeViewModel {
     }
 
     func exportXpub(enableBio: Bool, credentials: Credentials) async throws {
-        try AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoCredentials, credentials: credentials, for: account.keychain)
+        try AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoCredentials, credentials: credentials, for: wallet.keychain)
     }
 
     func getCredentials(wm: WalletManager) async throws -> Credentials {
-        if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: account.keychain) {
-            return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
-        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: account.keychain) {
-            return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
+        if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: wallet.keychain) {
+            return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: wallet.keychain)
+        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoBioCredentials, forNetwork: wallet.keychain) {
+            return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: wallet.keychain)
         } else {
             let session = wm.prominentSession
-            let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain)
+            let enableBio = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: wallet.keychain)
             AnalyticsManager.shared.loginWalletStart()
             let method: AuthenticationTypeHandler.AuthType = enableBio ? .AuthKeyBiometric : .AuthKeyPIN
-            let data = try AuthenticationTypeHandler.getPinData(method: method, for: account.keychain)
+            let data = try AuthenticationTypeHandler.getPinData(method: method, for: wallet.keychain)
             try await session.connect()
             let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
             return try await session.decryptWithPin(decrypt)
@@ -115,9 +115,9 @@ class QRUnlockJadeViewModel {
 
     func login() async throws -> WalletManager {
         AnalyticsManager.shared.loginWalletStart()
-        let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
-        let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: account.keychain)
-        let wm = WalletsRepository.shared.getOrAdd(for: account)
+        let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: wallet.keychainLightning)
+        let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: wallet.keychain)
+        let wm = WalletsRepository.shared.getOrAdd(for: wallet)
         let credentials = try await getCredentials(wm: wm)
         let res = try await wm.login(
             credentials: credentials,
@@ -126,10 +126,10 @@ class QRUnlockJadeViewModel {
             device: nil,
             fullRestore: false,
             creation: false,
-            parentXpub: account.xpubHashId
+            parentXpub: wallet.xpubHashId
         )
-        account.applyLoginResult(res, credentials: credentials)
-        AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly)
+        wallet.applyLoginResult(res, credentials: credentials)
+        AnalyticsManager.shared.loginWalletEnd(wallet: wallet, loginType: .watchOnly)
         return wm
     }
 

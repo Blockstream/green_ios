@@ -16,8 +16,8 @@ final class SendAddressViewModel: Sendable {
     let delegate: SendAddressViewModelDelegate?
 
     private let parser: PaymentTargetParser
-    private var wm: WalletManager { wallet.wallet }
-    
+    private var wm: WalletManager { wallet.wm }
+
     // UI state
     var error: Error?
     var paymentTarget: PaymentTarget?
@@ -138,17 +138,17 @@ final class SendAddressViewModel: Sendable {
         }()
         return paymentTarget
             .eligibleRails()
-            .flatMap { subaccounts(for: $0, wallet: wm, amount: amount) }
+            .flatMap { subaccounts(for: $0, wm: wm, amount: amount) }
     }
 
-    private func subaccounts(for rail: PaymentRail, wallet: WalletManager, amount: UInt64?) -> [Account] {
+    private func subaccounts(for rail: PaymentRail, wm: WalletManager, amount: UInt64?) -> [Account] {
         switch rail {
         case .bitcoin:
-            return wallet.bitcoinSubaccountsWithFunds()
+            return wm.bitcoinSubaccountsWithFunds()
         case .liquid:
-            return wallet.liquidSubaccountsWithFunds()
+            return wm.liquidSubaccountsWithFunds()
         case .lightning:
-            if let subaccount = wallet.glNetworkBackendOrNil()?.account {
+            if let subaccount = wm.glNetworkBackendOrNil()?.account {
                 let maxPayable = subaccount.lightningSession?.nodeState()?.maxPayableMsat.satoshi ?? 0
                 if maxPayable > 0 {
                     if let amount = amount, maxPayable < amount {

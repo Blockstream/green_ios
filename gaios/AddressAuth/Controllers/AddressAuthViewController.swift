@@ -126,11 +126,11 @@ class AddressAuthViewController: KeyboardViewController {
 
     func onSign(_ row: Int) {
         guard let model = viewModel?.listCellModelsFilter[safe: row] else { return }
-        if let wm = WalletManager.current, let account = WalletsStorage.shared.current, account.isHW && wm.isWatchonly {
+        if let wm = WalletManager.current, let wallet = WalletsStorage.shared.current, wallet.isHW && wm.isWatchonly {
             selectedAddress = model.address
             presentConnectViewController()
         } else {
-            presentDialogSignViewController(wallet: viewModel.wallet, address: model.address)
+            presentDialogSignViewController(account: viewModel.account, address: model.address)
         }
     }
 
@@ -145,11 +145,11 @@ class AddressAuthViewController: KeyboardViewController {
     }
 
     @MainActor
-    func presentDialogSignViewController(wallet: Account, address: String) {
+    func presentDialogSignViewController(account: Account, address: String) {
         let storyboard = UIStoryboard(name: "AddressAuth", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogSignViewController") as? DialogSignViewController {
             vc.modalPresentationStyle = .overFullScreen
-            vc.viewModel = DialogSignViewModel(subaccount: wallet, address: address)
+            vc.viewModel = DialogSignViewModel(subaccount: account, address: address)
             present(vc, animated: false, completion: nil)
         }
     }
@@ -289,7 +289,7 @@ extension AddressAuthViewController: HWDialogConnectViewControllerDelegate {
 
     func logged() {
         if let selectedAddress = selectedAddress {
-            presentDialogSignViewController(wallet: viewModel.wallet, address: selectedAddress)
+            presentDialogSignViewController(account: viewModel.account, address: selectedAddress)
         }
     }
 

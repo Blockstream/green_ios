@@ -99,7 +99,7 @@ class AccountCreatePublicKeyViewController: UIViewController {
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: false, completion: nil)
         AnalyticsManager.shared.scanQr(
-            account: WalletsStorage.shared.current,
+            wallet: WalletsStorage.shared.current,
             screen: .addAccountPK)
     }
 

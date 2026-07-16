@@ -718,7 +718,7 @@
 		81B0DDBA2DA51B3500B036FB /* ConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B0DDB92DA51B3000B036FB /* ConnectViewModel.swift */; };
 		81B2350F2A6A8BCD00B8FF5D /* Countly in Frameworks */ = {isa = PBXBuildFile; productRef = 81B2350E2A6A8BCD00B8FF5D /* Countly */; };
 		81B7FD222A8F959C0024A0E8 /* URLSchemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B7FD212A8F959C0024A0E8 /* URLSchemeManager.swift */; };
-		81BAD32D289BD66900FF0F54 /* AccountNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BAD32C289BD66900FF0F54 /* AccountNavigator.swift */; };
+		81BAD32D289BD66900FF0F54 /* WalletNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BAD32C289BD66900FF0F54 /* WalletNavigator.swift */; };
 		81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */; };
 		81BB8BA12FEE7D5C0019BB3D /* WalletManager+Backend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BB8BA02FEE7D490019BB3D /* WalletManager+Backend.swift */; };
 		81BB8BA32FEEE38C0019BB3D /* WalletManager+Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BB8BA22FEEE36E0019BB3D /* WalletManager+Network.swift */; };
@@ -1726,7 +1726,7 @@
 		81B0DC442E94791D00CE6F5D /* LwkBoltzBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LwkBoltzBackend.swift; sourceTree = "<group>"; };
 		81B0DDB92DA51B3000B036FB /* ConnectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewModel.swift; sourceTree = "<group>"; };
 		81B7FD212A8F959C0024A0E8 /* URLSchemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSchemeManager.swift; sourceTree = "<group>"; };
-		81BAD32C289BD66900FF0F54 /* AccountNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountNavigator.swift; sourceTree = "<group>"; };
+		81BAD32C289BD66900FF0F54 /* WalletNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNavigator.swift; sourceTree = "<group>"; };
 		81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemMessageViewController.swift; sourceTree = "<group>"; };
 		81BB8BA02FEE7D490019BB3D /* WalletManager+Backend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletManager+Backend.swift"; sourceTree = "<group>"; };
 		81BB8BA22FEEE36E0019BB3D /* WalletManager+Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletManager+Network.swift"; sourceTree = "<group>"; };
@@ -1957,7 +1957,7 @@
 				3484118B265E6113002D2202 /* Constants.swift */,
 				6D0983F223FF033900289ACA /* DropAlert.swift */,
 				34C9E10826B92F0B00200D2F /* DynamicTableView.swift */,
-				81BAD32C289BD66900FF0F54 /* AccountNavigator.swift */,
+				81BAD32C289BD66900FF0F54 /* WalletNavigator.swift */,
 				3457F4AA292394DD00EF33B5 /* CustomVisualEffectView.swift */,
 				34675B0929409D9900771D50 /* Common.swift */,
 				349693C52CFEF613000F308E /* JadeAsset.swift */,
@@ -5543,7 +5543,7 @@
 				34145FF22DBF776C00F725E0 /* BuyTiers.swift in Sources */,
 				81928F872DC4FDBB0016108E /* AccountCellModel.swift in Sources */,
 				34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */,
-				81BAD32D289BD66900FF0F54 /* AccountNavigator.swift in Sources */,
+				81BAD32D289BD66900FF0F54 /* WalletNavigator.swift in Sources */,
 				346EB2862BE8BB480043139F /* SendSuccessViewController.swift in Sources */,
 				34465BA32D082FDA002E5033 /* GenuineCheckEndViewModel.swift in Sources */,
 				347372F22E65B77F00FE2BEA /* ElectrumCellModel.swift in Sources */,

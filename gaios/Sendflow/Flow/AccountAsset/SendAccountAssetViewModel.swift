@@ -10,13 +10,13 @@ class SendAccountAssetViewModel {
     let subaccounts: [Account]
     let draft: TransactionDraft
     var cellModels: [AccountAssetCellModel] = []
-    let wallet: WalletManager
+    let wm: WalletManager
     let delegate: SendAccountAssetViewModelDelegate?
 
-    init(subaccounts: [Account], draft: TransactionDraft, wallet: WalletManager, delegate: SendAccountAssetViewModelDelegate) {
+    init(subaccounts: [Account], draft: TransactionDraft, wm: WalletManager, delegate: SendAccountAssetViewModelDelegate) {
         self.draft = draft
         self.subaccounts = subaccounts
-        self.wallet = wallet
+        self.wm = wm
         self.delegate = delegate
         self.cellModels = getCellModels()
     }
@@ -24,15 +24,15 @@ class SendAccountAssetViewModel {
     func getCellModels() -> [AccountAssetCellModel] {
         return subaccounts
             .flatMap { subaccount in
-                wallet.accountBackendOrNil(subaccount)?
+                wm.accountBackendOrNil(subaccount)?
                     .assets
                     .filter { assetId, _ in
                         filter(for: assetId, subaccount: subaccount)
                     }.compactMap { assetId, amount in
                         AccountAssetCellModel(
                             account: subaccount,
-                            asset: wallet.info(for: assetId),
-                            assetIcon: wallet.image(for: assetId),
+                            asset: wm.info(for: assetId),
+                            assetIcon: wm.image(for: assetId),
                             balance: amount,
                             showBalance: true
                         )

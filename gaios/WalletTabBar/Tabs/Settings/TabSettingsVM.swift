@@ -11,16 +11,16 @@ class TabSettingsVM: TabViewModel {
     }
 
     // load wallet manager for current logged session
-    var session: SessionManager? { wallet.prominentSession }
-    var isWatchonly: Bool { wallet.isWatchonly }
-    var isEphemeral: Bool { wallet.isEphemeral }
-    var isWatchonlySinglesig: Bool { (wallet.isWatchonly) && (mainWallet.username?.isEmpty ?? true) }
+    var session: SessionManager? { wm.prominentSession }
+    var isWatchonly: Bool { wm.isWatchonly }
+    var isEphemeral: Bool { wm.isEphemeral }
+    var isWatchonlySinglesig: Bool { (wm.isWatchonly) && (mainWallet.username?.isEmpty ?? true) }
     var isSinglesig: Bool { session?.gdkNetwork.electrum ?? true }
     var isHW: Bool { WalletsStorage.shared.current?.isHW ?? false }
     var multiSigSession: SessionManager? {
-        wallet
+        wm
             .multisigNetworkIds
-            .compactMap { wallet.gdkNetworkBackendOrNil($0) }
+            .compactMap { wm.gdkNetworkBackendOrNil($0) }
             .compactMap(\.session)
             .filter { $0.logged }
             .filter { !$0.gdkNetwork.electrum }.first
@@ -154,23 +154,23 @@ class TabSettingsVM: TabViewModel {
     }
 
     func getSubaccountsAmp() -> [Account] {
-        wallet.accounts.filter({ $0.type == .ampAccount || $0.type == .amp2Account })
+        wm.accounts.filter({ $0.type == .ampAccount || $0.type == .amp2Account })
     }
 
     func createSubaccountAmp() async throws {
-        let session = try wallet.gdkNetworkBackend(
-            wallet.liquidMultisigNetworkId
+        let session = try wm.gdkNetworkBackend(
+            wm.liquidMultisigNetworkId
         ).session
         let wasLoggedMultisig = session.logged
         try await session.connect()
         guard session.connected else {
             throw GaError.GenericError("id_connection_failed".localized)
         }
-        if let device = wallet.hwDevice {
+        if let device = wm.hwDevice {
             try await session.register(credentials: nil, hw: device)
             _ = try await session.loginUser(device)
         } else {
-            if let credentials = try await wallet.prominentSession.getCredentials(password: "") {
+            if let credentials = try await wm.prominentSession.getCredentials(password: "") {
                 try await session.register(credentials: credentials, hw: nil)
                 _ = try await session.loginUser(credentials)
             }
@@ -183,11 +183,11 @@ class TabSettingsVM: TabViewModel {
             // hide default 0 multisig subaccount when creating a new multisig
             _ = try await session.updateSubaccount(UpdateSubaccountParams(subaccount: 0, hidden: true))
         }
-        _ = try await wallet.getAccounts()
+        _ = try await wm.getAccounts()
     }
 
     func uniqueAmpName() -> String {
-        let counter = wallet.accounts.filter(
+        let counter = wm.accounts.filter(
             { $0.type == .ampAccount && $0.gdkNetwork.liquid
             }).count
         if counter > 0 {
@@ -213,22 +213,22 @@ class TabSettingsVM: TabViewModel {
     }
 
     func rescanSwaps() async throws {
-        await wallet.swapMonitor?.stop()
-        let liquidAddress = await getAddress(subaccount: wallet.liquidSubaccounts.first)
-        let bitcoinAddress = await getAddress(subaccount: wallet.bitcoinSubaccounts.first)
+        await wm.swapMonitor?.stop()
+        let liquidAddress = await getAddress(subaccount: wm.liquidSubaccounts.first)
+        let bitcoinAddress = await getAddress(subaccount: wm.bitcoinSubaccounts.first)
         if let liquidAddress, let bitcoinAddress {
-            try await wallet.swapMonitor?.restoreSwaps(bitcoinAddress: bitcoinAddress, liquidAddress: liquidAddress)
+            try await wm.swapMonitor?.restoreSwaps(bitcoinAddress: bitcoinAddress, liquidAddress: liquidAddress)
         }
-        try await wallet.swapMonitor?.start()
+        try await wm.swapMonitor?.start()
     }
 
     func getAddress(subaccount: Account?) async -> String? {
         guard let subaccount else { return nil }
-        return try? await wallet.accountBackend(subaccount).getReceiveAddress().address
+        return try? await wm.accountBackend(subaccount).getReceiveAddress().address
     }
-    
+
     func lTDetailsViewModel() -> LTDetailsViewModel? {
-        guard let lightningSession = wallet.lightningSession else { return nil }
+        guard let lightningSession = wm.lightningSession else { return nil }
         return LTDetailsViewModel(lightningSession: lightningSession)
     }
 

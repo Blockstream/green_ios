@@ -44,8 +44,8 @@ class ConnectViewController: HWFlowBaseViewController {
     var viewModel: ConnectViewModel!
 
     private var selectedItem: ScanListItem?
-    private var hasCredentials: Bool { viewModel.account.hasWoCredentials || viewModel.account.hasWoBioCredentials || viewModel.account.hasBioPin }
-    private var isQRmode: Bool { viewModel.account.uuid == nil }
+    private var hasCredentials: Bool { viewModel.wallet.hasWoCredentials || viewModel.wallet.hasWoBioCredentials || viewModel.wallet.hasBioPin }
+    private var isQRmode: Bool { viewModel.wallet.uuid == nil }
 
     var state: ConnectionState = .none {
         didSet {
@@ -111,8 +111,8 @@ class ConnectViewController: HWFlowBaseViewController {
             progress("")
         case .logged:
             progressView.isHidden = false
-            WalletsStorage.shared.upsert(viewModel.account)
-            AccountNavigator.navLogged(walletId: viewModel.account.id)
+            WalletsStorage.shared.upsert(viewModel.wallet)
+            WalletNavigator.navLogged(walletId: viewModel.wallet.id)
         case .errorWatchonly:
             progressView.isHidden = true
             retryButton.isHidden = false
@@ -170,11 +170,11 @@ class ConnectViewController: HWFlowBaseViewController {
     }
 
     func loginSinglesig() async {
-        if self.viewModel.account.hasBioPin {
+        if self.viewModel.wallet.hasBioPin {
             await loginBiometric(method: .AuthKeyBiometric)
-        } else if self.viewModel.account.hasManualPin {
+        } else if self.viewModel.wallet.hasManualPin {
             await loginBiometric(method: .AuthKeyPIN)
-        } else if self.viewModel.account.hasWoBioCredentials {
+        } else if self.viewModel.wallet.hasWoBioCredentials {
             await loginBiometric(method: .AuthKeyWoBioCredentials)
         } else {
             switch AuthenticationTypeHandler.biometryType {
@@ -197,7 +197,7 @@ class ConnectViewController: HWFlowBaseViewController {
         retryWoButton.isHidden = true
         retryButton.setTitle("id_connect_with_bluetooth".localized, for: .normal)
         retryWoButton.setTitle("", for: .normal)
-        lblTitle.text = viewModel.account.name
+        lblTitle.text = viewModel.wallet.name
         lblSubtitle.text = ""
         switch AuthenticationTypeHandler.biometryType {
         case .faceID:
@@ -227,11 +227,11 @@ class ConnectViewController: HWFlowBaseViewController {
     }
 
     func onScannedDevice(_ item: ScanListItem) {
-        AnalyticsManager.shared.hwwConnect(account: viewModel.account)
+        AnalyticsManager.shared.hwwConnect(wallet: viewModel.wallet)
 
         viewModel?.type = item.type
         viewModel?.peripheralID = item.identifier
-        viewModel.account.uuid = item.identifier
+        viewModel.wallet.uuid = item.identifier
         if !viewModel.firstConnection {
             state = .connect
         }
@@ -487,7 +487,7 @@ extension ConnectViewController: BleUnavailableViewControllerDelegate {
 extension ConnectViewController: ConnectViewModelDelegate {
     func onScan(peripherals: [ScanListItem]) {
         if self.selectedItem != nil { return }
-        if let item = peripherals.filter({ $0.identifier == self.viewModel.account.uuid || $0.name == self.viewModel.account.name }).first {
+        if let item = peripherals.filter({ $0.identifier == self.viewModel.wallet.uuid || $0.name == self.viewModel.wallet.name }).first {
             self.selectedItem = item
             self.onScannedDevice(item)
         }

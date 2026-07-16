@@ -126,16 +126,16 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     @MainActor
     func pushConnectViewController(firstConnection: Bool, testnet: Bool? = nil) {
         Task {
-            var account = try await bleHwManager.defaultAccount()
+            var wallet = try await bleHwManager.defaultWallet()
             try? await bleHwManager.disconnect()
             if let testnet = testnet, testnet {
-                account?.networkId = NetworkId.electrumTestnet
+                wallet?.networkId = NetworkId.electrumTestnet
             }
             await MainActor.run {
                 let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-                if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectViewController") as? ConnectViewController, let account = account {
+                if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectViewController") as? ConnectViewController, let wallet {
                     vc.viewModel = ConnectViewModel(
-                        account: account,
+                        wallet: wallet,
                         firstConnection: true,
                         storeConnection: true
                     )

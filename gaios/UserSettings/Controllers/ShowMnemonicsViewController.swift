@@ -61,10 +61,10 @@ class ShowMnemonicsViewController: UIViewController {
     }
 
     func getLightningCredentials() -> Credentials? {
-        guard let account = WalletsStorage.shared.current else {
+        guard let wallet = WalletsStorage.shared.current else {
             return nil
         }
-        return try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
+        return try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: wallet.keychainLightning)
     }
 
     func reload(showLightning: Bool) async {

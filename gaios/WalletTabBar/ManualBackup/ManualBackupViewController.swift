@@ -58,7 +58,7 @@ class ManualBackupViewController: UIViewController {
         } else {
             mnemonic = try? generateMnemonic12()
         }
-        if let mnemonic, let vc = AccountNavigator.phraseNoteDown(phrase: mnemonic,
+        if let mnemonic, let vc = WalletNavigator.phraseNoteDown(phrase: mnemonic,
         subAccountCreateDelegate: subAccountCreateDelegate) {
             navigationController?.pushViewController(vc, animated: true)
         }
@@ -76,14 +76,14 @@ class ManualBackupViewController: UIViewController {
     @IBAction func btnNext(_ sender: Any) {
         switch viewModel.flowType {
         case .phrase:
-            if let vc = AccountNavigator.mnemonic() {
+            if let vc = WalletNavigator.mnemonic() {
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .quiz:
             Task {
                 if let credentials = try? await wm.prominentSession.getCredentials(password: "") {
                     if let mnemonic = credentials.mnemonic {
-                        if let vc = AccountNavigator.phraseNoteDown(phrase: mnemonic) {
+                        if let vc = WalletNavigator.phraseNoteDown(phrase: mnemonic) {
                             navigationController?.pushViewController(vc, animated: true)
                         }
                     }

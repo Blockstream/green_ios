@@ -101,7 +101,7 @@ class TabTransactVC: TabViewController {
     }
 
     func swapScreen() {
-        AnalyticsManager.shared.swapEntry(account: WalletsStorage.shared.current)
+        AnalyticsManager.shared.swapEntry(wallet: WalletsStorage.shared.current)
         if viewModel.mainWallet.isJade && !viewModel.existBoltzKey() {
             let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
             let vc = storyboard.instantiateViewController(identifier: "DialogSwapJadeViewController") { coder in
@@ -123,7 +123,7 @@ class TabTransactVC: TabViewController {
     @MainActor
     func pushJadeBoltzExportViewController() {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        let viewModel = JadeBoltzExportViewModel(wallet: viewModel.wallet, mainWallet: viewModel.mainWallet)
+        let viewModel = JadeBoltzExportViewModel(wm: viewModel.wm, mainWallet: viewModel.mainWallet)
         let vc = storyboard.instantiateViewController(identifier: "JadeBoltzExportViewController") { coder in
             JadeBoltzExportViewController(coder: coder, viewModel: viewModel)
         }
@@ -458,7 +458,7 @@ extension TabTransactVC: AssetSelectViewControllerDelegate {
 extension TabTransactVC: DialogAccountsViewControllerDelegate {
     func didSelectAccount(_ walletItem: Account?) {
         if let nav = navigationController, let account = walletItem, let anyOrAsset {
-            activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainWallet) { [
+            activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainWallet: viewModel.mainWallet) { [
                 weak self,
                 weak nav
             ] in

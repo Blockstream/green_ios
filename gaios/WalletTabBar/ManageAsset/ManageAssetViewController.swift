@@ -157,7 +157,7 @@ class ManageAssetViewController: UIViewController {
         let subaccount = viewModel.subaccounts[indexPath.row]
         let vm = ManageAssetViewModel(
             walletDataModel: viewModel.walletDataModel,
-            wallet: viewModel.wallet,
+            wm: viewModel.wm,
             mainWallet: viewModel.mainWallet,
             assetId: viewModel.assetId,
             selectedSubaccount: subaccount
@@ -223,7 +223,7 @@ class ManageAssetViewController: UIViewController {
     func lightningTransfer() {
         let viewModel = LTRedeemViewModel(
             wallet: viewModel.selectedSubaccount,
-            amount: viewModel.wallet.lightningSession?
+            amount: viewModel.wm.lightningSession?
                 .nodeState()?.onchainBalanceMsat.satoshi ?? 0)
         pushLTReedemViewController(viewModel)
     }
@@ -245,7 +245,7 @@ class ManageAssetViewController: UIViewController {
         }
     }
     func pushLTSettingsViewController() {
-        if !viewModel.wallet.hasLightning {
+        if !viewModel.wm.hasLightning {
             DropAlert().warning(message: "Create a lightning account")
             return
         }
@@ -259,7 +259,7 @@ class ManageAssetViewController: UIViewController {
     @MainActor
     func pushJadeBoltzExportViewController() {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        let viewModel = JadeBoltzExportViewModel(wallet: viewModel.wallet, mainWallet: viewModel.mainWallet)
+        let viewModel = JadeBoltzExportViewModel(wm: viewModel.wm, mainWallet: viewModel.mainWallet)
         let vc = storyboard.instantiateViewController(identifier: "JadeBoltzExportViewController") { coder in
             JadeBoltzExportViewController(coder: coder, viewModel: viewModel)
         }
@@ -339,7 +339,7 @@ extension ManageAssetViewController: UITableViewDelegate, UITableViewDataSource 
                 let model = AccountCellModel(
                     account: subaccount,
                     satoshi: (try? subaccount
-                        .assets(viewModel.wallet)[viewModel.assetId]) ?? 0,
+                        .assets(viewModel.wm)[viewModel.assetId]) ?? 0,
                     assetId: viewModel.assetId
 )
                 cell.configure(
@@ -490,7 +490,7 @@ extension ManageAssetViewController {
 
 extension ManageAssetViewController {
     func swapScreen() {
-        AnalyticsManager.shared.swapEntry(account: WalletsStorage.shared.current)
+        AnalyticsManager.shared.swapEntry(wallet: WalletsStorage.shared.current)
         if viewModel.mainWallet.isJade && !viewModel.existBoltzKey() {
             let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
             let vc = storyboard.instantiateViewController(identifier: "DialogSwapJadeViewController") { coder in
@@ -511,7 +511,7 @@ extension ManageAssetViewController {
     }
 
     func buyScreen() {
-        AnalyticsManager.shared.buyInitiate(account: WalletsStorage.shared.current)
+        AnalyticsManager.shared.buyInitiate(wallet: WalletsStorage.shared.current)
         if !getCountlyRemoteConfigEnableBuyIosUk() && checkUKRegion() {
             showAlert(title: "id_buy_bitcoin".localized, message: "id_feature_unavailable_in_the_uk".localized)
             return
@@ -548,7 +548,7 @@ extension ManageAssetViewController {
     }
     func receiveScreen() {
         if let nav = navigationController, let account = viewModel.selectedSubaccount {
-            activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainAccount: viewModel.mainWallet) { [
+            activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainWallet: viewModel.mainWallet) { [
                 weak self,
                 weak nav
             ] in

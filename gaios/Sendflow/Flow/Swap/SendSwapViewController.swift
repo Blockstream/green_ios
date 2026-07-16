@@ -234,7 +234,7 @@ class SendSwapViewController: UIViewController {
     }
     @MainActor
     @IBAction func btnNext(_ sender: Any) {
-        AnalyticsManager.shared.swapInitiate(account: WalletsStorage.shared.current,
+        AnalyticsManager.shared.swapInitiate(wallet: WalletsStorage.shared.current,
                                              from: viewModel.currentState().from.chain,
                                              to: viewModel.currentState().to.chain)
         Task { [weak viewModel] in

@@ -13,14 +13,14 @@ class BiometricLoginViewController: UIViewController {
     @IBOutlet weak var pinButton: UIButton!
 
     var viewModel: LoginViewModel!
-    private var account: Wallet { viewModel.account }
+    private var wallet: Wallet { viewModel.wallet }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setStyle()
         setContent()
         setNavigation()
-        AnalyticsManager.shared.recordView(.login, sgmt: AnalyticsManager.shared.sessSgmt(account))
+        AnalyticsManager.shared.recordView(.login, sgmt: AnalyticsManager.shared.sessSgmt(wallet))
     }
 
     func setNavigation() {
@@ -29,11 +29,11 @@ class BiometricLoginViewController: UIViewController {
     }
 
     func setContent() {
-        titleLabel.text = account.name.localized
+        titleLabel.text = wallet.name.localized
         subtitleLabel.text = "id_try_face_id_again_or_enter_your".localized
         let attrTitle = NSAttributedString(string: "id_type_pin".localized, attributes: [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue, NSAttributedString.Key.foregroundColor: UIColor.gAccent()])
         pinButton.setAttributedTitle(attrTitle, for: .normal)
-        pinButton.isHidden = !account.hasManualPin
+        pinButton.isHidden = !wallet.hasManualPin
         biometricButton.setTitle("", for: .normal)
         switch AuthenticationTypeHandler.biometryType {
         case .faceID:
@@ -76,11 +76,11 @@ class BiometricLoginViewController: UIViewController {
     }
 
     func autologin() {
-        if AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain) {
+        if AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: wallet.keychain) {
             Task { [weak self] in
                 await self?.login(usingAuth: .AuthKeyBiometric)
             }
-        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: account.keychain) {
+        } else if AuthenticationTypeHandler.findAuth(method: .AuthKeyWoCredentials, forNetwork: wallet.keychain) {
             Task { [weak self] in
                 await self?.login(usingAuth: .AuthKeyWoCredentials)
             }
@@ -97,11 +97,11 @@ class BiometricLoginViewController: UIViewController {
         let isTorActive = AppSettings.shared.gdkSettings?.tor == true
         let torIcon = isTorActive ? UIImage(named: "ic_tor") : nil
         self.startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon)
-        let account = viewModel.account
+        let wallet = viewModel.wallet
         let task = Task.detached { [weak self] in
             switch usingAuth {
             case .AuthKeyWoCredentials:
-                let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
+                let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: wallet.keychain)
                 _ = try await self?.viewModel.loginWithCredentials(credentials: credentials)
             case .AuthKeyBiometric:
                 try await self?.viewModel.loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
@@ -120,10 +120,10 @@ class BiometricLoginViewController: UIViewController {
     @MainActor
     func success() {
         self.startLoader(message: "id_loading_wallet".localized)
-        AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .biometrics)
+        AnalyticsManager.shared.loginWalletEnd(wallet: wallet, loginType: .biometrics)
         AnalyticsManager.shared.activeWalletStart()
-        BackupHelper.shared.cleanDismissedCache(walletId: account.id)
-        AccountNavigator.navLogged(walletId: account.id)
+        BackupHelper.shared.cleanDismissedCache(walletId: wallet.id)
+        WalletNavigator.navLogged(walletId: wallet.id)
     }
 
     func failureAuthError(error: AuthenticationTypeHandler.AuthError) {
@@ -156,7 +156,7 @@ class BiometricLoginViewController: UIViewController {
     @MainActor
     func failure(error: Error, enableFailingCounter: Bool) {
         self.stopLoader()
-        AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: error.description())
+        AnalyticsManager.shared.failedWalletLogin(wallet: wallet, error: error, prettyError: error.description())
         if let error = error as? AuthenticationTypeHandler.AuthError {
             failureAuthError(error: error)
             return
@@ -164,13 +164,13 @@ class BiometricLoginViewController: UIViewController {
         switch error {
         case LoginError.connectionFailed:
             DropAlert().error(message: "id_connection_failed".localized)
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: "id_connection_failed")
+            AnalyticsManager.shared.failedWalletLogin(wallet: wallet, error: error, prettyError: "id_connection_failed")
         case LoginError.walletNotFound:
             let msg = "id_wallet_not_found"
             DropAlert().error(message: msg.localized)
             showError(msg: msg)
         case GaError.NotAuthorizedError(_):
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: "id_not_authorized")
+            AnalyticsManager.shared.failedWalletLogin(wallet: wallet, error: error, prettyError: "id_not_authorized")
         case TwoFactorCallError.failure(let msg):
             if msg.contains("id_connection_failed") {
                 DropAlert().error(message: msg.localized)
@@ -178,12 +178,12 @@ class BiometricLoginViewController: UIViewController {
                 DropAlert().error(message: msg.localized)
                 showError(msg: msg)
             }
-            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
+            AnalyticsManager.shared.failedWalletLogin(wallet: self.wallet, error: error, prettyError: msg)
         default:
             let msg = "id_login_failed"
             DropAlert().error(message: msg.localized)
             showError(msg: msg)
-            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
+            AnalyticsManager.shared.failedWalletLogin(wallet: self.wallet, error: error, prettyError: msg)
         }
     }
     func showError(msg: String) {
@@ -198,7 +198,7 @@ class BiometricLoginViewController: UIViewController {
     func showReportError(msg: String) {
         let request = ZendeskErrorRequest(
             error: msg,
-            network: viewModel.account.networkId,
+            network: viewModel.wallet.networkId,
             paymentHash: nil,
             screenName: "Login")
         presentContactUsViewController(request: request)
@@ -209,7 +209,7 @@ class BiometricLoginViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .default) { _ in })
         if enableReset {
             alert.addAction(UIAlertAction(title: "id_reset".localized, style: .destructive) { _ in
-                self.account.removeAuthentication(.AuthKeyBiometric)
+                self.wallet.removeAuthentication(.AuthKeyBiometric)
             })
         }
         DispatchQueue.main.async {

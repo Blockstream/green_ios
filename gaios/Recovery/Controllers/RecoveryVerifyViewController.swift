@@ -111,11 +111,11 @@ class RecoveryVerifyViewController: UIViewController {
             subAccountCreateDelegate?.didNewRecoveryPhrase(mnemonic)
             return
         }
-        guard let account = WalletsStorage.shared.current else {
+        guard let wallet = WalletsStorage.shared.current else {
             return
         }
-        BackupHelper.shared.removeFromBackupList(account.id)
-        if !account.hasManualPin {
+        BackupHelper.shared.removeFromBackupList(wallet.id)
+        if !wallet.hasManualPin {
             pushSetPinViewController()
         } else {
             pushBackupSuccessViewController()

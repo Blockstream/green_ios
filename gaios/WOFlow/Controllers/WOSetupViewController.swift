@@ -180,7 +180,7 @@ class WOSetupViewController: KeyboardViewController {
     @MainActor
     func success(wallet: Wallet) {
         stopLoader()
-        AccountNavigator.navLogged(walletId: wallet.id)
+        WalletNavigator.navLogged(walletId: wallet.id)
     }
 
     @MainActor
@@ -198,7 +198,7 @@ class WOSetupViewController: KeyboardViewController {
         }
         stopLoader()
         DropAlert().error(message: prettyError.localized)
-        AnalyticsManager.shared.failedWalletLogin(account: wallet, error: error, prettyError: prettyError)
+        AnalyticsManager.shared.failedWalletLogin(wallet: wallet, error: error, prettyError: prettyError)
         WalletsRepository.shared.delete(for: wallet)
     }
 }

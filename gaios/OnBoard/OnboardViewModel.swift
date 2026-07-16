@@ -18,7 +18,7 @@ class OnboardViewModel {
     static var flowType: OnBoardingFlowType = .add
     static var chainType: OnBoardingChainType = .mainnet
     static var credentials: Credentials?
-    static var restoreAccountId: String?
+    static var restoreWalletId: String?
 
     func getBIP39WordList(_ mnemonic: String) -> [String] {
         greenaddress.getBIP39WordList()
@@ -38,16 +38,16 @@ class OnboardViewModel {
         return walletId?.xpubHashId
     }
 
-    func checkWalletsJustRestored(account: Wallet, credentials: Credentials) async throws {
+    func checkWalletsJustRestored(wallet: Wallet, credentials: Credentials) async throws {
         // Avoid to restore an existing wallets
-        let session = SessionManager(account.networkId)
+        let session = SessionManager(wallet.networkId)
         let xpub = try await getXpubHashId(session: session, credentials: credentials)
         let prevAccounts = WalletsStorage.shared.find(xpubHashId: xpub ?? "")?
             .filter {
-                $0.networkId == account.networkId &&
+                $0.networkId == wallet.networkId &&
                 !$0.isHW && !$0.isWatchonly &&
-                $0.id != account.id &&
-                $0.id != OnboardViewModel.restoreAccountId } ?? []
+                $0.id != wallet.id &&
+                $0.id != OnboardViewModel.restoreWalletId } ?? []
         if !prevAccounts.isEmpty {
             if prevAccounts.count == 1, let name = prevAccounts.first?.name {
                 throw LoginError.walletsJustRestored(String(format: "id_wallet_already_restored_s".localized, name))
@@ -56,106 +56,106 @@ class OnboardViewModel {
         }
     }
 
-    func addPinData(wallet: WalletManager, account: Wallet, credentials: Credentials, pin: String) async throws -> Credentials {
-        let session = wallet.prominentSession
+    func addPinData(wm: WalletManager, wallet: Wallet, credentials: Credentials, pin: String) async throws -> Credentials {
+        let session = wm.prominentSession
         try await session.connect()
         let encryptParams = EncryptWithPinParams(pin: pin, credentials: credentials)
         let encrypted = try await session.encryptWithPin(encryptParams)
-        try AuthenticationTypeHandler.setPinData(method: .AuthKeyPIN, pinData: encrypted.pinData, extraData: nil, for: account.keychain)
-        let pinData = try AuthenticationTypeHandler.getPinData(method: .AuthKeyPIN, for: account.keychain)
+        try AuthenticationTypeHandler.setPinData(method: .AuthKeyPIN, pinData: encrypted.pinData, extraData: nil, for: wallet.keychain)
+        let pinData = try AuthenticationTypeHandler.getPinData(method: .AuthKeyPIN, for: wallet.keychain)
         let decryptParams = DecryptWithPinParams(pin: pin, pinData: pinData)
         return try await session.decryptWithPin(decryptParams)
     }
 
-    func addBiometricData(wallet: WalletManager, account: Wallet, credentials: Credentials) async throws -> Credentials {
+    func addBiometricData(wm: WalletManager, wallet: Wallet, credentials: Credentials) async throws -> Credentials {
         var pinData = PinData(encryptedData: "", pinIdentifier: UUID().uuidString, salt: "", encryptedBiometric: nil, plaintextBiometric: nil)
-        try AuthenticationTypeHandler.setPinData(method: .AuthKeyBiometric, pinData: pinData, extraData: credentials.mnemonic, for: account.keychain)
-        pinData = try AuthenticationTypeHandler.getPinData(method: .AuthKeyBiometric, for: account.keychain)
+        try AuthenticationTypeHandler.setPinData(method: .AuthKeyBiometric, pinData: pinData, extraData: credentials.mnemonic, for: wallet.keychain)
+        pinData = try AuthenticationTypeHandler.getPinData(method: .AuthKeyBiometric, for: wallet.keychain)
         return Credentials(mnemonic: pinData.plaintextBiometric, pinData: pinData)
     }
 
     func restoreWallet(credentials: Credentials, pin: String?) async throws -> (Wallet, WalletManager) {
         var credentials = credentials
         try await self.validateMnemonic(credentials.mnemonic ?? "")
-        var account = try await createAccount()
-        let wallet = WalletsRepository.shared.getOrAdd(for: account)
-        wallet.popupResolver = await PopupResolver()
-        wallet.hwInterfaceResolver = HwPopupResolver()
+        var wallet = try await createWallet()
+        let wm = WalletsRepository.shared.getOrAdd(for: wallet)
+        wm.popupResolver = await PopupResolver()
+        wm.hwInterfaceResolver = HwPopupResolver()
         // setup auth
         if let pin = pin {
-            credentials = try await addPinData(wallet: wallet, account: account, credentials: credentials, pin: pin)
+            credentials = try await addPinData(wm: wm, wallet: wallet, credentials: credentials, pin: pin)
         } else {
-            credentials = try await addBiometricData(wallet: wallet, account: account, credentials: credentials)
+            credentials = try await addBiometricData(wm: wm, wallet: wallet, credentials: credentials)
         }
-        try await checkWalletsJustRestored(account: account, credentials: credentials)
+        try await checkWalletsJustRestored(wallet: wallet, credentials: credentials)
         // login
-        let boltzCredentials = try wallet.deriveBoltzCredentials(from: credentials)
-        let lightningCredentials = try wallet.deriveLightningCredentials(from: credentials)
+        let boltzCredentials = try wm.deriveBoltzCredentials(from: credentials)
+        let lightningCredentials = try wm.deriveLightningCredentials(from: credentials)
         // add boltz auth into keychain
-        try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: boltzCredentials, for: account.keychain)
-        let res = try await wallet.login(
+        try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: boltzCredentials, for: wallet.keychain)
+        let res = try await wm.login(
             credentials: credentials,
             lightningCredentials: lightningCredentials,
             boltzCredentials: boltzCredentials,
             device: nil,
             fullRestore: true,
             creation: false)
-        account.applyLoginResult(res, credentials: credentials)
+        wallet.applyLoginResult(res, credentials: credentials)
         // add lightning auth into keychain only if it successfully restored
-        if wallet.lightningSession?.logged == true {
-            try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: lightningCredentials, for: account.keychainLightning)
+        if wm.lightningSession?.logged == true {
+            try? AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: lightningCredentials, for: wallet.keychainLightning)
         } else {
-            account.removeAuthentication(.AuthKeyLightning)
+            wallet.removeAuthentication(.AuthKeyLightning)
         }
         // cleanup previous restored account
-        if let restoreAccountId = OnboardViewModel.restoreAccountId {
-            if let restoredAccount = WalletsStorage.shared.get(for: restoreAccountId) {
-                account.name = restoredAccount.name
-                await WalletsStorage.shared.remove(restoredAccount)
+        if let restoreWalletId = OnboardViewModel.restoreWalletId {
+            if let restoredWallet = WalletsStorage.shared.get(for: restoreWalletId) {
+                wallet.name = restoredWallet.name
+                await WalletsStorage.shared.remove(restoredWallet)
             }
         }
         // notify analytics
-        AnalyticsManager.shared.importWallet(account: account)
-        return (account, wallet)
+        AnalyticsManager.shared.importWallet(wallet: wallet)
+        return (wallet, wm)
     }
 
     func createWallet(pin: String?) async throws -> (Wallet, WalletManager) {
-        var account = try await createAccount()
+        var wallet = try await createWallet()
         let mnemonic = try generateMnemonic12()
         var credentials = Credentials(mnemonic: mnemonic)
-        let wallet = WalletsRepository.shared.getOrAdd(for: account)
+        let wm = WalletsRepository.shared.getOrAdd(for: wallet)
         if let pin = pin {
-            credentials = try await addPinData(wallet: wallet, account: account, credentials: credentials, pin: pin)
+            credentials = try await addPinData(wm: wm, wallet: wallet, credentials: credentials, pin: pin)
         } else {
-            credentials = try await addBiometricData(wallet: wallet, account: account, credentials: credentials)
+            credentials = try await addBiometricData(wm: wm, wallet: wallet, credentials: credentials)
         }
-        let boltzCredentials = try wallet.deriveBoltzCredentials(from: credentials)
-        try AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: boltzCredentials, for: account.keychain)
-        let res = try await wallet.login(
+        let boltzCredentials = try wm.deriveBoltzCredentials(from: credentials)
+        try AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: boltzCredentials, for: wallet.keychain)
+        let res = try await wm.login(
             credentials: credentials,
             lightningCredentials: nil,
             boltzCredentials: boltzCredentials,
             device: nil,
             fullRestore: false,
             creation: true)
-        account.applyLoginResult(res, credentials: credentials)
-        return (account, wallet)
+        wallet.applyLoginResult(res, credentials: credentials)
+        return (wallet, wm)
     }
 
-    func createAccount() async throws -> Wallet {
+    func createWallet() async throws -> Wallet {
         let testnet = OnboardViewModel.chainType == .testnet ? true : false
         let name = WalletsStorage.shared.getUniqueAccountName(testnet: testnet)
         let mainNetwork: NetworkId = testnet ? .electrumTestnet : .electrumMainnet
         return Wallet(name: name, network: mainNetwork)
     }
 
-    func setupPinWallet(credentials: Credentials, pin: String, account: Wallet, wm: WalletManager) async throws -> (Wallet, WalletManager) {
+    func setupPinWallet(credentials: Credentials, pin: String, wallet: Wallet, wm: WalletManager) async throws -> (Wallet, WalletManager) {
         let session = wm.prominentSession
         try await session.connect()
-        try await account.addPin(session: session, pin: pin, credentials: credentials)
-        var account = account
-        account.attempts = 0
-        WalletsStorage.shared.upsert(account)
-        return (account, wm)
+        try await wallet.addPin(session: session, pin: pin, credentials: credentials)
+        var wallet = wallet
+        wallet.attempts = 0
+        WalletsStorage.shared.upsert(wallet)
+        return (wallet, wm)
     }
 }

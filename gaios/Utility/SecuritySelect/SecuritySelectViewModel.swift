@@ -126,13 +126,13 @@ class SecuritySelectViewModel {
     }
 
     func loginHW(session: SessionManager) async throws {
-        guard let account = WalletsStorage.shared.current else {
+        guard let wallet = WalletsStorage.shared.current else {
             throw GaError.GenericError("No account provided")
         }
-        if session.gdkNetwork.liquid && account.isLedger {
+        if session.gdkNetwork.liquid && wallet.isLedger {
             throw GaError.GenericError("Liquid not supported on Ledger Nano X")
         }
-        let hw = account.isJade ? HWDevice.defaultJade(fmwVersion: nil) : HWDevice.defaultLedger()
+        let hw = wallet.isJade ? HWDevice.defaultJade(fmwVersion: nil) : HWDevice.defaultLedger()
         do {
             try await session.register(hw: hw)
             _ = try await session.loginUser(hw)

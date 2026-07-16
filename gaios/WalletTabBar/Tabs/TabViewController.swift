@@ -52,7 +52,7 @@ class TabViewController: UIViewController {
         WalletManager.current?.bitcoinSubaccounts ?? []//.sorted(by: { $0.btc ?? 0 > $1.btc ?? 0 }) ?? []
     }
     func buyScreen(currency: String, hideBalance: Bool) {
-        AnalyticsManager.shared.buyInitiate(account: WalletsStorage.shared.current)
+        AnalyticsManager.shared.buyInitiate(wallet: WalletsStorage.shared.current)
         if !getCountlyRemoteConfigEnableBuyIosUk() && checkUKRegion() {
             showAlert(title: "id_buy_btc".localized, message: "id_feature_unavailable_in_the_uk".localized)
             return

@@ -13,13 +13,13 @@ protocol ConnectViewModelDelegate: AnyObject {
 
 class ConnectViewModel: NSObject {
 
-    var account: Wallet
+    var wallet: Wallet
     var firstConnection: Bool = false
     var storeConnection: Bool = true
     var autologin: Bool = true
     var isScanning: Bool = false
     var state: ConnectionState = .none
-    var isJade: Bool { account.isJade }
+    var isJade: Bool { wallet.isJade }
     var updateState: ((ConnectionState)->())?
     var peripherals: [ScanListItem] = []
     var bleHwManager: BleHwManager { BleHwManager.shared }
@@ -37,7 +37,7 @@ class ConnectViewModel: NSObject {
     }
 
     internal init(
-        account: Wallet,
+        wallet: Wallet,
         firstConnection: Bool,
         storeConnection: Bool,
         state: ConnectionState = .none,
@@ -47,7 +47,7 @@ class ConnectViewModel: NSObject {
         peripheralID: UUID? = nil,
         type: DeviceType = .Jade,
         autologin: Bool = true) {
-            self.account = account
+            self.wallet = wallet
             self.state = state
             self.firstConnection = firstConnection
             self.storeConnection = storeConnection
@@ -118,7 +118,7 @@ class ConnectViewModel: NSObject {
             try await bleHwManager.ping()
             let version = try await bleHwManager.jade?.version()
             AnalyticsManager.shared.hwwConnected(
-                account: account,
+                wallet: wallet,
                 fwVersion: version?.jadeVersion,
                 model: "\(version?.boardType.rawValue ?? "")")
             updateState?(.connected)
@@ -126,7 +126,7 @@ class ConnectViewModel: NSObject {
             _ = try await bleHwManager.ledger?.getLedgerNetwork()
             let version = try await bleHwManager.ledger?.version()
             AnalyticsManager.shared.hwwConnected(
-                account: account,
+                wallet: wallet,
                 fwVersion: version ?? "",
                 model: "Ledger Nano X")
             updateState?(.connected)
@@ -138,7 +138,7 @@ class ConnectViewModel: NSObject {
         updateState?(.auth(version))
         // authentication
         for i in 0..<3 {
-            let res = try await bleHwManager.authenticating(testnet: account.networkId.testnet)
+            let res = try await bleHwManager.authenticating(testnet: wallet.networkId.testnet)
             if res == true {
                 break
             } else if i == 2 {
@@ -149,11 +149,11 @@ class ConnectViewModel: NSObject {
         _ = try await bleHwManager.jade?.silentMasterBlindingKey()
         // login
         updateState?(.login)
-        let (account, wm) = try await bleHwManager.login(account: account, fullRestore: firstConnection)
-        self.account = account
-        WalletsStorage.shared.current = account
+        let (wallet, wm) = try await bleHwManager.login(wallet: wallet, fullRestore: firstConnection)
+        self.wallet = wallet
+        WalletsStorage.shared.current = wallet
         if storeConnection {
-            WalletsRepository.shared.add(for: account, wm: wm)
+            WalletsRepository.shared.add(for: wallet, wm: wm)
         }
     }
 
@@ -165,7 +165,7 @@ class ConnectViewModel: NSObject {
             .compactMap({ $0.coreDescriptors })
             .reduce(into: [], { $0 += $1 })
         let credentials = Credentials(coreDescriptors: descriptors)
-        _ = try AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoCredentials, credentials: credentials, for: account.keychain)
+        _ = try AuthenticationTypeHandler.setCredentials(method: .AuthKeyWoCredentials, credentials: credentials, for: wallet.keychain)
     }
 
     func checkFirmware() async throws -> (JadeVersionInfo?, Firmware?) {
@@ -185,25 +185,25 @@ class ConnectViewModel: NSObject {
         }
         // login
         updateState?(.login)
-        let (account, wm) = try await bleHwManager.login(account: account, fullRestore: firstConnection)
+        let (wallet, wm) = try await bleHwManager.login(wallet: wallet, fullRestore: firstConnection)
         // use updated account
-        self.account = account
-        WalletsStorage.shared.current = account
+        self.wallet = wallet
+        WalletsStorage.shared.current = wallet
         if storeConnection {
-            WalletsRepository.shared.add(for: account, wm: wm)
+            WalletsRepository.shared.add(for: wallet, wm: wm)
         }
     }
 
     func getCredentials(method: AuthenticationTypeHandler.AuthType) async throws -> Credentials {
         switch method {
         case .AuthKeyWoCredentials:
-            return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
+            return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: wallet.keychain)
         case .AuthKeyWoBioCredentials:
-            return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: account.keychain)
+            return try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoBioCredentials, for: wallet.keychain)
         case .AuthKeyBiometric, .AuthKeyPIN:
-            let wm = WalletManager(networkId: account.networkId)
+            let wm = WalletManager(networkId: wallet.networkId)
             let session = wm.prominentSession
-            let data = try AuthenticationTypeHandler.getPinData(method: method, for: account.keychain)
+            let data = try AuthenticationTypeHandler.getPinData(method: method, for: wallet.keychain)
             try await session.connect()
             let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
             return try await session.decryptWithPin(decrypt)
@@ -215,15 +215,15 @@ class ConnectViewModel: NSObject {
     func loginJadeWatchonly(method: AuthenticationTypeHandler.AuthType) async throws {
         updateState?(.watchonly)
         AnalyticsManager.shared.loginWalletStart()
-        guard account.xpubHashId != nil else {
+        guard wallet.xpubHashId != nil else {
             throw GaError.GenericError("Wallet not found")
         }
-        let wm = WalletManager(networkId: account.networkId)
+        let wm = WalletManager(networkId: wallet.networkId)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = HwPopupResolver()
         let credentials = try await getCredentials(method: method)
-        let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: account.keychainLightning)
-        let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: account.keychain)
+        let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: wallet.keychainLightning)
+        let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: wallet.keychain)
         updateState?(.login)
         _ = try await wm.login(
             credentials: credentials,
@@ -232,10 +232,10 @@ class ConnectViewModel: NSObject {
             device: nil,
             fullRestore: false,
             creation: false,
-            parentXpub: account.xpubHashId)
-        WalletsStorage.shared.current = account
+            parentXpub: wallet.xpubHashId)
+        WalletsStorage.shared.current = wallet
         if storeConnection {
-            WalletsRepository.shared.add(for: account, wm: wm)
+            WalletsRepository.shared.add(for: wallet, wm: wm)
         }
     }
 }

@@ -132,7 +132,7 @@ class WOViewModel {
         )
         wallet.applyLoginResult(res, credentials: credentials)
         WalletsStorage.shared.current = wallet
-        AnalyticsManager.shared.loginWalletEnd(account: wallet, loginType: .watchOnly)
+        AnalyticsManager.shared.loginWalletEnd(wallet: wallet, loginType: .watchOnly)
     }
 
     func setupSinglesig(credentials: Credentials) async throws {

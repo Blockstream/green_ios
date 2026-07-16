@@ -168,9 +168,10 @@ class LNInvoiceViewController: UIViewController {
                                                        media: AnalyticsManager.ReceiveAddressMedia.text,
                                                        method: AnalyticsManager.ReceiveAddressMethod.copy)
         AnalyticsManager.shared
-            .receiveAddress(account: WalletsStorage.shared.current,
-                                               walletItem: viewModel.account,
-                                               data: data)
+            .receiveAddress(
+                wallet: WalletsStorage.shared.current,
+                account: viewModel.account,
+                data: data)
         UIPasteboard.general.string = text
         switch viewModel.type {
         case .bolt11, .lwkSwap:
@@ -253,8 +254,8 @@ extension LNInvoiceViewController: DialogListViewControllerDelegate {
                     media: AnalyticsManager.ReceiveAddressMedia.text,
                     method: AnalyticsManager.ReceiveAddressMethod.share)
                 AnalyticsManager.shared.receiveAddress(
-                    account: WalletsStorage.shared.current,
-                    walletItem: viewModel.account,
+                    wallet: WalletsStorage.shared.current,
+                    account: viewModel.account,
                     data: data)
             case .qr:
                 let uri = viewModel.bolt11
@@ -263,8 +264,8 @@ extension LNInvoiceViewController: DialogListViewControllerDelegate {
                     media: AnalyticsManager.ReceiveAddressMedia.image,
                     method: AnalyticsManager.ReceiveAddressMethod.share)
                 AnalyticsManager.shared.receiveAddress(
-                    account: WalletsStorage.shared.current,
-                    walletItem: viewModel.account,
+                    wallet: WalletsStorage.shared.current,
+                    account: viewModel.account,
                     data: data)
                 Task {
                     let image = await imgToShare()

@@ -208,10 +208,10 @@ class SetPinViewController: UIViewController {
                 guard let credentials = try await WalletManager.current?.prominentNetworkBackend.session.getCredentials(password: "") else {
                     throw LoginError.failed("")
                 }
-                guard let wm = WalletManager.current, let account = WalletsStorage.shared.current else {
+                guard let wm = WalletManager.current, let wallet = WalletsStorage.shared.current else {
                     throw LoginError.failed("")
                 }
-                return try await self?.viewModel.setupPinWallet(credentials: credentials, pin: pin, account: account, wm: wm)
+                return try await self?.viewModel.setupPinWallet(credentials: credentials, pin: pin, wallet: wallet, wm: wm)
             case .restore:
                 await self?.startLoader(message: "id_restoring_your_wallet".localized, isRive: true)
                 guard let credentials = OnboardViewModel.credentials else {
@@ -233,13 +233,13 @@ class SetPinViewController: UIViewController {
                 if let account = accountWallet?.0 {
                     WalletsStorage.shared.current = account
                     AnalyticsManager.shared.activeWalletStart()
-                    AccountNavigator.navLogged(walletId: account.id, isCreated: false, isRestored: true)
+                    WalletNavigator.navLogged(walletId: account.id, isCreated: false, isRestored: true)
                 }
             case .create:
                 if let account = accountWallet?.0 {
                     WalletsStorage.shared.current = account
                     AnalyticsManager.shared.activeWalletStart()
-                    AccountNavigator.navLogged(walletId: account.id, isCreated: true, isRestored: false)
+                    WalletNavigator.navLogged(walletId: account.id, isCreated: true, isRestored: false)
                 }
             case .backup:
                 let storyboard = UIStoryboard(name: "Recovery", bundle: nil)

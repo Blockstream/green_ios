@@ -22,8 +22,8 @@ enum RefreshReceiveFeature: Sendable, Hashable {
 @MainActor
 final class ReceiveViewModel: Sendable {
     var walletDataModel: WalletDataModel
-    var wm: WalletManager { walletDataModel.wallet }
-    let mainAccount: Wallet
+    var wm: WalletManager { walletDataModel.wm }
+    let mainWallet: Wallet
     weak var delegate: ReceiveViewModelDelegate?
     private let receiveService: ReceiveService
 
@@ -37,7 +37,7 @@ final class ReceiveViewModel: Sendable {
     // Callback for UI updates
     var onUpdate: (@MainActor @Sendable (RefreshReceiveFeature?) -> Void)?
     init(
-        mainAccount: Wallet,
+        mainWallet: Wallet,
         walletDataModel: WalletDataModel,
         subaccount: Account,
         anyOrAsset: AnyOrAsset,
@@ -45,7 +45,7 @@ final class ReceiveViewModel: Sendable {
         receiveService: ReceiveService = ReceiveService(),
         onUpdate: (@MainActor @Sendable (RefreshReceiveFeature?) -> Void)? = nil,
     ) {
-        self.mainAccount = mainAccount
+        self.mainWallet = mainWallet
         self.delegate = delegate
         self.receiveService = receiveService
         self.walletDataModel = walletDataModel
@@ -54,7 +54,7 @@ final class ReceiveViewModel: Sendable {
             subaccount: subaccount,
             type: type,
             anyOrAsset: anyOrAsset,
-            inputDenomination: walletDataModel.wallet.prominentSession.settings?.denomination ?? .Sats
+            inputDenomination: walletDataModel.wm.prominentSession.settings?.denomination ?? .Sats
         )
         self.onUpdate = onUpdate
     }
@@ -166,7 +166,7 @@ final class ReceiveViewModel: Sendable {
         }
     }
     func dismissBackupCard() {
-        BackupHelper.shared.addToDismissed(walletId: mainAccount.id, position: .receive)
+        BackupHelper.shared.addToDismissed(walletId: mainWallet.id, position: .receive)
         onUpdate?(nil)
     }
     func editNote() {
@@ -206,7 +206,7 @@ final class ReceiveViewModel: Sendable {
         delegate?.denominationSelector(vm: self, model: model)
     }
     func onAddressAuth() {
-        let model = AddressAuthViewModel(wallet: state.subaccount)
+        let model = AddressAuthViewModel(account: state.subaccount)
         delegate?.addressAuth(model)
     }
     func onManualBackup() {
@@ -232,8 +232,8 @@ final class ReceiveViewModel: Sendable {
     }
     func receiveVerifyOnDeviceViewModel() -> HWDialogVerifyOnDeviceViewModel? {
         guard let address = state.address?.address else { return nil }
-        let account = WalletsStorage.shared.current
-        return HWDialogVerifyOnDeviceViewModel(isLedger: account?.isLedger ?? false,
+        let wallet = WalletsStorage.shared.current
+        return HWDialogVerifyOnDeviceViewModel(isLedger: wallet?.isLedger ?? false,
                                                address: address,
                                                isRedeposit: false,
                                                isDismissible: false)
@@ -368,6 +368,8 @@ final class ReceiveViewModel: Sendable {
         }
     }
     var showBackup: Bool {
-       return BackupHelper.shared.needsBackup(walletId: mainAccount.id) && BackupHelper.shared.isDismissed(walletId: mainAccount.id, position: .receive) == false
+        return BackupHelper.shared
+            .needsBackup(walletId: mainWallet.id) && BackupHelper.shared
+            .isDismissed(walletId: mainWallet.id, position: .receive) == false
     }
 }

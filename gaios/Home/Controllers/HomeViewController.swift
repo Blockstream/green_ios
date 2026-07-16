@@ -99,18 +99,18 @@ class HomeViewController: UIViewController {
     }
 
     func walletRename(_ index: String) {
-        let account = WalletsStorage.shared.get(for: index)
+        let wallet = WalletsStorage.shared.get(for: index)
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRenameViewController") as? DialogRenameViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             vc.index = index
-            vc.prefill = account?.name ?? ""
+            vc.prefill = wallet?.name ?? ""
             present(vc, animated: false, completion: nil)
         }
     }
 
-    func getAccountFromTableView(_ indexPath: IndexPath) -> Wallet? {
+    func getWalletFromTableView(_ indexPath: IndexPath) -> Wallet? {
         switch HomeSection(rawValue: indexPath.section) {
         case .swWallet:
             return WalletsStorage.shared.sws[indexPath.row]
@@ -123,25 +123,25 @@ class HomeViewController: UIViewController {
         }
     }
 
-    func goAccount(accountId: String) {
-        if let wm = WalletsRepository.shared.get(for: accountId), wm.logged {
-            AccountNavigator.navLogged(walletId: accountId)
+    func goWallet(walletId: String) {
+        if let wm = WalletsRepository.shared.get(for: walletId), wm.logged {
+            WalletNavigator.navLogged(walletId: walletId)
         } else {
-            if let vc = AccountNavigator.login(walletId: accountId, autologin: true) {
+            if let vc = WalletNavigator.login(walletId: walletId, autologin: true) {
                 navigationController?.pushViewController(vc, animated: true)
             }
         }
     }
 
     func onTapOverview(_ indexPath: IndexPath) {
-        if let account = getAccountFromTableView(indexPath) {
-            goAccount(accountId: account.id)
+        if let wallet = getWalletFromTableView(indexPath) {
+            goWallet(walletId: wallet.id)
         }
     }
 
-    func isOverviewSelected(_ account: Wallet) -> Bool {
+    func isOverviewSelected(_ wallet: Wallet) -> Bool {
         WalletsRepository.shared
-            .get(for: account.id)?.activeNetworkIds.count ?? 0 > 0
+            .get(for: wallet.id)?.activeNetworkIds.count ?? 0 > 0
     }
 
     func onPromo(_ promo: Promo) {
@@ -224,8 +224,8 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         let deleteTitle = "id_delete".localized
 
         let renameRowAction = UIContextualAction(style: .normal, title: renameTitle) { [weak self] (_, _, completed) -> Void in
-            if let account = self?.getAccountFromTableView(indexPath) {
-                self?.walletRename(account.id)
+            if let wallet = self?.getWalletFromTableView(indexPath) {
+                self?.walletRename(wallet.id)
             }
             completed(true)
         }
@@ -234,8 +234,8 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         renameRowAction.image = pencilImage
 
         let deleteRowAction = UIContextualAction(style: .destructive, title: deleteTitle) { [weak self] (_, _, completed) -> Void in
-            if let account = self?.getAccountFromTableView(indexPath) {
-                self?.walletDelete(account.id)
+            if let wallet = self?.getWalletFromTableView(indexPath) {
+                self?.walletDelete(wallet.id)
             }
             completed(true)
         }
@@ -362,9 +362,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case .swWallet:
-            let account = WalletsStorage.shared.sws[indexPath.row]
+            let wallet = WalletsStorage.shared.sws[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
-                cell.configure(item: account,
+                cell.configure(item: wallet,
                                indexPath: indexPath,
                                onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
                 cell.selectionStyle = .none
@@ -372,9 +372,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case .ephWallet:
-            let account = WalletsStorage.shared.ephs[indexPath.row]
+            let wallet = WalletsStorage.shared.ephs[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
-                cell.configure(item: account,
+                cell.configure(item: wallet,
                                indexPath: indexPath,
                                onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
                 cell.selectionStyle = .none
@@ -382,10 +382,10 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case .hwWallet:
-            let account = WalletsStorage.shared.hwsVisible[indexPath.row]
+            let wallet = WalletsStorage.shared.hwsVisible[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 cell.configure(
-                    item: account,
+                    item: wallet,
                     indexPath: indexPath,
                     onTap: { [weak self] indexPath in self?.onTapOverview(indexPath) })
                 cell.selectionStyle = .none
@@ -452,18 +452,18 @@ extension HomeViewController: UIPopoverPresentationControllerDelegate {
 
 extension HomeViewController: DialogRenameViewControllerDelegate, DialogDeleteViewControllerDelegate {
     func didRename(name: String, index: String?) {
-        if let index = index, var account = WalletsStorage.shared.get(for: index) {
-            account.name = name
-            WalletsStorage.shared.upsert(account)
+        if let index = index, var wallet = WalletsStorage.shared.get(for: index) {
+            wallet.name = name
+            WalletsStorage.shared.upsert(wallet)
             AnalyticsManager.shared.renameWallet()
             tableView.reloadData()
         }
     }
     func didDelete(_ index: String?) {
-        if let index = index, let account = WalletsStorage.shared.get(for: index) {
+        if let index = index, let wallet = WalletsStorage.shared.get(for: index) {
             Task {
                 self.startLoader(message: "id_removing_wallet".localized)
-                await WalletsStorage.shared.remove(account)
+                await WalletsStorage.shared.remove(wallet)
                 await MainActor.run {
                     self.stopLoader()
                     AnalyticsManager.shared.deleteWallet()

@@ -80,7 +80,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       
         
         // Open first page
-        AccountNavigator.navFirstPage()
+        WalletNavigator.navFirstPage()
 
         return true
     }

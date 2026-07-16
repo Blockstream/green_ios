@@ -37,9 +37,10 @@ class DialogAmountViewController: KeyboardViewController {
 
     var selectedType = TransactionBaseType.BTC
     var prefill: Int64?
-    var wallet: Account?
+    var account: Account?
 
     weak var delegate: DialogAmountViewControllerDelegate?
+    var feeAsset: String { account?.gdkNetwork.getFeeAsset() ?? "btc" }
 
     lazy var blurredView: UIView = {
         let containerView = UIView()
@@ -60,7 +61,7 @@ class DialogAmountViewController: KeyboardViewController {
 
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00".localeFormattedString(2), attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
         if let satoshi = prefill {
-            if let (amount, _) = Balance.fromSatoshi(satoshi, assetId: wallet!.gdkNetwork.getFeeAsset())?.toValue() {
+            if let (amount, _) = Balance.fromSatoshi(satoshi, assetId: feeAsset)?.toValue() {
                 amountTextField.text = "\(amount)"
             }
         }
@@ -80,7 +81,7 @@ class DialogAmountViewController: KeyboardViewController {
         let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTap))
             tappableBg.addGestureRecognizer(tapToClose)
 
-        AnalyticsManager.shared.recordView(.requestAmount, sgmt: AnalyticsManager.shared.subAccSeg(WalletsStorage.shared.current, walletItem: wallet))
+        AnalyticsManager.shared.recordView(.requestAmount, sgmt: AnalyticsManager.shared.subAccSeg(WalletsStorage.shared.current, account: account))
     }
 
     deinit {
@@ -98,11 +99,6 @@ class DialogAmountViewController: KeyboardViewController {
         amountTextField.becomeFirstResponder()
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         reload()
@@ -116,7 +112,7 @@ class DialogAmountViewController: KeyboardViewController {
 
     func updateEstimate() {
         let satoshi = getSatoshi() ?? 0
-        let assetId = wallet!.gdkNetwork.getFeeAsset()
+        let assetId = feeAsset
         if selectedType == TransactionBaseType.BTC {
             let (amount, denom) = Balance.fromSatoshi(satoshi, assetId: assetId)?.toFiat() ?? ("", "")
             lblHint.text = "≈ \(amount) \(denom)"
@@ -131,8 +127,8 @@ class DialogAmountViewController: KeyboardViewController {
                 let settings = session.settings else {
             return
         }
-        if selectedType == TransactionBaseType.BTC, let wallet = wallet {
-            let string = settings.denomination.string(for: wallet.gdkNetwork)
+        if selectedType == TransactionBaseType.BTC, let account {
+            let string = settings.denomination.string(for: account.gdkNetwork)
             lblDenom.text = string
         } else {
             let isMainnet = WalletsStorage.shared.current?.gdkNetwork.mainnet ?? true
@@ -185,7 +181,7 @@ class DialogAmountViewController: KeyboardViewController {
         amountText = amountText.isEmpty ? "0" : amountText
         amountText = amountText.unlocaleFormattedString(8)
         guard let number = Double(amountText), number > 0 else { return nil }
-        let assetId = wallet!.gdkNetwork.getFeeAsset()
+        let assetId = feeAsset
         if selectedType == TransactionBaseType.BTC {
             return Balance.from(amountText, assetId: assetId)?.satoshi
         } else {
@@ -227,7 +223,7 @@ class DialogAmountViewController: KeyboardViewController {
 
     @IBAction func btnFiat(_ sender: Any) {
         let satoshi = getSatoshi() ?? 0
-        let assetId = wallet!.gdkNetwork.getFeeAsset()
+        let assetId = feeAsset
         if let balance = Balance.fromSatoshi(satoshi, assetId: assetId) {
             let (amount, _) = selectedType == TransactionBaseType.BTC ? balance.toDenom() : balance.toFiat()
             if amount.isEmpty {

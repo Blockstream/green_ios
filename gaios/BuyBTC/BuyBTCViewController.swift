@@ -365,7 +365,7 @@ class BuyBTCViewController: KeyboardViewController {
         }
     }
     func verifySingleAddress() async {
-        AnalyticsManager.shared.verifyAddressJade(account: WalletsStorage.shared.current, walletItem: viewModel.account)
+        AnalyticsManager.shared.verifyAddressJade(wallet: WalletsStorage.shared.current, account: viewModel.account)
         if let vm = viewModel.verifyOnDeviceViewModel() {
             presentVerifyOnDeviceViewController(viewModel: vm)
         }
@@ -446,13 +446,13 @@ class BuyBTCViewController: KeyboardViewController {
     }
     @IBAction func btnNext(_ sender: Any) {
         if quotes.count != 0 {
-            AnalyticsManager.shared.buyRedirect(account: self.viewModel.mainWallet)
+            AnalyticsManager.shared.buyRedirect(wallet: self.viewModel.mainWallet)
             selectProvider(quotes[selectedIndex])
         }
     }
 
     @IBAction func btnBackup(_ sender: Any) {
-        if let vc = AccountNavigator.backupIntro(.quiz) {
+        if let vc = WalletNavigator.backupIntro(.quiz) {
             navigationController?.pushViewController(vc, animated: true)
         }
     }

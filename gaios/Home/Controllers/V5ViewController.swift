@@ -26,6 +26,6 @@ class V5ViewController: UIViewController {
         animateView.addSubview(riveView)
     }
     @IBAction func btnGetStarted(_ sender: Any) {
-        AccountNavigator.navFirstPage()
+        WalletNavigator.navFirstPage()
     }
 }

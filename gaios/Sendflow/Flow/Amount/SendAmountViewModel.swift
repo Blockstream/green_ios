@@ -164,7 +164,7 @@ final class SendAmountViewModel {
 
     private func submarineSwapLimits() async -> BoltzSwapInfoLimits? {
         if submarineSwapInfo == nil {
-            submarineSwapInfo = try? await wallet.wallet
+            submarineSwapInfo = try? await wallet.wm
                 .awaitLwkSession()?
                 .fetchSubmarineSwapsInfo()
         }
@@ -173,7 +173,7 @@ final class SendAmountViewModel {
 
     private func submarineSwapQuote(receiveAmount: UInt64) async throws -> Quote? {
         if submarineQuoteBuilder == nil {
-            guard let boltzSession = await wallet.wallet.awaitLwkSession()?.boltzSession else {
+            guard let boltzSession = await wallet.wm.awaitLwkSession()?.boltzSession else {
                 return nil
             }
             submarineQuoteBuilder = QuoteBuilder(boltzSession: boltzSession)
@@ -311,7 +311,7 @@ final class SendAmountViewModel {
         }
     }
     var backend: AccountBackend? {
-        return wallet.wallet.accountBackendOrNil(subaccount)
+        return wallet.wm.accountBackendOrNil(subaccount)
     }
     var maxSendAmount: UInt64? {
         if subaccount.isLightning {

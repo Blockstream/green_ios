@@ -5,13 +5,13 @@ import core
 extension Settings {
 
     func getScreenLock() -> ScreenLockType {
-        let account = WalletsStorage.shared.current
-        if account?.hasBioPin ?? false && account?.hasManualPin ?? false {
+        let wallet = WalletsStorage.shared.current
+        if wallet?.hasBioPin ?? false && wallet?.hasManualPin ?? false {
             return .All
-        } else if account?.hasBioPin ?? false {
+        } else if wallet?.hasBioPin ?? false {
             let biometryType = AuthenticationTypeHandler.biometryType
             return biometryType == .faceID ? .FaceID : .TouchID
-        } else if account?.hasManualPin ?? false {
+        } else if wallet?.hasManualPin ?? false {
             return .Pin
         } else {
             return .None

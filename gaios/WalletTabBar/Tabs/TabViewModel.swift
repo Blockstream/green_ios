@@ -5,15 +5,15 @@ import core
 @MainActor
 class TabViewModel {
     let walletDataModel: WalletDataModel
-    let wallet: WalletManager
+    let wm: WalletManager
     var mainWallet: Wallet
     var state = WalletState()
     @MainActor var onUpdate: ((RefreshFeature?) -> Void)?
     var observationTask: Task<Void, Never>?
 
-    init(walletDataModel: WalletDataModel, wallet: WalletManager, mainWallet: Wallet) {
+    init(walletDataModel: WalletDataModel, wm: WalletManager, mainWallet: Wallet) {
         self.walletDataModel = walletDataModel
-        self.wallet = wallet
+        self.wm = wm
         self.mainWallet = mainWallet
         startObserving()
     }

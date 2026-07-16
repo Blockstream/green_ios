@@ -290,7 +290,7 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
                     cell.configure(
                         alertCard,
                         onLeft: {[weak self] in
-                            if let vc = AccountNavigator.backupIntro(.quiz) {
+                            if let vc = WalletNavigator.backupIntro(.quiz) {
                                 self?.navigationController?.pushViewController(vc, animated: true)
                             }
                         },

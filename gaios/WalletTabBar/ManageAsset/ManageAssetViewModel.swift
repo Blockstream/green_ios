@@ -9,7 +9,7 @@ import AsyncAlgorithms
 class ManageAssetViewModel {
 
     let walletDataModel: WalletDataModel
-    let wallet: WalletManager
+    let wm: WalletManager
     var mainWallet: Wallet
     var assetId: String
     var selectedSubaccount: Account?
@@ -22,7 +22,7 @@ class ManageAssetViewModel {
     }
     var selectedAccountBackend: AccountBackend? {
         if let selectedSubaccount {
-            return wallet.accountBackendOrNil(selectedSubaccount)
+            return wm.accountBackendOrNil(selectedSubaccount)
         }
         return nil
     }
@@ -76,9 +76,9 @@ class ManageAssetViewModel {
         return []
     }
 
-    init(walletDataModel: WalletDataModel, wallet: WalletManager, mainWallet: Wallet, assetId: String, selectedSubaccount: Account?) {
+    init(walletDataModel: WalletDataModel, wm: WalletManager, mainWallet: Wallet, assetId: String, selectedSubaccount: Account?) {
         self.walletDataModel = walletDataModel
-        self.wallet = wallet
+        self.wm = wm
         self.mainWallet = mainWallet
         self.assetId = assetId
         self.selectedSubaccount = selectedSubaccount
@@ -133,44 +133,44 @@ class ManageAssetViewModel {
 
     func renameSubaccount(name: String) async throws {
         guard let selectedSubaccount else { return }
-        self.selectedSubaccount = try await wallet.updateAccount(
+        self.selectedSubaccount = try await wm.updateAccount(
             account: selectedSubaccount,
             newAccountName: name)
-        _ = try await wallet.getAccounts()
+        _ = try await wm.getAccounts()
     }
     func archiveSubaccount() async throws {
         guard let selectedSubaccount else { return }
-        self.selectedSubaccount = try await wallet.updateAccount(
+        self.selectedSubaccount = try await wm.updateAccount(
             account: selectedSubaccount,
             isHidden: true)
-        _ = try await wallet.getAccounts()
+        _ = try await wm.getAccounts()
     }
     var isFunded: Bool? {
         return balances?[assetId] ?? 0 > 0
     }
     func hasLightning() -> Bool {
-        guard let account = WalletsStorage.shared.current else {
+        guard let wallet = WalletsStorage.shared.current else {
             return false
         }
         return AuthenticationTypeHandler.findAuth(
             method: .AuthKeyLightning,
-            forNetwork: account.keychainLightning)
+            forNetwork: wallet.keychainLightning)
     }
 
     func canSendLightning() -> Bool {
         return (
-            wallet.lightningSession?
+            wm.lightningSession?
                 .nodeState()?.channelsBalanceMsat.satoshi ?? 0
         ) > 0
     }
     func hasOnchainFunds() -> Bool {
         return (
-            wallet.lightningSession?
+            wm.lightningSession?
                 .nodeState()?.onchainBalanceMsat.satoshi ?? 0
         ) > 0
     }
     func currency() -> String? {
-        wallet.prominentSession.settings?.pricing["currency"]
+        wm.prominentSession.settings?.pricing["currency"]
     }
     func canSwap() -> Bool {
         if mainWallet.isWatchonly ||
@@ -182,7 +182,7 @@ class ManageAssetViewModel {
     }
 
     func lTSettingsDialogViewModel() -> LTSettingsDialogViewModel? {
-        guard let lightningSession = wallet.lightningSession else { return nil }
+        guard let lightningSession = wm.lightningSession else { return nil }
         return LTSettingsDialogViewModel(
             mainWallet: mainWallet,
             wallet: walletDataModel,

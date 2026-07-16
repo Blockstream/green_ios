@@ -42,12 +42,12 @@ class HWDialogConnectViewController: UIViewController {
         setContent()
         setStyle()
         view.alpha = 0.0
-        if let account = WalletsStorage.shared.current {
+        if let wallet = WalletsStorage.shared.current {
             viewModel = ConnectViewModel(
-                account: account,
+                wallet: wallet,
                 firstConnection: false,
                 storeConnection: false,
-                type: account.isJade ? .Jade : .Ledger
+                type: wallet.isJade ? .Jade : .Ledger
             )
         }
         viewModel?.updateState = { self.state = $0 }
@@ -85,7 +85,7 @@ class HWDialogConnectViewController: UIViewController {
 
     func updateImage() {
         if viewModel?.isJade ?? true {
-            let boardType = viewModel?.account.boardType ?? BleHwManager.shared.jade?.version?.boardType
+            let boardType = viewModel?.wallet.boardType ?? BleHwManager.shared.jade?.version?.boardType
             icWallet.image = JadeAsset.img(.horizontal, JadeVersion(boardType: boardType))
         } else {
             icWallet.image = UIImage(named: "ic_hww_ledger")
@@ -193,7 +193,7 @@ class HWDialogConnectViewController: UIViewController {
     func onScannedDevice(_ item: ScanListItem) {
         viewModel?.type = item.type
         viewModel?.peripheralID = item.identifier
-        viewModel?.account.uuid = item.identifier
+        viewModel?.wallet.uuid = item.identifier
         Task { [weak self] in
             await self?.viewModel?.stopScan()
             await self?.onLogin()
@@ -239,7 +239,7 @@ class HWDialogConnectViewController: UIViewController {
 extension HWDialogConnectViewController: ConnectViewModelDelegate {
     func onScan(peripherals: [ScanListItem]) {
         if self.selectedItem != nil { return }
-        if let item = peripherals.filter({ $0.identifier == self.viewModel?.account.uuid || $0.name == self.viewModel?.account.name }).first {
+        if let item = peripherals.filter({ $0.identifier == self.viewModel?.wallet.uuid || $0.name == self.viewModel?.wallet.name }).first {
             self.selectedItem = item
             self.onScannedDevice(item)
         }

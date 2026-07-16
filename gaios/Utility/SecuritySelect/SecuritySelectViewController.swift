@@ -42,8 +42,8 @@ class SecuritySelectViewController: UIViewController {
         setContent()
         setStyle()
 
-        let account = WalletsStorage.shared.current
-        AnalyticsManager.shared.recordView(.addAccountChooseType, sgmt: AnalyticsManager.shared.sessSgmt(account))
+        let wallet = WalletsStorage.shared.current
+        AnalyticsManager.shared.recordView(.addAccountChooseType, sgmt: AnalyticsManager.shared.sessSgmt(wallet))
     }
 
     func unarchiveCreateDialog(completion: @escaping (Bool) -> Void) {

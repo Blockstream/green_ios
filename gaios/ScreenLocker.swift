@@ -163,7 +163,7 @@ class ScreenLocker {
         }
         WalletsRepository.shared.delete(for: mainWallet.id)
         await MainActor.run {
-            AccountNavigator.navLogout(walletId: wallet?.isEphemeral ?? false ? nil : mainWallet.id)
+            WalletNavigator.navLogout(walletId: wallet?.isEphemeral ?? false ? nil : mainWallet.id)
         }
     }
 

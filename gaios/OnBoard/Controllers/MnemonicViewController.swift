@@ -84,7 +84,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         }
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: false, completion: nil)
-        AnalyticsManager.shared.scanQr(account: nil, screen: .onBoardRecovery)
+        AnalyticsManager.shared.scanQr(wallet: nil, screen: .onBoardRecovery)
     }
     @objc func btnPaste(_ sender: Any) {
         onPaste(UIPasteboard.general.string ?? "")
@@ -192,7 +192,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             stopLoader()
             if let account = accountWallet?.0 {
                 WalletsStorage.shared.current = account
-                AccountNavigator.navLogged(walletId: account.id, isCreated: false, isRestored: true)
+                WalletNavigator.navLogged(walletId: account.id, isCreated: false, isRestored: true)
             }
         case .failure(let err):
             stopLoader()

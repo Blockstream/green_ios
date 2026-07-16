@@ -11,10 +11,10 @@ class AddressAuthViewModel {
     var lastPointer: Int?
     var isLoading = false
 
-    var wallet: Account
+    var account: Account
 
-    init(wallet: Account) {
-        self.wallet = wallet
+    init(account: Account) {
+        self.account = account
     }
 
     func isReady() -> Bool {
@@ -30,8 +30,8 @@ class AddressAuthViewModel {
             lastPointer = nil
         }
         isLoading = true
-        let params = GetPreviousAddressesParams(subaccount: Int(wallet.pointer), lastPointer: lastPointer)
-        let res = try await wallet.gdkSession?.getPreviousAddresses(params)
+        let params = GetPreviousAddressesParams(subaccount: Int(account.pointer), lastPointer: lastPointer)
+        let res = try await account.gdkSession?.getPreviousAddresses(params)
         isLoading = false
         lastPointer = res?.lastPointer
         let newModels = res?.list.compactMap { AddressAuthCellModel(address: $0.address ?? "",
@@ -55,7 +55,7 @@ class AddressAuthViewModel {
     }
 
     func canSign() -> Bool {
-        guard let wm = WalletManager.current, let account = WalletsStorage.shared.current else { return false }
-        return wallet.gdkNetwork.electrum && !wallet.gdkNetwork.liquid && (!wm.isWatchonly || account.isHW)
+        guard let wm = WalletManager.current, let wallet = WalletsStorage.shared.current else { return false }
+        return wallet.gdkNetwork.electrum && !account.gdkNetwork.liquid && (!wm.isWatchonly || wallet.isHW)
     }
 }

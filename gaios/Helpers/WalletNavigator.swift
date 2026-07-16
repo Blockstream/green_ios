@@ -9,7 +9,7 @@ enum BackupFlowType {
     case quiz
     case addSubaccount
 }
-class AccountNavigator {
+class WalletNavigator {
 
     static func home() -> HomeViewController? {
          instantiateViewController(storyboard: "Home", identifier: "Home")
@@ -39,7 +39,7 @@ class AccountNavigator {
         let vcWatch: WOLoginViewController? = instantiateViewController(storyboard: "WOFlow", identifier: "WOLoginViewController")
         if wallet.isHW {
             vcConnect?.viewModel = ConnectViewModel(
-                account: wallet,
+                wallet: wallet,
                 firstConnection: false,
                 storeConnection: true,
                 autologin: autologin)
@@ -49,10 +49,10 @@ class AccountNavigator {
             vcWatch?.autologin = autologin
             return vcWatch
         } else if wallet.hasBioPin || wallet.hasWoCredentials {
-            vcBiometricLogin?.viewModel = LoginViewModel(account: wallet, autologin: autologin)
+            vcBiometricLogin?.viewModel = LoginViewModel(wallet: wallet, autologin: autologin)
             return vcBiometricLogin
         } else {
-            vcLogin?.viewModel = LoginViewModel(account: wallet, autologin: autologin)
+            vcLogin?.viewModel = LoginViewModel(wallet: wallet, autologin: autologin)
             return vcLogin
         }
     }
@@ -65,14 +65,14 @@ class AccountNavigator {
     @MainActor
     static func walletTabBarViewController(walletId: String, isCreated: Bool, isRestored: Bool) -> WalletTabBarViewController {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        let account = WalletsStorage.shared.get(for: walletId)!
-        let wallet = WalletsRepository.shared.getOrAdd(for: account)
+        let wallet = WalletsStorage.shared.get(for: walletId)!
+        let wm = WalletsRepository.shared.getOrAdd(for: wallet)
         let walletTabBarModel = WalletTabBarModel(
-            wallet: wallet,
-            mainWallet: account,
+            wm: wm,
+            mainWallet: wallet,
             isCreated: isCreated,
             isRestored: isRestored)
-        WalletsStorage.shared.current = account
+        WalletsStorage.shared.current = wallet
         return storyboard.instantiateViewController(identifier: "WalletTabBarViewController") { coder in
             WalletTabBarViewController(coder: coder, walletTabBarModel: walletTabBarModel)
         }
@@ -148,8 +148,8 @@ class AccountNavigator {
         if wallets.isEmpty {
             // if there are no wallets
             navStarted()
-        } else if wallets.count == 1, let accountId = walletId {
-            navLogin(walletId: accountId, autologin: false)
+        } else if wallets.count == 1, let walletId {
+            navLogin(walletId: walletId, autologin: false)
         } else {
             navHome()
         }

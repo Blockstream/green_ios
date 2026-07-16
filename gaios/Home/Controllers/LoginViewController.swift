@@ -33,7 +33,7 @@ class LoginViewController: UIViewController {
     let menuButton = UIButton(type: .system)
     var viewModel: LoginViewModel!
     
-    private var account: Wallet { viewModel.account }
+    private var wallet: Wallet { viewModel.wallet }
     private var remoteAlert: RemoteAlert?
     private var pinCode = ""
     private let MAXATTEMPTS = 3
@@ -52,7 +52,7 @@ class LoginViewController: UIViewController {
         }
     }
     private var showLockPage: Bool {
-        (account.attempts >= self.MAXATTEMPTS  || account.hasPin == false)
+        (wallet.attempts >= self.MAXATTEMPTS  || wallet.hasPin == false)
     }
     @IBAction func tap1(_ sender: Any) {
         tapNumber("1")
@@ -104,7 +104,7 @@ class LoginViewController: UIViewController {
     }
     
     func setNavigation() {
-        navigationItem.title = account.name
+        navigationItem.title = wallet.name
         navigationItem.setHidesBackButton(true, animated: false)
         let ntwBtn = UIButton(type: .system)
         ntwBtn.setTitle("id_wallets".localized, for: .normal)
@@ -122,7 +122,7 @@ class LoginViewController: UIViewController {
     
     func setRemoteAlert() {
         alertCard.isHidden = true
-        self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .login, networks: [account.networkId]).first
+        self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .login, networks: [wallet.networkId]).first
         if remoteAlert != nil {
             alertCard.isHidden = false
             alertTitle.text = remoteAlert?.title?.htmlDecoded
@@ -182,15 +182,15 @@ class LoginViewController: UIViewController {
     }
 
     func autologin(passphrase: String?) {
-        if account.askEphemeral ?? false {
+        if wallet.askEphemeral ?? false {
             Task { [weak self] in
-                self?.loginWithPassphrase(isAlwaysAsk: self?.account.askEphemeral ?? false)
+                self?.loginWithPassphrase(isAlwaysAsk: self?.wallet.askEphemeral ?? false)
             }
-        } else if account.hasBioPin {
+        } else if wallet.hasBioPin {
             Task { [weak self] in
                 await self?.login(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: passphrase)
             }
-        } else if account.hasWoCredentials {
+        } else if wallet.hasWoCredentials {
             Task { [weak self] in
                 await self?.login(usingAuth: .AuthKeyWoCredentials, withPIN: nil, bip39passphrase: passphrase)
             }
@@ -274,7 +274,7 @@ class LoginViewController: UIViewController {
         let isTorActive = AppSettings.shared.gdkSettings?.tor == true
         let torIcon = isTorActive ? UIImage(named: "ic_tor") : nil
         self.startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon)
-        let account = viewModel.account
+        let account = viewModel.wallet
         let task = Task.detached { [weak self] in
             if usingAuth == .AuthKeyWoCredentials {
                 let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyWoCredentials, for: account.keychain)
@@ -296,12 +296,12 @@ class LoginViewController: UIViewController {
     @MainActor
     func success(withPIN: Bool) {
         self.startLoader(message: "id_loading_wallet".localized)
-        AnalyticsManager.shared.loginWalletEnd(account: account,
+        AnalyticsManager.shared.loginWalletEnd(wallet: wallet,
                                                loginType: withPIN ? .pin : .biometrics)
         AnalyticsManager.shared.activeWalletStart()
-        BackupHelper.shared.cleanDismissedCache(walletId: account.id)
-        WalletsStorage.shared.current = viewModel.account
-        AccountNavigator.navLogged(walletId: account.id)
+        BackupHelper.shared.cleanDismissedCache(walletId: wallet.id)
+        WalletsStorage.shared.current = viewModel.wallet
+        WalletNavigator.navLogged(walletId: wallet.id)
     }
     
     @MainActor
@@ -310,23 +310,23 @@ class LoginViewController: UIViewController {
         self.stopLoader()
         switch error {
         case AuthenticationTypeHandler.AuthError.CanceledByUser:
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: "id_action_cancel")
+            AnalyticsManager.shared.failedWalletLogin(wallet: wallet, error: error, prettyError: "id_action_cancel")
         case AuthenticationTypeHandler.AuthError.KeychainError:
             self.onBioAuthError(error.localizedDescription)
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: error.localizedDescription)
+            AnalyticsManager.shared.failedWalletLogin(wallet: wallet, error: error, prettyError: error.localizedDescription)
         case AuthenticationTypeHandler.AuthError.SecurityError(let desc):
             DropAlert().error(message: desc.localized)
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: desc)
+            AnalyticsManager.shared.failedWalletLogin(wallet: wallet, error: error, prettyError: desc)
         case LoginError.connectionFailed:
             DropAlert().error(message: "id_connection_failed".localized)
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: "id_connection_failed")
+            AnalyticsManager.shared.failedWalletLogin(wallet: wallet, error: error, prettyError: "id_connection_failed")
         case LoginError.walletNotFound:
             let msg = "id_wallet_not_found"
             DropAlert().error(message: msg.localized)
             showError(msg: msg)
         case GaError.NotAuthorizedError(_):
             self.wrongPin()
-            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: "id_not_authorized")
+            AnalyticsManager.shared.failedWalletLogin(wallet: wallet, error: error, prettyError: "id_not_authorized")
         case TwoFactorCallError.failure(let msg):
             if msg.contains("id_connection_failed") {
                 DropAlert().error(message: msg.localized)
@@ -338,12 +338,12 @@ class LoginViewController: UIViewController {
                 DropAlert().error(message: msg.localized)
                 showError(msg: msg)
             }
-            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
+            AnalyticsManager.shared.failedWalletLogin(wallet: self.wallet, error: error, prettyError: msg)
         default:
             let msg = "id_login_failed"
             showError(msg: msg)
             DropAlert().error(message: msg.localized)
-            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: msg)
+            AnalyticsManager.shared.failedWalletLogin(wallet: self.wallet, error: error, prettyError: msg)
         }
         self.pinCode = ""
         self.reloadPin()
@@ -361,7 +361,7 @@ class LoginViewController: UIViewController {
     func showReportError(msg: String) {
         let request = ZendeskErrorRequest(
             error: msg,
-            network: viewModel.account.networkId,
+            network: viewModel.wallet.networkId,
             paymentHash: nil,
             screenName: "Login")
         presentContactUsViewController(request: request)
@@ -373,9 +373,9 @@ class LoginViewController: UIViewController {
     }
 
     func wrongPin() {
-        viewModel.updateAccountAttempts(account.attempts + 1)
-        if account.attempts == self.MAXATTEMPTS {
-            WalletsRepository.shared.delete(for: account)
+        viewModel.updateAccountAttempts(wallet.attempts + 1)
+        if wallet.attempts == self.MAXATTEMPTS {
+            WalletsRepository.shared.delete(for: wallet)
             self.reload()
         } else {
             self.reload()
@@ -389,7 +389,7 @@ class LoginViewController: UIViewController {
         let alert = UIAlertController(title: "id_warning".localized, message: text, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .default) { _ in })
         alert.addAction(UIAlertAction(title: "id_reset".localized, style: .destructive) { _ in
-            try? self.account.removeAuthentication(.AuthKeyBiometric)
+            try? self.wallet.removeAuthentication(.AuthKeyBiometric)
         })
         DispatchQueue.main.async {
             self.present(alert, animated: true, completion: nil)
@@ -400,13 +400,13 @@ class LoginViewController: UIViewController {
         cardEnterPin.isHidden = showLockPage
         lblTitle.isHidden = showLockPage
         cardWalletLock.isHidden = !showLockPage
-        attempts.isHidden = account.attempts == 0
-        attemptsView.isHidden = account.attempts == 0
-        if account.attempts == MAXATTEMPTS {
-        } else if MAXATTEMPTS - account.attempts == 1 {
+        attempts.isHidden = wallet.attempts == 0
+        attemptsView.isHidden = wallet.attempts == 0
+        if wallet.attempts == MAXATTEMPTS {
+        } else if MAXATTEMPTS - wallet.attempts == 1 {
             attempts.text = "id_last_attempt_if_failed_you_will".localized
         } else {
-            attempts.text = String(format: "id_attempts_remaining_d".localized, MAXATTEMPTS - account.attempts)
+            attempts.text = String(format: "id_attempts_remaining_d".localized, MAXATTEMPTS - wallet.attempts)
         }
     }
 
@@ -460,7 +460,7 @@ class LoginViewController: UIViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             vc.index = nil
-            vc.prefill = account.name
+            vc.prefill = wallet.name
             present(vc, animated: false, completion: nil)
         }
     }
@@ -473,7 +473,7 @@ class LoginViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "id_ok".localized, style: .default) { (_: UIAlertAction) in
             self.emergencyRestore = true
             self.reload()
-            if self.account.hasBioPin {
+            if self.wallet.hasBioPin {
                 Task() { [weak self] in
                     await self?.decryptMnemonic(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
                 }
@@ -505,7 +505,7 @@ class LoginViewController: UIViewController {
 
     @IBAction func btnWalletLock(_ sender: Any) {
         OnboardViewModel.flowType = .restore
-        OnboardViewModel.restoreAccountId = account.id
+        OnboardViewModel.restoreWalletId = wallet.id
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
             navigationController?.pushViewController(vc, animated: true)
@@ -524,12 +524,12 @@ class LoginViewController: UIViewController {
 extension LoginViewController: DialogRenameViewControllerDelegate, DialogDeleteViewControllerDelegate {
     func didRename(name: String, index: String?) {
         viewModel.updateAccountName(name)
-        navigationItem.title = account.name
+        navigationItem.title = wallet.name
     }
     func didDelete(_ index: String?) {
         Task {
             self.startLoader(message: "id_removing_wallet".localized)
-            await WalletsStorage.shared.remove(account)
+            await WalletsStorage.shared.remove(wallet)
             await MainActor.run {
                 self.stopLoader()
                 navigationController?.popViewController(animated: true)
@@ -560,7 +560,7 @@ extension LoginViewController: DialogPassphraseViewControllerDelegate {
     func didConfirm(passphrase: String, alwaysAsk: Bool) {
         bip39passphare = passphrase
         viewModel.updateAccountAskEphemeral(alwaysAsk)
-        if account.hasBioPin {
+        if wallet.hasBioPin {
             autologin(passphrase: passphrase)
         }
     }
@@ -572,7 +572,7 @@ extension LoginViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .loginPrefs:
-            let items = LoginPrefs.getPrefs(isWatchOnly: account.isWatchonly, isLocked: showLockPage)
+            let items = LoginPrefs.getPrefs(isWatchOnly: wallet.isWatchonly, isLocked: showLockPage)
             switch items[index] {
             case .emergency:
                 showEmergencyDialog()

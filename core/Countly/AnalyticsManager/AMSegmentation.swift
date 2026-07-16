@@ -23,15 +23,15 @@ public extension AnalyticsManager {
         return s
     }
 
-    func sessSgmt(_ account: Wallet?) -> Sgmt {
+    func sessSgmt(_ wallet: Wallet?) -> Sgmt {
         var s = ntwSgmtUnified()
-        if account?.isJade ?? false {
+        if wallet?.isJade ?? false {
             s[AnalyticsManager.strBrand] = "Blockstream"
             s[AnalyticsManager.strFirmware] = hwData.fwVersion
             s[AnalyticsManager.strModel] = hwData.model
             s[AnalyticsManager.strConnection] = AnalyticsManager.strBle
         }
-        if account?.isLedger ?? false {
+        if wallet?.isLedger ?? false {
             s[AnalyticsManager.strBrand] = "Ledger"
             s[AnalyticsManager.strFirmware] = hwData.fwVersion
             s[AnalyticsManager.strModel] = "Ledger Nano X"
@@ -41,7 +41,7 @@ public extension AnalyticsManager {
         return s
     }
 
-    func accountNetworkLabel(_ gdkNetwork: GdkNetwork) -> String {
+    func walletNetworkLabel(_ gdkNetwork: GdkNetwork) -> String {
         let server: String? = {
             if gdkNetwork.lightning { return "greenlight" }
             if gdkNetwork.multisig { return "legacy" }
@@ -53,34 +53,34 @@ public extension AnalyticsManager {
         return [server, liquid, mainnet].compactMap { $0 }.joined(separator: "-")
     }
 
-    func subAccSeg(_ account: Wallet?, walletItem: Account?) -> Sgmt {
-        var s = sessSgmt(account)
-        if let walletItem = walletItem {
-            s[AnalyticsManager.strAccountType] = walletItem.type.rawValue
-            s[AnalyticsManager.strNetwork] = accountNetworkLabel(walletItem.gdkNetwork)
+    func subAccSeg(_ wallet: Wallet?, account: Account?) -> Sgmt {
+        var s = sessSgmt(wallet)
+        if let account {
+            s[AnalyticsManager.strAccountType] = account.type.rawValue
+            s[AnalyticsManager.strNetwork] = walletNetworkLabel(account.gdkNetwork)
         }
         return s
     }
 
-    func twoFacSgmt(_ account: Wallet?, walletItem: Account?, twoFactorType: TwoFactorType?) -> Sgmt {
-        var s = subAccSeg(account, walletItem: walletItem)
-        if let twoFactorType = twoFactorType, let walletItem = walletItem {
+    func twoFacSgmt(_ wallet: Wallet?, account: Account?, twoFactorType: TwoFactorType?) -> Sgmt {
+        var s = subAccSeg(wallet, account: account)
+        if let twoFactorType = twoFactorType, let account {
             s[AnalyticsManager.str2fa] = twoFactorType.rawValue
-            s[AnalyticsManager.strNetwork] = accountNetworkLabel(walletItem.gdkNetwork)
+            s[AnalyticsManager.strNetwork] = walletNetworkLabel(account.gdkNetwork)
         }
         return s
     }
 
-    func firmwareSgmt(_ account: Wallet?, firmware: Firmware) -> Sgmt {
-        var s = sessSgmt(account)
+    func firmwareSgmt(_ wallet: Wallet?, firmware: Firmware) -> Sgmt {
+        var s = sessSgmt(wallet)
         s[AnalyticsManager.strSelectedConfig] = firmware.config.lowercased()
         s[AnalyticsManager.strSelectedDelta] = firmware.isDelta == true ? "true" : "false"
         s[AnalyticsManager.strSelectedVersion] = firmware.version
         return s
     }
 
-    func swapSgmt(_ account: Wallet?, from: String, to: String) -> Sgmt {
-        var s = sessSgmt(account)
+    func swapSgmt(_ wallet: Wallet?, from: String, to: String) -> Sgmt {
+        var s = sessSgmt(wallet)
         s[AnalyticsManager.strSwapFrom] = from
         s[AnalyticsManager.strSwapTo] = to
         return s
