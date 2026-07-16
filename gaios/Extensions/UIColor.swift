@@ -120,6 +120,9 @@ extension UIColor {
     class func gBorderBold() -> UIColor {
         return UIColor(named: "gBorderBold")!
     }
+    class func gAmp() -> UIColor {
+        return UIColor(named: "gAmp")!
+    }
 }
 
 extension UIColor {

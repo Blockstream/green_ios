@@ -1,4 +1,5 @@
 import UIKit
+import core
 
 class AssetSelectCell: UITableViewCell {
 
@@ -44,7 +45,7 @@ class AssetSelectCell: UITableViewCell {
         }
         // Any AMP legacy asset
         if model.anyAmpLegacy {
-            self.lblAsset.text = "Any AMP Legacy Asset".localized
+            self.lblAsset.text = WalletsStorage.shared.current?.gdkNetwork.mainnet ?? true == true ? "Any AMP Asset".localized : "Any AMP Legacy Asset".localized
             self.imgView?.image = UIImage(named: "default_asset_amp_icon")!
             return
         }

@@ -5,6 +5,7 @@ enum AddressDisplayStyle {
     case `default`
     case yellow
     case txDetails
+    case amp
 }
 
 enum AddressDisplayAppearance {
@@ -107,10 +108,12 @@ class AddressDisplay {
         }
         attrS.setFont(font: .monospacedSystemFont(ofSize: fontSize, weight: .regular), stringValue: visibleAddress)
 
-        var color = {
+        let color = {
             switch style {
             case .yellow:
                 return UIColor.warningYellow()
+            case .amp:
+                return UIColor.gAmp()
             default:
                 return UIColor.gAccent()
             }

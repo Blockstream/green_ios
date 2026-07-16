@@ -69,7 +69,7 @@ struct ReceiveState {
         case .anyAmp:
             return "Any AMP Asset".localized
         case .anyAmpLegacy:
-            return "Any AMP Legacy Asset".localized
+            return WalletsStorage.shared.current?.gdkNetwork.mainnet ?? true == true ? "Any AMP Asset".localized : "Any AMP Legacy Asset".localized
         case .asset(let assetId):
             return assetInfo?.name ?? assetId
         }

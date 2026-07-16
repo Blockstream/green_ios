@@ -1,4 +1,5 @@
 import UIKit
+import core
 
 class AnyAssetCell: UITableViewCell {
 
@@ -28,7 +29,7 @@ class AnyAssetCell: UITableViewCell {
             self.lblAny.text = "Any AMP Asset".localized
             imgView.image = UIImage(named: "default_asset_amp_icon")!
         case .anyAmpLegacy:
-            self.lblAny.text = "Any AMP Legacy Asset".localized
+            self.lblAny.text = WalletsStorage.shared.current?.gdkNetwork.mainnet ?? true == true ? "Any AMP Asset".localized : "Any AMP Legacy Asset".localized
             imgView.image = UIImage(named: "default_asset_amp_icon")!
         default:
             break

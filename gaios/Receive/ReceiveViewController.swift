@@ -148,12 +148,19 @@ class ReceiveViewController: KeyboardViewController {
             groupedTxtAddress.isHidden = true
             bgCardAddress.borderWidth = 1.0
             bgCardAddress.borderColor = UIColor.gGrayCardBorder()
+            var style = AddressDisplayStyle.default
+            switch vm.state.anyOrAsset {
+            case .anyAmpLegacy, .anyAmp:
+                style = .amp
+            default:
+                break
+            }
             if !vm.state.isBip21 && !vm.state.isLightning {
                 groupedTxtAddress.isHidden = false
                 AddressDisplay.configure(
                     address: vm.state.text ?? "",
                     textView: groupedTxtAddress,
-                    style: .default,
+                    style: style,
                     truncate: true)
             } else {
                 plainTxtAddress.isHidden = false
@@ -574,7 +581,12 @@ extension ReceiveViewController {
         lnBannerBoxAddress.isHidden = true
         envelopeBorderViewAddress.backgroundColor = .clear
         envelopeBorderViewAddress.borderWidth = 5.0
-        envelopeBorderViewAddress.borderColor = UIColor.gAccent()
+        switch vm.state.anyOrAsset {
+        case .anyAmpLegacy, .anyAmp:
+            envelopeBorderViewAddress.borderColor = UIColor.gAmp()
+        default:
+            envelopeBorderViewAddress.borderColor = UIColor.gAccent()
+        }
         envelopeBorderViewAddress.cornerRadius = 20.0
         btnMagnifyAddress.setTitle("id_increase_qr_size".localized, for: .normal)
         btnCopyAddress.setTitle("id_copy_address".localized, for: .normal)
