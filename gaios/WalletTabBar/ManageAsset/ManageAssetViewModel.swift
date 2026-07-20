@@ -13,6 +13,8 @@ class ManageAssetViewModel {
     var mainWallet: Wallet
     var assetId: String
     var selectedSubaccount: Account?
+    var subaccounts = [Account]()
+
 
     var state = WalletState()
     var onUpdate: ((RefreshFeature?) -> Void)?
@@ -25,19 +27,6 @@ class ManageAssetViewModel {
             return wm.accountBackendOrNil(selectedSubaccount)
         }
         return nil
-    }
-    var subaccounts: [Account] {
-        if assetId == AssetInfo.lightningId {
-            return state.subaccounts
-            .filter { $0.networkId.lightning && !$0.hidden }
-                .sorted()
-        } else if assetId == AssetInfo.btcId || assetId == AssetInfo.testId {
-            return state.subaccounts.filter { $0.networkId.bitcoin && !$0.hidden }.sorted()
-        } else if assetId == AssetInfo.lbtcId || assetId == AssetInfo.ltestId {
-            return state.subaccounts.filter { $0.networkId.liquid && !$0.hidden }.sorted()
-        } else {
-            return state.subaccounts.filter { $0.networkId.liquid && !$0.hidden }.sorted()
-        }
     }
     func getBoltzKey() throws -> Credentials {
         try AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: mainWallet.keychain)
@@ -82,8 +71,23 @@ class ManageAssetViewModel {
         self.mainWallet = mainWallet
         self.assetId = assetId
         self.selectedSubaccount = selectedSubaccount
+        self.subaccounts = getSubaccounts()
         observationTask = Task { [weak self] in
             await self?.startObserving()
+        }
+    }
+
+    func getSubaccounts() -> [Account] {
+        if assetId == AssetInfo.lightningId {
+            return state.subaccounts
+                .filter { $0.networkId.lightning && !$0.hidden }
+                .sorted()
+        } else if assetId == AssetInfo.btcId || assetId == AssetInfo.testId {
+            return state.subaccounts.filter { $0.networkId.bitcoin && !$0.hidden }.sorted()
+        } else if assetId == AssetInfo.lbtcId || assetId == AssetInfo.ltestId {
+            return state.subaccounts.filter { $0.networkId.liquid && !$0.hidden }.sorted()
+        } else {
+            return state.subaccounts.filter { $0.networkId.liquid && !$0.hidden }.sorted()
         }
     }
 
@@ -91,21 +95,23 @@ class ManageAssetViewModel {
         for await update in await walletDataModel.states() {
             guard !Task.isCancelled else { break }
             await MainActor.run { [weak self] in
-                self?.state = update.state
-                self?.onUpdate?(update.feature)
+                guard let self else { return }
+                self.state = update.state
+                self.onUpdate?(update.feature)
                 switch update.feature {
                 case .txs:
-                    if let selectedSubaccount = self?.selectedSubaccount, let assetId = self?.assetId {
-                        Task { [weak self] in
-                            await self?.walletDataModel.triggerRefresh(features: [.nestedTxs(subaccount: selectedSubaccount.id, assetId: assetId)])
+                    if let selectedSubaccount = self.selectedSubaccount {
+                        Task {
+                            await self.walletDataModel.triggerRefresh(features: [.nestedTxs(subaccount: selectedSubaccount.id, assetId: self.assetId)])
                         }
                     }
                 case .subaccounts:
-                    if let currentSubaccountId = self?.selectedSubaccount?.id {
-                        self?.selectedSubaccount = self?.subaccounts.first(where: { $0.id == currentSubaccountId })
+                    self.subaccounts = self.getSubaccounts()
+                    if let currentSubaccountId = self.selectedSubaccount?.id {
+                        self.selectedSubaccount = self.subaccounts.first(where: { $0.id == currentSubaccountId })
                     }
-                    if self?.selectedSubaccount == nil && self?.subaccounts.count == 1 {
-                        self?.selectedSubaccount = self?.subaccounts.first
+                    if self.selectedSubaccount == nil && self.subaccounts.count == 1 {
+                        self.selectedSubaccount = self.subaccounts.first
                     }
                 default:
                     break
@@ -123,10 +129,10 @@ class ManageAssetViewModel {
             guard let self else { return }
             if let selectedSubaccount {
                 await walletDataModel.triggerRefresh(features: [.subaccounts])
-                await walletDataModel.triggerRefresh(features: [.balance, .nestedTxs(subaccount: selectedSubaccount.id, assetId: assetId)])
+                await walletDataModel.triggerRefresh(features: [.nestedTxs(subaccount: selectedSubaccount.id, assetId: assetId)])
             } else {
                 await walletDataModel.triggerRefresh(features: [.subaccounts])
-                await walletDataModel.triggerRefresh(features: [.balance])
+                //await walletDataModel.triggerRefresh(features: [.balance])
             }
         }
     }
@@ -136,14 +142,14 @@ class ManageAssetViewModel {
         self.selectedSubaccount = try await wm.updateAccount(
             account: selectedSubaccount,
             newAccountName: name)
-        _ = try await wm.getAccounts()
+        await walletDataModel.triggerRefresh(features: [.subaccounts])
     }
     func archiveSubaccount() async throws {
         guard let selectedSubaccount else { return }
         self.selectedSubaccount = try await wm.updateAccount(
             account: selectedSubaccount,
             isHidden: true)
-        _ = try await wm.getAccounts()
+        await walletDataModel.triggerRefresh(features: [.subaccounts])
     }
     var isFunded: Bool? {
         return balances?[assetId] ?? 0 > 0

@@ -101,8 +101,8 @@ actor WalletDataModel {
     }
     private func performFetchSubaccounts(refresh: Bool) async {
         do {
-            let subaccounts = try await wm.getAccounts(refresh: refresh)
-            await update(.subaccounts) { $0.subaccounts = subaccounts.sorted() }
+            let subaccounts = try await wm.getAccounts(refresh: refresh).sorted()
+            await update(.subaccounts) { $0.subaccounts = subaccounts }
         } catch {
             logger.error("WalletDataModel performFetchSubaccounts error: \(error.localizedDescription)")
         }
