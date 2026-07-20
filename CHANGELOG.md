@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Receive: architectural refactor and performance improvements
 
+### Fixed
+- Send: fix Psbt qrcode size
+
+
 ## [5.5.1] - 2026-06-17
 
 ### Changed

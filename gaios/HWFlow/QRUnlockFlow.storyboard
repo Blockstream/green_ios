@@ -944,7 +944,7 @@
                                 <rect key="frame" x="0.0" y="96" width="414" height="542"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HVG-Le-u3l">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="542"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="578"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="eaT-3g-ROX">
                                                 <rect key="frame" x="20" y="10" width="374" height="194"/>
@@ -1008,9 +1008,9 @@
                                             <constraint firstItem="eaT-3g-ROX" firstAttribute="top" secondItem="HVG-Le-u3l" secondAttribute="top" constant="10" id="87m-Vw-OoJ"/>
                                             <constraint firstItem="JVv-Zx-CxZ" firstAttribute="leading" secondItem="HVG-Le-u3l" secondAttribute="leading" constant="40" id="Ayg-c8-ses"/>
                                             <constraint firstItem="eaT-3g-ROX" firstAttribute="leading" secondItem="HVG-Le-u3l" secondAttribute="leading" constant="20" id="CUR-mj-Z8V"/>
+                                            <constraint firstAttribute="bottom" secondItem="JVv-Zx-CxZ" secondAttribute="bottom" constant="20" symbolic="YES" id="IOf-eC-8G3"/>
                                             <constraint firstAttribute="trailing" secondItem="eaT-3g-ROX" secondAttribute="trailing" constant="20" id="Mri-UF-lhO"/>
                                             <constraint firstItem="JVv-Zx-CxZ" firstAttribute="centerX" secondItem="HVG-Le-u3l" secondAttribute="centerX" id="dzQ-rg-3aV"/>
-                                            <constraint firstItem="JVv-Zx-CxZ" firstAttribute="top" secondItem="HVG-Le-u3l" secondAttribute="top" constant="224" id="sA3-Uy-eUd"/>
                                             <constraint firstItem="JVv-Zx-CxZ" firstAttribute="top" secondItem="eaT-3g-ROX" secondAttribute="bottom" constant="20" id="xSa-Lh-W06"/>
                                         </constraints>
                                     </view>
@@ -1020,7 +1020,6 @@
                                     <constraint firstAttribute="bottom" secondItem="HVG-Le-u3l" secondAttribute="bottom" id="5U5-eL-cXI"/>
                                     <constraint firstItem="HVG-Le-u3l" firstAttribute="top" secondItem="agP-In-HfW" secondAttribute="top" id="Fcs-FR-aG1"/>
                                     <constraint firstItem="HVG-Le-u3l" firstAttribute="leading" secondItem="agP-In-HfW" secondAttribute="leading" id="I7y-MG-83y"/>
-                                    <constraint firstItem="HVG-Le-u3l" firstAttribute="bottom" secondItem="VpN-zA-FGR" secondAttribute="bottom" id="bv3-NY-XVi"/>
                                     <constraint firstAttribute="trailing" secondItem="HVG-Le-u3l" secondAttribute="trailing" id="rvP-9K-Omr"/>
                                 </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="RIZ-17-dCT"/>
