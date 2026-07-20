@@ -143,7 +143,7 @@ public struct Account: Codable, Equatable, Comparable, Sendable {
         case .ampAccount: return "AMP Liquid"
         case .amp2Account: return "AMP Liquid"
         case .twoOfThree: return "2of3"
-        case .lightning: return "Lighning" // Kept exact typo from your source string
+        case .lightning: return "Lightning"
         case .unknown: return "Unknown"
         }
     }
