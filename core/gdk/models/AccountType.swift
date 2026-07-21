@@ -30,7 +30,7 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, C
         case .bip86Taproot: return "Taproot"
         case .lightning: return "Lightning"
         case .standard: return "2FA Protected"
-        case .ampAccount: return "AMP Legacy"
+        case .ampAccount: return ampLegacyTitle
         case .amp2Account: return "AMP"
         case .twoOfThree: return "2of3 with 2FA"
         case .unknown: return self.rawValue
@@ -40,7 +40,7 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, C
     public var title: String {
         switch self {
         case .standard: return "2FA Protected"
-        case .ampAccount: return "AMP Legacy"
+        case .ampAccount: return ampLegacyTitle
         case .amp2Account: return "AMP"
         case .twoOfThree: return "2of3 with 2FA"
         case .bip44Legacy: return "Legacy"
@@ -50,6 +50,11 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, C
         case .lightning: return "Lightning"
         case .unknown: return "Unknown"
         }
+    }
+
+    // Mainnet only has AMP0 for now, so avoid the temporary "Legacy" suffix there.
+    private var ampLegacyTitle: String {
+        WalletsStorage.shared.current?.gdkNetwork.mainnet ?? true ? "AMP" : "AMP Legacy"
     }
 
     public var string: String { title }
