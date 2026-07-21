@@ -318,7 +318,8 @@ class SendAmountViewModelLegacy {
             } else if !createTx.sendAll && (createTx.satoshi == nil || createTx.satoshi == 0) {
                 return tx
             }
-            if let networkId = network, networkId.multisig && (networkId.bitcoin || networkId.testnet) {
+            // Multisig require assetId = nil for bitcoin transaction
+            if let networkId = network, networkId.multisig && networkId.bitcoin {
                 createTx.addressee.assetId = nil
             }
             tx.addressees = [createTx.addressee]
