@@ -5,7 +5,7 @@ class LwkNetworkClient {
 
     public static let BIP44_GAP_LIMIT = 20
     public static let WATERFALLS_URL_MAINNET = "https://waterfalls.liquidwebwallet.org/liquid/api"
-    public static let WATERFALLS_URL_TESTNET = "https://waterfalls.liquidwebwallet.org/liquidtestnet/api"
+    public static let WATERFALLS_URL_TESTNET = "https://waterfalls-elements-testnet.esplora.staging.blockstream.io:17771/"
 
     let isTestnet: Bool
     private let lwkNetwork: LiquidWalletKit.Network
