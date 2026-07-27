@@ -404,9 +404,36 @@ public struct Transaction: Comparable {
     }
     public var unblindingUrl: String? {
         get {
-            return get( "unblindingUrl") ?? unblindingUrlString()
+            if let url: String = get("unblindingUrl"), !url.isEmpty, !url.hasSuffix("#blinded=") {
+                return url
+            }
+            return unblindingUrlString()
         }
         set { details["unblindingUrl"] = newValue }
+    }
+
+    public func urlForTx(explorerUrl: String? = nil) -> URL? {
+        let base = explorerUrl ?? networkIdInjected?.gdkNetwork.txExplorerUrl
+        guard let base, let hash, !hash.isEmpty else {
+            return nil
+        }
+        return URL(string: "\(base)\(hash)")
+    }
+
+    public func urlForTxUnblinded(explorerUrl: String? = nil) -> URL? {
+        guard let unblindingUrl = unblindingUrl,
+              !unblindingUrl.isEmpty,
+              !unblindingUrl.hasSuffix("#blinded="),
+              unblindingUrl.contains("#blinded=") else {
+            return nil
+        }
+        if unblindingUrl.hasPrefix("http") {
+            return URL(string: unblindingUrl)
+        }
+        if let explorerUrl = explorerUrl ?? networkIdInjected?.gdkNetwork.txExplorerUrl {
+            return URL(string: "\(explorerUrl)\(unblindingUrl)")
+        }
+        return nil
     }
 
     public func date(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String {
@@ -445,11 +472,14 @@ public struct Transaction: Comparable {
             outputs: unblindedOutputs ?? [])
     }
 
-    public func unblindingUrlString(address: String? = nil) -> String {
+    public func unblindingUrlString(address: String? = nil) -> String? {
         let inputTexts = inputs?.compactMap { $0.getUnblindedString() } ?? []
         let outputTexts = outputs?.compactMap { $0.getUnblindedString() } ?? []
         let blindingUrlString = (inputTexts + outputTexts).joined(separator: ",")
-        return "\(networkIdInjected?.gdkNetwork.txExplorerUrl ?? "")\(hash ?? "")#blinded=\(blindingUrlString)"
+        guard !blindingUrlString.isEmpty, let txHash = hash, !txHash.isEmpty else {
+            return nil
+        }
+        return "\(networkIdInjected?.gdkNetwork.txExplorerUrl ?? "")\(txHash)#blinded=\(blindingUrlString)"
     }
 
     public static func == (lhs: Transaction, rhs: Transaction) -> Bool {

@@ -760,7 +760,10 @@ extension SendCoordinator: SendAccountAssetViewModelDelegate {
 extension SendCoordinator: SendSuccessViewModelDelegate {
     func sendSuccessViewModelDidShare(_ vm: SendSuccessViewModel, url: URL) {
         let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-        Task { await nav.presentAsync(activityVC, animated: true) }
+        Task {
+            let presenter = nav.presentedViewController ?? nav.topViewController ?? nav
+            await presenter.presentAsync(activityVC, animated: true)
+        }
     }
 
     func sendSuccessViewModelDidFinish(_ vm: SendSuccessViewModel) {
@@ -822,6 +825,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             let model = SendSuccessViewModel(
                 sendTransactionSuccess: sendTransactionSuccess,
                 tx: gdkTransaction,
+                subaccount: vm.subaccount,
                 total: vm.convertToDenom(satoshi: vm.satoshiWithFee ?? 0),
                 delegate: self)
             await self.navigate(to: .success(model))
@@ -921,6 +925,7 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             let model = SendSuccessViewModel(
                 sendTransactionSuccess: sendTransactionSuccess,
                 tx: transaction,
+                subaccount: subaccount,
                 total: vm.convertToDenom(satoshi: vm.satoshiWithFee ?? 0),
                 delegate: self)
             if vm.isSwapTransaction, let swapId = vm.swapId {

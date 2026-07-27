@@ -7,33 +7,31 @@ import greenaddress
 final class SendSuccessViewModel: Sendable {
     let sendTransactionSuccess: SendTransactionSuccess
     let tx: core.Transaction
+    let subaccount: Account?
     let total: String?
     let delegate: SendSuccessViewModelDelegate?
 
-    internal init(sendTransactionSuccess: SendTransactionSuccess, tx: core.Transaction, total: String?, delegate: SendSuccessViewModelDelegate?) {
+    internal init(sendTransactionSuccess: SendTransactionSuccess, tx: core.Transaction, subaccount: Account? = nil, total: String?, delegate: SendSuccessViewModelDelegate?) {
         self.sendTransactionSuccess = sendTransactionSuccess
         self.tx = tx
+        self.subaccount = subaccount
         self.total = total
         self.delegate = delegate
     }
 
     func urlForTx() -> URL? {
-        guard let txExplorerUrl = tx.networkIdInjected?.gdkNetwork.txExplorerUrl, let
-                txHash = sendTransactionSuccess.txHash else {
-            return nil
-        }
-        return URL(string: "\(txExplorerUrl)\(txHash)")
+        let explorerUrl = subaccount?.gdkNetwork.txExplorerUrl ?? tx.networkIdInjected?.gdkNetwork.txExplorerUrl
+        return sendTransactionSuccess.urlForTx(explorerUrl: explorerUrl) ?? tx.urlForTx(explorerUrl: explorerUrl)
     }
 
     func urlForTxUnblinded() -> URL? {
-        if let unblindingUrl = tx.unblindingUrl{
-            return URL(string: unblindingUrl)
-        }
-        return nil
+        let explorerUrl = subaccount?.gdkNetwork.txExplorerUrl ?? tx.networkIdInjected?.gdkNetwork.txExplorerUrl
+        return tx.urlForTxUnblinded(explorerUrl: explorerUrl) ?? urlForTx()
     }
 
     func url() -> URL? {
-        if tx.isLightning {
+        let isLightning = subaccount?.isLightning ?? tx.isLightning
+        if isLightning {
             if let url = sendTransactionSuccess.url {
                 return URL(string: url)
             }

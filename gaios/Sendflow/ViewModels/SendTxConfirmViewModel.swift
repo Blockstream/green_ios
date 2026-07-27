@@ -294,14 +294,11 @@ class SendTxConfirmViewModel {
     }
 
     func urlForTx() -> URL? {
-        return URL(string: (subaccount.gdkNetwork.txExplorerUrl ?? "") + (sendTransaction?.txHash ?? ""))
+        return sendTransaction?.urlForTx(explorerUrl: subaccount.gdkNetwork.txExplorerUrl) ?? transaction.urlForTx(explorerUrl: subaccount.gdkNetwork.txExplorerUrl)
     }
 
     func urlForTxUnblinded() -> URL? {
-        if let unblindingUrl = transaction.unblindingUrl {
-            return URL(string: unblindingUrl)
-        }
-        return nil
+        return transaction.urlForTxUnblinded(explorerUrl: subaccount.gdkNetwork.txExplorerUrl) ?? urlForTx()
     }
 
     func validateHW(_ address: core.Address) async throws -> Bool {

@@ -193,6 +193,11 @@ public struct SendTransactionSuccess: Codable {
         self.psbt = psbt
         self.transaction = transaction
     }
+
+    public func urlForTx(explorerUrl: String? = nil) -> URL? {
+        guard let explorerUrl, let txHash, !txHash.isEmpty else { return nil }
+        return URL(string: "\(explorerUrl)\(txHash)")
+    }
 }
 
 public struct CreateRedepositTransactionParams: Codable {

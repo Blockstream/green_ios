@@ -44,7 +44,7 @@ class SendSuccessViewController: UIViewController {
         lblTitle.text = "id_transaction_successful".localized
         btnDone.setTitle("id_done".localized, for: .normal)
         btnShare.setTitle("id_share_link".localized, for: .normal)
-        btnShare.isHidden = viewModel.tx.isLightning
+        btnShare.isHidden = viewModel.url() == nil
         if let message = viewModel.sendTransactionSuccess.message {
             lblAddress.text = message
             btnTxId.isHidden = true

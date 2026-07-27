@@ -149,11 +149,11 @@ class TxDetailsViewController: UIViewController {
     }
 
     func urlForTx() -> URL? {
-        return URL(string: (vm.account.gdkNetwork.txExplorerUrl ?? "") + (vm.transaction.hash ?? ""))
+        return vm.transaction.urlForTx(explorerUrl: vm.account.gdkNetwork.txExplorerUrl)
     }
 
     func urlForTxUnblinded() -> URL? {
-        return URL(string: vm.transaction.unblindingUrl ?? "")
+        return vm.transaction.urlForTxUnblinded(explorerUrl: vm.account.gdkNetwork.txExplorerUrl) ?? urlForTx()
     }
 
     func blidingDataString() -> String? {
