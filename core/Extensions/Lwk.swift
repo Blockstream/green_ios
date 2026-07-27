@@ -37,6 +37,8 @@ extension LwkError {
             body: let body
         ):
             return "Esplora \(status) error: \(body ?? "")"
+        case .Amp2HttpError(url: let url, status: let status, body: let body):
+            return "Amp2 \(status) error: \(body ?? "")"
         }
     }
 }
