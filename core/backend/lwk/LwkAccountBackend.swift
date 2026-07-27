@@ -72,22 +72,10 @@ public class LwkAccountBackend: AccountBackend {
             tx.feeRate = 0
             tx.hash = walletTx.txid().description
             tx.amounts = walletTx.balance()
+            tx.type = TransactionType(rawValue: walletTx.type()) ?? .unknown
             if let explorerUrl = networkBackend?.network.explorerUrl {
                 tx.unblindingUrl = walletTx.unblindedUrl(explorerUrl: explorerUrl)
             }
-            // fix for redeposit tx
-            let testnet = networkBackend?.networkId.testnet ?? false
-            let defaultNetworkId: NetworkId = testnet ? .lwkTestnet : .lwkMainnet
-            let feeAsset = (
-                networkBackend?.networkId ?? defaultNetworkId
-            ).gdkNetwork.getFeeAsset()
-            let onlyFeePaid = tx.amounts.allSatisfy { $0.key == feeAsset || $0.value == 0 }
-            if let lbtc = tx.amounts[feeAsset], lbtc == -Int64(walletTx.fee()) && onlyFeePaid {
-                tx.type = .redeposit
-            } else {
-                tx.type = TransactionType(rawValue: walletTx.type()) ?? .unknown
-            }
-
             return tx
         }
         for tx in txs {
