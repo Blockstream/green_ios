@@ -837,11 +837,11 @@
 		C79C85A62FD9881A00501B33 /* LightningTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A52FD9881A00501B33 /* LightningTask.swift */; };
 		C79C85A82FD98CEE00501B33 /* NotificationDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A72FD98CEE00501B33 /* NotificationDeviceManager.swift */; };
 		C79C85AA2FD9A94F00501B33 /* LightningModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A92FD9A94F00501B33 /* LightningModel.swift */; };
+		C7BD1F9F2FF28BE00053FAC0 /* SwapAssetSelectorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7BD1F9E2FF28BD70053FAC0 /* SwapAssetSelectorViewModel.swift */; };
 		C7E400EB2FE9599400188624 /* ShowMnemonicHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E400EA2FE9599400188624 /* ShowMnemonicHeaderView.swift */; };
 		C7E400EE2FE959B400188624 /* ShowMnemonicHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7E400ED2FE959B400188624 /* ShowMnemonicHeaderView.xib */; };
 		C7E400F32FE959E800188624 /* ShowMnemonicFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7E400F22FE959E800188624 /* ShowMnemonicFooterView.xib */; };
 		C7E400F52FE95AE600188624 /* ShowMnemonicFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E400F42FE95AE600188624 /* ShowMnemonicFooterView.swift */; };
-		C7BD1F9F2FF28BE00053FAC0 /* SwapAssetSelectorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7BD1F9E2FF28BD70053FAC0 /* SwapAssetSelectorViewModel.swift */; };
 		C7FEF0922FF2737100820714 /* SwapAssetSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FEF0912FF2737100820714 /* SwapAssetSelectorViewController.swift */; };
 		C7FEF09C2FF2747000820714 /* SwapAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7FEF09B2FF2747000820714 /* SwapAssetCell.xib */; };
 		C7FEF09D2FF2747000820714 /* SwapAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FEF09A2FF2747000820714 /* SwapAssetCell.swift */; };
@@ -1833,11 +1833,11 @@
 		C79C85A52FD9881A00501B33 /* LightningTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningTask.swift; sourceTree = "<group>"; };
 		C79C85A72FD98CEE00501B33 /* NotificationDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDeviceManager.swift; sourceTree = "<group>"; };
 		C79C85A92FD9A94F00501B33 /* LightningModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningModel.swift; sourceTree = "<group>"; };
+		C7BD1F9E2FF28BD70053FAC0 /* SwapAssetSelectorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetSelectorViewModel.swift; sourceTree = "<group>"; };
 		C7E400EA2FE9599400188624 /* ShowMnemonicHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMnemonicHeaderView.swift; sourceTree = "<group>"; };
 		C7E400ED2FE959B400188624 /* ShowMnemonicHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowMnemonicHeaderView.xib; sourceTree = "<group>"; };
 		C7E400F22FE959E800188624 /* ShowMnemonicFooterView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowMnemonicFooterView.xib; sourceTree = "<group>"; };
 		C7E400F42FE95AE600188624 /* ShowMnemonicFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMnemonicFooterView.swift; sourceTree = "<group>"; };
-		C7BD1F9E2FF28BD70053FAC0 /* SwapAssetSelectorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetSelectorViewModel.swift; sourceTree = "<group>"; };
 		C7FEF0912FF2737100820714 /* SwapAssetSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetSelectorViewController.swift; sourceTree = "<group>"; };
 		C7FEF09A2FF2747000820714 /* SwapAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetCell.swift; sourceTree = "<group>"; };
 		C7FEF09B2FF2747000820714 /* SwapAssetCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SwapAssetCell.xib; sourceTree = "<group>"; };
@@ -5453,7 +5453,6 @@
 				81C3BC212F2696BC00CD4F2D /* SendAccountAssetViewModelDelegate.swift in Sources */,
 				34FAB3152D95929300317454 /* BackupHelper.swift in Sources */,
 				81A5919929155F6A001D1A65 /* MultisigSettingsViewController.swift in Sources */,
-				34422E3D2FB1D5E9002FA916 /* LNInvoiceViewController.swift in Sources */,
 				81D401CD2F9BAC4700384005 /* SendAmountViewModel.swift in Sources */,
 				81C3BC1F2F26969A00CD4F2D /* SendAddressViewModelDelegate.swift in Sources */,
 				344EF1C12C10525300689D63 /* TxDetailsTotalsCell.swift in Sources */,
@@ -7494,7 +7493,7 @@
 			repositoryURL = "https://github.com/blockstream/lwk-swift";
 			requirement = {
 				kind = exactVersion;
-				version = 0.18.2;
+				version = 0.18.3;
 			};
 		};
 		81D6B3052EE8189400A637C4 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
