@@ -54,10 +54,10 @@ public class LwkAccountBackend: AccountBackend {
     }
 
     public func getTransactions(params: GetTransactionsParams) async throws -> Transactions {
-        if params.first > 0 {
-            return Transactions(list: [])
-        }
-        let txs: [Transaction] = try wollet.transactions().map { walletTx in
+        let txs: [Transaction] = try wollet.transactionsPaginated(
+            offset: UInt32(params.first),
+            limit: UInt32(params.count)
+        ).map { walletTx in
             var tx = Transaction([:], accountId: account.id)
             tx.blockHeight = walletTx.height() ?? 0
             // Use a max timestamp sentinel so undated LWK txs sort first.
