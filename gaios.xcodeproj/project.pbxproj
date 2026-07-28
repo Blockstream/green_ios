@@ -743,6 +743,7 @@
 		81CBFF712F6B72A9004AB3D8 /* ConverterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CBFF702F6B72A9004AB3D8 /* ConverterManager.swift */; };
 		81CCDF082B9F3E3800C8490C /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CCDF072B9F3E3800C8490C /* Logger.swift */; };
 		81CDF3452BF2D50500AA4C19 /* SendHWConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CDF3442BF2D50500AA4C19 /* SendHWConfirmViewModel.swift */; };
+		81D15B94301826FC00F0FB97 /* LwkClientType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D15B93301826F200F0FB97 /* LwkClientType.swift */; };
 		81D1F9E92FDAE06E00ADF015 /* AccountType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464E2670ECE0009E8FCE /* AccountType.swift */; };
 		81D1F9EA2FDAE06E00ADF015 /* NetworkId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A34FEE29C547B8004B27F4 /* NetworkId.swift */; };
 		81D1F9EB2FDAE06E00ADF015 /* Balance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DC54342885BD8300DC37C9 /* Balance.swift */; };
@@ -1744,6 +1745,7 @@
 		81CDF3442BF2D50500AA4C19 /* SendHWConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendHWConfirmViewModel.swift; sourceTree = "<group>"; };
 		81CF900C28EC75FE003CC793 /* ProdSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = ProdSettings.xcconfig; sourceTree = "<group>"; };
 		81CF900D28EC7631003CC793 /* DevSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DevSettings.xcconfig; sourceTree = "<group>"; };
+		81D15B93301826F200F0FB97 /* LwkClientType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LwkClientType.swift; sourceTree = "<group>"; };
 		81D307E42F22436A0091AF50 /* SendLwkSignViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendLwkSignViewModel.swift; sourceTree = "<group>"; };
 		81D307E62F2245760091AF50 /* SendLwkSignViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendLwkSignViewController.swift; sourceTree = "<group>"; };
 		81D307F62F2383DB0091AF50 /* TransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionBuilder.swift; sourceTree = "<group>"; };
@@ -4580,6 +4582,7 @@
 			isa = PBXGroup;
 			children = (
 				81B0DC442E94791D00CE6F5D /* LwkBoltzBackend.swift */,
+				81D15B93301826F200F0FB97 /* LwkClientType.swift */,
 				81DED4182FE8341A0037725D /* LwkNetworkClient.swift */,
 				81DED4192FE8341A0037725D /* LwkNetworkBackend.swift */,
 				81DED41A2FE8341A0037725D /* LwkAccountBackend.swift */,
@@ -5876,6 +5879,7 @@
 				8177EE1A2B6C933400C2271C /* MigratorManager.swift in Sources */,
 				81CBFF712F6B72A9004AB3D8 /* ConverterManager.swift in Sources */,
 				8177EE1C2B6C933400C2271C /* SessionManager.swift in Sources */,
+				81D15B94301826FC00F0FB97 /* LwkClientType.swift in Sources */,
 				8152908B2EE0FFBE00BB487A /* Lwk.swift in Sources */,
 				81F9B0262F3E493D003D4A85 /* Boltz.swift in Sources */,
 				8177EE1D2B6C933400C2271C /* ResolverManager.swift in Sources */,
