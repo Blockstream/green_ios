@@ -77,8 +77,7 @@ class SendLwkSignViewModel {
             // so the bolt11 accessor throws; fall back to the entered amount.
             return invoiceSatoshi
         }
-        let feeAsset = subaccount.gdkNetwork.getFeeAsset()
-        if let amount = tx.amountsWithFee[feeAsset] {
+        if let amount = tx.amountsWithFee[assetIdFrom] {
             return UInt64(abs(amount))
         }
         return nil
@@ -121,8 +120,7 @@ class SendLwkSignViewModel {
     var txFee: UInt64? { tx.fee }
     var totalFee: UInt64? { (swapFee ?? 0) + (claimNetworkFee ?? 0) + (tx.fee ?? 0) + (lightningSetupFee ?? 0)  }
     var txSatoshi: UInt64? {
-        let feeAsset = NetworkId.electrumLiquid.gdkNetwork.getFeeAsset()
-        if let amount = tx.amounts[feeAsset] {
+        if let amount = tx.amounts[assetIdFrom] {
             return UInt64(abs(amount))
         }
         return nil
@@ -248,6 +246,14 @@ class SendLwkSignViewModel {
     }
     func convertToFiat(satoshi: UInt64) -> String? {
         return Balance.fromSatoshi(satoshi, assetId: assetIdFrom)?.toFiatText()
+    }
+    func convertFeeToDenom(satoshi: UInt64) -> String? {
+        let feeAsset = subaccount.gdkNetwork.getFeeAsset()
+        return Balance.fromSatoshi(satoshi, assetId: feeAsset)?.toText(denominationType)
+    }
+    func convertFeeToFiat(satoshi: UInt64) -> String? {
+        let feeAsset = subaccount.gdkNetwork.getFeeAsset()
+        return Balance.fromSatoshi(satoshi, assetId: feeAsset)?.toFiatText()
     }
     func convertToText(satoshi: UInt64) -> String? {
         return isFiat ? convertToFiat(satoshi: satoshi) : convertToDenom(satoshi: satoshi)

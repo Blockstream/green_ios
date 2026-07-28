@@ -184,7 +184,7 @@ class SendLwkSignViewController: UIViewController {
             lblAccountNameTo.isHidden = true
         }
         lblSumAmountValue.text = convertToDenom(viewModel.satoshiWithFee ?? 0)
-        lblSumFeeValue.text = convertToDenom(viewModel.totalFee ?? 0)
+        lblSumFeeValue.text = viewModel.convertFeeToDenom(satoshi: viewModel.totalFee ?? 0)
         lblSumTotalValue.text = convertToDenom(viewModel.recipientSatoshi ?? 0)
         lblConversion.text = "≈ \(convertToFiat(viewModel.recipientSatoshi ?? 0) ?? "")"
         lblSumAmountView.isHidden = false
@@ -209,7 +209,7 @@ class SendLwkSignViewController: UIViewController {
         lblAssetNameFrom.text = viewModel.assetFrom?.name ?? viewModel.assetIdFrom
         iconAssetFrom.image = viewModel.assetImageFrom
         lblAccountNameFrom.isHidden = true
-        lblSumFeeValue.text = convertToDenom(viewModel.totalFee ?? 0)
+        lblSumFeeValue.text = viewModel.convertFeeToDenom(satoshi: viewModel.totalFee ?? 0)
         lblSumAmountValue.text = convertToDenom(viewModel.recipientSatoshi ?? 0)
         lblSumTotalValue.text = convertToDenom(viewModel.satoshiWithFee ?? 0)
         lblConversion.text = "≈ \(convertToFiat(viewModel.satoshiWithFee ?? 0) ?? "")"
@@ -252,11 +252,11 @@ class SendLwkSignViewController: UIViewController {
 
     func sendFeeInfoViewController() -> SendFeeInfoViewController {
         let scope = SendFeeScope.lwkSwap(
-            networkFee: convertToDenom(viewModel.networkFee ?? 0) ?? "",
-            lightningSetupFee: viewModel.lightningSetupFee != nil ? (convertToDenom(viewModel.lightningSetupFee ?? 0)) : nil,
-            swapFee: convertToDenom(viewModel.swapFee ?? 0) ?? "",
-            total: convertToDenom(viewModel.totalFee ?? 0) ?? "",
-            fiat: "≈ " + (convertToFiat(viewModel.totalFee ?? 0) ?? ""))
+            networkFee: viewModel.convertFeeToDenom(satoshi: viewModel.networkFee ?? 0) ?? "",
+            lightningSetupFee: viewModel.lightningSetupFee != nil ? viewModel.convertFeeToDenom(satoshi: viewModel.lightningSetupFee ?? 0) : nil,
+            swapFee: viewModel.convertFeeToDenom(satoshi: viewModel.swapFee ?? 0) ?? "",
+            total: viewModel.convertFeeToDenom(satoshi: viewModel.totalFee ?? 0) ?? "",
+            fiat: "≈ " + (viewModel.convertFeeToFiat(satoshi: viewModel.totalFee ?? 0) ?? ""))
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         // swiftlint:disable:next force_cast
         let vc = storyboard.instantiateViewController(withIdentifier: "SendFeeInfoViewController") as! SendFeeInfoViewController
