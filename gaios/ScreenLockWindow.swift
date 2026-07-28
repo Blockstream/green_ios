@@ -10,6 +10,16 @@ class ScreenLockWindow: UIWindow {
     public static let shared = ScreenLockWindow()
 
     override func setup() {
+        setup(windowScene: nil)
+    }
+
+    func setup(windowScene: UIWindowScene?) {
+        if let windowScene = windowScene {
+            self.windowScene = windowScene
+            frame = windowScene.coordinateSpace.bounds
+        } else {
+            frame = UIScreen.main.bounds
+        }
         isHidden = false
         isOpaque = true
         windowLevel = UIWindowLevelBackground

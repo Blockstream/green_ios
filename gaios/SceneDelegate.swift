@@ -1,0 +1,46 @@
+import UIKit
+
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+
+    var window: UIWindow?
+
+    func scene(_ scene: UIScene,
+               willConnectTo session: UISceneSession,
+               options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = scene as? UIWindowScene,
+              let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+
+        appDelegate.setupMainWindow(windowScene: windowScene)
+        window = appDelegate.window
+
+        if let urlContext = connectionOptions.urlContexts.first {
+            appDelegate.handleOpen(url: urlContext.url, sourceApplication: urlContext.options.sourceApplication)
+        }
+    }
+
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let urlContext = URLContexts.first,
+              let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        appDelegate.handleOpen(url: urlContext.url, sourceApplication: urlContext.options.sourceApplication)
+    }
+
+    func sceneWillResignActive(_ scene: UIScene) {
+        (UIApplication.shared.delegate as? AppDelegate)?.handleWillResignActive()
+    }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        (UIApplication.shared.delegate as? AppDelegate)?.handleDidEnterBackground()
+    }
+
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        (UIApplication.shared.delegate as? AppDelegate)?.handleWillEnterForeground()
+    }
+
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        (UIApplication.shared.delegate as? AppDelegate)?.handleDidBecomeActive()
+    }
+
+    func sceneDidDisconnect(_ scene: UIScene) {
+        window = nil
+    }
+}

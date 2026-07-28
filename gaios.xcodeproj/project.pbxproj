@@ -27,6 +27,7 @@
 		3407F5CD2A49BBC3005EF8E1 /* LTConfirmingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3407F5CC2A49BBC3005EF8E1 /* LTConfirmingViewController.swift */; };
 		3407F5D12A49C28A005EF8E1 /* Illustration Lightning Transaction.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3407F5D02A49C28A005EF8E1 /* Illustration Lightning Transaction.riv */; };
 		3407F5D42A4ABC94005EF8E1 /* DialogFeedbackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3407F5D32A4ABC94005EF8E1 /* DialogFeedbackViewController.swift */; };
+		3409650330179AB1007801AF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3409650230179AA0007801AF /* SceneDelegate.swift */; };
 		340A5F5428E339E0003D56B1 /* SafeNavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340A5F5328E339E0003D56B1 /* SafeNavigationManager.swift */; };
 		340A5F5628E33F51003D56B1 /* DialogSafeNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340A5F5528E33F51003D56B1 /* DialogSafeNavigationViewController.swift */; };
 		340E11D42F741E5B0069BF8B /* DialogLiquidAssetToFiatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340E11D32F741E580069BF8B /* DialogLiquidAssetToFiatViewController.swift */; };
@@ -1005,6 +1006,7 @@
 		3407F5CC2A49BBC3005EF8E1 /* LTConfirmingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTConfirmingViewController.swift; sourceTree = "<group>"; };
 		3407F5D02A49C28A005EF8E1 /* Illustration Lightning Transaction.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Lightning Transaction.riv"; sourceTree = "<group>"; };
 		3407F5D32A4ABC94005EF8E1 /* DialogFeedbackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogFeedbackViewController.swift; sourceTree = "<group>"; };
+		3409650230179AA0007801AF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		340A5F5328E339E0003D56B1 /* SafeNavigationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeNavigationManager.swift; sourceTree = "<group>"; };
 		340A5F5528E33F51003D56B1 /* DialogSafeNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogSafeNavigationViewController.swift; sourceTree = "<group>"; };
 		340E11D32F741E580069BF8B /* DialogLiquidAssetToFiatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogLiquidAssetToFiatViewController.swift; sourceTree = "<group>"; };
@@ -3639,6 +3641,7 @@
 				34AB8BAC26036742009C930A /* Services */,
 				34AFA8E429D1723F00C4F3E6 /* Rive */,
 				676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */,
+				3409650230179AA0007801AF /* SceneDelegate.swift */,
 				34813D992EF955A900807EE4 /* TestAutomation */,
 				81F7FE712BE2FD4D00F44FC2 /* AppNotifications.swift */,
 				8189BEFF2236F2270091B466 /* ScreenLocker.swift */,
@@ -5324,6 +5327,7 @@
 				3419B44E2BEE304900492198 /* ReEnable2faAccountCell.swift in Sources */,
 				3465E2142A8F38FD0082D556 /* PinServerWarnViewController.swift in Sources */,
 				81DEB8302CF3966F0084FFF0 /* Data.swift in Sources */,
+				3409650330179AB1007801AF /* SceneDelegate.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
 				34E4E8912E2A451F0061DB16 /* AccountDescriptorViewModel.swift in Sources */,
 				34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */,

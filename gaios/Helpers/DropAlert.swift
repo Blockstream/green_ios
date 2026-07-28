@@ -16,7 +16,14 @@ class DropAlert: UIView {
     private var messageLabel = UILabel()
     private let screenWidth = UIScreen.main.bounds.size.width
     private let screenHeight = UIScreen.main.bounds.size.height
-    private let statusBarHeight = UIApplication.shared.statusBarFrame.size.height
+    private var statusBarHeight: CGFloat {
+        return UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive }?
+            .statusBarManager?
+            .statusBarFrame
+            .height ?? 0
+    }
 
     init() {
         super.init(frame: CGRect.zero)
@@ -83,7 +90,11 @@ class DropAlert: UIView {
 
     private func addSubviewToWindow(_ view: UIView) {
         if superview == nil {
-            let reverseWindows = UIApplication.shared.windows.reversed()
+            let reverseWindows = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .filter { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive }
+                .flatMap { $0.windows }
+                .reversed()
             for window in reverseWindows {
                 if window.windowLevel == UIWindow.Level.normal
                     && !window.isHidden

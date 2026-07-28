@@ -24,7 +24,7 @@ class SafeNavigationManager {
         }
 
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        appDelegate?.navigateWindow = UIWindow(frame: UIScreen.main.bounds)
+        appDelegate?.navigateWindow = appDelegate?.makeWindow()
         appDelegate?.navigateWindow?.windowLevel = .alert
         appDelegate?.navigateWindow?.tag = 999
 
@@ -59,7 +59,7 @@ class SafeNavigationManager {
             }
         } else {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            appDelegate?.navigateWindow = UIWindow(frame: UIScreen.main.bounds)
+            appDelegate?.navigateWindow = appDelegate?.makeWindow()
             appDelegate?.navigateWindow?.windowLevel = .alert
             appDelegate?.navigateWindow?.tag = 999
 

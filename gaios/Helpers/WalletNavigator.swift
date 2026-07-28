@@ -205,7 +205,11 @@ class WalletNavigator {
             UIView.animate(withDuration: 0.2, delay: 0.0, options: UIView.AnimationOptions.curveEaseOut, animations: {
                 appDelegate?.window??.rootViewController?.view.alpha = 0.0
             }, completion: { (_) -> Void  in
-                UIApplication.shared.windows.forEach { window in
+                UIApplication.shared.connectedScenes
+                    .compactMap { $0 as? UIWindowScene }
+                    .filter { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive }
+                    .flatMap { $0.windows }
+                    .forEach { window in
                     window.subviews.forEach { view in
                         if let loader = view.viewWithTag(Loader.tag) as? Loader {
                             loader.stop()

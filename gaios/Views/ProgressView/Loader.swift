@@ -88,7 +88,7 @@ class Loader: UIView {
     }
 
     static func resume() {
-        if let window = UIApplication.shared.windows.filter({ $0.isKeyWindow }).first {
+        if let window = UIApplication.activeKeyWindow {
             if let loader = window.viewWithTag(Loader.tag) as? Loader {
                 if !loader.isRive {
                     loader.loadingIndicator.isAnimating = true
@@ -102,7 +102,7 @@ extension UIViewController {
 
     @objc var loader: Loader? {
         get {
-            if let window = UIApplication.shared.windows.filter({ $0.isKeyWindow }).first {
+            if let window = UIApplication.activeKeyWindow {
                 return window.viewWithTag(Loader.tag) as? Loader
             }
             return nil
@@ -116,7 +116,7 @@ extension UIViewController {
 
     @MainActor
     @objc func startLoader(message: NSMutableAttributedString, isRive: Bool = false, bottomIcon: UIImage? = nil) {
-        if let window = UIApplication.shared.windows.filter({ $0.isKeyWindow }).first {
+        if let window = UIApplication.activeKeyWindow {
             if loader == nil {
                 let loader = Loader()
                 loader.isRive = isRive
@@ -157,7 +157,11 @@ extension UIViewController {
 
     @MainActor
     @objc func stopLoader() {
-        UIApplication.shared.windows.forEach { window in
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .filter { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive }
+            .flatMap { $0.windows }
+            .forEach { window in
             window.subviews.forEach { view in
                 if let loader = view.viewWithTag(Loader.tag) as? Loader {
                     loader.stop()
