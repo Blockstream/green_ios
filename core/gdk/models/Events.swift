@@ -7,7 +7,7 @@ public struct TransactionEvent: Codable {
         case subAccounts = "subaccounts"
         case satoshi = "satoshi"
     }
-    public let txHash: String
+    public let txHash: String?
     public let type: String?
     public let subAccounts: [UInt32]?
     public let satoshi: UInt64?

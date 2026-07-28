@@ -204,7 +204,8 @@ public class WalletManager {
                 let datadir = Gdk.shared.config.datadir ?? URL.applicationSupportDirectory.path()
                 networkBackends[target] = LwkNetworkBackend(
                     dataDir: datadir,
-                    network: target.gdkNetwork
+                    network: target.gdkNetwork,
+                    newNotificationDelegate: self
                 )
             case .lightningMainnet:
                 networkBackends[target] = GlNetworkBackend(

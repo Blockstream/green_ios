@@ -354,7 +354,7 @@ extension GdkNetworkBackend: NewNotificationDelegate {
         case .newTransaction(let tx):
             logger
                 .info(
-                    "GdkNetworkBackend didReceive newTransaction(\(tx.txHash)) on \(networkId.network)"
+                    "GdkNetworkBackend didReceive newTransaction(\(tx.txHash ?? "", privacy: .public)) on \(networkId.network, privacy: .public)"
                 )
             Task { [weak self] in
                 for accountBackend in (self?.accountBackends ?? [:]).values {

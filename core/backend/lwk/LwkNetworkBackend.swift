@@ -23,6 +23,7 @@ public final class LwkNetworkBackend: NetworkBackend {
     public var gdkNetwork: GdkNetwork { network }
     public var networkId: NetworkId { network.networkId }
     public var networkType: NetworkId { network.networkId }
+    public weak var newNotificationDelegate: NewNotificationDelegate?
     private var accountBackends = [String: AccountBackend]()
 
     private let dataDir: String
@@ -35,13 +36,15 @@ public final class LwkNetworkBackend: NetworkBackend {
 
     init(
         dataDir: String,
-        network: GdkNetwork
+        network: GdkNetwork,
+        newNotificationDelegate: NewNotificationDelegate?
     ) {
         self.dataDir = dataDir
         self.network = network
         self.lwkNetwork = network.testnet ? LiquidWalletKit.Network.testnet() : LiquidWalletKit.Network.mainnet()
         self.client = LwkNetworkClient(isTestnet: network.testnet)
         self.accounts = []
+        self.newNotificationDelegate = newNotificationDelegate
         self.amp2Server = try? LwkNetworkBackend.createAmp2Client(network)
     }
 
@@ -117,7 +120,14 @@ public final class LwkNetworkBackend: NetworkBackend {
                         timestamp: Int64(header.time())
                     )
                     print("Update block \(block)")
-                    self.block = block
+                    if self.block?.height != block.height {
+                        self.block = block
+                        self.newNotificationDelegate?
+                            .didReceive(
+                                event: .newBlock(block: block),
+                                networkId: self.networkId
+                            )
+                    }
                     try await self.scanBlockchain()
                 } catch is CancellationError {
                     break
@@ -145,6 +155,21 @@ public final class LwkNetworkBackend: NetworkBackend {
                         "Update for \(account.id) : \(try update.serialize().toHex())"
                     )
                     try lwkBackend.wollet.applyUpdate(update: update)
+                    if !update.onlyTip() {
+                        newNotificationDelegate?
+                            .didReceive(
+                                event:
+                                        .newTransaction(
+                                            transaction: TransactionEvent(
+                                                txHash: nil,
+                                                type: nil,
+                                                subAccounts: nil,
+                                                satoshi: nil
+                                            )
+                                        ),
+                                networkId: networkId
+                            )
+                    }
                 }
             }
         }
