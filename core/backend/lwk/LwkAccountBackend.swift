@@ -99,25 +99,25 @@ public class LwkAccountBackend: AccountBackend {
         guard let networkBackend else {
             throw GaError.GenericError("Backend not initialized")
         }
+        let recipientAddress = try LiquidWalletKit.Address(s: recipient.address)
         let builder = networkBackend.lwkNetwork.txBuilder()
         if recipient.isGreedy ?? false {
-            let address = try LiquidWalletKit.Address(s: recipient.address)
             if networkBackend.isPolicyAsset(assetId: recipientAsset) {
                 try builder.drainLbtcWallet()
-                try builder.drainLbtcTo(address: address)
+                try builder.drainLbtcTo(address: recipientAddress)
             } else {
                 guard let satoshi = try wollet.balance()[recipientAsset], satoshi > 0 else {
                     throw GaError.GenericError("No balance available for send all")
                 }
                 try builder.addRecipient(
-                    address: address,
+                    address: recipientAddress,
                     satoshi: satoshi,
                     asset: recipientAsset
                 )
             }
         } else if let satoshi = recipient.satoshi {
             try builder.addRecipient(
-                address: LiquidWalletKit.Address(s: recipient.address),
+                address: recipientAddress,
                 satoshi: UInt64(satoshi),
                 asset: recipientAsset
             )
@@ -129,36 +129,42 @@ public class LwkAccountBackend: AccountBackend {
         let transaction = try pset.extractTx()
         var tx = params
         tx.fee = balance.fee()
-        if recipient.isGreedy ?? false && balance.recipients().isEmpty {
-            // Send all on a wallet's addressee
-            let outputs: [TxInputOutput] = pset.outputs().map {
-                return TxInputOutput(
-                    satoshi: $0.amount()?.int64(),
-                    assetId: $0.asset(),
-                    script: $0.scriptPubkey().description
-                )
-            }
-            tx.outputs = outputs
-            tx.addressees[0].satoshi = outputs.first?.satoshi ?? 0
-            if let feeAsset = networkBackend.gdkNetwork.policyAsset {
-                var amounts = outputs.reduce(into: [:]) {
-                    $0[$1.assetId ?? "", default: 0] += $1.satoshi ?? 0
+        let recipients: [TxInputOutput] = balance.recipients().map {
+            return TxInputOutput(
+                address: $0.address()?.description,
+                isChange: false,
+                satoshi: $0.value() != nil ? Int64($0.value()!) : 0,
+                assetId: $0.asset()
+            )
+        }
+        if recipient.isGreedy ?? false {
+            let destination: TxInputOutput?
+            if let externalRecipient = recipients.first {
+                destination = externalRecipient
+                tx.outputs = recipients
+            } else {
+                // A wallet-owned destination is not included in PsetBalance.recipients.
+                // Resolve it from the PSET using the requested asset and address script.
+                let outputs: [TxInputOutput] = pset.outputs().map {
+                    return TxInputOutput(
+                        satoshi: $0.amount()?.int64(),
+                        assetId: $0.asset(),
+                        script: $0.scriptPubkey().description
+                    )
                 }
-                if let fee = amounts[feeAsset] {
-                    amounts[feeAsset] = fee - Int64(balance.fee())
+                destination = outputs.first {
+                    $0.assetId == recipientAsset &&
+                    $0.script == recipientAddress.scriptPubkey().description
                 }
-                tx.amounts = amounts
+                tx.outputs = outputs
             }
+            guard let recipientSatoshi = destination?.satoshi,
+                  recipientSatoshi > 0 else {
+                throw GaError.GenericError("Unable to resolve send all recipient amount")
+            }
+            tx.addressees[0].satoshi = recipientSatoshi
+            tx.amounts = [recipientAsset: -recipientSatoshi]
         } else {
-            // Send all on external address
-            let recipients: [TxInputOutput] = balance.recipients().map {
-                return TxInputOutput(
-                    address: $0.address()?.description,
-                    isChange: false,
-                    satoshi: $0.value() != nil ? Int64($0.value()!) : 0,
-                    assetId: $0.asset()
-                )
-            }
             tx.outputs = recipients
             var balances = balance.balances()
             if let feeAsset = networkBackend.gdkNetwork.policyAsset {
