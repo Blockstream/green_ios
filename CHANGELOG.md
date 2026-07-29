@@ -3,19 +3,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [5.6.0] - 2026-08-12
 
 ### Added
-Send: add blinding step in airgapped signing
+- AMP2 accounts on testnet using the LWK backend
+- Lightning push notifications in development mode
+- Transaction blinding for air-gapped Liquid signing
 
 ### Changed
-- Receive: architectural refactor and performance improvements
+- Disable new swaps while allowing in-progress swaps to complete
+- Revamp the receive flow
+- Rebuild session state around per-network backends
+- Improve account list presentation
+- Improve Buy Bitcoin error handling
+- Improve Jade air-gapped QR signing and onboarding
+- Require anti-exfil signing and support external blinding on compatible Jade firmware
 - Bump GDK to 0.77.7
 - Bump LWK to 0.18.3
 
 ### Fixed
-- Send: fix Psbt qrcode size
-
+- Fix the frozen camera preview in the QR scanner
+- Fix PSBT QR code layout on small screens
+- Prevent unlock-method changes for BIP39 passphrase wallets
+- Fix swap settings refresh and the Learn More link
+- Improve redaction of sensitive data in logs
+- Reject mismatched invoice amounts from malicious LNURL-pay servers
 
 ## [5.5.1] - 2026-06-17
 
