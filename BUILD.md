@@ -1,4 +1,4 @@
-# Build Blockstream Green for iOS
+# Build Blockstream App for iOS
 
 ## Build requirements
 

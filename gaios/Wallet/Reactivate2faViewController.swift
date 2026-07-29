@@ -43,7 +43,7 @@ class Reactivate2faViewController: UIViewController {
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
         let attrWhyString = NSMutableAttributedString(
-                string: "Learn about Blockstream Green multisig 2FA model here",
+                string: "Learn about Blockstream app multisig 2FA model here",
                 attributes: attr)
         let attrRiskString = NSMutableAttributedString(
                 string: "Learn what could go wrong without 2FA here",

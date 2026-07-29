@@ -12,7 +12,7 @@ All of these (and more) are explained in more detail [here](https://help.blockst
 
 ## Build
 
-For instructions on how to build Blockstream Green please refer to [BUILD.md](BUILD.md)
+For instructions on how to build Blockstream app please refer to [BUILD.md](BUILD.md)
 
 ## Contributing
 

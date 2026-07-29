@@ -1,4 +1,4 @@
-## Guidelines for contributions to Green bitcoin wallet for iOS
+## Guidelines for contributions to Blockstream app for iOS
 
 If you want to contribute to the project, please refer to the following guidelines.
 
