@@ -300,7 +300,7 @@ public final class GdkNetworkBackend: NetworkBackend {
         let defaultAccountBip84 = networkAccounts.filter(
             {$0.type == .bip84Segwit
             }).first
-        if defaultAccountBip84 == nil {
+        if network.singlesig && defaultAccountBip84 == nil {
             logger.info("WM \(self.network.network) Create GDK bip84Segwit account")
             let accountType = AccountType.bip84Segwit
             _ = try await createAccount(
