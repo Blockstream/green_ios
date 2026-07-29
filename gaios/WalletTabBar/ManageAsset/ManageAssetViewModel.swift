@@ -152,7 +152,7 @@ class ManageAssetViewModel {
         await walletDataModel.triggerRefresh(features: [.subaccounts])
     }
     var isFunded: Bool? {
-        return balances?[assetId] ?? 0 > 0
+        selectedBalances?.values.contains(where: { $0 > 0 }) ?? true
     }
     func hasLightning() -> Bool {
         guard let wallet = WalletsStorage.shared.current else {
