@@ -112,9 +112,7 @@ public final class GdkNetworkBackend: NetworkBackend {
     }
 
     public func getAccount(account: Account) async throws -> Account {
-        guard let res = try await session.subaccount(account.pointer) else {
-            throw GaError.GenericError("No subaccount found for \(account.id)")
-        }
+        let res = try await session.subaccount(account.pointer)
         if let index = accounts.firstIndex(where: { $0.id == res.id }) {
             accounts[index] = res
         } else {

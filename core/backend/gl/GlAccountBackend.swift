@@ -6,9 +6,9 @@ public final class GlAccountBackend: AccountBackend {
 
     // MARK: - Properties
     public let session: LightningSessionManager
-    public let account: Account
-    public private(set) var assets: Assets = [:]
-    public private(set) var txs = [String: Transaction]()
+    @ThreadSafe public private(set) var account: Account
+    @ThreadSafe public private(set) var assets: Assets = [:]
+    @ThreadSafe public private(set) var txs = [String: Transaction]()
     public var hasTxs: Bool { !txs.isEmpty }
     public weak var networkBackend: GlNetworkBackend?
 
@@ -41,9 +41,11 @@ public final class GlAccountBackend: AccountBackend {
 
     public func getTransactions(params: GetTransactionsParams) async throws -> Transactions {
         let res = try await session.transactions(params)
-        for tx in res.list {
-            if let paymentPreimage = tx.paymentPreimage {
-                txs[paymentPreimage] = tx
+        _txs.mutate { cache in
+            for tx in res.list {
+                if let paymentPreimage = tx.paymentPreimage {
+                    cache[paymentPreimage] = tx
+                }
             }
         }
         return res

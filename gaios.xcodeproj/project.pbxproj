@@ -576,6 +576,7 @@
 		8153AD292CECB7600030CE8F /* Meld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8153AD282CECB75B0030CE8F /* Meld.swift */; };
 		8153AD2B2CEF21FA0030CE8F /* CreateAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8153AD2A2CEF21F60030CE8F /* CreateAccountCell.swift */; };
 		8153AD2D2CEF24880030CE8F /* CreateAccountCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8153AD2C2CEF24880030CE8F /* CreateAccountCell.xib */; };
+		8153DD6A301C071B009017BB /* ThreadSafe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8153DD69301C070F009017BB /* ThreadSafe.swift */; };
 		815C0DCD3009996B00D53221 /* DialogCountlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815C0DCC3009996B00D53221 /* DialogCountlyViewController.swift */; };
 		815D63A42F6426FC000A4CD7 /* SwapManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815D63A32F6426E9000A4CD7 /* SwapManager.swift */; };
 		815D63A62F642713000A4CD7 /* SwapModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815D63A52F64270F000A4CD7 /* SwapModel.swift */; };
@@ -1581,6 +1582,7 @@
 		8153AD282CECB75B0030CE8F /* Meld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meld.swift; sourceTree = "<group>"; };
 		8153AD2A2CEF21F60030CE8F /* CreateAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountCell.swift; sourceTree = "<group>"; };
 		8153AD2C2CEF24880030CE8F /* CreateAccountCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CreateAccountCell.xib; sourceTree = "<group>"; };
+		8153DD69301C070F009017BB /* ThreadSafe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSafe.swift; sourceTree = "<group>"; };
 		8158974A2701980700DDF6D4 /* HWError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWError.swift; sourceTree = "<group>"; };
 		815A804329B3D44300269027 /* WalletsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsStorage.swift; sourceTree = "<group>"; };
 		815A804529B3D4B600269027 /* KeychainStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStorage.swift; sourceTree = "<group>"; };
@@ -3941,6 +3943,7 @@
 		816E9BD92BC5198A008DBFA7 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				8153DD69301C070F009017BB /* ThreadSafe.swift */,
 				816E9BDA2BC5199C008DBFA7 /* SerialTasks.swift */,
 			);
 			path = Utils;
@@ -5846,6 +5849,7 @@
 				81D1F9F82FDAE06E00ADF015 /* Credentials.swift in Sources */,
 				81BB8BA92FEF3BA30019BB3D /* WalletManager+Utility.swift in Sources */,
 				81D1F9F92FDAE06E00ADF015 /* GdkInterface.swift in Sources */,
+				8153DD6A301C071B009017BB /* ThreadSafe.swift in Sources */,
 				81D1F9FA2FDAE06E00ADF015 /* TwoFactorConfig.swift in Sources */,
 				81D1F9FB2FDAE06E00ADF015 /* GDKResolver.swift in Sources */,
 				81D1F9FD2FDAE06E00ADF015 /* URL.swift in Sources */,

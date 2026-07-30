@@ -6,9 +6,9 @@ public final class GdkAccountBackend: AccountBackend {
 
     // MARK: - Properties
     public let session: SessionManager
-    public let account: Account
-    public private(set) var assets: Assets = [:]
-    public private(set) var txs = [String: Transaction]()
+    @ThreadSafe public private(set) var account: Account
+    @ThreadSafe public private(set) var assets: Assets = [:]
+    @ThreadSafe public private(set) var txs = [String: Transaction]()
     public var hasTxs: Bool { !txs.isEmpty }
     public weak var networkBackend: GdkNetworkBackend?
 
@@ -34,6 +34,7 @@ public final class GdkAccountBackend: AccountBackend {
             hidden: hidden
         )
         try await session.updateSubaccount(params)
+        account = try await session.subaccount(account.pointer)
     }
 
     public func getReceiveAddress() async throws -> Address {
@@ -50,9 +51,11 @@ public final class GdkAccountBackend: AccountBackend {
 
     public func getTransactions(params: GetTransactionsParams) async throws -> Transactions {
         let res = try await session.transactions(params)
-        for tx in res.list {
-            if let txHash = tx.hash {
-                txs[txHash] = tx
+        _txs.mutate { cache in
+            for tx in res.list {
+                if let txHash = tx.hash {
+                    cache[txHash] = tx
+                }
             }
         }
         return res
@@ -60,7 +63,7 @@ public final class GdkAccountBackend: AccountBackend {
 
     public func getOutputDescriptors() async throws -> String? {
         let res = try await session.subaccount(account.pointer)
-        return res?.outputDescriptors
+        return res.outputDescriptors
     }
 
     public func getUnspentOutputs(isBump: Bool, isExpired: Bool, expiredAt: UInt64?) async throws -> [String: [UnspentOutput]] {

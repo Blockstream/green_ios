@@ -212,13 +212,16 @@ public class SessionManager {
         return Transactions(list: list ?? [])
     }
 
-    public func subaccount(_ pointer: UInt32) async throws -> Account? {
+    public func subaccount(_ pointer: UInt32) async throws -> Account {
         let subaccount = try self.session?.getSubaccount(subaccount: pointer)
         let res = try await resolve(subaccount)
         let result = res?["result"] as? [String: Any]
-        var wallet = Account.from(result ?? [:]) as? Account
-        wallet?.networkInjected = self.gdkNetwork
-        return wallet
+        var account = Account.from(result ?? [:]) as? Account
+        guard var account else {
+            throw GaError.GenericError("Failed to parse account")
+        }
+        account.networkInjected = self.gdkNetwork
+        return account
     }
 
     public func subaccounts(_ refresh: Bool = false) async throws -> [Account] {

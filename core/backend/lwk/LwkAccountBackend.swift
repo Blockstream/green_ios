@@ -10,13 +10,13 @@ public class LwkAccountBackend: AccountBackend {
     let wollet: Wollet
     let signer: Signer
     let amp2: Amp2?
-    public let account: Account
-    public private(set) var assets: Assets = [:]
-    public private(set) var txs = [String: Transaction]()
+    @ThreadSafe public private(set) var account: Account
+    @ThreadSafe public private(set) var assets: Assets = [:]
+    @ThreadSafe public private(set) var txs = [String: Transaction]()
+    @ThreadSafe private var nextAddressIndex: Int = 0
     public var hasTxs: Bool { !txs.isEmpty }
     public weak var networkBackend: LwkNetworkBackend?
 
-    private var nextAddressIndex: Int = 0
 
     init(
         networkBackend: LwkNetworkBackend,
@@ -54,7 +54,7 @@ public class LwkAccountBackend: AccountBackend {
     }
 
     public func getTransactions(params: GetTransactionsParams) async throws -> Transactions {
-        let txs: [Transaction] = try wollet.transactionsPaginated(
+        let transactions: [Transaction] = try wollet.transactionsPaginated(
             offset: UInt32(params.first),
             limit: UInt32(params.count)
         ).map { walletTx in
@@ -78,12 +78,14 @@ public class LwkAccountBackend: AccountBackend {
             }
             return tx
         }
-        for tx in txs {
-            if let txHash = tx.hash {
-                self.txs[txHash] = tx
+        _txs.mutate { cache in
+            for tx in transactions {
+                if let txHash = tx.hash {
+                    cache[txHash] = tx
+                }
             }
         }
-        return Transactions(list: txs)
+        return Transactions(list: transactions)
     }
 
     public func createTransaction(params: Transaction) async throws -> Transaction {
