@@ -202,14 +202,6 @@ public final class LwkNetworkBackend: NetworkBackend {
         )
     }
 
-    func extractSlip77(from input: String) throws -> String {
-        let regex = /slip77\((.*?)\)/
-        if let match = input.firstMatch(of: regex) {
-            return String(match.output.1)
-        }
-        throw GaError.GenericError("Invalid slip77")
-    }
-
     func lwkPointer(type: AccountType) throws -> UInt32 {
         switch type {
         case .bip84Segwit:
@@ -231,10 +223,7 @@ public final class LwkNetworkBackend: NetworkBackend {
             throw GaError.GenericError("Invalid amp2 server")
         }
         let userXpub = try signer.keyoriginXpub(bip: .newBip87())
-        let descriptor = try signer.wpkhSlip77Descriptor()
-        let descriptorBlindingKey = try extractSlip77(
-            from: descriptor.description
-        )
+        let descriptorBlindingKey = try signer.slip77MasterBlindingKey()
         return try amp2Server
             .descriptorFromStr(
                 keyoriginXpub: userXpub,
