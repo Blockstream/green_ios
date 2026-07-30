@@ -10,6 +10,11 @@ extension BoltzSwap {
         }
         return nil
     }
+    public var lastState: String? {
+        let data = data?.data(using: .utf8, allowLossyConversion: false)
+        let dict = try? JSONSerialization.jsonObject(with: data ?? Data(), options: []) as? [String: Any]
+        return dict?["last_state"] as? String
+    }
 }
 
 extension LwkError {

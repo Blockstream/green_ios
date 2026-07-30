@@ -104,11 +104,14 @@ public actor BoltzController {
         ])
         for id in ids {
             if let swap = try? await get(with: id) {
-                lwkLogger.info("\(swap.id ?? "") \(swap.xpubHashId ?? "") \(swap.txHash ?? "")  \(swap.isPending)")
+                lwkLogger
+                    .info(
+                        "\(swap.id ?? "") \(swap.type?.rawValue ?? "") \(swap.lastState ?? "") \(swap.isPending ? "pending" : "terminated") \(swap.xpubHashId ?? "") \(swap.txHash ?? "")  "
+                    )
             }
         }
     }
-    
+
     /// Fetch ID of 'BoltzSwap' objects by his id.
     public func fetchID(byId id: String) async throws -> NSManagedObjectID? {
         let item = try await context.perform {
