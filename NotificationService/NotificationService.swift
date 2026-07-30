@@ -114,22 +114,25 @@ class NotificationService: UNNotificationServiceExtension {
             // Pre-update UI notification
             bestAttemptContent?.title = account.name
             bestAttemptContent?.threadIdentifier = account.xpubHashId ?? ""
-            if let persistentId = try await BoltzController.shared.fetchID(byId: eventSwap.id),
-                  let swap = try await BoltzController.shared.get(with: persistentId) {
-                switch eventSwap.status {
-                case "transaction.mempool":
-                    switch swap.type {
-                    case .Submarine, .ReverseSubmarine:
-                        bestAttemptContent?.body = "Processing Lightning payment.."
-                    case .Chain:
-                        bestAttemptContent?.body = "Processing chain swap.."
-                    case .none:
-                        break
-                    }
-                default:
+            guard let persistentId = try await BoltzController.shared.fetchID(byId: eventSwap.id),
+                  let swap = try await BoltzController.shared.get(with: persistentId) else {
+                throw NotificationError.InvalidSwap
+            }
+            switch eventSwap.status {
+            case "transaction.mempool":
+                switch swap.type {
+                case .Submarine, .ReverseSubmarine:
+                    bestAttemptContent?.body = "Processing Lightning payment.."
+                case .Chain:
+                    bestAttemptContent?.body = "Processing chain swap.."
+                case .none:
                     break
                 }
+            default:
+                break
             }
+            let shouldWakeLightningSigner = eventSwap.status == "invoice.pending" &&
+                swap.isBtcToLightning
             // get credentials
             let credentials = try AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: account.keychain)
             guard let mnemonic = credentials.mnemonic else {
@@ -139,10 +142,49 @@ class NotificationService: UNNotificationServiceExtension {
             let sharedBackend = await SwapManager.shared.getBackend(
                 for: xpubHashId
             )
-            let task = SwapTask(lwkBoltzBackend: sharedBackend)
-            let swap = try await task.start(xpubHashId: xpubHashId, secret: mnemonic, swapId: eventSwap.id)
-        } catch NotificationError.Timeout {
-            logger.error("NotificationService timeout error")
+            let swapTask = SwapTask(lwkBoltzBackend: sharedBackend)
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    do {
+                        _ = try await swapTask.start(
+                            xpubHashId: xpubHashId,
+                            secret: mnemonic,
+                            swapId: eventSwap.id
+                        )
+                    } catch NotificationError.Timeout {
+                        logger.error("NotificationService: Swap task timed out")
+                    } catch {
+                        logger.error(
+                            "NotificationService: Swap task failed: \(error.localizedDescription, privacy: .public)"
+                        )
+                    }
+                }
+                if shouldWakeLightningSigner {
+                    group.addTask {
+                        do {
+                            logger.info(
+                                "NotificationService: Waking Lightning signer for BTC->LN swap \(eventSwap.id, privacy: .public)"
+                            )
+                            let credentials = try AuthenticationTypeHandler.getCredentials(
+                                method: .AuthKeyLightning,
+                                for: account.keychainLightning
+                            )
+                            guard let mnemonic = credentials.mnemonic else {
+                                throw NotificationError.Failed
+                            }
+                            try await LightningTask().start(
+                                xpubHashId: xpubHashId,
+                                secret: mnemonic
+                            )
+                        } catch {
+                            logger.error(
+                                "NotificationService: Lightning signer failed: \(error.localizedDescription, privacy: .public)"
+                            )
+                        }
+                    }
+                }
+                await group.waitForAll()
+            }
         } catch {
             logger.error("NotificationService error: \(error.localizedDescription, privacy: .public)")
         }

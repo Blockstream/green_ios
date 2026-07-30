@@ -2,18 +2,30 @@ import LiquidWalletKit
 import Foundation
 
 extension BoltzSwap {
+    private var serializedData: [String: Any]? {
+        guard let data = data?.data(using: .utf8, allowLossyConversion: false) else {
+            return nil
+        }
+        return try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+    }
+
     public var type: BoltzSwapTypes? {
-        let data = data?.data(using: .utf8, allowLossyConversion: false)
-        let dict = try? JSONSerialization.jsonObject(with: data ?? Data(), options: []) as? [String: Any]
-        if let swapType = dict?["swap_type"] as? String {
+        if let swapType = serializedData?["swap_type"] as? String {
             return BoltzSwapTypes(rawValue: swapType)
         }
         return nil
     }
+
     public var lastState: String? {
-        let data = data?.data(using: .utf8, allowLossyConversion: false)
-        let dict = try? JSONSerialization.jsonObject(with: data ?? Data(), options: []) as? [String: Any]
-        return dict?["last_state"] as? String
+        serializedData?["last_state"] as? String
+    }
+
+    public var fromChain: String? {
+        serializedData?["from_chain"] as? String
+    }
+
+    public var isBtcToLightning: Bool {
+        type == .Submarine && fromChain == "BTC"
     }
 }
 
