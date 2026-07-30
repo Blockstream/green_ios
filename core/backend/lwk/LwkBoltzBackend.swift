@@ -104,7 +104,7 @@ public final class LwkBoltzBackend {
         return WebHook(url: "\(webhookBaseUrl())/webhook/boltz/\(xpubHashId)", status: status ?? [])
     }
 
-    // Reverse Submarine Swaps (Lightning -> Chain)
+    // Reverse Submarine Swaps: Lightning -> Liquid
     nonisolated public func invoice(amount: UInt64, description: String?, claimAddress: LiquidWalletKit.Address) async throws -> InvoiceResponse {
         guard let boltzSession = boltzSession else {
             throw BoltzBackendError.sessionNotInitialized
@@ -127,6 +127,7 @@ public final class LwkBoltzBackend {
         return res
     }
 
+    // Normal Submarine Swaps: Liquid -> Lightning
     nonisolated public func preparePay(
         lightningPayment: LightningPayment,
         refundAddress: LiquidWalletKit.Address
@@ -150,6 +151,7 @@ public final class LwkBoltzBackend {
         return res
     }
 
+    // Cross Chain Swaps: Liquid -> Bitcoin
     nonisolated public func lbtcToBtc(amount: UInt64, refundAddress: String, claimAddress: String, xpubHashId: String) async throws -> LockupResponse {
         guard let boltzSession = boltzSession else {
             throw BoltzBackendError.sessionNotInitialized
@@ -170,6 +172,7 @@ public final class LwkBoltzBackend {
             txHash: nil)
         return res
     }
+    // Cross Chain Swaps: Bitcoin -> Liquid
     nonisolated public func btcToLbtc(amount: UInt64, refundAddress: String, claimAddress: String, xpubHashId: String) async throws -> LockupResponse {
         guard let boltzSession = boltzSession else {
             throw BoltzBackendError.sessionNotInitialized
@@ -190,6 +193,7 @@ public final class LwkBoltzBackend {
             txHash: nil)
         return res
     }
+    // Reverse Submarine Swaps: Lightning -> Bitcoin
     nonisolated public func lnToBtc(
         amount: UInt64,
         description: String?,
@@ -198,12 +202,11 @@ public final class LwkBoltzBackend {
         guard let boltzSession = boltzSession else {
             throw BoltzBackendError.sessionNotInitialized
         }
-        let invoiceStatuses = ["transaction.mempool", "transaction.confirmed", "invoice.settled"]
         let res = try boltzSession.lnToBtc(
             amount: amount,
             description: description,
             claimAddress: claimAddress,
-            webhook: try webhook(status: invoiceStatuses))
+            webhook: try webhook(status: []))
         let bolt11 = try res.bolt11Invoice().description
         _ = try await BoltzController.shared.create(
             id: try res.swapId(),
@@ -215,6 +218,7 @@ public final class LwkBoltzBackend {
             txHash: nil)
         return res
     }
+    // Normal Submarine Swaps: Bitcoin -> Lightning
     nonisolated public func btcToLn(
         lightningPayment: LightningPayment,
         refundAddress: BitcoinAddress
@@ -222,11 +226,10 @@ public final class LwkBoltzBackend {
         guard let boltzSession = boltzSession else {
             throw BoltzBackendError.sessionNotInitialized
         }
-        let preparePayStatuses = ["invoice.paid", "swap.expired", "invoice.failedToPay", "transaction.lockupFailed"]
         let res = try boltzSession.btcToLn(
             lightningPayment: lightningPayment,
             refundAddress: refundAddress,
-            webhook: try webhook(status: preparePayStatuses))
+            webhook: try webhook(status: []))
         _ = try await BoltzController.shared.create(
             id: try res.swapId(),
             data: try res.serialize(),
