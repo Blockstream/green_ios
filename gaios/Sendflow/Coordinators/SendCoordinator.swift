@@ -223,7 +223,7 @@ extension SendCoordinator {
             .eligibleRails()
             .flatMap { subaccounts(for: $0, wm: wm, amount: amount) }
     }
-    
+
     func resolveInitialAssetType(for subaccount: Account?, with assetId: String?) -> SwapAssetType? {
         if let subaccount = subaccount, subaccount.isLightning {
             return .lightning
@@ -846,24 +846,34 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
             transactionType: .lwkSwap,
             addressInputType: .paste,
             sendAll: false)
+        let paymentInvoiceType = vm.subaccount.isLightning ? invoiceType(target: vm.draft.paymentTarget) : nil
+        if let paymentInvoiceType, !vm.isInternalSwap {
+            AnalyticsManager.shared.sendAttempt(
+                wallet: WalletsStorage.shared.current,
+                account: vm.subaccount,
+                invoiceType: paymentInvoiceType)
+        }
         Task {
             let route = await handleSend(vm: vm, transaction: transaction)
             switch route {
-            case .success(let model):
+            case .success:
                 AnalyticsManager.shared.endSendTransaction(
                     wallet: WalletsStorage.shared.current,
                     account: vm.subaccount,
                     transactionSgmt: segment,
-                    withMemo: false)
+                    withMemo: false,
+                    invoiceType: paymentInvoiceType)
                 // Swap analytics must never be emitted for pure lightning payments.
                 if vm.isSwapTransaction {
-                    if vm.isCrossChainSwap {
-                        let from = try vm.draft.lockupResponse?.chainFrom() ?? ""
-                        let to = try vm.draft.lockupResponse?.chainTo() ?? ""
+                    // draft.swapPosition is the reliable source for internal wallet conversion
+                    // direction, including BTC↔LN and LN↔BTC. The old
+                    // lockupResponse.chainFrom()/chainTo() path only covers one kind of swap and
+                    // can miss Lightning internal swaps
+                    if let swapPosition = vm.draft.swapPosition {
                         AnalyticsManager.shared.swapInternal(
                             wallet: WalletsStorage.shared.current,
-                            from: from,
-                            to: to)
+                            from: swapPosition.from.chain,
+                            to: swapPosition.to.chain)
                     } else if vm.isSubmarineSwap {
                         AnalyticsManager.shared.swapSend(
                             wallet: WalletsStorage.shared.current,
@@ -879,12 +889,19 @@ extension SendCoordinator: SendLwkSignViewModelDelegate {
                     transactionSgmt: segment,
                     withMemo: false,
                     prettyError: model.error.description().localized,
-                    nodeId: nil)
+                    nodeId: lightningNodeId(account: vm.subaccount, invoiceType: paymentInvoiceType),
+                    invoiceType: paymentInvoiceType
+                )
                 await navigate(to: .failure(model))
             default:
                 break
             }
         }
+    }
+    func lightningNodeId(account: Account?, invoiceType: AnalyticsInvoiceType?) -> String? {
+        guard invoiceType != nil else { return nil }
+        return account?.lightningSession?.nodeState()?.id
+            ?? WalletManager.current?.lightningSession?.nodeState()?.id
     }
     func handleSend(vm: SendLwkSignViewModel, transaction: core.Transaction) async -> SendRoute {
         let isHW = mainWallet.isHW
@@ -1047,10 +1064,24 @@ extension SendCoordinator: SendAmountViewModelDelegate {
             self.draft = draft
             self.selectedFiat = vm.isFiat
             self.selectedDenomination = vm.denominationType
-            guard (draft.subaccount != nil) else {
+            guard draft.subaccount != nil else {
                 forwardError(SendFlowError.failedToBuildTransaction)
                 return
             }
             routeAndNavigate()
         }
+
+    func invoiceType(target: PaymentTarget?) -> AnalyticsInvoiceType? {
+        guard let target else { return nil }
+        switch target {
+        case .lightningInvoice:
+            return AnalyticsInvoiceType.bolt11
+        case .lightningOffer:
+            return AnalyticsInvoiceType.bolt12
+        case .lnUrl:
+            return AnalyticsInvoiceType.lnurl
+        default:
+            return nil
+        }
+    }
 }

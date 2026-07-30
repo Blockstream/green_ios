@@ -74,6 +74,8 @@ public extension AnalyticsManager {
     static let strSwapFrom = "from"
     static let strSwapTo = "to"
 
+    static let strInvoiceType = "invoice_type"
+
     enum OnBoardFlow: String {
         case strCreate = "create"
         case strRestore = "restore"

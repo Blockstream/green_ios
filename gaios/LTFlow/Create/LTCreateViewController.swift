@@ -21,6 +21,7 @@ class LTCreateViewController: UIViewController {
 
     var viewModel: LTCreateViewModel!
     private var riveView: RiveView?
+    private var isJadeEnableAnalyticsStarted = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -108,6 +109,7 @@ class LTCreateViewController: UIViewController {
 
     @IBAction func tapNext(_ sender: Any) {
         if viewModel.isHW {
+            trackJadeEnableStartIfNeeded()
             presentConnectJadeViewController()
             return
         }
@@ -120,9 +122,22 @@ class LTCreateViewController: UIViewController {
         let url = viewModel.isHW ? ExternalUrls.lightningJadeHelp : ExternalUrls.understandingLightningSupport
         SafeNavigationManager.shared.navigate(url)
     }
+
+    private func trackJadeEnableStartIfNeeded() {
+        guard !isJadeEnableAnalyticsStarted else { return }
+        isJadeEnableAnalyticsStarted = true
+        AnalyticsManager.shared.enableStart(wallet: viewModel.mainWallet)
+    }
+
+    private func trackJadeEnableFailedIfNeeded() {
+        guard isJadeEnableAnalyticsStarted else { return }
+        isJadeEnableAnalyticsStarted = false
+        AnalyticsManager.shared.enableFailed(wallet: viewModel.mainWallet)
+    }
     
 
     func enableLightning() async {
+        AnalyticsManager.shared.enableStart(wallet: viewModel.mainWallet)
         startLoader(message: "Enabling Lightning...")
         let task = Task.detached { [weak self] in
             try await self?.viewModel.enableLightning()
@@ -130,7 +145,15 @@ class LTCreateViewController: UIViewController {
         switch await task.result {
         case .success:
             stopLoader()
-            DropAlert().success(message: "Lightning enabled")
+            DropAlert().success(message: "Lightning enabled".localized)
+            var account: Account?
+            if let backend = WalletManager.current?.glNetworkBackendOrNil(),
+                backend.isLoggedIn {
+                account = backend.account
+            }
+            AnalyticsManager.shared.createAccount(wallet: viewModel.mainWallet,
+                                                  account: account)
+
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.newSubaccount.rawValue), object: nil, userInfo: nil)
             if viewModel.isHW {
                 pushLTExportJadeViewController()
@@ -140,6 +163,7 @@ class LTCreateViewController: UIViewController {
         case .failure(let error):
             stopLoader()
             showError(error)
+            AnalyticsManager.shared.enableFailed(wallet: viewModel.mainWallet)
         }
     }
 
@@ -166,7 +190,8 @@ class LTCreateViewController: UIViewController {
 
 extension LTCreateViewController: LTExportJadeViewControllerDelegate {
     func didExportedWallet() {
-        DropAlert().success(message: "Lightning enabled")
+        isJadeEnableAnalyticsStarted = false
+        DropAlert().success(message: "Lightning enabled".localized)
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.newSubaccount.rawValue), object: nil, userInfo: nil)
         navigationController?.popViewController(animated: true)
     }
@@ -183,5 +208,6 @@ extension LTCreateViewController: HWDialogConnectViewControllerDelegate {
 
     func failure(err: Error) {
         showError(err)
+        trackJadeEnableFailedIfNeeded()
     }
 }

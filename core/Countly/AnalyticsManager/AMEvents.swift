@@ -71,6 +71,11 @@ public enum AnalyticsEventName: String {
     case swapInitiate = "swap_initiate"
     case swapSetup = "swap_setup"
     case swapEnable = "swap_enable"
+
+    case invoiceCreate = "invoice_create"
+    case sendAttempt = "send_attempt"
+    case enableStart = "enable_start"
+    case enableFailed = "enable_failed"
 }
 
 extension AnalyticsManager {
@@ -137,7 +142,11 @@ extension AnalyticsManager {
         startEvent(.sendTransaction)
     }
 
-    public func endSendTransaction(wallet: Wallet?, account: Account?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool) {
+    public func endSendTransaction(wallet: Wallet?,
+                                   account: Account?,
+                                   transactionSgmt: AnalyticsManager.TransactionSegmentation,
+                                   withMemo: Bool,
+                                   invoiceType: AnalyticsInvoiceType?) {
         endTrace(.sendTransaction)
         var s = subAccSeg(wallet, account: account)
         switch transactionSgmt.transactionType {
@@ -153,6 +162,9 @@ extension AnalyticsManager {
         s[AnalyticsManager.strAddressInput] = (transactionSgmt.addressInputType ?? .paste).rawValue
         // s[AnalyticsManager.strSendAll] = transactionSgmt.sendAll ? "true" : "false"
         s[AnalyticsManager.strWithMemo] = withMemo ? "true" : "false"
+        if let invoiceType {
+            s[AnalyticsManager.strInvoiceType] = invoiceType.rawValue
+        }
         endEvent(.sendTransaction, sgmt: s)
     }
 
@@ -210,8 +222,8 @@ extension AnalyticsManager {
         transactionSgmt: AnalyticsManager.TransactionSegmentation,
         withMemo: Bool,
         prettyError: String?,
-        nodeId: String?) {
-        endTrace(.failedTransaction)
+        nodeId: String?,
+        invoiceType: AnalyticsInvoiceType?) {
         var s = subAccSeg(wallet, account: account)
         switch transactionSgmt.transactionType {
         case .transaction:
@@ -231,6 +243,9 @@ extension AnalyticsManager {
         }
         if let nodeId = nodeId {
             s[AnalyticsManager.strNodeId] = nodeId
+        }
+        if let invoiceType {
+            s[AnalyticsManager.strInvoiceType] = invoiceType.rawValue
         }
         endTrace(.failedTransaction)
         endEvent(.failedTransaction, sgmt: s)
@@ -472,6 +487,28 @@ extension AnalyticsManager {
     public func swapEnable(wallet: Wallet?) {
         let s = sessSgmt(wallet)
         recordEvent(.swapEnable, sgmt: s)
+    }
+    public func invoiceCreate(wallet: Wallet?, account: Account?) {
+        let s = subAccSeg(wallet, account: account)
+        recordEvent(.invoiceCreate, sgmt: s)
+    }
+    public func sendAttempt(wallet: Wallet?,
+                            account: Account?,
+                            invoiceType: AnalyticsInvoiceType?
+    ) {
+        var s = subAccSeg(wallet, account: account)
+        if let invoiceType {
+            s[AnalyticsManager.strInvoiceType] = invoiceType.rawValue
+        }
+        recordEvent(.sendAttempt, sgmt: s)
+    }
+    public func enableStart(wallet: Wallet?) {
+        let s = sessSgmt(wallet)
+        recordEvent(.enableStart, sgmt: s)
+    }
+    public func enableFailed(wallet: Wallet?) {
+        let s = sessSgmt(wallet)
+        recordEvent(.enableFailed, sgmt: s)
     }
 }
 

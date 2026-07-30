@@ -8,7 +8,11 @@ public enum AnalyticsConsent: Int {
     case denied
     case authorized
 }
-
+public enum AnalyticsInvoiceType: String {
+    case bolt11
+    case bolt12
+    case lnurl
+}
 public enum AppStorageConstants: String {
     case dontShowTorAlert = "dont_show_tor_alert"
     case defaultTransactionPriority = "default_transaction_priority"

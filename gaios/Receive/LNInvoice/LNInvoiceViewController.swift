@@ -34,6 +34,18 @@ class LNInvoiceViewController: UIViewController {
     private var invoiceObservationTask: Task<Void, Never>?
     private var handledPaidInvoice = false
     var viewModel: LNInvoiceViewModel!
+    private var nativeLightningAccountForAnalytics: Account? {
+        guard viewModel.type == .bolt11, viewModel.account.isLightning else { return nil }
+        return viewModel.account
+    }
+
+    private func trackReceiveAddress(data: AnalyticsManager.ReceiveAddressData) {
+        guard let account = nativeLightningAccountForAnalytics else { return }
+        AnalyticsManager.shared.receiveAddress(
+            wallet: WalletsStorage.shared.current,
+            account: account,
+            data: data)
+    }
 
     init?(coder: NSCoder, viewModel: LNInvoiceViewModel) {
         self.viewModel = viewModel
@@ -167,11 +179,7 @@ class LNInvoiceViewController: UIViewController {
         let data = AnalyticsManager.ReceiveAddressData(type: AnalyticsManager.ReceiveAddressType.address,
                                                        media: AnalyticsManager.ReceiveAddressMedia.text,
                                                        method: AnalyticsManager.ReceiveAddressMethod.copy)
-        AnalyticsManager.shared
-            .receiveAddress(
-                wallet: WalletsStorage.shared.current,
-                account: viewModel.account,
-                data: data)
+        trackReceiveAddress(data: data)
         UIPasteboard.general.string = text
         switch viewModel.type {
         case .bolt11, .lwkSwap:
@@ -253,20 +261,14 @@ extension LNInvoiceViewController: DialogListViewControllerDelegate {
                     type: AnalyticsManager.ReceiveAddressType.address,
                     media: AnalyticsManager.ReceiveAddressMedia.text,
                     method: AnalyticsManager.ReceiveAddressMethod.share)
-                AnalyticsManager.shared.receiveAddress(
-                    wallet: WalletsStorage.shared.current,
-                    account: viewModel.account,
-                    data: data)
+                trackReceiveAddress(data: data)
             case .qr:
                 let uri = viewModel.bolt11
                 let data = AnalyticsManager.ReceiveAddressData(
                     type: AnalyticsManager.ReceiveAddressType.address,
                     media: AnalyticsManager.ReceiveAddressMedia.image,
                     method: AnalyticsManager.ReceiveAddressMethod.share)
-                AnalyticsManager.shared.receiveAddress(
-                    wallet: WalletsStorage.shared.current,
-                    account: viewModel.account,
-                    data: data)
+                trackReceiveAddress(data: data)
                 Task {
                     let image = await imgToShare()
                     await MainActor.run { [weak self] in

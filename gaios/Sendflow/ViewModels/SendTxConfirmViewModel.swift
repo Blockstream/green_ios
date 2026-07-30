@@ -263,7 +263,8 @@ class SendTxConfirmViewModel {
                 wallet: WalletsStorage.shared.current,
                 account: subaccount,
                 transactionSgmt: transSgmt,
-                withMemo: withMemo)
+                withMemo: withMemo,
+                invoiceType: nil)
             if sendAll { AnalyticsManager.shared.emptiedAccount = subaccount }
             return sendTransaction!
         } catch {
@@ -273,7 +274,8 @@ class SendTxConfirmViewModel {
                 transactionSgmt: transSgmt,
                 withMemo: withMemo,
                 prettyError: error.description(),
-                nodeId: nil
+                nodeId: nil,
+                invoiceType: nil
             )
             self.error = error
             throw error

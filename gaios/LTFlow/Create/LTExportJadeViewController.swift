@@ -130,11 +130,21 @@ extension LTExportJadeViewController: QrScannerViewControllerDelegate {
         switch await task.result {
         case .success:
             self.stopLoader()
+            var account: Account?
+            if let backend = WalletManager.current?.glNetworkBackendOrNil(),
+               backend.isLoggedIn {
+                account = backend.account
+            }
+            AnalyticsManager.shared.createAccount(
+                wallet: WalletsStorage.shared.current,
+                account: account
+            )
             self.navigationController?.popViewController(animated: true)
             self.delegate?.didExportedWallet()
         case .failure(let err):
             self.stopLoader()
             self.showError(err)
+            AnalyticsManager.shared.enableFailed(wallet: WalletsStorage.shared.current)
         }
     }
     func didStop() {

@@ -180,6 +180,10 @@ class ReceiveViewController: KeyboardViewController {
         case .paymentReady:
             // enter LNInvoiceScreen
             btnConfirm.setStyle(.primary)
+            if vm.state.type == .bolt11, vm.state.subaccount.isLightning {
+                AnalyticsManager.shared.invoiceCreate(wallet: WalletsStorage.shared.current,
+                                                      account: vm.state.subaccount)
+            }
             showLightningInvoice()
         case .error(let errStr):
             btnConfirm.setStyle(.primary)
