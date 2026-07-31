@@ -49,9 +49,26 @@ public final class GdkAccountBackend: AccountBackend {
         return res
     }
 
+    public func removeCachedTransaction(hash: String?) {
+        guard let hash, !hash.isEmpty else { return }
+        _txs.mutate { $0.removeValue(forKey: hash) }
+    }
+
     public func getTransactions(params: GetTransactionsParams) async throws -> Transactions {
         let res = try await session.transactions(params)
         _txs.mutate { cache in
+            // Reconciliate mempool transaction in cache
+            if params.first == 0 {
+                let txHashes = res.list.map { $0.hash }
+                for hash in cache.keys {
+                    if let tx = cache[hash],
+                       tx.blockHeight == 0,
+                       !txHashes.contains(hash) {
+                        cache.removeValue(forKey: hash)
+                    }
+                }
+            }
+            // Update transactions
             for tx in res.list {
                 if let txHash = tx.hash {
                     cache[txHash] = tx

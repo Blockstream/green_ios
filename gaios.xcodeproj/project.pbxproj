@@ -577,6 +577,7 @@
 		8153AD2B2CEF21FA0030CE8F /* CreateAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8153AD2A2CEF21F60030CE8F /* CreateAccountCell.swift */; };
 		8153AD2D2CEF24880030CE8F /* CreateAccountCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8153AD2C2CEF24880030CE8F /* CreateAccountCell.xib */; };
 		8153DD6A301C071B009017BB /* ThreadSafe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8153DD69301C070F009017BB /* ThreadSafe.swift */; };
+		8153DD6E301C1EB9009017BB /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 8153DD6D301C1EB9009017BB /* AsyncAlgorithms */; };
 		815C0DCD3009996B00D53221 /* DialogCountlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815C0DCC3009996B00D53221 /* DialogCountlyViewController.swift */; };
 		815D63A42F6426FC000A4CD7 /* SwapManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815D63A32F6426E9000A4CD7 /* SwapManager.swift */; };
 		815D63A62F642713000A4CD7 /* SwapModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815D63A52F64270F000A4CD7 /* SwapModel.swift */; };
@@ -1906,6 +1907,7 @@
 				81CB5A3E2F504C1700908553 /* LiquidWalletKit in Frameworks */,
 				818A8E4B2FACBC16005471BF /* GreenlightSDK in Frameworks */,
 				81BC54432BB1E084009F7631 /* hw.framework in Frameworks */,
+				8153DD6E301C1EB9009017BB /* AsyncAlgorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4851,6 +4853,7 @@
 				8177EDDA2B6C7B9C00C2271C /* Countly */,
 				81CB5A3D2F504C1700908553 /* LiquidWalletKit */,
 				818A8E4A2FACBC16005471BF /* GreenlightSDK */,
+				8153DD6D301C1EB9009017BB /* AsyncAlgorithms */,
 			);
 			productName = core;
 			productReference = 8177ED882B6C688C00C2271C /* core.framework */;
@@ -7529,6 +7532,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8114888C2B785A25004C7AB6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		8153DD6D301C1EB9009017BB /* AsyncAlgorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81D6B3052EE8189400A637C4 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
+			productName = AsyncAlgorithms;
 		};
 		8173B8EB2AB19DB800C15C85 /* ZendeskSupportSDK */ = {
 			isa = XCSwiftPackageProductDependency;

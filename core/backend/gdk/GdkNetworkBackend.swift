@@ -1,6 +1,6 @@
 import Foundation
-import Combine
 import greenaddress
+import Combine
 import hw
 
 public final class GdkNetworkBackend: NetworkBackend {
@@ -20,6 +20,11 @@ public final class GdkNetworkBackend: NetworkBackend {
     public var networkType: NetworkId { network.networkId }
     private var accountBackends = [String: AccountBackend]()
     public weak var newNotificationDelegate: NewNotificationDelegate?
+    //  Disable notification handling until all networks are initialized
+    var disableNotificationHandling = false
+
+    private let blockDebouncer = NotificationDebouncer(interval: .milliseconds(300))
+    private let transactionDebouncer = NotificationDebouncer(interval: .milliseconds(300))
 
     public init(
         network: GdkNetwork,
@@ -36,10 +41,108 @@ public final class GdkNetworkBackend: NetworkBackend {
         self.session.hwProtocol = hwProtocol
         self.session.hwInterfaceResolver = hwInterfaceResolver
         self.newNotificationDelegate = newNotificationDelegate
+        self.disableNotificationHandling = true
     }
 
     deinit {
-        self.newNotificationDelegate = nil
+        blockDebouncer.cancel()
+        transactionDebouncer.cancel()
+        newNotificationDelegate = nil
+    }
+
+    private func debounce(event: EventNotificationTypes) {
+        switch event {
+        case .newBlock(let block):
+            if block.height > 0 {
+                self.block = block
+            }
+            guard block.height > 0 && !disableNotificationHandling else {
+                return
+            }
+            blockDebouncer.schedule(event) { [weak self] events in
+                self?.handleBlockEvents(events)
+            }
+        case .newTransaction:
+            // Avoid handle newTransaction during wallet restoring
+            guard block?.height ?? 0 > 0 && !disableNotificationHandling else {
+                return
+            }
+            transactionDebouncer.schedule(event) { [weak self] events in
+                self?.handleTransactionEvents(events)
+            }
+        default:
+            break
+        }
+    }
+
+    private func syncTransactions(
+        for accountBackend: AccountBackend
+    ) async throws {
+        let mempoolCount = (accountBackend as? GdkAccountBackend)?
+            .txs.values.filter { $0.blockHeight == 0 }.count ?? 0
+        let count = max(30, mempoolCount)
+        _ = try await accountBackend.getBalance(confirmations: 0)
+        _ = try await accountBackend.getTransactions(
+            params: GetTransactionsParams(
+                subaccount: accountBackend.account.pointer,
+                first: 0,
+                count: count
+            )
+        )
+    }
+
+    private func handleBlockEvents(_ events: [EventNotificationTypes]) {
+        guard case .newBlock(let block) = events.last, block.height > 0 else { return }
+
+        Task { [weak self] in
+            guard let self else { return }
+            self.block = block
+            for accountBackend in self.accountBackends.values {
+                let pendingTxs = self.pendingTransactions(block: block, accountBackend: accountBackend)
+                if !pendingTxs.isEmpty {
+                    try? await self.syncTransactions(
+                        for: accountBackend
+                    )
+                }
+            }
+            self.newNotificationDelegate?
+                .didReceive(event: .newBlock(block: block), networkId: networkId)
+        }
+    }
+
+    private func handleTransactionEvents(_ events: [EventNotificationTypes]) {
+        var subaccounts = Set<UInt32>()
+        for event in events {
+            guard case .newTransaction(let tx) = event, let pointers = tx.subAccounts else { continue }
+            for pointer in pointers {
+                subaccounts.insert(pointer)
+            }
+        }
+
+        Task { [weak self] in
+            guard let self else { return }
+            if !subaccounts.isEmpty {
+                for accountBackend in self.accountBackends.values {
+                    let pointer = accountBackend.account.pointer
+                    guard subaccounts.contains(pointer) else { continue }
+                    try? await self.syncTransactions(
+                        for: accountBackend
+                    )
+                }
+            }
+            if case .newTransaction(let tx) = events.last {
+                self.newNotificationDelegate?
+                    .didReceive(event: .newTransaction(transaction: tx), networkId: networkId)
+            }
+        }
+    }
+
+    private func pendingTransactions(block: Block, accountBackend: AccountBackend) -> [Transaction] {
+        let minConfirmations = networkId.liquid ? 2 : 6
+        let pendingTxs = accountBackend.txs.values.filter {
+            $0.confirmations(block: block.height) <= minConfirmations
+        }
+        return pendingTxs
     }
 
     public func accountBackend(_ account: Account) -> AccountBackend {
@@ -194,6 +297,7 @@ public final class GdkNetworkBackend: NetworkBackend {
         prominentNetworkId: NetworkId
     )
     async throws -> LoginUserResult? {
+        disableNotificationHandling = true
         // Disable gdk login on multisig on new wallet
         if creation && network.multisig {
             return nil
@@ -249,6 +353,8 @@ public final class GdkNetworkBackend: NetworkBackend {
                 refresh: refresh,
                 hasGdkCache: hasGdkCache || network.multisig)
             _ = try? await session.loadSettings()
+            // Allow initialization calls to have priority over notifications initiated updates
+            disableNotificationHandling = false
             return res
         } catch TwoFactorCallError.failure(let txt) {
             if txt.contains("HWW must enable host unblinding for singlesig wallets") {
@@ -331,51 +437,13 @@ extension GdkNetworkBackend: NewNotificationDelegate {
                 .info(
                     "GdkNetworkBackend didReceive newBlock(\(block.height)) on \(networkId.network)"
                 )
-            self.block = block
-            let minConfirmations = networkId.liquid ? 2 : 6
-            Task { [weak self] in
-                for accountBackend in (self?.accountBackends ?? [:]).values {
-                    let pendingTxs = accountBackend.txs.values.filter {
-                        $0.confirmations(block: block.height) <= minConfirmations
-                    }
-                    if !pendingTxs.isEmpty {
-                        _ = try await accountBackend.getBalance(confirmations: 0)
-                        _ = try await accountBackend
-                            .getTransactions(
-                                params: GetTransactionsParams(
-                                    subaccount: accountBackend
-                                        .account.pointer,
-                                    first: 0,
-                                    count: pendingTxs.count)
-                            )
-                    }
-                }
-                self?.newNotificationDelegate?
-                    .didReceive(event: event, networkId: networkId)
-            }
+            debounce(event: event)
         case .newTransaction(let tx):
             logger
                 .info(
                     "GdkNetworkBackend didReceive newTransaction(\(tx.txHash ?? "", privacy: .public)) on \(networkId.network, privacy: .public)"
                 )
-            Task { [weak self] in
-                for accountBackend in (self?.accountBackends ?? [:]).values {
-                    if let subaccounts = tx.subAccounts, subaccounts
-                        .contains(accountBackend.account.pointer) {
-                        _ = try await accountBackend.getBalance(confirmations: 0)
-                        _ = try await accountBackend
-                            .getTransactions(
-                                params: GetTransactionsParams(
-                                    subaccount: accountBackend
-                                        .account.pointer,
-                                    first: 0,
-                                    count: 1)
-                            )
-                    }
-                }
-                self?.newNotificationDelegate?
-                    .didReceive(event: event, networkId: networkId)
-            }
+            debounce(event: event)
         case .twoFactorReset:
             logger
                 .info(
@@ -419,10 +487,54 @@ extension GdkNetworkBackend: NewNotificationDelegate {
                 .info(
                     "GdkNetworkBackend didReceive newSubaccount on \(networkId.network)"
                 )
+            guard !disableNotificationHandling else {
+                return
+            }
             newNotificationDelegate?
                 .didReceive(event: event, networkId: networkId)
         default:
             break
+        }
+    }
+}
+
+private final class NotificationDebouncer {
+    private let interval: DispatchTimeInterval
+    private var buffer: [EventNotificationTypes] = []
+    private var workItem: DispatchWorkItem?
+
+    init(interval: DispatchTimeInterval) {
+        self.interval = interval
+    }
+
+    func schedule(_ event: EventNotificationTypes, handler: @escaping ([EventNotificationTypes]) -> Void) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.buffer.append(event)
+            self.workItem?.cancel()
+            let work = DispatchWorkItem { [weak self] in
+                guard let self else { return }
+                let events = self.buffer
+                self.buffer.removeAll()
+                self.workItem = nil
+                handler(events)
+            }
+            self.workItem = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.interval, execute: work)
+        }
+    }
+
+    func cancel() {
+        if Thread.isMainThread {
+            workItem?.cancel()
+            workItem = nil
+            buffer.removeAll()
+        } else {
+            DispatchQueue.main.sync {
+                workItem?.cancel()
+                workItem = nil
+                buffer.removeAll()
+            }
         }
     }
 }
