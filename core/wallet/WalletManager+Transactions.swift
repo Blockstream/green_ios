@@ -64,4 +64,19 @@ extension WalletManager {
         }
         return txs.sorted(by: { $0 > $1 })
     }
+
+    public func cachedBalances(subaccounts: [Account]) -> [String: [String: Int64]] {
+        subaccounts.reduce(into: [:]) { result, account in
+            if let assets = accountBackendOrNil(account)?.assets {
+                result[account.id] = assets
+            }
+        }
+    }
+    public func cachedTransactions(subaccounts: [Account]) -> [String: [Transaction]] {
+        subaccounts.reduce(into: [:]) { result, account in
+            result[account.id] = accountBackendOrNil(account)?.txs.values
+                .map { Transaction($0.details, accountId: account.id) } ?? []
+        }
+    }
+
 }

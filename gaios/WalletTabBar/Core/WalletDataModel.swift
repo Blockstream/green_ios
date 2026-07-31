@@ -69,6 +69,80 @@ actor WalletDataModel {
         }
     }
 
+    func triggerReload(features: Set<RefreshFeature>) async {
+        await withTaskGroup(of: Void.self) { [weak self] group in
+            for feature in features {
+                group.addTask { await self?.reloadFromCache(feature: feature) }
+            }
+        }
+    }
+
+    // Reload data from cache and apply to state
+    private func reloadFromCache(feature: RefreshFeature) async {
+        switch feature {
+        case .subaccounts:
+            await reloadSubaccountsFromCache()
+            await reloadBalancesFromCache()
+        case .balance:
+            await reloadBalancesFromCache()
+        case .txs(reset: let reset):
+            await reloadTransactionsFromCache(reset: reset)
+        case .nestedTxs(subaccount: let subaccount, assetId: let assetId):
+            break
+            //await reloadTransactionsFromCache(subaccount: subaccount, assetId: assetId)
+        default:
+            break
+        }
+    }
+
+    private func reloadSubaccountsFromCache() async {
+        let subaccounts = wm.accounts
+        await update(.subaccounts) { $0.subaccounts = subaccounts }
+    }
+
+    private func reloadBalancesFromCache() async {
+        let subaccounts = state.subaccounts
+        guard !subaccounts.isEmpty else { return }
+        var balancesForSubaccount = wm.cachedBalances(subaccounts: subaccounts)
+        let balances = balancesForSubaccount
+            .flatMap(\.value)
+            .reduce(into: [String: Int64]()) { dict, pair in
+                dict[pair.key, default: 0] += pair.value
+            }
+        let totals = balances
+            .filter { AssetInfo.baseIds.contains($0.key) }
+            .values
+            .reduce(0, +)
+        await update(.balance) {
+            $0.balancesForSubaccount = balancesForSubaccount
+            $0.balances = balances
+            $0.totals = ("btc", totals)
+            $0.assetAmountList = balances.toList()
+        }
+    }
+
+    private func reloadTransactionsFromCache(reset: Bool) async {
+        let subaccounts = state.subaccounts
+        guard !subaccounts.isEmpty else { return }
+        let txsByAccount = wm.cachedTransactions(subaccounts: subaccounts)
+        var cache: [String: [Transactions]] = reset ? [:] : (state.txsGdk ?? [:])
+        for (accountId, list) in txsByAccount {
+            cache[accountId] = [Transactions(list: list.sorted(by: >))]
+        }
+        let prominentSubaccount = subaccounts.first { !$0.hidden }
+        let txsMeld = try? await fetchMeldTransactions(prominentSubaccount)
+        var list = cache
+            .flatMap({$0.value})
+            .flatMap({$0.list})
+        list.append(contentsOf: txsMeld ?? [])
+        list.sort(by: >)
+        await update(.txs(reset: reset)) {
+            $0.txsGdk = cache
+            $0.txsMeld = txsMeld ?? []
+            $0.txs = list
+            // pagination unchanged on incremental; load-more still uses performFetchTransactions
+        }
+    }
     // TODO: isFetchingBalance is a temp guard; the real fix is making WalletManager an actor
     private func performFetchBalance() async {
         if isFetchingBalance { return }
@@ -459,20 +533,22 @@ extension WalletDataModel: NewNotificationDelegate {
                     )
             }
             if pendings?.count ?? 0 > 0 {
-                await triggerRefresh(features: [.balance, .txs(reset: true)])
+                await triggerReload(features: [.balance, .txs(reset: true)])
             }
         case .newSubaccount:
             logger.info("WalletDataModel newSubaccount")
         case .newTransaction:
             logger.info("WalletDataModel newTransaction")
-            await triggerRefresh(features: [.balance, .txs(reset: true)])
+            await triggerReload(
+                features: [.balance, .txs(reset: true)]
+            )
         case .twoFactorReset:
             logger.info("WalletDataModel twoFactorReset")
-            await triggerRefresh(features: [.subaccounts])
+            await triggerReload(features: [.subaccounts])
             await triggerRefresh(features: [.settings])
         case .updateSettings:
             logger.info("WalletDataModel updateSettings")
-            await triggerRefresh(features: [.subaccounts])
+            await triggerReload(features: [.subaccounts])
             await triggerRefresh(features: [.settings])
         case .disconnected:
             logger.info("WalletDataModel disconnected")
@@ -485,13 +561,13 @@ extension WalletDataModel: NewNotificationDelegate {
             break
         case .refreshAssets:
             logger.info("WalletDataModel refreshAssets")
-            await triggerRefresh(features: [.subaccounts, .balance, .txs(reset: true)])
+            await triggerReload(features: [.subaccounts, .balance, .txs(reset: true)])
         case .invoicePaid:
             logger.info("WalletDataModel invoicePaid")
-            await triggerRefresh(features: [.balance, .txs(reset: true)])
+            await triggerReload(features: [.balance, .txs(reset: true)])
         case .paymentSucceed:
             logger.info("WalletDataModel paymentSucceed")
-            await triggerRefresh(features: [.balance, .txs(reset: true)])
+            await triggerReload(features: [.balance, .txs(reset: true)])
         case .paymentFailed:
             break
         }
