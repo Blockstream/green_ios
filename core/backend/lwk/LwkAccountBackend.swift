@@ -37,11 +37,15 @@ public class LwkAccountBackend: AccountBackend {
         let firstUnusedIndex = Int(try wollet.address(index: nil).index())
         // Hand out addresses past the wallet's first-unused index, but stay
         // within the BIP44 gap limit so we don't generate addresses the wallet won't scan.
-        if nextAddressIndex < firstUnusedIndex || nextAddressIndex - firstUnusedIndex >= Self.GAP_LIMIT {
-            nextAddressIndex = firstUnusedIndex
+        var reservedIndex = 0
+        _nextAddressIndex.mutate { nextIndex in
+            if nextIndex < firstUnusedIndex || nextIndex - firstUnusedIndex >= Self.GAP_LIMIT {
+                nextIndex = firstUnusedIndex
+            }
+            reservedIndex = nextIndex
+            nextIndex += 1
         }
-        let address = try wollet.address(index: UInt32(nextAddressIndex))
-        nextAddressIndex += 1
+        let address = try wollet.address(index: UInt32(reservedIndex))
         print("Address #\(address.index()) \(address.address())")
         return Address(address: address.address().description)
     }
