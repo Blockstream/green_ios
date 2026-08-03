@@ -626,6 +626,15 @@ extension ReceiveViewController {
             btnNote.addTarget(self, action: #selector(editNoteBtnTapped), for: .touchUpInside)
             navigationItem.rightBarButtonItem = UIBarButtonItem(customView: btnNote)
         } else {
+            // Hide the menu when this account has no supported receive options.
+            let options = MoreOptPrefs.getPrefs(
+                account: vm.state.subaccount,
+                assetId: vm.state.anyOrAsset.assetId
+            )
+            guard !options.isEmpty else {
+                navigationItem.rightBarButtonItem = UIBarButtonItem(customView: helpButton)
+                return
+            }
             let optBtn = UIButton(type: .system)
             optBtn.setImage(UIImage(named: "ic_dots_three"), for: .normal)
             optBtn.addTarget(self, action: #selector(optBtnTap), for: .touchUpInside)

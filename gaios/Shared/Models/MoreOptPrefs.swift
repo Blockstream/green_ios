@@ -31,7 +31,8 @@ enum MoreOptPrefs: Int, CaseIterable {
     static func getPrefs(account: Account, assetId: String) -> [MoreOptPrefs] {
 
         let hideSweep = account.gdkNetwork.liquid || account.gdkNetwork.lightning
-        let hideSign = account.gdkNetwork.lightning
+        // Address history is currently available only through a GDK-backed account.
+        let hideAddressList = account.gdkSession == nil
         let hideAmountRequest = account.gdkNetwork.lightning || !AssetInfo.baseIds.contains(assetId)
 
         var prefs: [MoreOptPrefs] = []
@@ -41,7 +42,7 @@ enum MoreOptPrefs: Int, CaseIterable {
         if hideSweep == false {
             prefs.append(.sweep)
         }
-        if hideSign == false {
+        if hideAddressList == false {
             prefs.append(.addressAuth)
         }
         return prefs
