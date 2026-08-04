@@ -47,22 +47,11 @@ class QrScannerView: UIView {
         }
     }
 
-    private func startScanningWithoutPermission() {
-        Task {
-            await cameraManager.setup()
-            if let session = await cameraManager.session {
-                await setupPreviewLayer(session: session)
-            }
-            setNeedsLayout()
-            await cameraManager.start(self)
-        }
-    }
-
     func isScanning() async -> Bool {
         await cameraManager.isRunning
     }
 
-    private func setupPreviewLayer(session: AVCaptureSession) async {
+    private func setupPreviewLayer(session: AVCaptureSession) {
         previewLayer?.removeFromSuperlayer()
         let preview = AVCaptureVideoPreviewLayer(session: session)
         preview.videoGravity = .resizeAspectFill
@@ -145,22 +134,44 @@ class QrScannerView: UIView {
     }
 
     func startScanningCheckPermission() {
+        isDismissing = false
         Task {
-            isDismissing = false
             let status = AVCaptureDevice.authorizationStatus(for: .video)
             switch status {
             case .authorized:
-                startScanningWithoutPermission()
+                break
             case .notDetermined:
-                if await AVCaptureDevice.requestAccess(for: .video) {
-                    startScanningWithoutPermission()
-                } else {
+                guard await AVCaptureDevice.requestAccess(for: .video) else {
                     delegate?.didChangeAuthorization(isAuthorized: false)
+                    return
                 }
             case .denied, .restricted:
                 delegate?.didChangeAuthorization(isAuthorized: false)
-            @unknown default: break
+                return
+            @unknown default:
+                return
             }
+
+            guard !isDismissing else { return }
+
+            // Always fully stop before starting again.
+            await setTorch(on: false)
+            await bcurProvider.reset()
+            await cameraManager.setDecoding(false)
+            await cameraManager.stop()
+
+            guard !isDismissing else { return }
+
+            await cameraManager.setup()
+            guard !isDismissing else { return }
+
+            if let session = await cameraManager.session {
+                setupPreviewLayer(session: session)
+            }
+            guard !isDismissing else { return }
+
+            setNeedsLayout()
+            await cameraManager.start(self)
         }
     }
 

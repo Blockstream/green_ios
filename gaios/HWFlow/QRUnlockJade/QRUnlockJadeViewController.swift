@@ -46,15 +46,11 @@ class QRUnlockJadeViewController: UIViewController {
         setContent()
         setStyle()
         qrScanView.delegate = self
-        self.view.alpha = 0.0
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         refresh()
-        UIView.animate(withDuration: 0.3) {
-            self.view.alpha = 1.0
-        }
     }
 
     func setContent() {
@@ -103,8 +99,6 @@ class QRUnlockJadeViewController: UIViewController {
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         lblStep.setStyle(.txtCard)
         btnNext.setStyle(.primary)
-        qrScanView.layer.masksToBounds = true
-        qrScanView.cornerRadius = 10.0
     }
 
     @MainActor

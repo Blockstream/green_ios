@@ -47,8 +47,6 @@ class QRPsbtAquireViewController: UIViewController {
         lblStep.textColor = UIColor.gAccent()
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         lblHint.setStyle(.txtCard)
-        qrScanView.layer.masksToBounds = true
-        qrScanView.cornerRadius = 10.0
         imgStep.image = UIImage(named: "ic_qr_scan_square")?.maskWithColor(color: UIColor.gAccent())
         btnImport.setStyle(.outlinedWhite)
     }

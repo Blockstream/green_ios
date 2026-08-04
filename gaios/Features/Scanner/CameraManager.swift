@@ -12,6 +12,8 @@ actor CameraManager {
         label: "io.blockstream.green.scanner.metadata",
         qos: .userInteractive
     )
+    /// Serializes session configuration and start/stop (blocking AV calls).
+    private let sessionTasks = SerialTasks<Void>()
 
     func tryStartDecoding() -> Bool {
         if isDecoding { return false }
@@ -93,7 +95,11 @@ actor CameraManager {
         device.unlockForConfiguration()
     }
 
-    func setup() {
+    func setup() async {
+        // Keep a single session for the lifetime of this manager.
+        if session != nil {
+            return
+        }
         let session = AVCaptureSession()
         session.sessionPreset = .high
         guard let videoCaptureDevice = bestDeviceForScanning() else {
@@ -102,17 +108,20 @@ actor CameraManager {
         try? applyBcurFrameRate(to: videoCaptureDevice)
         try? applyDeviceConfiguration(to: videoCaptureDevice)
         let input = try? AVCaptureDeviceInput(device: videoCaptureDevice)
-        if let input, session.canAddInput(input) {
-            session.addInput(input)
-        }
         let output = AVCaptureMetadataOutput()
-        if session.canAddOutput(output) {
-            session.addOutput(output)
-            output.metadataObjectTypes = [.qr]
-        }
+        // Claim before awaiting so a re-entrant setup cannot create a second session.
         self.session = session
         self.captureDevice = videoCaptureDevice
         self.captureMetadataOutput = output
+        try? await sessionTasks.add {
+            if let input, session.canAddInput(input) {
+                session.addInput(input)
+            }
+            if session.canAddOutput(output) {
+                session.addOutput(output)
+                output.metadataObjectTypes = [.qr]
+            }
+        }
     }
 
     func setTorch(on: Bool) {
@@ -130,17 +139,26 @@ actor CameraManager {
         }
     }
 
-    func start(_ objectsDelegate: (any AVCaptureMetadataOutputObjectsDelegate)?) {
-        if session?.isRunning == false {
-            captureMetadataOutput?.setMetadataObjectsDelegate(objectsDelegate, queue: metadataQueue)
-            session?.startRunning()
+    func start(_ objectsDelegate: (any AVCaptureMetadataOutputObjectsDelegate)?) async {
+        let session = self.session
+        let output = self.captureMetadataOutput
+        let metadataQueue = self.metadataQueue
+        try? await sessionTasks.add {
+            guard let session, session.isRunning == false else { return }
+            output?.setMetadataObjectsDelegate(objectsDelegate, queue: metadataQueue)
+            session.startRunning()
         }
     }
-    func stop() {
-        if session?.isRunning == true {
-            captureMetadataOutput?.setMetadataObjectsDelegate(nil, queue: nil)
-            session?.stopRunning()
+
+    func stop() async {
+        let session = self.session
+        let output = self.captureMetadataOutput
+        try? await sessionTasks.add {
+            guard let session, session.isRunning else { return }
+            output?.setMetadataObjectsDelegate(nil, queue: nil)
+            session.stopRunning()
         }
     }
+
     var isRunning: Bool { session?.isRunning ?? false }
 }
