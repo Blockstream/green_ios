@@ -287,7 +287,7 @@ final class ReceiveViewModel: Sendable {
             } else if asset.isBitcoin {
                 return getBitcoinSubaccounts()
             } else if asset.amp ?? false {
-                return getLiquidAmpSubaccounts()
+                return getLiquidAmpLegacySubaccounts()
             } else {
                 return getLiquidSubaccounts()
             }

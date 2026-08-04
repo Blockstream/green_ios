@@ -403,7 +403,7 @@ extension TabTransactVC: UITableViewDataSourcePrefetching {
                 } else if asset.isBitcoin {
                     return getBitcoinSubaccounts()
                 } else if asset.amp ?? false {
-                    return getLiquidAmpSubaccounts()
+                    return getLiquidAmpLegacySubaccounts()
                 }
             }
             return getLiquidSubaccounts()
