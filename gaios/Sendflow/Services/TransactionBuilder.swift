@@ -19,7 +19,11 @@ actor TransactionBuilder {
             guard let resolved = lnurlInvoice.lightningInvoice()?.description else {
                 throw TransactionError.invalid(localizedDescription: "Invalid LNURL invoice")
             }
-            return LightningPayment.fromBolt11Invoice(invoice: try Bolt11Invoice(s: resolved))
+            let bolt11 = try Bolt11Invoice(s: resolved)
+            guard amount == bolt11.amountMilliSatoshis()?.satoshi else {
+                throw TransactionError.invalid(localizedDescription: "Invoice amount mismatch")
+            }
+            return LightningPayment.fromBolt11Invoice(invoice: bolt11)
         }.value
     }
 
@@ -447,6 +451,9 @@ actor TransactionBuilder {
                 throw TransactionError.invalid(localizedDescription: "Invalid LNURL invoice")
             }
             let bolt11 = try Bolt11Invoice(s: resolvedInvoice)
+            guard satoshi == bolt11.amountMilliSatoshis()?.satoshi else {
+                throw TransactionError.invalid(localizedDescription: "Invoice amount mismatch")
+            }
             return try await TransactionBuilder.build(
                 from: lightningSubaccount,
                 invoice: bolt11,
