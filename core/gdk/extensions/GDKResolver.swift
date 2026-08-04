@@ -38,6 +38,7 @@ public class GDKResolver {
     let hwDelegate: HwResolverDelegate?
     let hwDevice: HWProtocol?
     let gdkSession: GDKSession?
+    let enableLogs: Bool
     var prevResolveCode: [String: Any]? = nil
 
     public init(_ twoFactorCall: TwoFactorCall?,
@@ -49,6 +50,7 @@ public class GDKResolver {
                 bcurDelegate: BcurResolver? = nil,
                 hwDevice: HWProtocol? = nil,
                 network: NetworkId,
+                enableLogs: Bool = false,
                 connected: @escaping () -> Bool = { true }) {
         self.twoFactorCall = twoFactorCall
         self.gdkSession = gdkSession
@@ -60,6 +62,7 @@ public class GDKResolver {
         self.connected = connected
         self.hwDevice = hwDevice
         self.progressDelegate = progressDelegate
+        self.enableLogs = enableLogs
     }
 
     public func resolve() async throws -> [String: Any]? {
@@ -76,7 +79,10 @@ public class GDKResolver {
     private func resolving(_ res: [String: Any]) async throws {
         let status = res["status"] as? String
         let name = res["name"] as? String
-        print("GDKResolver \(network.rawValue) \(res)")
+        if enableLogs {
+            logger
+                .info("GDKResolver \(self.network.rawValue, privacy: .public) \(res, privacy: .public)")
+        }
         switch status {
         case "done":
             break

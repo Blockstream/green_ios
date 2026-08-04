@@ -179,7 +179,7 @@ public class SessionManager {
         }
     }
 
-    public func resolve(_ twoFactorCall: TwoFactorCall?, bcurResolver: BcurResolver? = nil) async throws -> [String: Any]? {
+    public func resolve(_ twoFactorCall: TwoFactorCall?, bcurResolver: BcurResolver? = nil, enableLogs: Bool = true) async throws -> [String: Any]? {
         let rm = ResolverManager(
             twoFactorCall,
             network: networkId,
@@ -188,7 +188,8 @@ public class SessionManager {
             session: self,
             popupResolver: popupResolver,
             hwInterfaceDelegate: hwInterfaceResolver,
-            bcurResolver: bcurResolver)
+            bcurResolver: bcurResolver,
+            enableLogs: enableLogs)
         return try await rm.run()
     }
 
@@ -371,19 +372,26 @@ public class SessionManager {
         fun: GdkFunc?,
         params: Dictionary<String, Any>,
         funcName: String = #function,
-        bcurResolver: BcurResolver? = nil
+        bcurResolver: BcurResolver? = nil,
+        enableLogs: Bool = true
     )
     async throws -> Dictionary<String, Any> {
-        log(funcName, params)
+        if enableLogs {
+            log(funcName, params)
+        }
         do {
             if let fun = try fun?(params) {
-                if let res = try await resolve(fun, bcurResolver: bcurResolver) {
-                    log(funcName, res)
+                if let res = try await resolve(fun, bcurResolver: bcurResolver, enableLogs: enableLogs) {
+                    if enableLogs {
+                        log(funcName, res)
+                    }
                     return res
                 }
             }
         } catch {
-            logError(funcName, error: error)
+            if enableLogs {
+                logError(funcName, error: error)
+            }
             throw error
         }
         throw GaError.GenericError()
@@ -393,14 +401,16 @@ public class SessionManager {
         fun: GdkFunc?,
         params: T,
         funcName: String = #function,
-        bcurResolver: BcurResolver? = nil
+        bcurResolver: BcurResolver? = nil,
+        enableLogs: Bool = true
     )
     async throws -> K {
         let res = try await wrap(
             fun: fun,
             params: params.toDict() ?? [:],
             funcName: funcName,
-            bcurResolver: bcurResolver)
+            bcurResolver: bcurResolver,
+            enableLogs: enableLogs)
         if let res = res["result"] as? K {
             return res
         } else {
@@ -430,7 +440,7 @@ public class SessionManager {
 
     public func getCredentials(password: String) async throws -> Credentials? {
         let cred = Credentials(password: password)
-        let res: Credentials = try await wrapper(fun: self.session?.getCredentials, params: cred)
+        let res: Credentials = try await wrapper(fun: self.session?.getCredentials, params: cred, enableLogs: false)
         return res
     }
 
@@ -441,7 +451,11 @@ public class SessionManager {
     }
 
     public func encryptWithPin(_ params: EncryptWithPinParams) async throws -> EncryptWithPinResult {
-        return try await wrapper(fun: self.session?.encryptWithPin, params: params)
+        return try await wrapper(
+            fun: self.session?.encryptWithPin,
+            params: params,
+            enableLogs: false
+        )
     }
 
     public func resetTwoFactor(email: String, isDispute: Bool) async throws {
@@ -644,12 +658,12 @@ public class SessionManager {
 
     public func bcurEncode(params: BcurEncodeParams) async throws -> BcurEncodedData? {
         try? await connect()
-        return try await wrapper(fun: self.session?.bcurEncode, params: params)
+        return try await wrapper(fun: self.session?.bcurEncode, params: params, enableLogs: false)
     }
 
     public func bcurDecode(params: BcurDecodeParams, bcurResolver: BcurResolver) async throws -> BcurDecodedData? {
         try await connect()
-        let res = try await wrap(fun: self.session?.bcurDecode, params: params.toDict() ?? [:], bcurResolver: bcurResolver)
+        let res = try await wrap(fun: self.session?.bcurDecode, params: params.toDict() ?? [:], bcurResolver: bcurResolver, enableLogs: false)
         return res["result"] as? BcurDecodedData
     }
 

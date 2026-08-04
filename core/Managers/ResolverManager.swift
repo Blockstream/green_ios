@@ -17,7 +17,8 @@ public class ResolverManager {
         session: SessionManager? = nil,
         popupResolver: PopupResolverDelegate? = nil,
         hwInterfaceDelegate: HwInterfaceResolver? = nil,
-        bcurResolver: BcurResolver? = nil) {
+        bcurResolver: BcurResolver? = nil,
+        enableLogs: Bool = true) {
         self.session = session
         resolver = GDKResolver(
             factor,
@@ -28,6 +29,7 @@ public class ResolverManager {
             bcurDelegate: bcurResolver,
             hwDevice: hwDevice,
             network: network,
+            enableLogs: enableLogs,
             connected: connected
         )
     }
