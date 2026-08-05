@@ -341,7 +341,14 @@ actor TransactionBuilder {
                 throw TransactionError.invalid(localizedDescription: "Select subaccount")
             }
             var tx = try await session.psbtGetDetails(params: PsbtGetDetailParams(psbt: psbt, utxos: [:]))
-            let addressee = tx.transactionOutputs?.map { Addressee.from(address: $0.address ?? "", satoshi: $0.satoshi, assetId: $0.assetId) }
+            let addressee = tx.transactionOutputs?.filter { !($0.isChange ?? false) }.map {
+                Addressee
+                    .from(
+                        address: $0.address ?? "",
+                        satoshi: $0.satoshi,
+                        assetId: $0.assetId
+                    )
+            }
             tx.addressees = addressee ?? []
             tx.accountId = subaccount.id
             return tx
