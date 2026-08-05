@@ -153,35 +153,40 @@ class ScreenLocker {
         guard let mainWallet = WalletsStorage.shared.current else {
             return
         }
-        if mainWallet.isHW {
+        if let wm = WalletsRepository.shared.get(for: mainWallet.id) {
+            await shutdown(walletId: mainWallet.id, wm: wm)
+        }
+        await MainActor.run {
+            WalletNavigator.navLogout(walletId: mainWallet.isEphemeral ? nil : mainWallet.id)
+        }
+    }
+
+    /// Disconnect and remove a wallet from the repository so login never reuses an empty WM.
+    private func shutdown(walletId: String, wm: WalletManager) async {
+        if let wallet = WalletsStorage.shared.get(for: walletId), wallet.isHW {
             try? await BleHwManager.shared.disconnect()
         }
-        let wallet = WalletsRepository.shared.get(for: mainWallet.id)
-        await wallet?.disconnect()
-        if wallet?.isEphemeral ?? false {
-            await WalletsStorage.shared.remove(mainWallet)
+        await wm.disconnect()
+        if wm.isEphemeral, let wallet = WalletsStorage.shared.get(for: walletId) {
+            await WalletsStorage.shared.remove(wallet)
         }
-        WalletsRepository.shared.delete(for: mainWallet.id)
-        await MainActor.run {
-            WalletNavigator.navLogout(walletId: wallet?.isEphemeral ?? false ? nil : mainWallet.id)
-        }
+        WalletsRepository.shared.delete(for: walletId)
     }
 
     func resumeNetworks() async {
         logger.info("ScreenLocker resumeNetworks")
-        guard let countdownInterval = self.countdownInterval else {
+        guard let idleStartedAt = countdownInterval else {
             // We became inactive, but never started a countdown.
             return
         }
-        let countdown: TimeInterval = CFAbsoluteTimeGetCurrent() - countdownInterval
-        for wm in WalletsRepository.shared.wallets.values {
-            if wm.logged {
-                let altimeout = wm.prominentSession?.settings?.altimeout ?? 5
-                if Int(countdown) >= altimeout * 60 {
-                    await wm.disconnect()
-                } else {
-                    await wm.resume()
-                }
+        let countdown: TimeInterval = CFAbsoluteTimeGetCurrent() - idleStartedAt
+        // Snapshot before mutating the repository.
+        for (walletId, wm) in Array(WalletsRepository.shared.wallets) where wm.logged {
+            let altimeout = wm.prominentSession?.settings?.altimeout ?? 5
+            if Int(countdown) >= altimeout * 60 {
+                await shutdown(walletId: walletId, wm: wm)
+            } else {
+                await wm.resume()
             }
         }
     }
