@@ -83,6 +83,7 @@ class ReceiveViewController: KeyboardViewController {
     @IBOutlet weak var btnConfirm: UIButton!
     @IBOutlet weak var stackBottom: NSLayoutConstraint!
 
+    private let swapsUnavailableView = UIView()
     weak var verifyOnDeviceViewController: HWDialogVerifyOnDeviceViewController?
     private let vm: ReceiveViewModel
     var onFinish: (() -> Void)?
@@ -141,7 +142,9 @@ class ReceiveViewController: KeyboardViewController {
                 self.textFieldAmount.becomeFirstResponder()
             } else {
                 view.endEditing(true)
-                requestNewAddress()
+                if vm.state.type != .swapUnavailable {
+                    requestNewAddress()
+                }
             }
         case .address:
             resetQR()
@@ -266,12 +269,15 @@ class ReceiveViewController: KeyboardViewController {
 
         // page
         let network = vm.state.subaccount.gdkNetwork
-        btnConfirm.isHidden = !(network.lightning || vm.state.type == .lwkSwap)
-        btnShare.isHidden = network.lightning || vm.state.type == .lwkSwap
+        let swapsUnavailable = vm.state.type == .swapUnavailable
+        swapsUnavailableView.isHidden = !swapsUnavailable
+        btnConfirm.isHidden = swapsUnavailable || !(network.lightning || vm.state.type == .lwkSwap)
+        btnShare.isHidden = swapsUnavailable || network.lightning || vm.state.type == .lwkSwap
+        btnVerify.isHidden = !vm.state.showVerify
         btnConfirm.isEnabled = vm.isConfirmEnabled
         btnConfirm.setStyle( btnConfirm.isEnabled ? .primary : .primaryDisabled)
         switch vm.state.type {
-        case .address:
+        case .address, .swapUnavailable:
             btnConfirm.setTitle("id_confirm".localized, for: .normal)
         case .bolt11, .lwkSwap:
             btnConfirm.setTitle("id_create_invoice".localized, for: .normal)
@@ -518,7 +524,8 @@ extension ReceiveViewController {
         imgViewAsset?.image = vm.state.assetIcon
         // self.onTap = onTap
         iconDiscloseAsset.isHidden = true // onTap == nil
-        if vm.state.isLBTC() && vm.hasLwkSession {
+        if vm.state.isLBTC() && vm.hasLwkSession &&
+            SwapAvailability.isCreationEnabled(.init(from: .lightning, to: .liquid)) {
             configureLightningReady()
         } else {
             viewLightReadyAsset.isHidden = true
@@ -535,6 +542,7 @@ extension ReceiveViewController {
         segmented.setTitle("Lightning", forSegmentAt: 1)
         segmented.selectedSegmentIndex = vm.state.selectedSegment
         viewSegmented.isHidden = !vm.showSegmented
+        configureSwapsUnavailableView()
         // Amount
         textFieldAmount.text = vm.state.amountText
         lblAmountSection.setStyle(.txtSectionHeader)
@@ -607,7 +615,7 @@ extension ReceiveViewController {
         btnShare.setTitle("id_share".localized, for: .normal)
         btnVerify.setTitle("id_verify_on_device".localized, for: .normal)
         switch vm.state.type {
-        case .address:
+        case .address, .swapUnavailable:
             btnConfirm.setTitle("id_confirm".localized, for: .normal)
         case .bolt11, .lwkSwap:
             btnConfirm.setTitle("id_create_invoice".localized, for: .normal)
@@ -694,6 +702,75 @@ extension ReceiveViewController {
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
+    }
+    func configureSwapsUnavailableView() {
+        guard swapsUnavailableView.superview == nil,
+              let stack = viewSegmented.superview as? UIStackView,
+              let segmentedIndex = stack.arrangedSubviews.firstIndex(of: viewSegmented) else { return }
+
+        swapsUnavailableView.accessibilityIdentifier = AccessibilityIds.ReceiveScreen.swapsUnavailable
+
+        let cardView = UIView()
+        cardView.backgroundColor = UIColor.gWarnCardBgBlue()
+        cardView.cornerRadius = 8
+        cardView.borderWidth = 1
+        cardView.borderColor = UIColor.gWarnCardBorderBlue()
+        cardView.translatesAutoresizingMaskIntoConstraints = false
+        swapsUnavailableView.addSubview(cardView)
+
+        let icon = UIImageView(image: UIImage(named: "ic_card_warn_blue"))
+        icon.contentMode = .scaleAspectFit
+
+        let titleLabel = UILabel()
+        titleLabel.text = "Lightning Unavailable"
+        titleLabel.numberOfLines = 0
+        titleLabel.setStyle(.txtBigger)
+
+        let bodyLabel = UILabel()
+        bodyLabel.text = "Receiving Lightning payments as Liquid Bitcoin is temporarily disabled."
+        bodyLabel.numberOfLines = 0
+        bodyLabel.setStyle(.txtCard)
+        bodyLabel.textColor = UIColor.gGrayTxt()
+
+        let learnMoreButton = UIButton(type: .system)
+        learnMoreButton.contentHorizontalAlignment = .left
+        learnMoreButton.setStyle(.underline(txt: "id_learn_more".localized, color: UIColor.gAccent()))
+        learnMoreButton.setImage(UIImage(named: "ic_learn_more")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        learnMoreButton.tintColor = UIColor.gAccent()
+        learnMoreButton.semanticContentAttribute = .forceRightToLeft
+        learnMoreButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
+        learnMoreButton.addTarget(self, action: #selector(swapsUnavailableLearnMore), for: .touchUpInside)
+
+        let textStack = UIStackView(arrangedSubviews: [titleLabel, bodyLabel, learnMoreButton])
+        textStack.axis = .vertical
+        textStack.spacing = 4
+        textStack.setCustomSpacing(12, after: bodyLabel)
+
+        let contentStack = UIStackView(arrangedSubviews: [icon, textStack])
+        contentStack.axis = .horizontal
+        contentStack.alignment = .top
+        contentStack.spacing = 10
+        contentStack.translatesAutoresizingMaskIntoConstraints = false
+        cardView.addSubview(contentStack)
+
+        NSLayoutConstraint.activate([
+            cardView.topAnchor.constraint(equalTo: swapsUnavailableView.topAnchor),
+            cardView.leadingAnchor.constraint(equalTo: swapsUnavailableView.leadingAnchor, constant: 20),
+            cardView.trailingAnchor.constraint(equalTo: swapsUnavailableView.trailingAnchor, constant: -20),
+            cardView.bottomAnchor.constraint(equalTo: swapsUnavailableView.bottomAnchor),
+            icon.widthAnchor.constraint(equalToConstant: 24),
+            icon.heightAnchor.constraint(equalToConstant: 24),
+            contentStack.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 16),
+            contentStack.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 16),
+            contentStack.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
+            contentStack.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -16)
+        ])
+        stack.insertArrangedSubview(swapsUnavailableView, at: segmentedIndex + 1)
+        swapsUnavailableView.isHidden = true
+    }
+
+    @objc func swapsUnavailableLearnMore() {
+        SafeNavigationManager.shared.navigate(ExternalUrls.swapsUnavailable)
     }
     func configureLightningReady() {
         viewLightReadyAsset.isHidden = false

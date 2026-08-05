@@ -151,6 +151,9 @@ actor TransactionBuilder {
     // bolt11 invoice; for BOLT12 offers that don't expose a resolvable invoice
     // yet, dedup is skipped (we still proceed with a fresh preparePay).
     static func buildSwap(lightningPayment: LightningPayment, lwk: LwkBoltzBackend, subaccount: Account, xpub: String) async throws -> PreparePayResponse {
+        guard SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) else {
+            throw SendFlowError.lbtcLightningPaymentsUnavailable
+        }
         return try await Task.detached(priority: .userInitiated) {
             if let invoice = try lightningPayment.bolt11Invoice()?.description {
                 let swapIdsByInvoice = try await BoltzController.shared.fetchSwaps(xpubHashId: xpub, invoice: invoice, swapType: .Submarine)
@@ -176,6 +179,9 @@ actor TransactionBuilder {
     }
 
     static func buildSubmarineSwapTransaction(lightningPayment: LightningPayment, lwk: LwkBoltzBackend, subaccount: Account, xpub: String) async throws -> (PreparePayResponse?, core.Transaction) {
+        guard SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) else {
+            throw SendFlowError.lbtcLightningPaymentsUnavailable
+        }
         return try await Task.detached(priority: .userInitiated) {
             guard let session = subaccount.gdkSession else {
                 throw TransactionError.invalid(localizedDescription: "No Lwk session")
@@ -210,8 +216,14 @@ actor TransactionBuilder {
     }
     static func buildCrossChainSwap(from: Account, to: Account, amount: UInt64, lwk: LwkBoltzBackend, xpub: String) async throws -> LockupResponse {
         if from.networkId.bitcoin && to.networkId.liquid {
+            guard SwapAvailability.isCreationEnabled(.init(from: .bitcoin, to: .liquid)) else {
+                throw SendFlowError.serviceUnavailable
+            }
             return try await buildBtcToLbtcSwap(from: from, to: to, amount: amount, lwk: lwk, xpub: xpub)
         } else if from.networkId.liquid && to.networkId.bitcoin {
+            guard SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .bitcoin)) else {
+                throw SendFlowError.serviceUnavailable
+            }
             return try await buildLbtcToBtcSwap(from: from, to: to, amount: amount, lwk: lwk, xpub: xpub)
         } else {
             throw SendFlowError.failedToBuildTransaction
@@ -242,6 +254,9 @@ actor TransactionBuilder {
     }
 
     static func buildLbtcToBtcSwap(from: Account, to: Account, amount: UInt64, lwk: LwkBoltzBackend, xpub: String) async throws -> LockupResponse {
+        guard SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .bitcoin)) else {
+            throw SendFlowError.serviceUnavailable
+        }
         return try await Task.detached(priority: .userInitiated) {
             // Get a Liquid refund address
             guard let refundAddress = try await from.gdkSession?.getReceiveAddress(subaccount: from.pointer).address else {
@@ -256,6 +271,9 @@ actor TransactionBuilder {
         }.value
     }
     static func buildBtcToLbtcSwap(from: Account, to: Account, amount: UInt64, lwk: LwkBoltzBackend, xpub: String) async throws -> LockupResponse {
+        guard SwapAvailability.isCreationEnabled(.init(from: .bitcoin, to: .liquid)) else {
+            throw SendFlowError.serviceUnavailable
+        }
         return try await Task.detached(priority: .userInitiated) {
             // Get a Bitcoin refund address
             guard let refundAddress = try await from.gdkSession?.getReceiveAddress(subaccount: from.pointer).address else {
@@ -270,6 +288,9 @@ actor TransactionBuilder {
         }.value
     }
     static func buildBtcToLnSwap(from: Account, to: Account, receiveAmount: UInt64, lwk: LwkBoltzBackend, xpub: String) async throws -> (pay: PreparePayResponse, openingFee: UInt64) {
+        guard SwapAvailability.isCreationEnabled(.init(from: .bitcoin, to: .lightning)) else {
+            throw SendFlowError.serviceUnavailable
+        }
         return try await Task.detached(priority: .userInitiated) {
             guard let lightningSession = to.lightningSession else {
                 throw SendFlowError.failedToBuildTransaction
@@ -289,6 +310,9 @@ actor TransactionBuilder {
         }.value
     }
     static func buildLnToBtcSwap(from: Account, to: Account, amount: UInt64, lwk: LwkBoltzBackend, xpub: String) async throws -> InvoiceResponse {
+        guard SwapAvailability.isCreationEnabled(.init(from: .lightning, to: .bitcoin)) else {
+            throw SendFlowError.serviceUnavailable
+        }
         return try await Task.detached(priority: .userInitiated) {
             guard let rawClaimAddress = try await to.gdkSession?.getReceiveAddress(subaccount: to.pointer).address,
                   let claimAddress = try? BitcoinAddress(s: rawClaimAddress) else {

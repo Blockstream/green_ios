@@ -53,7 +53,8 @@ class AssetSelectCell: UITableViewCell {
         self.lblAsset.text = name
         self.imgView?.image = model.icon
 
-        if model.isLBTC() && hasLwkSession {
+        if model.isLBTC() && hasLwkSession &&
+            SwapAvailability.isCreationEnabled(.init(from: .lightning, to: .liquid)) {
             configureLightningReady()
         } else {
             viewLightReady.isHidden = true

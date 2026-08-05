@@ -50,6 +50,11 @@ final class SendCoordinator {
     }
 
     func startSwap(subaccount: Account?, assetId: String?) {
+        guard SwapAvailability.hasEnabledCreationDirection else {
+            let model = SwapsUnavailableViewModel(wm: wallet.wm, mainWallet: mainWallet)
+            nav.pushViewController(SwapsUnavailableViewController(viewModel: model), animated: true)
+            return
+        }
         selectedDenomination = wallet.wm.settings?.denomination ?? .Sats
         let initialAsset = resolveInitialAssetType(for: subaccount, with: assetId)
         let model = SendSwapViewModel(
@@ -305,6 +310,10 @@ extension SendCoordinator {
             guard let subaccount = draft.subaccount else {
                 return .selectSubaccount(sendAccountAssetViewModel(draft: draft))
             }
+            if subaccount.networkId.liquid,
+               !SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) {
+                throw SendFlowError.lbtcLightningPaymentsUnavailable
+            }
             if invoice.amountMilliSatoshis() == nil && draft.satoshi == nil {
                 return .enterAmount(makeEnterAmountViewModel(draft: draft, subaccount: subaccount))
             }
@@ -327,6 +336,10 @@ extension SendCoordinator {
         case .lnUrl(let input, let payment):
             guard let subaccount = draft.subaccount else {
                 return .selectSubaccount(sendAccountAssetViewModel(draft: draft))
+            }
+            if subaccount.networkId.liquid,
+               !SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) {
+                throw SendFlowError.lbtcLightningPaymentsUnavailable
             }
             guard let amount = draft.satoshi, amount > 0 else {
                 return .enterAmount(makeEnterAmountViewModel(draft: draft, subaccount: subaccount))
@@ -373,6 +386,17 @@ extension SendCoordinator {
         var updated = draft
         updated.paymentTarget = resolved
         updated.bip353Origin = original
+        let eligibleSubaccounts = resolveSubaccounts(paymentTarget: resolved)
+        if let selected = updated.subaccount,
+           !eligibleSubaccounts.contains(where: { $0.id == selected.id }) {
+            updated.subaccount = nil
+            updated.assetId = nil
+        }
+        if updated.subaccount == nil, eligibleSubaccounts.count == 1,
+           let subaccount = eligibleSubaccounts.first {
+            updated.subaccount = subaccount
+            updated.assetId = resolved.assetId()
+        }
         self.draft = updated
         return try await route(draft: updated)
     }
@@ -382,6 +406,9 @@ extension SendCoordinator {
         draft: TransactionDraft,
         subaccount: Account
     ) async throws -> SendRoute {
+        guard SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) else {
+            throw SendFlowError.lbtcLightningPaymentsUnavailable
+        }
         let xpub = WalletsStorage.shared.current?.xpubHashId
         let lwk = await wallet.wm.awaitLwkSession()
         guard let xpub, let lwk else {
@@ -454,6 +481,9 @@ extension SendCoordinator {
         draft: TransactionDraft,
         subaccount: Account
     ) async throws -> SendRoute {
+        guard SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) else {
+            throw SendFlowError.lbtcLightningPaymentsUnavailable
+        }
         guard subaccount.networkId.liquid else {
             throw SendFlowError.wrongSubaccount
         }
@@ -532,6 +562,9 @@ extension SendCoordinator {
         subaccount: Account,
         satoshi: UInt64
     ) async throws -> SendRoute {
+        guard SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) else {
+            throw SendFlowError.lbtcLightningPaymentsUnavailable
+        }
         let lwk = await wallet.wm.awaitLwkSession()
         guard let lwk, let xpub = WalletsStorage.shared.current?.xpubHashId else {
             throw SendFlowError.invalidSession
@@ -660,6 +693,19 @@ extension SendCoordinator: SendAddressViewModelDelegate {
         assetId: String?) {
         var subaccountToUse: Account? = subaccount
         var assetIdToUse: AssetId? = assetId
+        if case .lightningOffer = paymentTarget {
+            if assetIdToUse == AssetInfo.lightningId || subaccountToUse?.networkId.lightning == true {
+                vm.delegate?.sendAddressViewModel(
+                    vm,
+                    didFailWith: SendFlowError.generic("Bolt12 payment is only available via LBTC")
+                )
+                return
+            }
+            if !SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) {
+                vm.delegate?.sendAddressViewModel(vm, didFailWith: SendFlowError.lbtcLightningPaymentsUnavailable)
+                return
+            }
+        }
         if !paymentTarget.eligibleRails().isEmpty &&
             resolveSubaccounts(paymentTarget: paymentTarget).isEmpty {
             let error: SendFlowError = {
@@ -673,10 +719,6 @@ extension SendCoordinator: SendAddressViewModelDelegate {
                 return .noAvailableSubaccounts
             }()
             vm.delegate?.sendAddressViewModel(vm, didFailWith: error)
-            return
-        }
-        if case .lightningOffer = paymentTarget, subaccountToUse?.networkId.lightning == true {
-            vm.delegate?.sendAddressViewModel(vm, didFailWith: SendFlowError.generic("Bolt12 payment is only available via LBTC"))
             return
         }
         if let selected = subaccountToUse,

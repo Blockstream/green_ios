@@ -6,7 +6,7 @@ struct TransactionDraft: Sendable {
     var subaccount: Account?
     let address: String?
     var satoshi: UInt64?
-    let assetId: String?
+    var assetId: String?
     var sendAll: Bool?
     var paymentTarget: PaymentTarget?
     var lockupResponse: LockupResponse?

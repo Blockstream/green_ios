@@ -773,6 +773,8 @@
 		81D340A82F29155B003BD537 /* JadeBoltzExportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D340A72F29155B003BD537 /* JadeBoltzExportViewModel.swift */; };
 		81D340AA2F29156E003BD537 /* JadeBoltzExportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D340A92F29156E003BD537 /* JadeBoltzExportViewController.swift */; };
 		81D340AD2F2A224D003BD537 /* JadeBoltzSwapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D340AC2F2A224D003BD537 /* JadeBoltzSwapViewController.swift */; };
+		A11000012F50000100ABCDEF /* SwapsUnavailableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11000022F50000100ABCDEF /* SwapsUnavailableViewController.swift */; };
+		A11000032F50000100ABCDEF /* SwapRescanService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11000042F50000100ABCDEF /* SwapRescanService.swift */; };
 		81D340AF2F2A2263003BD537 /* JadeBoltzSwapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D340AE2F2A2263003BD537 /* JadeBoltzSwapViewModel.swift */; };
 		81D340B22F2AD7C1003BD537 /* SendHWViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D340B12F2AD7C1003BD537 /* SendHWViewController.swift */; };
 		81D340B42F2AD7D1003BD537 /* SendHWViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D340B32F2AD7D1003BD537 /* SendHWViewModel.swift */; };
@@ -1756,6 +1758,8 @@
 		81D340A72F29155B003BD537 /* JadeBoltzExportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeBoltzExportViewModel.swift; sourceTree = "<group>"; };
 		81D340A92F29156E003BD537 /* JadeBoltzExportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeBoltzExportViewController.swift; sourceTree = "<group>"; };
 		81D340AC2F2A224D003BD537 /* JadeBoltzSwapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeBoltzSwapViewController.swift; sourceTree = "<group>"; };
+		A11000022F50000100ABCDEF /* SwapsUnavailableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapsUnavailableViewController.swift; sourceTree = "<group>"; };
+		A11000042F50000100ABCDEF /* SwapRescanService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRescanService.swift; sourceTree = "<group>"; };
 		81D340AE2F2A2263003BD537 /* JadeBoltzSwapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeBoltzSwapViewModel.swift; sourceTree = "<group>"; };
 		81D340B12F2AD7C1003BD537 /* SendHWViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendHWViewController.swift; sourceTree = "<group>"; };
 		81D340B32F2AD7D1003BD537 /* SendHWViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendHWViewModel.swift; sourceTree = "<group>"; };
@@ -4473,6 +4477,8 @@
 		81D340AB2F2A2242003BD537 /* Swaps */ = {
 			isa = PBXGroup;
 			children = (
+				A11000022F50000100ABCDEF /* SwapsUnavailableViewController.swift */,
+				A11000042F50000100ABCDEF /* SwapRescanService.swift */,
 				81D340AE2F2A2263003BD537 /* JadeBoltzSwapViewModel.swift */,
 				81D340AC2F2A224D003BD537 /* JadeBoltzSwapViewController.swift */,
 				81D340A72F29155B003BD537 /* JadeBoltzExportViewModel.swift */,
@@ -5344,6 +5350,8 @@
 				3403BDE42F3F0F24005881A3 /* VideoCaptureDump.swift in Sources */,
 				6D0983F323FF033900289ACA /* DropAlert.swift in Sources */,
 				81D340AD2F2A224D003BD537 /* JadeBoltzSwapViewController.swift in Sources */,
+				A11000012F50000100ABCDEF /* SwapsUnavailableViewController.swift in Sources */,
+				A11000032F50000100ABCDEF /* SwapRescanService.swift in Sources */,
 				3448E63B2730141500C7ADFF /* DialogReceiveShareTypeViewController.swift in Sources */,
 				67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */,
 				345ADE072D3E566800E7A20F /* ContactUsViewController.swift in Sources */,

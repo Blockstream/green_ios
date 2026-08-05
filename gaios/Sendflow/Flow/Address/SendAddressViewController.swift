@@ -69,6 +69,7 @@ class SendAddressViewController: KeyboardViewController {
         infoBg.cornerRadius = 4.0
         textBg.setStyle(CardStyle.defaultStyle)
         lblInvalid.setStyle(.txt)
+        lblInvalid.accessibilityIdentifier = AccessibilityIds.SendAddressScreen.inlineError
         btnQR.setStyle(.inline)
         btnPaste.setStyle(.primary)
         lblPlaceholder.setStyle(.txtCard)

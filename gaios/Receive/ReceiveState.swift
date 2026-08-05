@@ -96,7 +96,7 @@ struct ReceiveState {
     var showAddressView: Bool {
         if anyOrAsset.assetId == AssetInfo.lbtcId {
             switch type {
-            case .lwkSwap:
+            case .lwkSwap, .swapUnavailable:
                 return false
             default:
                 return true
@@ -290,10 +290,10 @@ struct ReceiveState {
 
     var text: String? {
         switch type {
-        case .bolt11:
+        case .bolt11, .lwkSwap:
             return bolt11
-        case .lwkSwap:
-            return bolt11
+        case .swapUnavailable:
+            return nil
         case .address:
             if let address = address?.address {
                 if !AssetInfo.baseIds.contains(where: { $0 == anyOrAsset.assetId }) {

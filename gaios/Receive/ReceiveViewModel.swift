@@ -11,6 +11,7 @@ enum ReceiveType: Sendable, Equatable {
     case address
     case bolt11
     case lwkSwap
+    case swapUnavailable
 }
 enum RefreshReceiveFeature: Sendable, Hashable {
     case denomination
@@ -96,6 +97,14 @@ final class ReceiveViewModel: Sendable {
     }
     func selectReverseSwapMode() {
         state.satoshi = nil
+        guard SwapAvailability.isCreationEnabled(.init(from: .lightning, to: .liquid)) else {
+            reverseSwapTask?.cancel()
+            paymentTask?.cancel()
+            state.type = .swapUnavailable
+            state.selectedSegment = 1
+            onUpdate?(.segmented)
+            return
+        }
         prepareReverseSwap()
     }
     func setAmount(_ satoshi: Int64?, feature: RefreshReceiveFeature? = nil) {
@@ -133,7 +142,7 @@ final class ReceiveViewModel: Sendable {
             guard let self else { return }
             do {
                 switch type {
-                case .address:
+                case .address, .swapUnavailable:
                     return
                 case .bolt11:
                     let response = try await self.receiveService.createLightningInvoice(

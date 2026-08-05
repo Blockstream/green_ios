@@ -192,14 +192,14 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     func rescanSwaps() async {
-        startLoader(message: "Rescan swaps...".localized)
+        startLoader(message: "Processing stuck swaps...".localized)
         let task = Task { [weak self] in
             try await self?.viewModel.rescanSwaps()
         }
         switch await task.result {
         case .success:
             stopLoader()
-            DropAlert().success(message: "Rescan completed".localized)
+            DropAlert().success(message: "Swaps Processed")
         case .failure(let err):
             stopLoader()
             showError(err.description().localized)

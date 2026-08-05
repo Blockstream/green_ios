@@ -46,6 +46,9 @@ actor ReceiveService {
     }
 
     func fetchReverseSwapInfo(_ request: ReverseSwapInfoRequest) async throws -> ReverseSwapInfoResponse {
+        guard SwapAvailability.isCreationEnabled(.init(from: .lightning, to: .liquid)) else {
+            throw GaError.GenericError("Receiving Lightning payments as Liquid Bitcoin is temporarily disabled.")
+        }
         let info = try await request.walletManager.lwkBoltzBackend?.fetchReverseSwapsInfo()
         return ReverseSwapInfoResponse(info: info)
     }
@@ -64,6 +67,9 @@ actor ReceiveService {
     }
 
     func createReverseSwapInvoice(_ request: ReverseSwapInvoiceRequest) async throws -> ReverseSwapInvoiceResponse {
+        guard SwapAvailability.isCreationEnabled(.init(from: .lightning, to: .liquid)) else {
+            throw GaError.GenericError("Receiving Lightning payments as Liquid Bitcoin is temporarily disabled.")
+        }
         logger.info("BOLTZ getReceiveAddress")
         let address = try await request.walletManager.accountBackend(
             request.subaccount

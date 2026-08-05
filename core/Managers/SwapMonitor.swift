@@ -51,11 +51,13 @@ public actor SwapMonitor {
     }
 
     public func stop() async {
-        for task in activeTasks {
-            task.value.cancel()
+        let tasks = Array(activeTasks.values)
+        for task in tasks {
+            task.cancel()
         }
-        // Give some time for tasks to cancel
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        for task in tasks {
+            await task.value
+        }
     }
 
     private func getPendingSwaps() async throws -> [NSManagedObjectID] {

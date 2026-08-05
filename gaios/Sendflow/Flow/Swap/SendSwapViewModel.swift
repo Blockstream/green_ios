@@ -128,7 +128,10 @@ final class SendSwapViewModel {
         }
     }
     private func checkSwapPairSupport(from: SwapAssetType, to: SwapAssetType) -> Bool {
-        return from != to && (from == .bitcoin || to == .bitcoin)
+        let direction = SwapDirection(from: from.swapNetwork, to: to.swapNetwork)
+        return from != to &&
+            (from == .bitcoin || to == .bitcoin) &&
+            SwapAvailability.isCreationEnabled(direction)
     }
     private func formatErrorMessageSatoshi(satoshi: UInt64?) -> String {
         var str = "N/A"
@@ -390,6 +393,10 @@ final class SendSwapViewModel {
     }
     // build cross chain lockup on background thread
     private nonisolated func handleCrossChainSwap(state: SwapPositionState) async throws -> (TransactionDraft, core.Transaction) {
+        let direction = SwapDirection(from: state.from.type.swapNetwork, to: state.to.type.swapNetwork)
+        guard SwapAvailability.isCreationEnabled(direction) else {
+            throw SwapFlowError.serviceUnavailable
+        }
         guard let accountFrom = state.from.account, let accountTo = state.to.account, let amount = state.from.amount else {
             throw SwapFlowError.invalidPaymentTarget
         }

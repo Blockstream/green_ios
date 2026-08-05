@@ -135,6 +135,9 @@ final class SendAmountViewModel {
 
     func validate() async throws {
         guard let satoshi else { return }
+        if usesSubmarineSwap && !SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) {
+            throw SendFlowError.lbtcLightningPaymentsUnavailable
+        }
         if usesSubmarineSwap, let limits = await submarineSwapLimits() {
             let minimum = UInt64(limits.minimalBatched ?? limits.minimal)
             if satoshi < minimum {
@@ -165,6 +168,9 @@ final class SendAmountViewModel {
     }
 
     private func submarineSwapLimits() async -> BoltzSwapInfoLimits? {
+        guard SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) else {
+            return nil
+        }
         if submarineSwapInfo == nil {
             submarineSwapInfo = try? await wallet.wm
                 .awaitLwkSession()?
@@ -174,6 +180,9 @@ final class SendAmountViewModel {
     }
 
     private func submarineSwapQuote(receiveAmount: UInt64) async throws -> Quote? {
+        guard SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) else {
+            throw SendFlowError.lbtcLightningPaymentsUnavailable
+        }
         if submarineQuoteBuilder == nil {
             guard let boltzSession = await wallet.wm.awaitLwkSession()?.boltzSession else {
                 return nil

@@ -213,18 +213,7 @@ class TabSettingsVM: TabViewModel {
     }
 
     func rescanSwaps() async throws {
-        await wm.swapMonitor?.stop()
-        let liquidAddress = await getAddress(subaccount: wm.liquidSubaccounts.first)
-        let bitcoinAddress = await getAddress(subaccount: wm.bitcoinSubaccounts.first)
-        if let liquidAddress, let bitcoinAddress {
-            try await wm.swapMonitor?.restoreSwaps(bitcoinAddress: bitcoinAddress, liquidAddress: liquidAddress)
-        }
-        try await wm.swapMonitor?.start()
-    }
-
-    func getAddress(subaccount: Account?) async -> String? {
-        guard let subaccount else { return nil }
-        return try? await wm.accountBackend(subaccount).getReceiveAddress().address
+        try await SwapRescanService(wm: wm).rescan()
     }
 
     func lTDetailsViewModel() -> LTDetailsViewModel? {

@@ -20,6 +20,8 @@ struct PaymentTargetParser: Sendable {
                 return .privateKey(text)
             }
             throw SendFlowError.invalidPaymentTarget
+        } catch let error as SendFlowError {
+            throw error
         } catch let error as LwkError {
             throw SendFlowError.lwkError(error)
         } catch {

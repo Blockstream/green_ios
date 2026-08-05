@@ -15,6 +15,7 @@ enum SendFlowError: Error, Sendable, Equatable {
     case serviceUnavailable
     case unsupportedInJadeCore
     case unsupportedSwapPair
+    case lbtcLightningPaymentsUnavailable
 
     func description() -> String {
         switch self {
@@ -49,6 +50,8 @@ enum SendFlowError: Error, Sendable, Equatable {
             return "Swaps are not enabled for this wallet".localized
         case .unsupportedSwapPair:
             return "Swap pair is not supported yet".localized
+        case .lbtcLightningPaymentsUnavailable:
+            return "Paying Lightning invoices with Liquid Bitcoin is temporarily disabled."
         }
     }
 }

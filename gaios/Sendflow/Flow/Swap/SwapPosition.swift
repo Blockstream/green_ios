@@ -31,10 +31,54 @@ enum SwapChainName: String {
     case liquid = "liquid"
     case lightning = "lightning"
 }
+
+enum SwapNetwork: Hashable {
+    case bitcoin
+    case liquid
+    case lightning
+}
+
+struct SwapDirection: Hashable {
+    let from: SwapNetwork
+    let to: SwapNetwork
+}
+
+struct SwapAvailability {
+    let enabledDirections: Set<SwapDirection>
+
+    // New swap creation is temporarily unavailable. Keep this list scoped by
+    // direction so pairs can be restored independently during rollout.
+    static let current = SwapAvailability(enabledDirections: [])
+
+    func isCreationEnabled(_ direction: SwapDirection) -> Bool {
+        enabledDirections.contains(direction)
+    }
+
+    static func isCreationEnabled(_ direction: SwapDirection) -> Bool {
+        current.isCreationEnabled(direction)
+    }
+
+    static var hasEnabledCreationDirection: Bool {
+        !current.enabledDirections.isEmpty
+    }
+}
 enum SwapRoute: Sendable {
     case chain
     case btcToLn
     case lnToBtc
+}
+
+extension SwapAssetType {
+    var swapNetwork: SwapNetwork {
+        switch self {
+        case .bitcoin:
+            return .bitcoin
+        case .liquid:
+            return .liquid
+        case .lightning:
+            return .lightning
+        }
+    }
 }
 extension SwapPositionState {
     var route: SwapRoute {

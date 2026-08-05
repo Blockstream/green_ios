@@ -63,18 +63,15 @@ final class SendAddressViewModel: Sendable {
         switch await task.result {
         case .success(let type):
             switch type {
-            case .lightningInvoice:
-                if isJadeCore() {
-                    delegate?.sendAddressViewModel(self, didFailWith: SendFlowError.unsupportedInJadeCore)
-                    onStateChanged?()
-                    return
-                }
+            case .lightningInvoice(let invoice):
+                guard validateLightningInvoice(invoice) else { return }
             case .lnUrl(_, let payment):
                 if isJadeCore() {
                     delegate?.sendAddressViewModel(self, didFailWith: SendFlowError.unsupportedInJadeCore)
                     onStateChanged?()
                     return
                 }
+                guard validateLiquidLightningPayment() else { return }
                 guard triggerNavigation else { break }
                 do {
                     _ = try await Task.detached(priority: .userInitiated) {
@@ -87,31 +84,29 @@ final class SendAddressViewModel: Sendable {
             case .bip353(_, let payment):
                 guard triggerNavigation else { break }
                 do {
-                    let resolved = try await Task.detached(priority: .userInitiated) {
-                        try payment.resolveBip353()
-                    }.value
-                    if resolved.kind() == .bip353 {
-                        throw SendFlowError.invalidPaymentTarget
-                    }
-                    if resolved.kind() == .lightningInvoice && isJadeCore() {
-                        delegate?.sendAddressViewModel(self, didFailWith: SendFlowError.unsupportedInJadeCore)
-                        onStateChanged?()
-                        return
-                    }
-                    if resolved.kind() == .lnUrl {
-                        if isJadeCore() {
-                            delegate?.sendAddressViewModel(self, didFailWith: SendFlowError.unsupportedInJadeCore)
-                            onStateChanged?()
-                            return
-                        }
+                    let resolvedTarget = try await parser.resolveBip353(text, payment: payment)
+                    switch resolvedTarget {
+                    case .lightningInvoice(let invoice):
+                        guard validateLightningInvoice(invoice) else { return }
+                    case .lightningOffer:
+                        guard validateLightningOffer() else { return }
+                    case .lnUrl(_, let resolvedPayment):
+                        guard validateLiquidLightningPayment() else { return }
                         _ = try await Task.detached(priority: .userInitiated) {
-                            try resolved.resolveLnurlInfo()
+                            try resolvedPayment.resolveLnurlInfo()
                         }.value
+                    default:
+                        break
                     }
+                } catch SendFlowError.lbtcLightningPaymentsUnavailable {
+                    handleError(.lbtcLightningPaymentsUnavailable)
+                    return
                 } catch {
                     self.handleError(SendFlowError.invalidPaymentTarget)
                     return
                 }
+            case .lightningOffer:
+                guard validateLightningOffer() else { return }
             default:
                 break
             }
@@ -158,6 +153,61 @@ final class SendAddressViewModel: Sendable {
                 }
             }
             return []
+        }
+    }
+
+    private func canPayNatively(_ invoice: Bolt11Invoice) -> Bool {
+        guard let account = wm.glNetworkBackendOrNil()?.account else { return false }
+        let maxPayable = account.lightningSession?.nodeState()?.maxPayableMsat.satoshi ?? 0
+        guard maxPayable > 0 else { return false }
+        guard let amount = invoice.amountMilliSatoshis()?.satoshi else { return true }
+        return maxPayable >= amount
+    }
+
+    private func validateLightningInvoice(_ invoice: Bolt11Invoice) -> Bool {
+        if isJadeCore() {
+            delegate?.sendAddressViewModel(self, didFailWith: SendFlowError.unsupportedInJadeCore)
+            onStateChanged?()
+            return false
+        }
+        if subaccount?.networkId.liquid == true,
+           !SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) {
+            handleError(.lbtcLightningPaymentsUnavailable)
+            return false
+        }
+        guard invoice.amountMilliSatoshis() != nil, !canPayNatively(invoice) else {
+            return true
+        }
+        let error: SendFlowError = canPayWithLiquid(invoice) ?
+            .lbtcLightningPaymentsUnavailable : .insufficientFunds
+        handleError(error)
+        return false
+    }
+
+    private func validateLightningOffer() -> Bool {
+        if assetId == AssetInfo.lightningId || subaccount?.networkId.lightning == true {
+            handleError(.generic("Bolt12 payment is only available via LBTC"))
+            return false
+        }
+        return validateLiquidLightningPayment(liquidOnly: true)
+    }
+
+    private func validateLiquidLightningPayment(liquidOnly: Bool = false) -> Bool {
+        let usesLiquid = liquidOnly || subaccount?.networkId.liquid == true
+        guard usesLiquid,
+              !SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) else {
+            return true
+        }
+        handleError(.lbtcLightningPaymentsUnavailable)
+        return false
+    }
+
+    private func canPayWithLiquid(_ invoice: Bolt11Invoice) -> Bool {
+        guard let amount = invoice.amountMilliSatoshis()?.satoshi else { return false }
+        return wm.liquidSubaccountsWithFunds().contains { account in
+            let assetId = account.gdkNetwork.getFeeAsset()
+            let balance = (try? account.assets(wm)[assetId]) ?? 0
+            return balance >= 0 && UInt64(balance) >= amount
         }
     }
 

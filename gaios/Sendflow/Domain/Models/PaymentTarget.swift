@@ -59,12 +59,18 @@ extension PaymentTarget {
             if invoice.amountMilliSatoshis() == nil {
                 return [.lightning]
             }
-            return [.liquid, .lightning]
+            if SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) {
+                return [.liquid, .lightning]
+            }
+            return [.lightning]
         case .lightningOffer:
             // BOLT12 is liquid-only for now; Lightning can be re-enabled later.
-            return [.liquid]
+            return SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) ? [.liquid] : []
         case .lnUrl:
-            return [.liquid, .lightning]
+            if SwapAvailability.isCreationEnabled(.init(from: .liquid, to: .lightning)) {
+                return [.liquid, .lightning]
+            }
+            return [.lightning]
         case .bip353:
             // BIP-353 resolves to any kind of payment via DNS; accept any rail
             // here and let the routing layer re-validate after resolution.

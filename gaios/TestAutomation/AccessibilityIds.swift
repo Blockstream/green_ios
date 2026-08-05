@@ -84,6 +84,14 @@ struct AccessibilityIds {
         static let btnQRCode = "btn_receive_qr_code"
         static let textFieldAmount = "textfield_receive_amount"
         static let lblLearnWhy = "lbl_receive_learn_why"
+        static let swapsUnavailable = "view_receive_swaps_unavailable"
+    }
+    struct SwapsUnavailableScreen {
+        static let view = "view_swaps_unavailable"
+        static let btnRescan = "btn_swaps_unavailable_rescan"
+    }
+    struct SendAddressScreen {
+        static let inlineError = "lbl_send_address_inline_error"
     }
     struct ManageAssetScreen {
         static let view = "view_manage_asset"

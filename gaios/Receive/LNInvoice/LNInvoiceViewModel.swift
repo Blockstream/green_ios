@@ -102,7 +102,7 @@ class LNInvoiceViewModel: ObservableObject {
     }
     var amountAndFeeText: (String, String) {
         switch type {
-        case .address:
+        case .address, .swapUnavailable:
             break
         case .bolt11:
             if let lightningReceivePayment {
