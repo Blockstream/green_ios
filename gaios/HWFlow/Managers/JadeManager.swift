@@ -169,6 +169,11 @@ extension JadeManager: JadeGdkRequest {
     func httpRequest(params: [String: Any]) async -> [String: Any]? {
         var network: NetworkId? = .electrumMainnet
         try? await connectPinServer(testnet: network?.testnet ?? false)
-        return self.pinServerSession?.httpRequest(params: params)
+        let response = self.pinServerSession?.httpRequest(params: params)
+        let urls = params["urls"] as? [String] ?? []
+        if urls.contains(where: { $0.contains("/set_pin") }) {
+            AnalyticsManager.shared.initializeJade(wallet: nil)
+        }
+        return response
     }
 }
