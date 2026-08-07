@@ -47,7 +47,9 @@ class TabHomeVM: TabViewModel {
         guard let credentials = try? await wm.prominentSession?.getCredentials(password: "") else {
             throw GaError.NotAuthorizedError("")
         }
-        let lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: mainWallet.keychainLightning)
+        let lightningCredentials = wm.isEphemeral
+            ? try? wm.deriveLightningCredentials(from: credentials)
+            : try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: mainWallet.keychainLightning)
         let boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: mainWallet.keychain)
         _ = try await wm.login(
             credentials: credentials,

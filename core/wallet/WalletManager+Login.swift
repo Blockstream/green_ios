@@ -25,6 +25,7 @@ extension WalletManager {
         backend: NetworkBackend,
         credentials: Credentials,
         lightningCredentials: Credentials?,
+        lightningRestoreOnly: Bool = false,
         device: HWDevice?,
         fullRestore: Bool,
         creation: Bool,
@@ -48,7 +49,7 @@ extension WalletManager {
             }
             return try await backend.login(
                 credentials: lightningCredentials,
-                restore: fullRestore,
+                restore: fullRestore || lightningRestoreOnly,
                 parentXpub: parentXpub)
         } else if let backend = backend as? LwkNetworkBackend {
             logger.info("Connecting to lwk backend \(backend.network.network)")
@@ -80,6 +81,7 @@ extension WalletManager {
         parentXpub: String? = nil
     ) async throws -> LoginUserResult? {
         isEphemeral = !(credentials.bip39Passphrase ?? "").isEmpty
+        let lightningRestoreOnly = isEphemeral
         isWatchonly = credentials.isWatchonly
         hwDevice = device
         let resolvedParentXpub = try await resolveParentXpub(
@@ -97,12 +99,18 @@ extension WalletManager {
                             backend: backend,
                             credentials: credentials,
                             lightningCredentials: lightningCredentials,
+                            lightningRestoreOnly: lightningRestoreOnly,
                             device: device,
                             fullRestore: fullRestore,
                             creation: creation,
                             resolvedParentXpub: resolvedParentXpub)
                         return (networkId, .success(res))
                     } catch {
+                        // An existing passphrase Lightning node is optional and discovered best-effort.
+                        if lightningRestoreOnly && backend is GlNetworkBackend {
+                            logger.info("Greenlight restore-only discovery failed: \(error.localizedDescription, privacy: .public)")
+                            return (networkId, .success(nil))
+                        }
                         return (networkId, .failure(error))
                     }
                 }

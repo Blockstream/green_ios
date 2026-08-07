@@ -67,12 +67,15 @@ class LoginViewModel {
         let wm = WalletsRepository.shared.getOrAdd(for: wallet)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = HwPopupResolver()
+        let isEphemeral = !(credentials.bip39Passphrase ?? "").isEmpty
         if !wallet.hasBoltzKey {
             let boltzCredentials = try wm.deriveBoltzCredentials(from: credentials)
             try AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: boltzCredentials, for: wallet.keychain)
         }
-        var lightningCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: wallet.keychainLightning)
-        lightningCredentials?.bip39Passphrase = credentials.bip39Passphrase
+        // Derive passphrase wallet credentials transiently instead of reading the parent's key.
+        let lightningCredentials = isEphemeral
+            ? try? wm.deriveLightningCredentials(from: credentials)
+            : try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: wallet.keychainLightning)
         var boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: wallet.keychain)
         boltzCredentials?.bip39Passphrase = credentials.bip39Passphrase
         let res = try await wm.login(
