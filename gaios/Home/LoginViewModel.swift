@@ -63,21 +63,39 @@ class LoginViewModel {
         }
     }
 
+    func getBoltzCredentials(wm: WalletManager, mainCredentials: Credentials) throws -> Credentials {
+        let isBip39 = !mainCredentials.bip39Passphrase.isNilOrEmpty
+        let storedBoltz = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: wallet.keychain)
+        if isBip39 {
+            // Reuse keychain boltz key only when it was derived with the same bip39 passphrase
+            if let storedBoltz,
+               !storedBoltz.bip39Passphrase.isNilOrEmpty,
+               storedBoltz.bip39Passphrase == mainCredentials.bip39Passphrase {
+                return storedBoltz
+            } else {
+                // Missing, no bip39, or different passphrase: derive without storing
+                return try wm.deriveBoltzCredentials(from: mainCredentials)
+            }
+        } else if let storedBoltz {
+            return storedBoltz
+        } else {
+            // Non-bip39: derive and persist on keychain
+            let boltzCredentials = try wm.deriveBoltzCredentials(from: mainCredentials)
+            try AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: boltzCredentials, for: wallet.keychain)
+            return boltzCredentials
+        }
+    }
+
     func loginWithCredentials(credentials: Credentials) async throws -> WalletManager {
         let wm = WalletsRepository.shared.getOrAdd(for: wallet)
         wm.popupResolver = await PopupResolver()
         wm.hwInterfaceResolver = HwPopupResolver()
+        // Derive passphrase wallet credentials transiently instead of reading the parent's key, if bip39 ephemeral
         let isEphemeral = !(credentials.bip39Passphrase ?? "").isEmpty
-        if !wallet.hasBoltzKey {
-            let boltzCredentials = try wm.deriveBoltzCredentials(from: credentials)
-            try AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: boltzCredentials, for: wallet.keychain)
-        }
-        // Derive passphrase wallet credentials transiently instead of reading the parent's key.
         let lightningCredentials = isEphemeral
             ? try? wm.deriveLightningCredentials(from: credentials)
             : try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: wallet.keychainLightning)
-        var boltzCredentials = try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: wallet.keychain)
-        boltzCredentials?.bip39Passphrase = credentials.bip39Passphrase
+        let boltzCredentials = try? getBoltzCredentials(wm: wm, mainCredentials: credentials)
         let res = try await wm.login(
             credentials: credentials,
             lightningCredentials: lightningCredentials,
