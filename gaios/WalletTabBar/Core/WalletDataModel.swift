@@ -452,6 +452,7 @@ actor WalletDataModel {
     func fetchSecurity() async -> [SecuritySection] {
         let isWatchonly = mainWallet.isWatchonly
         let isHW = mainWallet.isHW
+        let isEphemeral = wm.isEphemeral
         var security: [SecuritySection] = [.init(section: .header, items: [.header])]
         if !isWatchonly {
             security += [.init(section: .level, items: [.header])]
@@ -461,7 +462,7 @@ actor WalletDataModel {
         if BackupHelper.shared.needsBackup(walletId: mainWallet.id) && BackupHelper.shared.isDismissed(walletId: mainWallet.id, position: .securityTab) == false {
             security += [.init(section: .backup, items: [.header])]
         }
-        if !isWatchonly && !isHW {
+        if !isWatchonly && !isHW && !isEphemeral {
             security += [.init(section: .unlock, items: [.bio, .pin])]
         }
         if mainWallet.isHW {
