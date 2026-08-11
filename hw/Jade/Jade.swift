@@ -159,10 +159,13 @@ public class Jade: JadeCommands, HWProtocol {
     }
 
     public func signTransaction(network: String, params: HWSignTxParams) async throws -> HWSignTxResponse {
+        if !params.useAeProtocol {
+            throw HWError.Abort("Hardware wallet requires Anti-Exfil protocol")
+        }
         if params.signingInputs.isEmpty {
             throw HWError.Abort("Input transactions missing")
         }
-        let txInputs = params.signingInputs.map { input -> TxInputBtc? in
+        let txInputs = params.signingInputs.map { input -> TxInput? in
             var txhash: String? = input.txHash
             var satoshi: UInt64? = input.satoshi
             if let hash = txhash, let tx = params.signingTxs[hash] {
@@ -171,11 +174,12 @@ public class Jade: JadeCommands, HWProtocol {
             } else {
                 return nil
             }
-            return TxInputBtc(
+            return TxInput(
                 isWitness: isSegwit(input.addressType),
                 inputTx: txhash?.hexToData(),
                 script: input.prevoutScript?.hexToData(),
                 satoshi: satoshi,
+                valueCommitment: nil,
                 path: input.userPath ?? [],
                 aeHostEntropy: input.aeHostEntropy?.hexToData(),
                 aeHostCommitment: input.aeHostCommitment?.hexToData())
@@ -190,22 +194,17 @@ public class Jade: JadeCommands, HWProtocol {
                                 network: network,
                                 numInputs: params.signingInputs.count,
                                 trustedCommitments: nil,
-                                useAeProtocol: params.useAeProtocol,
+                                useAeProtocol: true,
                                 txn: params.transaction?.hexToData() ?? Data())
         let res: JadeResponse<Bool> = try await exchange(JadeRequest(method: "sign_tx", params: signtx))
         if let result = res.result, !result {
             throw HWError.Abort("Invalid signature")
         }
-        var (commitments, signatures) = ([""], [""])
-        if params.useAeProtocol {
-            (commitments, signatures) = try await self.signTxInputsAntiExfil(inputs: txInputs)
-        } else {
-            (commitments, signatures) = try await self.signTxInputs(inputs: txInputs)
-        }
+        let (commitments, signatures) = try await self.signTxInputsAntiExfil(inputs: txInputs)
         return HWSignTxResponse(signatures: signatures, signerCommitments: commitments)
     }
 
-    func signTxInputs(inputs: [TxInputProtocol?]) async throws -> (commitments: [String], signatures: [String]) {
+    func signTxInputs(inputs: [TxInput?]) async throws -> (commitments: [String], signatures: [String]) {
         /**
          * Legacy Protocol:
          * Send one message per input - without expecting replies.
@@ -232,22 +231,15 @@ public class Jade: JadeCommands, HWProtocol {
         return (commitments: [], signatures: allReads)
     }
 
-    func signTxInput(_ input: TxInputProtocol) async throws {
-        var encoded: Data?
-        if let inputBtc = input as? TxInputBtc {
-            let request = JadeRequest<TxInputBtc>(method: "tx_input", params: inputBtc)
-            encoded = request.encoded
-        } else if let inputLiquid = input as? TxInputLiquid {
-            let request = JadeRequest<TxInputLiquid>(method: "tx_input", params: inputLiquid)
-            encoded = request.encoded
-        }
-#if DEBUG
-        print("=> " + encoded!.map { String(format: "%02hhx", $0) }.joined())
-#endif
+    func signTxInput(_ input: TxInput) async throws {
+        var input = input
+        input.aeHostEntropy = nil
+        let request = JadeRequest<TxInput>(method: "tx_input", params: input)
+        let encoded = request.encoded
         try await connection.write(encoded!)
     }
 
-    func signTxInputsAntiExfil(inputs: [TxInputProtocol?]) async throws -> (commitments: [String], signatures: [String]) {
+    func signTxInputsAntiExfil(inputs: [TxInput?]) async throws -> (commitments: [String], signatures: [String]) {
         /**
          * Anti-exfil protocol:
          * We send one message per input (which includes host-commitment *but
@@ -258,26 +250,15 @@ public class Jade: JadeCommands, HWProtocol {
          */
         // Send inputs one at a time, receiving 'signer-commitment' in reply
         var signerCommitments = [String]()
-        for input in inputs {
-            if let inputBtc = input as? TxInputBtc {
-                let res: JadeResponse<Data> = try await exchange(JadeRequest(method: "tx_input", params: inputBtc))
-                signerCommitments += [res.result?.hex ?? ""]
-            } else if let inputLiquid = input as? TxInputLiquid {
-                let res: JadeResponse<Data> = try await exchange(JadeRequest(method: "tx_input", params: inputLiquid))
-                signerCommitments += [res.result?.hex ?? ""]
-            } else {
-                throw HWError.Abort("")
-            }
+        for input in inputs.compactMap({$0}) {
+            var input = input
+            input.aeHostEntropy = nil
+            let res: JadeResponse<Data> = try await exchange(JadeRequest(method: "tx_input", params: input))
+            signerCommitments += [res.result?.hex ?? ""]
         }
         var signatures = [String]()
-        for input in inputs {
-            var aeHostEntropy: Data?
-            if let inputBtc = input as? TxInputBtc {
-                aeHostEntropy = inputBtc.aeHostEntropy
-            } else if let inputLiquid = input as? TxInputLiquid {
-                aeHostEntropy = inputLiquid.aeHostEntropy
-            }
-            if let aeHostEntropy = aeHostEntropy {
+        for input in inputs.compactMap({$0}) {
+            if let aeHostEntropy = input.aeHostEntropy {
                 let params = JadeGetSignature(aeHostEntropy: aeHostEntropy)
                 let res: JadeResponse<Data> = try await exchange(JadeRequest(method: "get_signature", params: params))
                 signatures += [res.result?.hex ?? ""]
@@ -287,6 +268,9 @@ public class Jade: JadeCommands, HWProtocol {
     }
 
     public func signLiquidTransaction(network: String, params: HWSignTxParams) async throws -> HWSignTxResponse {
+        if !params.useAeProtocol {
+            throw HWError.Abort("Hardware wallet requires Anti-Exfil protocol")
+        }
         let version = try await version()
         // Load the tx into wally for legacy fw versions as will need it later
         // to access the output's asset[generator] and value[commitment].
@@ -295,14 +279,17 @@ public class Jade: JadeCommands, HWProtocol {
         // FIXME: remove when 0.1.48 is made minimum allowed version.
         let wallytx = !version.hasSwapSupport ? Wally.txFromBytes(tx: params.transaction?.hexToBytes() ?? [], elements: true) : nil
         let txInputs = params.signingInputs
-            .map { (txInput: InputOutput) -> TxInputLiquid in
-            return TxInputLiquid(isWitness: txInput.isSegwit,
-                                 script: txInput.prevoutScript?.hexToData(),
-                                 valueCommitment: txInput.commitment?.hexToData(),
-                                 path: txInput.userPath,
-                                 aeHostEntropy: txInput.aeHostEntropy?.hexToData(),
-                                 aeHostCommitment: txInput.aeHostCommitment?.hexToData())
-        }
+            .map { (txInput: InputOutput) -> TxInput in
+                return TxInput(
+                    isWitness: txInput.isSegwit,
+                    inputTx: nil,
+                    script: txInput.prevoutScript?.hexToData(),
+                    satoshi: nil,
+                    valueCommitment: txInput.commitment?.hexToData(),
+                    path: txInput.userPath,
+                    aeHostEntropy: txInput.aeHostEntropy?.hexToData(),
+                    aeHostCommitment: txInput.aeHostCommitment?.hexToData())
+            }
         // Get blinding factors and unblinding data per output - null for unblinded outputs
         // Assumes last entry is unblinded fee entry - assumes all preceding entries are blinded
         let trustedCommitments = params.txOutputs.enumerated().map { res -> Commitment? in
@@ -333,17 +320,12 @@ public class Jade: JadeCommands, HWProtocol {
                                 network: network,
                                 numInputs: txInputs.count,
                                 trustedCommitments: trustedCommitments,
-                                useAeProtocol: params.useAeProtocol,
+                                useAeProtocol: true,
                                 txn: params.transaction?.hexToData() ?? Data())
         guard try await signLiquidTx(params: params) else {
             throw HWError.Abort("Invalid sign tx")
         }
-        var (commitments, signatures) = ([""], [""])
-        if params.useAeProtocol {
-            (commitments, signatures) = try await signTxInputsAntiExfil(inputs: txInputs)
-        } else {
-            (commitments, signatures) = try await signTxInputs(inputs: txInputs)
-        }
+        let (commitments, signatures) = try await signTxInputsAntiExfil(inputs: txInputs)
         return HWSignTxResponse(signatures: signatures, signerCommitments: commitments)
     }
 }
