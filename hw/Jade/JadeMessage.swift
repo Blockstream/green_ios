@@ -261,8 +261,6 @@ public struct JadeVersionInfo: Codable, Equatable {
     public let jadeFeatures: String
     public let jadeHasPin: Bool
     public let efusemac: String?
-    
-    var hasSwapSupport: Bool { jadeVersion >= "0.1.48" }
 }
 
 public struct GetBlindingFactorParams: Codable {

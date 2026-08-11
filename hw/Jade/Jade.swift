@@ -104,20 +104,13 @@ public class Jade: JadeCommands, HWProtocol {
 
     func getBlindingFactors(index: Int, output: InputOutput, version: JadeVersionInfo, hashPrevouts: [UInt8]?) async throws -> (String, String ) {
         // Call Jade to get the blinding factors
-        // NOTE: 0.1.48+ Jade fw accepts 'ASSET_AND_VALUE', and returns abf and vbf concatenated abf||vbf
-        // (Previous versions need two calls, for 'ASSET' and 'VALUE' separately)
-        // FIXME: remove when 0.1.48 is made minimum allowed version.
         if output.blindingKey == nil {
             return ("", "")
-        } else if version.hasSwapSupport {
+        } else {
             let bfs = try await getBlindingFactor(JadeGetBlingingFactor(hashPrevouts: hashPrevouts?.data, outputIndex: index, type: "ASSET_AND_VALUE"))
             let assetblinder = bfs[0..<Wally.WALLY_BLINDING_FACTOR_LEN].reversed()
             let amountblinder = bfs[Wally.WALLY_BLINDING_FACTOR_LEN..<2*Wally.WALLY_BLINDING_FACTOR_LEN].reversed()
             return (Data(assetblinder).hex, Data(amountblinder).hex)
-        } else {
-            let abf = try await getBlindingFactor(JadeGetBlingingFactor(hashPrevouts: hashPrevouts?.data, outputIndex: index, type: "ASSET"))
-            let vbf = try await getBlindingFactor(JadeGetBlingingFactor(hashPrevouts: hashPrevouts?.data, outputIndex: index, type: "VALUE"))
-            return (Data(abf.reversed()).hex, Data(vbf.reversed()).hex)
         }
     }
 
@@ -271,13 +264,6 @@ public class Jade: JadeCommands, HWProtocol {
         if !params.useAeProtocol {
             throw HWError.Abort("Hardware wallet requires Anti-Exfil protocol")
         }
-        let version = try await version()
-        // Load the tx into wally for legacy fw versions as will need it later
-        // to access the output's asset[generator] and value[commitment].
-        // NOTE: 0.1.48+ Jade fw does need these extra values passed explicitly so
-        // no need to parse/load the transaction into wally.
-        // FIXME: remove when 0.1.48 is made minimum allowed version.
-        let wallytx = !version.hasSwapSupport ? Wally.txFromBytes(tx: params.transaction?.hexToBytes() ?? [], elements: true) : nil
         let txInputs = params.signingInputs
             .map { (txInput: InputOutput) -> TxInput in
                 return TxInput(
@@ -296,22 +282,11 @@ public class Jade: JadeCommands, HWProtocol {
             let out = res.element
             // Add a 'null' commitment for unblinded output
             guard out.blindingKey != nil else { return nil }
-            var commitment = Commitment(assetId: out.getAssetIdBytes?.data,
+            return Commitment(assetId: out.getAssetIdBytes?.data,
                        value: out.satoshi,
                        abf: out.getAbfs?.data,
                        vbf: out.getVbfs?.data,
-                       assetGenerator: nil,
-                       valueCommitment: nil,
                        blindingKey: out.getPublicKeyBytes?.data)
-            // Add asset-generator and value-commitment for legacy fw versions
-            // NOTE: 0.1.48+ Jade fw does need these extra values passed explicitly
-            if let wallytx = wallytx, let asset = Wally.txGetOutputAsset(wallyTx: wallytx, index: res.offset) {
-                commitment.assetGenerator = asset.data
-            }
-            if let wallytx = wallytx, let value = Wally.txGetOutputValue(wallyTx: wallytx, index: res.offset) {
-                commitment.valueCommitment = value.data
-            }
-            return commitment
         }
         // Get the change outputs and paths
         let change = getChangeData(outputs: params.txOutputs)
