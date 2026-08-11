@@ -93,7 +93,7 @@ class LoginViewModel {
         // Derive passphrase wallet credentials transiently instead of reading the parent's key, if bip39 ephemeral
         let isEphemeral = !(credentials.bip39Passphrase ?? "").isEmpty
         let lightningCredentials = isEphemeral
-            ? try? wm.deriveLightningCredentials(from: credentials)
+            ? nil
             : try? AuthenticationTypeHandler.getCredentials(method: .AuthKeyLightning, for: wallet.keychainLightning)
         let boltzCredentials = try? getBoltzCredentials(wm: wm, mainCredentials: credentials)
         let res = try await wm.login(
