@@ -67,12 +67,15 @@ class WalletNavigator {
         let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
         let wallet = WalletsStorage.shared.get(for: walletId)!
         let wm = WalletsRepository.shared.getOrAdd(for: wallet)
+        // Set the current wallet before building the model: WalletState seeds its
+        // subaccounts from WalletManager.current, so the model must not be built
+        // while the previous wallet is still current.
+        WalletsStorage.shared.current = wallet
         let walletTabBarModel = WalletTabBarModel(
             wm: wm,
             mainWallet: wallet,
             isCreated: isCreated,
             isRestored: isRestored)
-        WalletsStorage.shared.current = wallet
         return storyboard.instantiateViewController(identifier: "WalletTabBarViewController") { coder in
             WalletTabBarViewController(coder: coder, walletTabBarModel: walletTabBarModel)
         }

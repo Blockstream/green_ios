@@ -8,7 +8,10 @@ public final class GlNetworkBackend: NetworkBackend {
 
     public let network: GdkNetwork
     public private(set) var session: LightningSessionManager
-    public private(set) var accounts: [Account]
+    // Expose the synthetic Lightning account only when the Greenlight session is
+    // logged in, otherwise it leaks into WalletManager.accounts for wallets that
+    // never enabled Lightning (e.g. QR watch-only wallets).
+    public var accounts: [Account] { isLoggedIn ? [account] : [] }
     public private(set) var block: Block?
 
     public var isConnected: Bool { session.connected }
@@ -36,7 +39,6 @@ public final class GlNetworkBackend: NetworkBackend {
             networkInjected: network
         )
         self.account = partialAccount
-        self.accounts = [partialAccount]
         self.session.setNotificationDelegate(self)
     }
 
