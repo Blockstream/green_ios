@@ -87,16 +87,19 @@ class ManageAssetViewController: UIViewController {
             tableView?.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
+
     func reloadNavigation() {
-        if viewModel.selectedSubaccount != nil && Bundle.main.dev {
-            let settingsBtn = UIButton(type: .system)
-            settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
-            settingsBtn.setImage(UIImage(named: "ic_nav_disclose"), for: .normal)
-            settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
-            navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: settingsBtn)]
-        } else {
+        let isLightningAccount = viewModel.selectedSubaccount?.isLightning == true
+        let shouldHideSettings = viewModel.selectedSubaccount == nil || (isLightningAccount && !Bundle.main.dev)
+        if shouldHideSettings {
             navigationItem.rightBarButtonItems = []
+            return
         }
+        let settingsBtn = UIButton(type: .system)
+        settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+        settingsBtn.setImage(UIImage(named: "ic_nav_disclose"), for: .normal)
+        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: settingsBtn)]
     }
     @objc func pull(_ sender: UIRefreshControl? = nil) {
         viewModel.refresh()
@@ -548,10 +551,7 @@ extension ManageAssetViewController {
     }
     func receiveScreen() {
         if let nav = navigationController, let account = viewModel.selectedSubaccount {
-            activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainWallet: viewModel.mainWallet) { [
-                weak self,
-                weak nav
-            ] in
+            activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainWallet: viewModel.mainWallet) { [weak self] in
                 // nav?.popToRootViewController(animated: true)
                 self?.activeReceiveCoordinator = nil
             }
