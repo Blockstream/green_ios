@@ -207,14 +207,14 @@ class WalletNavigator {
                     .compactMap { $0 as? UIWindowScene }
                     .filter { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive }
                     .flatMap { $0.windows }
-                    .forEach { window in
-                    window.subviews.forEach { view in
-                        if let loader = view.viewWithTag(Loader.tag) as? Loader {
-                            loader.stop()
-                            loader.removeFromSuperview()
+                    .forEach { sceneWindow in
+                        sceneWindow.subviews.forEach { view in
+                            if let loader = view.viewWithTag(Loader.tag) as? Loader {
+                                loader.stop()
+                                loader.removeFromSuperview()
+                            }
                         }
                     }
-                }
                 window.rootViewController = root
                 window.rootViewController?.view.alpha = 0.0
                 UIView.animate(withDuration: 0.2, delay: 0.0, options: UIView.AnimationOptions.curveEaseIn, animations: {
