@@ -25,22 +25,45 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
-        (UIApplication.shared.delegate as? AppDelegate)?.handleWillResignActive()
+        handleWillResignActive()
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        (UIApplication.shared.delegate as? AppDelegate)?.handleDidEnterBackground()
+        handleDidEnterBackground()
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
-        (UIApplication.shared.delegate as? AppDelegate)?.handleWillEnterForeground()
+        handleWillEnterForeground()
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        (UIApplication.shared.delegate as? AppDelegate)?.handleDidBecomeActive()
+        handleDidBecomeActive()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
         window = nil
+    }
+
+    private func handleWillResignActive() {
+        getAppDelegate()?.resolve2faWindow?.isHidden = true
+        ScreenLocker.shared.applicationWillResignActive()
+    }
+
+    private func handleDidEnterBackground() {
+        ScreenLocker.shared.applicationDidEnterBackground()
+    }
+
+    private func handleWillEnterForeground() {
+        ScreenLocker.shared.applicationWillEnterForeground()
+    }
+
+    private func handleDidBecomeActive() {
+        ScreenLocker.shared.applicationDidBecomeActive()
+        Loader.resume()
+
+        if let resolve2faWindow = getAppDelegate()?.resolve2faWindow {
+            resolve2faWindow.isHidden = false
+            resolve2faWindow.makeKeyAndVisible()
+        }
     }
 }
