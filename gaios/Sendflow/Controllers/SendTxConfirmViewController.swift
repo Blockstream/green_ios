@@ -470,7 +470,7 @@ class SendTxConfirmViewController: UIViewController {
             vc.delegate = self
             vc.scope = scope
             vc.modalPresentationStyle = .overFullScreen
-            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+            UIApplication.shared.mainApplicationWindow?.rootViewController?.present(vc, animated: false, completion: nil)
         }
     }
 

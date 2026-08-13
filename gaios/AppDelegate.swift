@@ -12,7 +12,6 @@ func getAppDelegate() -> AppDelegate? {
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    var window: UIWindow?
     var navigateWindow: UIWindow?
     var resolve2faWindow: UIWindow?
 
@@ -85,25 +84,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
     }
 
-    @MainActor
-    func setupMainWindow(windowScene: UIWindowScene? = nil) {
-        if let windowScene = windowScene {
-            window = UIWindow(windowScene: windowScene)
-        } else {
-            window = makeWindow()
-        }
-        window?.endEditing(true)
-
-        // Set screen lock
-        ScreenLockWindow.shared.setup(windowScene: window?.windowScene)
-
-        // Open first page
-        WalletNavigator.navFirstPage()
-        window?.makeKeyAndVisible()
-    }
-
     func makeWindow() -> UIWindow {
-        if let windowScene = window?.windowScene ?? UIApplication.shared.connectedScenes
+        if let windowScene = UIApplication.shared.mainApplicationWindow?.windowScene ?? UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
             .first(where: { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive }) {
             return UIWindow(windowScene: windowScene)

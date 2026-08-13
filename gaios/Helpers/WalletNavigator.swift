@@ -145,8 +145,8 @@ class WalletNavigator {
     static func navLogout(walletId: String?) {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             appDelegate.resolve2faOff()
-            appDelegate.window?.endEditing(true)
         }
+        UIApplication.shared.mainApplicationWindow?.endEditing(true)
         let wallets = WalletsStorage.shared.wallets
         if wallets.isEmpty {
             // if there are no wallets
@@ -195,15 +195,15 @@ class WalletNavigator {
     }
 
     static func changeRoot(root: UIViewController, animated: Bool = true) {
-        let appDelegate = UIApplication.shared.delegate
-        if appDelegate?.window??.rootViewController == nil {
-            appDelegate?.window??.rootViewController = root
+        guard let window = UIApplication.shared.mainApplicationWindow else { return }
+        if window.rootViewController == nil {
+            window.rootViewController = root
             return
         }
         if animated {
             ScreenLockWindow.shared.suspend()
             UIView.animate(withDuration: 0.2, delay: 0.0, options: UIView.AnimationOptions.curveEaseOut, animations: {
-                appDelegate?.window??.rootViewController?.view.alpha = 0.0
+                window.rootViewController?.view.alpha = 0.0
             }, completion: { (_) -> Void  in
                 UIApplication.shared.connectedScenes
                     .compactMap { $0 as? UIWindowScene }
@@ -217,16 +217,16 @@ class WalletNavigator {
                         }
                     }
                 }
-                appDelegate?.window??.rootViewController = root
-                appDelegate?.window??.rootViewController?.view.alpha = 0.0
+                window.rootViewController = root
+                window.rootViewController?.view.alpha = 0.0
                 UIView.animate(withDuration: 0.2, delay: 0.0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-                    appDelegate?.window??.rootViewController?.view.alpha = 1.0
+                    window.rootViewController?.view.alpha = 1.0
                 }, completion: {_ in
                     ScreenLockWindow.shared.resume()
                 })
             })
         } else {
-            appDelegate?.window??.rootViewController = root
+            window.rootViewController = root
         }
     }
 }

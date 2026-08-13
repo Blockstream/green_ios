@@ -300,7 +300,7 @@ class BuyBTCViewController: KeyboardViewController {
             vc.viewModel = MoreActionsViewModel()
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
-            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+            UIApplication.shared.mainApplicationWindow?.rootViewController?.present(vc, animated: false, completion: nil)
         }
     }
     @objc func onCountry() {
@@ -309,7 +309,7 @@ class BuyBTCViewController: KeyboardViewController {
             vc.viewModel = SelectCountryViewModel()
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
-            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+            UIApplication.shared.mainApplicationWindow?.rootViewController?.present(vc, animated: false, completion: nil)
         }
     }
     func selectProvider(_ quote: MeldQuoteItem) {

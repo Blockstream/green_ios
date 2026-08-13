@@ -1,5 +1,23 @@
 import UIKit
 extension UIApplication {
+    var mainApplicationWindow: UIWindow? {
+        let foregroundWindows = connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .filter { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive }
+            .flatMap { $0.windows }
+
+        if let window = foregroundWindows.first(where: { $0.isKeyWindow && $0.windowLevel == .normal })
+            ?? foregroundWindows.first(where: { $0.windowLevel == .normal }) {
+            return window
+        }
+
+        let windows = connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+
+        return windows.first { $0.isKeyWindow && $0.windowLevel == .normal } ?? windows.first { $0.windowLevel == .normal }
+    }
+
     class var activeKeyWindow: UIWindow? {
         return UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }

@@ -92,7 +92,7 @@ class TabViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCompareSecurityViewController") as? DialogCompareSecurityViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
-            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+            UIApplication.shared.mainApplicationWindow?.rootViewController?.present(vc, animated: false, completion: nil)
         }
     }
 }

@@ -10,8 +10,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene,
               let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
-        appDelegate.setupMainWindow(windowScene: windowScene)
-        window = appDelegate.window
+        setupMainWindow(windowScene: windowScene)
 
         if let urlContext = connectionOptions.urlContexts.first {
             appDelegate.handleOpen(url: urlContext.url, sourceApplication: urlContext.options.sourceApplication)
@@ -42,6 +41,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidDisconnect(_ scene: UIScene) {
         window = nil
+    }
+
+    @MainActor
+    private func setupMainWindow(windowScene: UIWindowScene) {
+        window = UIWindow(windowScene: windowScene)
+        window?.endEditing(true)
+
+        // Set screen lock
+        ScreenLockWindow.shared.setup(windowScene: windowScene)
+
+        // Make the scene window discoverable
+        window?.makeKeyAndVisible()
+
+        // Open first page
+        WalletNavigator.navFirstPage()
     }
 
     private func handleWillResignActive() {

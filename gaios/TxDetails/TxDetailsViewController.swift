@@ -238,7 +238,7 @@ class TxDetailsViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendFeeInfoViewController") as? SendFeeInfoViewController {
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
-            UIApplication.shared.delegate?.window??.rootViewController?.present(vc, animated: false, completion: nil)
+            UIApplication.shared.mainApplicationWindow?.rootViewController?.present(vc, animated: false, completion: nil)
         }
     }
 
