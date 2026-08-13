@@ -59,7 +59,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     private func handleWillResignActive() {
-        getAppDelegate()?.resolve2faWindow?.isHidden = true
+        OverlayWindowManager.shared.hideResolve2FAForBackground()
         ScreenLocker.shared.applicationWillResignActive()
     }
 
@@ -75,9 +75,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         ScreenLocker.shared.applicationDidBecomeActive()
         Loader.resume()
 
-        if let resolve2faWindow = getAppDelegate()?.resolve2faWindow {
-            resolve2faWindow.isHidden = false
-            resolve2faWindow.makeKeyAndVisible()
-        }
+        OverlayWindowManager.shared.restoreResolve2FAAfterForeground()
     }
 }

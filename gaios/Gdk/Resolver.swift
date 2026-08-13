@@ -60,22 +60,16 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
         vc.failure = failure
 
         vc.onCancel = { [weak self] in
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                appDelegate.resolve2faOff()
-            }
+            OverlayWindowManager.shared.hideResolve2FA()
             self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled"))
         }
 
         vc.onCode = { [weak self] code in
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                appDelegate.resolve2faOff()
-            }
+            OverlayWindowManager.shared.hideResolve2FA()
             self?.textContinuation?.resume(returning: code)
         }
         vc.onEnable2faCall = { [weak self] in
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                appDelegate.resolve2faOff()
-            }
+            OverlayWindowManager.shared.hideResolve2FA()
             self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: ""))
 
             DispatchQueue.main.async {
@@ -91,9 +85,7 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
             }
         }
         DispatchQueue.main.async {
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                appDelegate.resolve2faOn(vc)
-            }
+            OverlayWindowManager.shared.showResolve2FA(vc)
         }
     }
 
@@ -111,23 +103,17 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
         vc.methods = methods
 
         vc.onCancel = { [weak self] in
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                appDelegate.resolve2faOff()
-            }
+            OverlayWindowManager.shared.hideResolve2FA()
             self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled"))
         }
 
         vc.onType = { [weak self] tfType in
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                appDelegate.resolve2faOff()
-            }
+            OverlayWindowManager.shared.hideResolve2FA()
             self?.textContinuation?.resume(returning: tfType.rawValue)
         }
 
         DispatchQueue.main.async {
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                appDelegate.resolve2faOn(vc)
-            }
+            OverlayWindowManager.shared.showResolve2FA(vc)
         }
     }
 

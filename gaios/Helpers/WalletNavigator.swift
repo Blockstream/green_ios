@@ -143,9 +143,7 @@ class WalletNavigator {
 
     @MainActor
     static func navLogout(walletId: String?) {
-        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            appDelegate.resolve2faOff()
-        }
+        OverlayWindowManager.shared.hideResolve2FA()
         UIApplication.shared.mainApplicationWindow?.endEditing(true)
         let wallets = WalletsStorage.shared.wallets
         if wallets.isEmpty {

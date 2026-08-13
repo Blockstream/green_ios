@@ -399,6 +399,7 @@
 		34CF91D92A31BE8200498B08 /* RecoveryTransactionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CF91D82A31BE8200498B08 /* RecoveryTransactionsViewController.swift */; };
 		34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */; };
 		34D3A7A12FD97FC000D3A19B /* ReceiveService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D3A7A02FD97FC000D3A19B /* ReceiveService.swift */; };
+		34D4377B302DCA730031304C /* OverlayWindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D4377A302DCA730031304C /* OverlayWindowManager.swift */; };
 		34D51B692A77939D00C0AF12 /* DialogInputDenominationFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34D51B682A77939D00C0AF12 /* DialogInputDenominationFooter.xib */; };
 		34D51B6B2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D51B6A2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift */; };
 		34D535E429A773AF00D3B5C5 /* SharePrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D535E329A773AF00D3B5C5 /* SharePrefs.swift */; };
@@ -1393,6 +1394,7 @@
 		34CF91D82A31BE8200498B08 /* RecoveryTransactionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryTransactionsViewController.swift; sourceTree = "<group>"; };
 		34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicViewController.swift; sourceTree = "<group>"; };
 		34D3A7A02FD97FC000D3A19B /* ReceiveService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveService.swift; sourceTree = "<group>"; };
+		34D4377A302DCA730031304C /* OverlayWindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayWindowManager.swift; sourceTree = "<group>"; };
 		34D51B682A77939D00C0AF12 /* DialogInputDenominationFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DialogInputDenominationFooter.xib; sourceTree = "<group>"; };
 		34D51B6A2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogInputDenominationFooter.swift; sourceTree = "<group>"; };
 		34D535E329A773AF00D3B5C5 /* SharePrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePrefs.swift; sourceTree = "<group>"; };
@@ -1950,6 +1952,7 @@
 		092E1EAE20CF98AF00362253 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				34D4377A302DCA730031304C /* OverlayWindowManager.swift */,
 				09309F19212F8D8700DE093B /* SearchTextField.swift */,
 				811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */,
 				3484118B265E6113002D2202 /* Constants.swift */,
@@ -5717,6 +5720,7 @@
 				344D57C52D71AA48009725A3 /* WalletTabBarViewController.swift in Sources */,
 				818BA70F2A2F900900DFB03A /* ScanViewController.swift in Sources */,
 				34D648002C7F550E00F3FCB4 /* TwoFactorAuthViewController.swift in Sources */,
+				34D4377B302DCA730031304C /* OverlayWindowManager.swift in Sources */,
 				34FAB3402D9C2B4C00317454 /* PreferenceCell.swift in Sources */,
 				34204717291B9A8600EDE945 /* PolicyCell.swift in Sources */,
 				34A2AF0227BD378C006A01E9 /* FooterQrCell.swift in Sources */,

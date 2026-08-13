@@ -12,9 +12,6 @@ func getAppDelegate() -> AppDelegate? {
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    var navigateWindow: UIWindow?
-    var resolve2faWindow: UIWindow?
-
     func setupAppearance() {
         if #available(iOS 15.0, *) {
             let appearance = UINavigationBarAppearance()
@@ -84,15 +81,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
     }
 
-    func makeWindow() -> UIWindow {
-        if let windowScene = UIApplication.shared.mainApplicationWindow?.windowScene ?? UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .first(where: { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive }) {
-            return UIWindow(windowScene: windowScene)
-        }
-        return UIWindow(frame: UIScreen.main.bounds)
-    }
-
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         handleOpen(url: url, sourceApplication: options[.sourceApplication] as? String)
 
@@ -118,19 +106,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         for wm in WalletsRepository.shared.wallets.values where wm.logged {
             await wm.disconnect()
         }
-    }
-
-    func resolve2faOn(_ vc: UIViewController) {
-        resolve2faWindow = makeWindow()
-        resolve2faWindow!.windowLevel = UIWindow.Level.alert
-        vc.view.frame = resolve2faWindow!.bounds
-        resolve2faWindow!.rootViewController = vc
-        resolve2faWindow!.makeKeyAndVisible()
-    }
-
-    func resolve2faOff() {
-        resolve2faWindow?.removeFromSuperview()
-        resolve2faWindow = nil
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {

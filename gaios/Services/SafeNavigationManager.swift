@@ -23,17 +23,12 @@ class SafeNavigationManager {
             return
         }
 
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        appDelegate?.navigateWindow = appDelegate?.makeWindow()
-        appDelegate?.navigateWindow?.windowLevel = .alert
-        appDelegate?.navigateWindow?.tag = 999
-
         if let con = UIStoryboard(name: "Shared", bundle: .main)
             .instantiateViewController(
                 withIdentifier: "DialogSafeNavigationViewController") as? DialogSafeNavigationViewController {
             con.onSelect = { [weak self] (action: SafeNavigationAction) in
 
-                appDelegate?.navigateWindow = nil
+                OverlayWindowManager.shared.hideNavigation()
 
                 switch action {
                 case .authorize:
@@ -46,9 +41,8 @@ class SafeNavigationManager {
                     UINotificationFeedbackGenerator().notificationOccurred(.success)
                 }
             }
-            appDelegate?.navigateWindow?.rootViewController = con
+            OverlayWindowManager.shared.showNavigation(con)
         }
-        appDelegate?.navigateWindow?.makeKeyAndVisible()
     }
 
     private func browse(_ url: URL, exitApp: Bool, title: String? = nil, completion: (() -> Void)? = nil) {
@@ -58,24 +52,17 @@ class SafeNavigationManager {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
         } else {
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            appDelegate?.navigateWindow = appDelegate?.makeWindow()
-            appDelegate?.navigateWindow?.windowLevel = .alert
-            appDelegate?.navigateWindow?.tag = 999
-
             if let vc = UIStoryboard(name: "Utility", bundle: .main)
                 .instantiateViewController(
                     withIdentifier: "BrowserViewController") as? BrowserViewController {
                 vc.url = url
                 vc.titleStr = title
                 vc.onClose = { () in
-                    appDelegate?.navigateWindow?.isHidden = true
-                    appDelegate?.navigateWindow = nil
+                    OverlayWindowManager.shared.hideNavigation()
                     completion?()
                 }
-                appDelegate?.navigateWindow?.rootViewController = vc
+                OverlayWindowManager.shared.showNavigation(vc)
             }
-            appDelegate?.navigateWindow?.makeKeyAndVisible()
         }
     }
 }
