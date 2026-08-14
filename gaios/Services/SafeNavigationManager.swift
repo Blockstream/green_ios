@@ -28,7 +28,9 @@ class SafeNavigationManager {
                 withIdentifier: "DialogSafeNavigationViewController") as? DialogSafeNavigationViewController {
             con.onSelect = { [weak self] (action: SafeNavigationAction) in
 
-                OverlayWindowManager.shared.hideNavigation()
+                Task { @MainActor in
+                    OverlayWindowManager.shared.hideNavigation()
+                }
 
                 switch action {
                 case .authorize:
@@ -41,7 +43,9 @@ class SafeNavigationManager {
                     UINotificationFeedbackGenerator().notificationOccurred(.success)
                 }
             }
-            OverlayWindowManager.shared.showNavigation(con)
+            Task { @MainActor in
+                OverlayWindowManager.shared.showNavigation(con)
+            }
         }
     }
 
@@ -58,10 +62,14 @@ class SafeNavigationManager {
                 vc.url = url
                 vc.titleStr = title
                 vc.onClose = { () in
-                    OverlayWindowManager.shared.hideNavigation()
+                    Task { @MainActor in
+                        OverlayWindowManager.shared.hideNavigation()
+                    }
                     completion?()
                 }
-                OverlayWindowManager.shared.showNavigation(vc)
+                Task { @MainActor in
+                    OverlayWindowManager.shared.showNavigation(vc)
+                }
             }
         }
     }

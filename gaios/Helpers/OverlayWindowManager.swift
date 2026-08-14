@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 final class OverlayWindowManager {
 
     static let shared = OverlayWindowManager()
@@ -10,57 +11,43 @@ final class OverlayWindowManager {
     private init() {}
 
     func showNavigation(_ viewController: UIViewController) {
-        runOnMain { [weak self] in
-            guard let self else { return }
-            let window = self.makeWindow()
-            window.windowLevel = .alert
-            window.tag = 999
-            window.rootViewController = viewController
-            window.makeKeyAndVisible()
-            self.navigateWindow = window
-        }
+        let window = makeWindow()
+        window.windowLevel = .alert
+        window.tag = 999
+        window.rootViewController = viewController
+        window.makeKeyAndVisible()
+        navigateWindow = window
     }
 
     func hideNavigation() {
-        runOnMain { [weak self] in
-            self?.navigateWindow?.isHidden = true
-            self?.navigateWindow?.rootViewController = nil
-            self?.navigateWindow = nil
-        }
+        navigateWindow?.isHidden = true
+        navigateWindow?.rootViewController = nil
+        navigateWindow = nil
     }
 
     func showResolve2FA(_ viewController: UIViewController) {
-        runOnMain { [weak self] in
-            guard let self else { return }
-            let window = self.makeWindow()
-            window.windowLevel = .alert
-            viewController.view.frame = window.bounds
-            window.rootViewController = viewController
-            window.makeKeyAndVisible()
-            self.resolve2faWindow = window
-        }
+        let window = makeWindow()
+        window.windowLevel = .alert
+        viewController.view.frame = window.bounds
+        window.rootViewController = viewController
+        window.makeKeyAndVisible()
+        resolve2faWindow = window
     }
 
     func hideResolve2FA() {
-        runOnMain { [weak self] in
-            self?.resolve2faWindow?.isHidden = true
-            self?.resolve2faWindow?.rootViewController = nil
-            self?.resolve2faWindow = nil
-        }
+        resolve2faWindow?.isHidden = true
+        resolve2faWindow?.rootViewController = nil
+        resolve2faWindow = nil
     }
 
     func hideResolve2FAForBackground() {
-        runOnMain { [weak self] in
-            self?.resolve2faWindow?.isHidden = true
-        }
+        resolve2faWindow?.isHidden = true
     }
 
     func restoreResolve2FAAfterForeground() {
-        runOnMain { [weak self] in
-            guard let window = self?.resolve2faWindow else { return }
-            window.isHidden = false
-            window.makeKeyAndVisible()
-        }
+        guard let window = resolve2faWindow else { return }
+        window.isHidden = false
+        window.makeKeyAndVisible()
     }
 
     private func makeWindow() -> UIWindow {
@@ -72,11 +59,4 @@ final class OverlayWindowManager {
         return UIWindow(frame: UIScreen.main.bounds)
     }
 
-    private func runOnMain(_ action: @escaping () -> Void) {
-        if Thread.isMainThread {
-            action()
-        } else {
-            DispatchQueue.main.async(execute: action)
-        }
-    }
 }
