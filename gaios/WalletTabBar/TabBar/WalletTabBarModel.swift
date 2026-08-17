@@ -121,13 +121,13 @@ class WalletTabBarModel {
                 BackupHelper.shared.addToBackupList(mainWallet.id)
             }
             await walletDataModel.triggerRefresh(features: [.subaccounts])
+            await walletDataModel.triggerRefresh(features: [.balance])
+            callAnalytics()
             await walletDataModel.triggerRefresh(features: [
-                .alertCards, .promos, .priceChart,
-                .balance, .settings, .security, .txs(reset: true)
+                .alertCards, .promos, .priceChart, .settings, .security, .txs(reset: true)
             ])
         }
         Task(priority: .background) {
-            callAnalytics()
             try? await registerNotifications()
             try? await startSwapMonitor()
             try? await wm.refreshRegistryIfNeeded()
