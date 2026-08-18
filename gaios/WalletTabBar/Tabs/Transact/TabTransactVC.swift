@@ -3,13 +3,10 @@ import UIKit
 import core
 
 class TabTransactVC: TabViewController {
-    private var activeReceiveCoordinator: ReceiveCoordinator?
     @IBOutlet weak var tableView: UITableView?
 
-    var anyOrAsset: AnyOrAsset?
-
     private let viewModel: TabTransactVM
-    private var activeSendCoordinator: SendCoordinator?
+    private lazy var transactActionsCoordinator = TransactActionsCoordinator(viewController: self, dataSource: viewModel)
 
     init?(coder: NSCoder, viewModel: TabTransactVM) {
         self.viewModel = viewModel
@@ -73,65 +70,19 @@ class TabTransactVC: TabViewController {
             }
         }
     }
-    func pushAssetSelectViewController() {
-        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-            vc.viewModel = viewModel.assetSelectViewModel(subaccounts: viewModel.subaccounts ?? [])
-            vc.dismissOnSelect = false
-            vc.delegate = self
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-    func accountsScreen(assetId: String, subaccounts: [Account]) {
-        let storyboard = UIStoryboard(name: "WalletTab", bundle: nil)
-        let model = viewModel.dialogAccountsViewModel(assetId: assetId, subaccounts: subaccounts, hideBalance: viewModel.hideBalance)
-        let vc = storyboard.instantiateViewController(identifier: "DialogAccountsViewController") { coder in
-            DialogAccountsViewController(coder: coder, viewModel: model)
-        }
-        vc.delegate = self
-        vc.modalPresentationStyle = .overFullScreen
-        present(vc, animated: false, completion: nil)
-    }
 
     func receive() {
-        pushAssetSelectViewController()
+        transactActionsCoordinator.receive()
     }
     func buy() {
-        buyScreen(currency: viewModel.defaultCurrency ?? "USD", hideBalance: viewModel.hideBalance)
+        transactActionsCoordinator.buy()
     }
 
     func swapScreen() {
-        AnalyticsManager.shared.swapEntry(wallet: WalletsStorage.shared.current)
-        if viewModel.mainWallet.isJade && !viewModel.existBoltzKey() {
-            let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-            let vc = storyboard.instantiateViewController(identifier: "DialogSwapJadeViewController") { coder in
-                DialogSwapJadeViewController(coder: coder)
-            }
-            vc.delegate = self
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-        } else {
-            if let nav = navigationController {
-                activeSendCoordinator = SendCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainWallet: viewModel.mainWallet) { [weak self,weak nav] in
-                    nav?.popToRootViewController(animated: true)
-                    self?.activeSendCoordinator = nil
-                }
-                activeSendCoordinator?.startSwap(subaccount: nil, assetId: nil)
-            }
-        }
-    }
-    @MainActor
-    func pushJadeBoltzExportViewController() {
-        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        let viewModel = JadeBoltzExportViewModel(wm: viewModel.wm, mainWallet: viewModel.mainWallet)
-        let vc = storyboard.instantiateViewController(identifier: "JadeBoltzExportViewController") { coder in
-            JadeBoltzExportViewController(coder: coder, viewModel: viewModel)
-        }
-        vc.delegate = self
-        navigationController?.pushViewController(vc, animated: false)
+        transactActionsCoordinator.swap()
     }
     func send() {
-        sendScreen(walletDataModel: viewModel.walletDataModel, input: nil)
+        transactActionsCoordinator.send()
     }
     func onTxTap(_ indexPath: IndexPath) {
         guard let tx = viewModel.txs?[indexPath.row] else { return }
@@ -184,10 +135,10 @@ extension TabTransactVC: UITableViewDelegate, UITableViewDataSource {
         case .actions:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactActionsCell.identifier, for: indexPath) as? TransactActionsCell {
                 cell.configure(
-                    onBuy: self.buy,
-                    onSend: self.send,
-                    onReceive: self.receive,
-                    onSwap: viewModel.canSwap() ? self.swapScreen : nil)
+                    onBuy: { [weak self] in self?.buy() },
+                    onSend: { [weak self] in self?.send() },
+                    onReceive: { [weak self] in self?.receive() },
+                    onSwap: viewModel.canSwap() ? { [weak self] in self?.swapScreen() } : nil)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -365,7 +316,7 @@ extension TabTransactVC {
 extension TabTransactVC: UITableViewDataSourcePrefetching {
    // incremental transactions fetching from gdk
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        guard viewModel.txsCanLoadMore ?? false == true else { return } // there's no more data
+        guard viewModel.txsCanLoadMore == true else { return } // there's no more data
         let threshold = (viewModel.txs?.count ?? 0) - 10 // Trigger when within 5 rows of the end
         let filteredIndexPaths = indexPaths.filter { $0.section == TabTransactSection.transactions.rawValue }
         let row = filteredIndexPaths.last?.row ?? 0
@@ -373,120 +324,10 @@ extension TabTransactVC: UITableViewDataSourcePrefetching {
             viewModel.refresh(features: [.txs(reset: false)])
         }
     }
-    func getLiquidSubaccounts() -> [Account] {
-        WalletManager.current?.liquidSubaccounts.sorted() ?? []
-    }
-    func getLiquidAmpSubaccounts() -> [Account] {
-        WalletManager.current?.liquidAmpSubaccounts.sorted() ?? []
-    }
-    func getLiquidAmpLegacySubaccounts() -> [Account] {
-        WalletManager.current?.liquidAmpLegacySubaccounts.sorted() ?? []
-    }
-    func getLightningSubaccounts() -> [Account] {
-        if let backend = WalletManager.current?.glNetworkBackendOrNil(), backend.isLoggedIn {
-            return [backend.account]
-        }
-        return []
-    }
-    func getAccounts(_ ref: AnyOrAsset) -> [Account] {
-        switch ref {
-        case .anyLiquid:
-            return getLiquidSubaccounts()
-        case .anyAmp:
-            return getLiquidAmpSubaccounts()
-        case .anyAmpLegacy:
-            return getLiquidAmpLegacySubaccounts()
-        case .asset(let assetId):
-            if let asset = WalletManager.current?.info(for: assetId) {
-                if asset.isLightning {
-                    return getLightningSubaccounts()
-                } else if asset.isBitcoin {
-                    return getBitcoinSubaccounts()
-                } else if asset.amp ?? false {
-                    return getLiquidAmpLegacySubaccounts()
-                }
-            }
-            return getLiquidSubaccounts()
-        }
-    }
-}
-
-extension TabTransactVC: AssetSelectViewControllerDelegate {
-
-    func didSelectAnyOrAsset(_ ref: AnyOrAsset) {
-        self.anyOrAsset = ref
-        switch ref {
-        case .anyLiquid:
-            let accounts = getAccounts(ref)
-            if accounts.count == 0 {
-                DropAlert().warning(message: "Create an account".localized)
-            } else if accounts.count == 1 {
-                didSelectAccount(accounts.first)
-            } else {
-                accountsScreen(assetId: AssetInfo.lbtcId, subaccounts: accounts)
-            }
-        case .anyAmp:
-            let accounts = getAccounts(ref)
-            if accounts.count == 0 {
-                DropAlert().warning(message: "Create an account".localized)
-            } else if accounts.count == 1 {
-                didSelectAccount(accounts.first)
-            } else {
-                accountsScreen(assetId: AssetInfo.lbtcId, subaccounts: accounts)
-            }
-        case .anyAmpLegacy:
-            let accounts = getAccounts(ref)
-            if accounts.count == 0 {
-                DropAlert().warning(message: "Create an account".localized)
-            } else if accounts.count == 1 {
-                didSelectAccount(accounts.first)
-            } else {
-                accountsScreen(assetId: AssetInfo.lbtcId, subaccounts: accounts)
-            }
-        case .asset(let assetId):
-            let accounts = getAccounts(ref)
-            if accounts.count == 0 {
-                DropAlert().warning(message: "Create an account".localized)
-            } else if accounts.count == 1 {
-                didSelectAccount(accounts.first)
-            } else {
-                accountsScreen(assetId: assetId, subaccounts: accounts)
-            }
-        }
-    }
-}
-extension TabTransactVC: DialogAccountsViewControllerDelegate {
-    func didSelectAccount(_ walletItem: Account?) {
-        if let nav = navigationController, let account = walletItem, let anyOrAsset {
-            activeReceiveCoordinator = ReceiveCoordinator(nav: nav, wallet: viewModel.walletDataModel, mainWallet: viewModel.mainWallet) { [
-                weak self,
-                weak nav
-            ] in
-                //nav?.popToRootViewController(animated: true)
-                self?.activeReceiveCoordinator = nil
-            }
-            activeReceiveCoordinator?.start(account: account, anyOrAsset: anyOrAsset)
-        }
-    }
 }
 
 extension TabTransactVC: TxDetailsViewControllerDelegate {
     func onMemoEdit() {
         viewModel.refresh(features: [.txs(reset: true)])
-    }
-}
-extension TabTransactVC: DialogSwapJadeViewControllerDelegate {
-    func didDismiss() {}
-    func didEnable() {
-        pushJadeBoltzExportViewController()
-    }
-    func didSelectNotNow() {}
-}
-extension TabTransactVC: JadeBoltzExportViewControllerDelegate {
-    func onExportSucceed() {
-        navigationController?.popToRootViewController(animated: true)
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) { [weak self] in
-            self?.swapScreen()
-        }
     }
 }

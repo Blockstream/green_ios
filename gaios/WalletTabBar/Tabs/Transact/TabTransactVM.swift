@@ -47,58 +47,9 @@ class TabTransactVM: TabViewModel {
     func rotateBalanceDisplayMode() async {
         try? await walletDataModel.rotateBalanceDisplayMode()
     }
-    func getBoltzKey() throws -> Credentials {
-        try AuthenticationTypeHandler.getCredentials(method: .AuthKeyBoltz, for: mainWallet.keychain)
-    }
-    func existBoltzKey() -> Bool {
-        (try? getBoltzKey()) != nil
-    }
-    public func selectableAssets(subaccounts: [Account]) -> [String]? {
-        let hasSubaccountAmp = !subaccounts.filter(
-            { $0.type == .ampAccount || $0.type == .amp2Account
-            }).isEmpty
-        let hasLightning = !subaccounts.filter({ $0.networkId.lightning }).isEmpty
-        let hasLiquid = !subaccounts.filter({ $0.networkId.liquid }).isEmpty
-        let hasBitcoin = !subaccounts.filter({ $0.networkId.bitcoin }).isEmpty
-        let assetIds = WalletManager.current?.registry.all
-            .filter { !(!hasSubaccountAmp && $0.amp == true) }
-            .filter { hasLightning || $0.assetId != AssetInfo.lightningId }
-            .filter { hasBitcoin || ![AssetInfo.btcId, AssetInfo.testId].contains($0.assetId) }
-            .filter { hasLiquid || [AssetInfo.btcId, AssetInfo.testId, AssetInfo.lightningId].contains($0.assetId) }
-            .map { $0.assetId }
-        return assetIds
-    }
-
-    func assetSelectViewModel(subaccounts: [Account]) -> AssetSelectViewModel {
-        let hasSubaccountAmp = !subaccounts.filter({ $0.type == .amp2Account }).isEmpty
-        let hasSubaccountAmpLegacy = !subaccounts.filter({ $0.type == .ampAccount }).isEmpty
-        let hasLiquid = !subaccounts.filter({ $0.networkId.liquid }).isEmpty
-        let assetIds = selectableAssets(subaccounts: subaccounts)
-        let list = AssetAmountList.from(assetIds: assetIds ?? [])
-        return AssetSelectViewModel(
-            assets: list,
-            enableAnyLiquidAsset: hasLiquid,
-            enableAnyAmpAsset: hasSubaccountAmp,
-            enableAnyAmpLegacyAsset: hasSubaccountAmpLegacy)
-    }
-
-    func dialogAccountsViewModel(assetId: String, subaccounts: [Account], hideBalance: Bool = false) -> DialogAccountsViewModel {
-        return DialogAccountsViewModel(
-            title: "id_account_selector".localized,
-            hint: "id_choose_which_account_you_want".localized,
-            isSelectable: true,
-            assetId: assetId,
-            accounts: subaccounts,
-            hideBalance: hideBalance)
-    }
-
     func hideBalance(_ value: Bool) async throws {
         try await walletDataModel.hideBalance(value)
     }
-    func canSwap() -> Bool {
-        if mainWallet.isWatchonly || (mainWallet.isHW && mainWallet.boardType == .v2c) {
-            return false
-        }
-        return true
-    }
 }
+
+extension TabTransactVM: TransactActionsDataSource {}

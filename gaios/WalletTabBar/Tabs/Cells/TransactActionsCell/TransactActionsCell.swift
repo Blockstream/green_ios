@@ -68,11 +68,9 @@ class TransactActionsCell: UITableViewCell {
         lblSwap.text = TransactActions.swap.name
         controlBuy.isHidden = onBuy == nil
 
-        // Handle disabled state for send button
-        if onSend == nil {
-            controlSend.alpha = 0.3
-            controlSend.isUserInteractionEnabled = false
-        }
+        let isSendEnabled = onSend != nil
+        controlSend.alpha = isSendEnabled ? 1.0 : 0.3
+        controlSend.isUserInteractionEnabled = isSendEnabled
         controlSwap.isHidden = onSwap == nil
     }
     @objc func didTapBuy() {

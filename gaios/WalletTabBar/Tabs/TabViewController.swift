@@ -7,6 +7,7 @@ enum TabHomeSection: Int, CaseIterable {
     case balance
     case backup
     case card
+    case actions
     case assets
     case chart
     case promo

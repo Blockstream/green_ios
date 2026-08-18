@@ -434,6 +434,7 @@
 		34E8457729DBFA4500B207E7 /* DialogAmountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8457629DBFA4500B207E7 /* DialogAmountViewController.swift */; };
 		34E8457929DC26DD00B207E7 /* LoginPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8457829DC26DD00B207E7 /* LoginPrefs.swift */; };
 		34E8457C29DD6ABB00B207E7 /* DialogPassphraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8457B29DD6ABB00B207E7 /* DialogPassphraseViewController.swift */; };
+		34EA3466303460560046C64A /* TransactActionsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA3465303460560046C64A /* TransactActionsCoordinator.swift */; };
 		34ED47042AD4259F000086D4 /* SupportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ED47032AD4259F000086D4 /* SupportManager.swift */; };
 		34EDF6BC28BF6EDC00145AD4 /* AlertCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */; };
 		34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */; };
@@ -1451,6 +1452,7 @@
 		34E8457629DBFA4500B207E7 /* DialogAmountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAmountViewController.swift; sourceTree = "<group>"; };
 		34E8457829DC26DD00B207E7 /* LoginPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPrefs.swift; sourceTree = "<group>"; };
 		34E8457B29DD6ABB00B207E7 /* DialogPassphraseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogPassphraseViewController.swift; sourceTree = "<group>"; };
+		34EA3465303460560046C64A /* TransactActionsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactActionsCoordinator.swift; sourceTree = "<group>"; };
 		34EB670028212EBA0036D615 /* AMEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMEvents.swift; sourceTree = "<group>"; };
 		34EB6702282138710036D615 /* AMSegmentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMSegmentation.swift; sourceTree = "<group>"; };
 		34EB670428213A8A0036D615 /* AMConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMConstants.swift; sourceTree = "<group>"; };
@@ -2407,6 +2409,7 @@
 		344D57CA2D71B52D009725A3 /* Tabs */ = {
 			isa = PBXGroup;
 			children = (
+				34EA3465303460560046C64A /* TransactActionsCoordinator.swift */,
 				812872C22EFF86C200DE995D /* TabViewModel.swift */,
 				344D57FC2D75E751009725A3 /* TabViewController.swift */,
 				344D57C82D71ABF5009725A3 /* WalletTab.swift */,
@@ -5927,6 +5930,7 @@
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
 				81A5919B29156011001D1A65 /* MultisigSettingsViewModel.swift in Sources */,
 				3472798D2CD3788F00A272D2 /* Promo.swift in Sources */,
+				34EA3466303460560046C64A /* TransactActionsCoordinator.swift in Sources */,
 				81D340A82F29155B003BD537 /* JadeBoltzExportViewModel.swift in Sources */,
 				81B7FD222A8F959C0024A0E8 /* URLSchemeManager.swift in Sources */,
 				342C11012DA50FF200EC5209 /* SetupNewViewController.swift in Sources */,

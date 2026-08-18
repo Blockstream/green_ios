@@ -6,6 +6,7 @@ import greenaddress
 class TabHomeVC: TabViewController {
 
     private let viewModel: TabHomeVM
+    private lazy var transactActionsCoordinator = TransactActionsCoordinator(viewController: self, dataSource: viewModel)
     @IBOutlet weak var tableView: UITableView?
     var timeFrame: ChartTimeFrame = .day
 
@@ -47,7 +48,7 @@ class TabHomeVC: TabViewController {
         super.viewWillAppear(animated)
         if let url = URLSchemeManager.shared.url {
             URLSchemeManager.shared.url = nil
-            sendScreen(walletDataModel: viewModel.walletDataModel, input: url.absoluteString)
+            transactActionsCoordinator.send(input: url.absoluteString)
         }
     }
 
@@ -58,19 +59,13 @@ class TabHomeVC: TabViewController {
     }
 
     func register() {
-        ["TabHeaderCell", "BalanceCell", "AlertCardCell", "WalletAssetCell", "PromoLayout0Cell", "PromoLayout1Cell", "PromoLayout2Cell", "PriceChartCell"].forEach {
+        ["TabHeaderCell", "BalanceCell", "AlertCardCell", "WalletAssetCell", "PromoLayout0Cell", "PromoLayout1Cell", "PromoLayout2Cell", "PriceChartCell", "TransactActionsCell"].forEach {
             tableView?.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
 
     @objc func pull(_ sender: UIRefreshControl? = nil) {
         viewModel.refresh(features: [.discover])
-    }
-
-    func buy() {
-        Task {
-            await buyScreen(currency: viewModel.defaultCurrency ?? "USD", hideBalance: viewModel.hideBalance)
-        }
     }
 }
 
@@ -124,6 +119,19 @@ extension TabHomeVC { // navigation
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+    func receive() {
+        transactActionsCoordinator.receive()
+    }
+    func buy() {
+        transactActionsCoordinator.buy()
+    }
+
+    func swapScreen() {
+        transactActionsCoordinator.swap()
+    }
+    func send() {
+        transactActionsCoordinator.send()
+    }
 }
 extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
 
@@ -141,6 +149,8 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
             return viewModel.backupCards.count
         case .card:
             return viewModel.alertCards.count
+        case .actions:
+            return 1
         case .assets:
             return viewModel.balances?.count ?? 0
         case .chart:
@@ -160,6 +170,16 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                 cell.configure(title: "id_home".localized, icon: headerIcon, tab: .home, onTap: {[weak self] in
                     self?.walletTab.switchNetwork()
                 })
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .actions:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: TransactActionsCell.identifier, for: indexPath) as? TransactActionsCell {
+                cell.configure(
+                    onBuy: { [weak self] in self?.buy() },
+                    onSend: { [weak self] in self?.send() },
+                    onReceive: { [weak self] in self?.receive() },
+                    onSwap: viewModel.canSwap() ? { [weak self] in self?.swapScreen() } : nil)
                 cell.selectionStyle = .none
                 return cell
             }

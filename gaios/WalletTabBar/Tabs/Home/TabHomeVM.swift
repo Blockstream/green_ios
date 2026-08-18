@@ -84,3 +84,5 @@ class TabHomeVM: TabViewModel {
         return cards
     }
 }
+
+extension TabHomeVM: TransactActionsDataSource {}
