@@ -14,12 +14,13 @@ class ScreenLockWindow: UIWindow {
     }
 
     func setup(windowScene: UIWindowScene?) {
-        if let windowScene = windowScene {
-            self.windowScene = windowScene
-            frame = windowScene.coordinateSpace.bounds
-        } else {
-            frame = UIScreen.main.bounds
+        guard let windowScene else {
+            detachFromScene()
+            return
         }
+
+        self.windowScene = windowScene
+        syncFrameToScene()
         isHidden = false
         isOpaque = true
         windowLevel = UIWindowLevelBackground
@@ -30,7 +31,21 @@ class ScreenLockWindow: UIWindow {
         rootViewController = viewController
     }
 
+    func detachFromScene() {
+        isHidden = true
+        windowLevel = UIWindowLevelBackground
+        rootViewController = nil
+        windowScene = nil
+    }
+
+    func syncFrameToScene() {
+        guard let windowScene else { return }
+        frame = windowScene.coordinateSpace.bounds
+    }
+
     func show() {
+        guard windowScene != nil else { return }
+        syncFrameToScene()
         // Show Screen Lock window
         windowLevel = UIWindowLevelScreenBlocking
         makeKeyAndVisible()

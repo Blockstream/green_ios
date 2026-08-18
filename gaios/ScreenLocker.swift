@@ -107,6 +107,7 @@ class ScreenLocker {
     }
 
     func showLockWindow() {
+        guard ScreenLockWindow.shared.windowScene != nil else { return }
         // Hide Root Window
         UIApplication.shared.mainApplicationWindow?.isHidden = true
         ScreenLockWindow.shared.show()
@@ -115,11 +116,12 @@ class ScreenLocker {
     func hideLockWindow() {
         ScreenLockWindow.shared.hide()
         // Show Root Window
-        UIApplication.shared.mainApplicationWindow?.isHidden = false
+        guard let mainWindow = UIApplication.shared.mainApplicationWindow else { return }
+        mainWindow.isHidden = false
         // By calling makeKeyAndVisible we ensure the rootViewController becomes first responder.
         // In the normal case, that means the ViewController will call `becomeFirstResponder`
         // on the vc on top of its navigation stack.
-        UIApplication.shared.mainApplicationWindow?.makeKeyAndVisible()
+        mainWindow.makeKeyAndVisible()
     }
 
     func ensureUI() {

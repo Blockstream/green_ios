@@ -40,6 +40,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
+        if let windowScene = scene as? UIWindowScene,
+           ScreenLockWindow.shared.windowScene === windowScene {
+            ScreenLockWindow.shared.detachFromScene()
+        }
         window = nil
     }
 
