@@ -140,46 +140,41 @@ public class JadeCommands {
         return res
     }
 
-    func request2cbor<T: Decodable>(_ request: JadeRequest<T>)  async throws -> Data {
+    func request2cbor<T: Encodable>(_ request: JadeRequest<T>) async throws -> Data {
         guard let buffer = request.encoded else { throw HWError.Abort("Invalid message") }
         return buffer
     }
 
     func dict2cbor(_ request: [String: Any]) async throws -> Data {
-        let inEncoded: [UInt8] = try! CBOR.encodeMap(request)
-        return Data(inEncoded)
+        Data(try CBOR.encodeMap(request as [String: Any?]))
     }
 
-    func cbor2response<K: Decodable>(_ response: Data)  async throws -> JadeResponse<K> {
-        return try CodableCBORDecoder().decode(JadeResponse<K>.self, from: response)
+    func cbor2response<K: Decodable>(_ response: Data) async throws -> JadeResponse<K> {
+        try CodableCBORDecoder().decode(JadeResponse<K>.self, from: response)
     }
 
-    func cbor2dict(_ response: Data)  async throws -> [String: Any?] {
+    func cbor2dict(_ response: Data) async throws -> [String: Any?] {
         let decoded = try CBOR.decode([UInt8](response))
         let map = CBOR.getDictionary(map: decoded ?? [:])
-        let dict = try CBOR.convertCBORMapToDictionary(map ?? [:])
-        return dict
+        return try CBOR.convertCBORMapToDictionary(map ?? [:])
     }
 
-    func exchange<T: Decodable, K: Decodable>(_ request: JadeRequest<T>) async throws -> JadeResponse<K> {
+    func exchange<T: Codable, K: Codable>(_ request: JadeRequest<T>) async throws -> JadeResponse<K> {
 #if DEBUG
         print("=> \(request)")
 #endif
-        // encode request
         let request = try await request2cbor(request)
-        // send request
         var res = try await connection.exchange(request)
-        // handling generic http request
         while true {
             let response = try await cbor2dict(res)
-            if let error = response["error"] as? [String: Any],
+            if let error = dictionary(response["error"]),
                let errorCode = error["code"] as? Int,
                let errorMessage = error["message"] as? String {
-                throw HWError.from(code: errorCode, message: errorMessage )
+                throw HWError.from(code: errorCode, message: errorMessage)
             }
-            if let result = response["result"] as? [String: Any],
-               let httpRequest = result["http_request"] as? [String: Any],
-                let onReply = httpRequest["on-reply"] as? String {
+            if let result = dictionary(response["result"]),
+               let httpRequest = dictionary(result["http_request"]),
+               let onReply = httpRequest["on-reply"] as? String {
                 let httpResponse = try await makeHttpRequest(httpRequest)
                 let package = [
                     "id": "\(JadeRequestId)",
@@ -188,18 +183,17 @@ public class JadeCommands {
                 ] as [String: Any]
                 JadeRequestId += 1
                 let request = try await dict2cbor(package)
-        #if DEBUG
+#if DEBUG
                 print("=> HttpRequest : \(request.hex)")
-        #endif
+#endif
                 res = try await connection.exchange(request)
-        #if DEBUG
+#if DEBUG
                 print("<= HttpResponse: \(res.hex)")
-        #endif
+#endif
             } else {
                 break
             }
         }
-        // decode response
         let response: JadeResponse<K> = try await cbor2response(res)
 #if DEBUG
         print("<= \(response)")
@@ -209,25 +203,22 @@ public class JadeCommands {
         }
         return response
     }
-    /*
-    func exchange(method: String, params: [String: Any]) async throws -> [String: Any?] {
-        let package = [
-            "id": "\(JadeRequestId)",
-            "method": method,
-            "params": params
-        ] as [String : Any]
-        JadeRequestId += 1
-        let request = try await dict2cbor(package)
-#if DEBUG
-        print("=> \(request)")
-#endif
-        let res = try await exchange(request)
-        var response = try await cbor2dict(res)
-#if DEBUG
-        print("<= \(response)")
-#endif
-        return response
-    }*/
+
+    private func dictionary(_ value: Any?) -> [String: Any]? {
+        if let dict = value as? [String: Any] {
+            return dict
+        }
+        if let dict = value as? [String: Any?] {
+            var result = [String: Any]()
+            for (key, item) in dict {
+                if let item {
+                    result[key] = item
+                }
+            }
+            return result
+        }
+        return nil
+    }
 
     public func makeHttpRequest(_ httpRequest: [String: Any]) async throws -> [String: Any] {
         var params = httpRequest["params"] as? [String: Any]
