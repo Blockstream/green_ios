@@ -7636,7 +7636,7 @@
 			repositoryURL = "https://github.com/valpackett/SwiftCBOR";
 			requirement = {
 				kind = exactVersion;
-				version = 0.4.5;
+				version = 0.6.0;
 			};
 		};
 		81961ACC29E4E41600E9B94D /* XCRemoteSwiftPackageReference "rive-ios" */ = {
