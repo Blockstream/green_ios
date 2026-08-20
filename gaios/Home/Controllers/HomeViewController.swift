@@ -4,7 +4,6 @@ import core
 import ObjectiveC
 
 enum HomeSection: Int, CaseIterable {
-    case promo
     case remoteAlerts
     case swWallet
     case ephWallet
@@ -23,8 +22,6 @@ class HomeViewController: UIViewController {
     var footerH: CGFloat = 54.0
 
     private var remoteAlert: RemoteAlert?
-    var promoCardCellModel = [PromoCellModel]()
-    var promoImpressionSent: Bool?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,7 +29,7 @@ class HomeViewController: UIViewController {
         setContent()
         setStyle()
 
-        ["WalletListCell", "AlertCardCell", "PromoLayout0Cell", "PromoLayout1Cell", "PromoLayout2Cell"].forEach {
+        ["WalletListCell", "AlertCardCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .home, networks: []).first
@@ -40,20 +37,9 @@ class HomeViewController: UIViewController {
         AnalyticsManager.shared.delegate = self
         AnalyticsManager.shared.recordView(.home)
         AnalyticsManager.shared.appLoadingFinished()
-        PromoManager.shared.delegate = self
         loadNavigationBtns()
         view.accessibilityIdentifier = AccessibilityIds.HomeScreen.view
         btnNewWallet.accessibilityIdentifier = AccessibilityIds.HomeScreen.btnSetUpNewWallet
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        Task {
-            do {
-                await self.reloadPromoCards()
-                self.tableView.reloadData()
-            }
-        }
     }
 
     func setContent() {
@@ -142,43 +128,6 @@ class HomeViewController: UIViewController {
     func isOverviewSelected(_ wallet: Wallet) -> Bool {
         WalletsRepository.shared
             .get(for: wallet.id)?.activeNetworkIds.count ?? 0 > 0
-    }
-
-    func onPromo(_ promo: Promo) {
-        if promo.is_small == true {
-            PromoManager.shared.promoAction(promo: promo, source: .home)
-            if let url = URL(string: promo.link ?? "") {
-                SafeNavigationManager.shared.navigate(url, exitApp: true)
-            }
-        } else {
-            PromoManager.shared.promoOpen(promo: promo, source: .home)
-            let storyboard = UIStoryboard(name: "PromoFlow", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "PromoViewController") as? PromoViewController {
-                vc.promo = promo
-                vc.source = .home
-                vc.modalPresentationStyle = .overFullScreen
-                present(vc, animated: false, completion: nil)
-            }
-        }
-    }
-
-    // dismiss promo
-    func promoDismiss() {
-        Task {
-            await reloadPromoCards()
-            tableView.reloadData()
-        }
-    }
-
-    func reloadPromoCards() async {
-        promoCardCellModel = PromoManager.shared.promoCellModels(.home)
-    }
-
-    func promoImpression(_ promo: Promo) {
-        if promoImpressionSent != true {
-            promoImpressionSent = true
-            PromoManager.shared.promoView(promo: promo, source: .home)
-        }
     }
 
     func onAbout() {
@@ -294,8 +243,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
         switch HomeSection(rawValue: section) {
-        case .promo:
-            return promoCardCellModel.count
         case .remoteAlerts:
             return remoteAlert != nil ? 1 : 0
         case .swWallet:
@@ -309,45 +256,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
         switch HomeSection(rawValue: indexPath.section) {
-
-        case .promo:
-            let model = promoCardCellModel[indexPath.row]
-            if model.promo.layout_small == 2 {
-                if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout2Cell", for: indexPath) as? PromoLayout2Cell {
-                    cell.configure(model, onAction: {[weak self] in
-                        self?.onPromo(model.promo)
-                    }, onDismiss: { [weak self] in
-                        self?.promoDismiss()
-                    })
-                    cell.selectionStyle = .none
-                    promoImpression(model.promo)
-                    return cell
-                }
-            } else if model.promo.layout_small == 1 {
-                if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout1Cell", for: indexPath) as? PromoLayout1Cell {
-                    cell.configure(model, onAction: {[weak self] in
-                        self?.onPromo(model.promo)
-                    }, onDismiss: { [weak self] in
-                        self?.promoDismiss()
-                    })
-                    cell.selectionStyle = .none
-                    promoImpression(model.promo)
-                    return cell
-                }
-            } else {
-                if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout0Cell", for: indexPath) as? PromoLayout0Cell {
-                    cell.configure(model, onAction: {[weak self] in
-                        self?.onPromo(model.promo)
-                    }, onDismiss: { [weak self] in
-                        self?.promoDismiss()
-                    })
-                    cell.selectionStyle = .none
-                    promoImpression(model.promo)
-                    return cell
-                }
-            }
         case .remoteAlerts:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = self.remoteAlert {
                 cell.configure(AlertCardCellModel(type: .remoteAlert(remoteAlert)),
@@ -473,17 +382,6 @@ extension HomeViewController: DialogRenameViewControllerDelegate, DialogDeleteVi
         }
     }
     func didCancel() {
-    }
-}
-
-extension HomeViewController: PromoManagerDelegate {
-    func preloadDidEnd() {
-        Task {
-            do {
-                await self.reloadPromoCards()
-                self.tableView.reloadData()
-            }
-        }
     }
 }
 

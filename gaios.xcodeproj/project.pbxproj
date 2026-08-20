@@ -228,8 +228,6 @@
 		3469701C2779D81200796D37 /* DialogCustomFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */; };
 		3469A2462887D23700B2F640 /* StoreReviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469A2452887D23700B2F640 /* StoreReviewManager.swift */; };
 		3469A2482887D56E00B2F640 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469A2472887D56E00B2F640 /* Date.swift */; };
-		346C72612C466D4D00E698E1 /* PromoFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 346C72602C466D4D00E698E1 /* PromoFlow.storyboard */; };
-		346C72632C466DD200E698E1 /* PromoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C72622C466DD200E698E1 /* PromoViewController.swift */; };
 		346EB26C2BE8BB0B0043139F /* SendFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 346EB26B2BE8BB0B0043139F /* SendFlow.storyboard */; };
 		346EB26F2BE8BB1A0043139F /* SendTitleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 346EB26D2BE8BB1A0043139F /* SendTitleView.xib */; };
 		346EB2702BE8BB1A0043139F /* SendTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EB26E2BE8BB1A0043139F /* SendTitleView.swift */; };
@@ -267,8 +265,6 @@
 		34742D3C2CE4AB400064F327 /* AssetToBuyCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34742D3B2CE4AB400064F327 /* AssetToBuyCell.xib */; };
 		34742D3E2CE4AB670064F327 /* AssetToBuyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34742D3D2CE4AB670064F327 /* AssetToBuyCell.swift */; };
 		34742D402CE4ABA30064F327 /* AssetToBuyCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34742D3F2CE4ABA30064F327 /* AssetToBuyCellModel.swift */; };
-		347B7C242C3280FE0016A5C0 /* PromoLayout0Cell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 347B7C232C3280FE0016A5C0 /* PromoLayout0Cell.xib */; };
-		347B7C262C3281190016A5C0 /* PromoLayout0Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B7C252C3281190016A5C0 /* PromoLayout0Cell.swift */; };
 		347B7C282C3281260016A5C0 /* PromoCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B7C272C3281260016A5C0 /* PromoCellModel.swift */; };
 		347C7E6A2FE96360008A4A49 /* AmpFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 347C7E692FE96360008A4A49 /* AmpFlow.storyboard */; };
 		347C7E6D2FE963AB008A4A49 /* DialogAmpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C7E6C2FE963A2008A4A49 /* DialogAmpViewController.swift */; };
@@ -345,8 +341,6 @@
 		34AD76B62E169A4800B44B4F /* ManageAsset.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34AD76B52E169A4800B44B4F /* ManageAsset.storyboard */; };
 		34AD76B92E16ABC400B44B4F /* AssetBalanceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34AD76B82E16ABC400B44B4F /* AssetBalanceCell.xib */; };
 		34AD76BB2E16ABDE00B44B4F /* AssetBalanceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AD76BA2E16ABDE00B44B4F /* AssetBalanceCell.swift */; };
-		34B0A4EE2D0198A6002E9A5C /* PromoLayout2Cell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B0A4ED2D0198A6002E9A5C /* PromoLayout2Cell.xib */; };
-		34B0A4F02D0198B8002E9A5C /* PromoLayout2Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B0A4EF2D0198B8002E9A5C /* PromoLayout2Cell.swift */; };
 		34B0D0032CE2553100A90080 /* ActionsSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B0D0002CE2553100A90080 /* ActionsSheetViewController.swift */; };
 		34B0D0042CE2553100A90080 /* ActionsSheetFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B0D0012CE2553100A90080 /* ActionsSheetFlow.storyboard */; };
 		34B0D0052CE2553100A90080 /* ActionsSheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B0D0022CE2553100A90080 /* ActionsSheetViewModel.swift */; };
@@ -363,8 +357,6 @@
 		34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34BBCEF52971516F0057DF4A /* AccountAssetCell.xib */; };
 		34BBCEF82971518C0057DF4A /* AccountAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBCEF72971518C0057DF4A /* AccountAssetCell.swift */; };
 		34BBCEFA297151C50057DF4A /* AssetAssetCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBCEF9297151C50057DF4A /* AssetAssetCellModel.swift */; };
-		34BC63612D0979A2001CC38F /* PromoLayout1Cell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34BC63602D0979A2001CC38F /* PromoLayout1Cell.xib */; };
-		34BC63632D0979BA001CC38F /* PromoLayout1Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BC63622D0979BA001CC38F /* PromoLayout1Cell.swift */; };
 		34BC63652D097A09001CC38F /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BC63642D097A09001CC38F /* UIImage.swift */; };
 		34BEEAEF2857274700C0187D /* DialogWatchOnlySetUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEEAEE2857274700C0187D /* DialogWatchOnlySetUpViewController.swift */; };
 		34BF09DE2A658BB800523E4C /* DialogQRViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BF09DD2A658BB800523E4C /* DialogQRViewController.swift */; };
@@ -853,10 +845,14 @@
 		C71E2AA52FBB03F9003E816A /* LTDetailsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71E2AA42FBB03F9003E816A /* LTDetailsCellModel.swift */; };
 		C71E2AA72FBB0419003E816A /* LTDetailsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C71E2AA62FBB0419003E816A /* LTDetailsCell.xib */; };
 		C742272B2FC0991800BDE83E /* LTSettingsDialogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C742272A2FC0991800BDE83E /* LTSettingsDialogViewController.swift */; };
+		C74D3FB230373AE500E3737E /* PromoContainerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74D3FB030373AE500E3737E /* PromoContainerCell.swift */; };
+		C74D3FB330373AE500E3737E /* PromoContainerCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C74D3FB130373AE500E3737E /* PromoContainerCell.xib */; };
 		C78788722FB74648009F2907 /* lightning_success.riv in Resources */ = {isa = PBXBuildFile; fileRef = C78788712FB74648009F2907 /* lightning_success.riv */; };
 		C79C85A62FD9881A00501B33 /* LightningTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A52FD9881A00501B33 /* LightningTask.swift */; };
 		C79C85A82FD98CEE00501B33 /* NotificationDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A72FD98CEE00501B33 /* NotificationDeviceManager.swift */; };
 		C79C85AA2FD9A94F00501B33 /* LightningModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A92FD9A94F00501B33 /* LightningModel.swift */; };
+		C7A2E0A830373C9300AD2A09 /* PromoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A2E0A630373C9300AD2A09 /* PromoCell.swift */; };
+		C7A2E0A930373C9300AD2A09 /* PromoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7A2E0A730373C9300AD2A09 /* PromoCell.xib */; };
 		C7BD1F9F2FF28BE00053FAC0 /* SwapAssetSelectorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7BD1F9E2FF28BD70053FAC0 /* SwapAssetSelectorViewModel.swift */; };
 		C7D648B12FC4838A00D5D23D /* CoinControlViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D648B02FC4838A00D5D23D /* CoinControlViewController.swift */; };
 		C7D648B42FC4860300D5D23D /* CoinControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D648B32FC4860300D5D23D /* CoinControlViewModel.swift */; };
@@ -1226,8 +1222,6 @@
 		3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCustomFeeViewController.swift; sourceTree = "<group>"; };
 		3469A2452887D23700B2F640 /* StoreReviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreReviewManager.swift; sourceTree = "<group>"; };
 		3469A2472887D56E00B2F640 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
-		346C72602C466D4D00E698E1 /* PromoFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PromoFlow.storyboard; sourceTree = "<group>"; };
-		346C72622C466DD200E698E1 /* PromoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoViewController.swift; sourceTree = "<group>"; };
 		346EB26B2BE8BB0B0043139F /* SendFlow.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = SendFlow.storyboard; sourceTree = "<group>"; };
 		346EB26D2BE8BB1A0043139F /* SendTitleView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SendTitleView.xib; sourceTree = "<group>"; };
 		346EB26E2BE8BB1A0043139F /* SendTitleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendTitleView.swift; sourceTree = "<group>"; };
@@ -1281,8 +1275,6 @@
 		34742D3B2CE4AB400064F327 /* AssetToBuyCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AssetToBuyCell.xib; sourceTree = "<group>"; };
 		34742D3D2CE4AB670064F327 /* AssetToBuyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetToBuyCell.swift; sourceTree = "<group>"; };
 		34742D3F2CE4ABA30064F327 /* AssetToBuyCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetToBuyCellModel.swift; sourceTree = "<group>"; };
-		347B7C232C3280FE0016A5C0 /* PromoLayout0Cell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromoLayout0Cell.xib; sourceTree = "<group>"; };
-		347B7C252C3281190016A5C0 /* PromoLayout0Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoLayout0Cell.swift; sourceTree = "<group>"; };
 		347B7C272C3281260016A5C0 /* PromoCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCellModel.swift; sourceTree = "<group>"; };
 		347C7E692FE96360008A4A49 /* AmpFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AmpFlow.storyboard; sourceTree = "<group>"; };
 		347C7E6C2FE963A2008A4A49 /* DialogAmpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAmpViewController.swift; sourceTree = "<group>"; };
@@ -1359,8 +1351,6 @@
 		34AD76B52E169A4800B44B4F /* ManageAsset.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ManageAsset.storyboard; sourceTree = "<group>"; };
 		34AD76B82E16ABC400B44B4F /* AssetBalanceCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AssetBalanceCell.xib; sourceTree = "<group>"; };
 		34AD76BA2E16ABDE00B44B4F /* AssetBalanceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalanceCell.swift; sourceTree = "<group>"; };
-		34B0A4ED2D0198A6002E9A5C /* PromoLayout2Cell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromoLayout2Cell.xib; sourceTree = "<group>"; };
-		34B0A4EF2D0198B8002E9A5C /* PromoLayout2Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoLayout2Cell.swift; sourceTree = "<group>"; };
 		34B0D0002CE2553100A90080 /* ActionsSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionsSheetViewController.swift; sourceTree = "<group>"; };
 		34B0D0012CE2553100A90080 /* ActionsSheetFlow.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ActionsSheetFlow.storyboard; sourceTree = "<group>"; };
 		34B0D0022CE2553100A90080 /* ActionsSheetViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionsSheetViewModel.swift; sourceTree = "<group>"; };
@@ -1378,8 +1368,6 @@
 		34BBCEF52971516F0057DF4A /* AccountAssetCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccountAssetCell.xib; sourceTree = "<group>"; };
 		34BBCEF72971518C0057DF4A /* AccountAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAssetCell.swift; sourceTree = "<group>"; };
 		34BBCEF9297151C50057DF4A /* AssetAssetCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetAssetCellModel.swift; sourceTree = "<group>"; };
-		34BC63602D0979A2001CC38F /* PromoLayout1Cell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromoLayout1Cell.xib; sourceTree = "<group>"; };
-		34BC63622D0979BA001CC38F /* PromoLayout1Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoLayout1Cell.swift; sourceTree = "<group>"; };
 		34BC63642D097A09001CC38F /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		34BEEAEE2857274700C0187D /* DialogWatchOnlySetUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogWatchOnlySetUpViewController.swift; sourceTree = "<group>"; };
 		34BF09DD2A658BB800523E4C /* DialogQRViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogQRViewController.swift; sourceTree = "<group>"; };
@@ -1876,10 +1864,14 @@
 		C71E2AA42FBB03F9003E816A /* LTDetailsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTDetailsCellModel.swift; sourceTree = "<group>"; };
 		C71E2AA62FBB0419003E816A /* LTDetailsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LTDetailsCell.xib; sourceTree = "<group>"; };
 		C742272A2FC0991800BDE83E /* LTSettingsDialogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTSettingsDialogViewController.swift; sourceTree = "<group>"; };
+		C74D3FB030373AE500E3737E /* PromoContainerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoContainerCell.swift; sourceTree = "<group>"; };
+		C74D3FB130373AE500E3737E /* PromoContainerCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PromoContainerCell.xib; sourceTree = "<group>"; };
 		C78788712FB74648009F2907 /* lightning_success.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = lightning_success.riv; sourceTree = "<group>"; };
 		C79C85A52FD9881A00501B33 /* LightningTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningTask.swift; sourceTree = "<group>"; };
 		C79C85A72FD98CEE00501B33 /* NotificationDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDeviceManager.swift; sourceTree = "<group>"; };
 		C79C85A92FD9A94F00501B33 /* LightningModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningModel.swift; sourceTree = "<group>"; };
+		C7A2E0A630373C9300AD2A09 /* PromoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCell.swift; sourceTree = "<group>"; };
+		C7A2E0A730373C9300AD2A09 /* PromoCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PromoCell.xib; sourceTree = "<group>"; };
 		C7BD1F9E2FF28BD70053FAC0 /* SwapAssetSelectorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetSelectorViewModel.swift; sourceTree = "<group>"; };
 		C7D648B02FC4838A00D5D23D /* CoinControlViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinControlViewController.swift; sourceTree = "<group>"; };
 		C7D648B32FC4860300D5D23D /* CoinControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinControlViewModel.swift; sourceTree = "<group>"; };
@@ -2683,15 +2675,6 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
-		346C725F2C466D3800E698E1 /* Promo */ = {
-			isa = PBXGroup;
-			children = (
-				346C72602C466D4D00E698E1 /* PromoFlow.storyboard */,
-				346C72622C466DD200E698E1 /* PromoViewController.swift */,
-			);
-			path = Promo;
-			sourceTree = "<group>";
-		};
 		346EB2662BE8BAC70043139F /* Sendflow */ = {
 			isa = PBXGroup;
 			children = (
@@ -2816,12 +2799,10 @@
 			children = (
 				3472798C2CD3788F00A272D2 /* Promo.swift */,
 				347B7C272C3281260016A5C0 /* PromoCellModel.swift */,
-				347B7C252C3281190016A5C0 /* PromoLayout0Cell.swift */,
-				347B7C232C3280FE0016A5C0 /* PromoLayout0Cell.xib */,
-				34BC63622D0979BA001CC38F /* PromoLayout1Cell.swift */,
-				34BC63602D0979A2001CC38F /* PromoLayout1Cell.xib */,
-				34B0A4EF2D0198B8002E9A5C /* PromoLayout2Cell.swift */,
-				34B0A4ED2D0198A6002E9A5C /* PromoLayout2Cell.xib */,
+				C74D3FB030373AE500E3737E /* PromoContainerCell.swift */,
+				C74D3FB130373AE500E3737E /* PromoContainerCell.xib */,
+				C7A2E0A630373C9300AD2A09 /* PromoCell.swift */,
+				C7A2E0A730373C9300AD2A09 /* PromoCell.xib */,
 			);
 			path = PromoCell;
 			sourceTree = "<group>";
@@ -4246,7 +4227,6 @@
 			isa = PBXGroup;
 			children = (
 				34B0CFFF2CE2552300A90080 /* ActionsSheet */,
-				346C725F2C466D3800E698E1 /* Promo */,
 				34ABBD7B2BF4A17C0049CC76 /* ReEnable2fa */,
 				34D761322A384E9000DE57F5 /* DenominationExchangeFlow */,
 				81ACC4B0227337F3004B1E92 /* Wallet.storyboard */,
@@ -5210,7 +5190,6 @@
 				345FC45C29ED480E009FCF43 /* WOFlow.storyboard in Resources */,
 				348A710A2D8AE05800490B55 /* WelcomeView.xib in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
-				347B7C242C3280FE0016A5C0 /* PromoLayout0Cell.xib in Resources */,
 				34F6152C2E426564007D38F9 /* TFATimeCell.xib in Resources */,
 				345B28ED2DD1EB340075860A /* jadeplus_3.riv in Resources */,
 				3407F5D12A49C28A005EF8E1 /* Illustration Lightning Transaction.riv in Resources */,
@@ -5226,12 +5205,10 @@
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
 				345B28D32DD1D6C30075860A /* animation_01_jade_v1.riv in Resources */,
 				345B28DB2DD1DB1D0075860A /* jadeplus_2.riv in Resources */,
-				34B0A4EE2D0198A6002E9A5C /* PromoLayout2Cell.xib in Resources */,
 				345402E92A1E43D5002CB598 /* DialogDenominationCell.xib in Resources */,
 				3420471C291BFFEF00EDE945 /* Utility.storyboard in Resources */,
 				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
 				346EB2762BE8BB3A0043139F /* SendFeeCell.xib in Resources */,
-				346C72612C466D4D00E698E1 /* PromoFlow.storyboard in Resources */,
 				3457F4B32923988600EF33B5 /* DialogListCell.xib in Resources */,
 				3419B44C2BEE302500492198 /* ReEnable2faAccountCell.xib in Resources */,
 				344A330C2E7B190300E372AD /* TitleCell.xib in Resources */,
@@ -5244,6 +5221,7 @@
 				343BC9542AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard in Resources */,
 				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
 				34A883A42BA3251B004A1826 /* TxDetailsStatusCell.xib in Resources */,
+				C74D3FB330373AE500E3737E /* PromoContainerCell.xib in Resources */,
 				3415CB042A67BD0100B66882 /* AddressAuth.storyboard in Resources */,
 				34204727291CE13100EDE945 /* AssetSelectCell.xib in Resources */,
 				345B28E92DD1E7600075860A /* Illustration Wallet.riv in Resources */,
@@ -5275,6 +5253,7 @@
 				34F57FF72BA1EA0000DCB076 /* TxDetails.storyboard in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
+				C7A2E0A930373C9300AD2A09 /* PromoCell.xib in Resources */,
 				345B28F22DD32B180075860A /* SettingsCell.xib in Resources */,
 				34DA78AD2D8098E40022FBB1 /* DialogAccountCell.xib in Resources */,
 				6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */,
@@ -5311,7 +5290,6 @@
 				8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */,
 				34F36F772E434F8E00791659 /* TFAMethodCell.xib in Resources */,
 				818A8E4F2FB29A55005471BF /* Scanner.storyboard in Resources */,
-				34BC63612D0979A2001CC38F /* PromoLayout1Cell.xib in Resources */,
 				347372B02E5F344500FE2BEA /* AppSettings.storyboard in Resources */,
 				345B28E72DD1E7090075860A /* Illustration Stars Success.riv in Resources */,
 				6D8099D823021CEF0069A69F /* PopoverMenu.storyboard in Resources */,
@@ -5414,7 +5392,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3498079F291CF05700F8DB95 /* Collection.swift in Sources */,
-				347B7C262C3281190016A5C0 /* PromoLayout0Cell.swift in Sources */,
 				81C3014E2BBFFB3900A16A84 /* UITextView.swift in Sources */,
 				81C3014D2BBFFB1100A16A84 /* BleJadeManager.swift in Sources */,
 				346EB2852BE8BB480043139F /* SendFailViewController.swift in Sources */,
@@ -5455,7 +5432,6 @@
 				347C7E6D2FE963AB008A4A49 /* DialogAmpViewController.swift in Sources */,
 				345ED1F429C088DC00BD9071 /* GetStartedOnBoardViewController.swift in Sources */,
 				81DE63432DDE2F6600AB79DB /* SetupNewMoreActionsViewController.swift in Sources */,
-				34B0A4F02D0198B8002E9A5C /* PromoLayout2Cell.swift in Sources */,
 				816685DA2BEE50EF00B03B02 /* SendTxConfirmViewModel.swift in Sources */,
 				81E56A642C2476950012A5A3 /* QRUnlockInfoAlertViewController.swift in Sources */,
 				3419B44E2BEE304900492198 /* ReEnable2faAccountCell.swift in Sources */,
@@ -5537,7 +5513,6 @@
 				817A0B412A41D48700E2F80D /* BleLedgerManager.swift in Sources */,
 				34BBCEF82971518C0057DF4A /* AccountAssetCell.swift in Sources */,
 				3457F4A92923947A00EF33B5 /* DialogListViewController.swift in Sources */,
-				346C72632C466DD200E698E1 /* PromoViewController.swift in Sources */,
 				81961ABB29E4B9C600E9B94D /* Balance.swift in Sources */,
 				81D340AF2F2A2263003BD537 /* JadeBoltzSwapViewModel.swift in Sources */,
 				34145FEA2DBB94B100F725E0 /* MoreActionsViewController.swift in Sources */,
@@ -5590,6 +5565,7 @@
 				81C3BC262F269B6800CD4F2D /* SendFlowError.swift in Sources */,
 				346EB2772BE8BB3A0043139F /* SendFeeCellModel.swift in Sources */,
 				812872D62F020F7C00DE995D /* Sections.swift in Sources */,
+				C74D3FB230373AE500E3737E /* PromoContainerCell.swift in Sources */,
 				343E17212FD0268800D9141A /* ReceiveViewModelDelegate.swift in Sources */,
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
 				346300E2274D4FBF00B28521 /* DialogShareTxOptionViewController.swift in Sources */,
@@ -5787,7 +5763,6 @@
 				348A71062D8AE02C00490B55 /* WelcomeView.swift in Sources */,
 				34FB697727FEF9D000A13197 /* AccountArchiveCell.swift in Sources */,
 				C71E2AA52FBB03F9003E816A /* LTDetailsCellModel.swift in Sources */,
-				34BC63632D0979BA001CC38F /* PromoLayout1Cell.swift in Sources */,
 				34B826CD2608830C00579C0B /* PhraseNoteDownViewController.swift in Sources */,
 				34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */,
 				344D57D12D71B6A4009725A3 /* TabSecurityVC.swift in Sources */,
@@ -5937,6 +5912,7 @@
 				3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */,
 				34E4E88F2E2A45090061DB16 /* AccountDescriptorViewController.swift in Sources */,
 				34F51A7F2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift in Sources */,
+				C7A2E0A830373C9300AD2A09 /* PromoCell.swift in Sources */,
 				81332CC32D55082D00F3520D /* Gdk.swift in Sources */,
 				81DE63462DDE41AF00AB79DB /* DialogActionsViewController.swift in Sources */,
 				C7E400F52FE95AE600188624 /* ShowMnemonicFooterView.swift in Sources */,

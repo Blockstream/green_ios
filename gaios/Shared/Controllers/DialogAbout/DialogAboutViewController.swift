@@ -293,8 +293,7 @@ extension DialogAboutViewController: DialogListViewControllerDelegate {
         case .deviceId:
             handleDebugID()
         case .promos:
-            PromoManager.shared.clearDismissed()
-            PromoManager.shared.resetVideoCache()
+            PromoManager.shared.clearDismissedPromos()
         case .cleanup:
             MigratorManager.shared.removeAll()
             DropAlert().success(message: "Wallet list deleted")

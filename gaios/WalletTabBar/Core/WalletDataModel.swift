@@ -267,7 +267,7 @@ actor WalletDataModel {
         }
     }
     private func performPromos() async {
-        let promos = await fetchPromoCards()
+        let promos = await fetchPromos()
         await update(.promos) { $0.promos = promos }
     }
     private func performSettings() async {
@@ -403,12 +403,8 @@ actor WalletDataModel {
         }
         return (cards, remoteAlerts)
     }
-    func fetchPromoCards() async -> [PromoCellModel] {
-        if let promo = PromoManager.shared.promoCellModels(.homeTab).first?.promo,
-           let source = PromoManager.shared.promoCellModels(.homeTab).first?.source {
-            PromoManager.shared.promoView(promo: promo, source: source)
-        }
-        return state.subaccounts.count == 0 ? [] : PromoManager.shared.promoCellModels(.homeTab)
+    func fetchPromos() async -> [PromoCellModel] {
+        return state.subaccounts.count != 0 ? PromoManager.shared.getPromos() : []
     }
     func fetchSettings() async -> [SettingSection] {
         if mainWallet.isWatchonly {

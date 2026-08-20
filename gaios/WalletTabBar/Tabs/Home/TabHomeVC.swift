@@ -1,6 +1,5 @@
 import UIKit
 import core
-
 import greenaddress
 
 class TabHomeVC: TabViewController {
@@ -25,11 +24,23 @@ class TabHomeVC: TabViewController {
 
         register()
         setContent()
+
         viewModel.onUpdate = { [weak self] feature in
             DispatchQueue.main.async {
                 self?.onUpdate(feature: feature)
             }
         }
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(promosDidLoad),
+            name: PromoManager.promosDidLoad,
+            object: nil
+        )
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self,name: PromoManager.promosDidLoad, object: nil)
     }
 
     func onUpdate(feature: RefreshFeature?) {
@@ -37,6 +48,23 @@ class TabHomeVC: TabViewController {
         case .alertCards, .promos, .balance, .subaccounts, .priceChart, .settings:
             if tableView?.refreshControl?.isRefreshing == true {
                 tableView?.refreshControl?.endRefreshing()
+            }
+            if feature == .promos {
+                let section = TabHomeSection.promo.rawValue
+                let currentRowCount = tableView?.numberOfRows(inSection: section) ?? 0
+                let updatedRowCount = min(viewModel.promos.count, 1)
+
+                if currentRowCount != updatedRowCount {
+                    tableView?.reloadSections(IndexSet(integer: section), with: .automatic)
+                } else if let cell = tableView?.cellForRow(at: IndexPath(row: 0, section: section)) as? PromoContainerCell {
+                    let shouldUpdateHeight = cell.isPaginationVisible != (viewModel.promos.count > 1)
+                    cell.update(with: viewModel.promos)
+                    if shouldUpdateHeight {
+                        tableView?.beginUpdates()
+                        tableView?.endUpdates()
+                    }
+                }
+                return
             }
             tableView?.reloadData()
         default:
@@ -59,7 +87,7 @@ class TabHomeVC: TabViewController {
     }
 
     func register() {
-        ["TabHeaderCell", "BalanceCell", "AlertCardCell", "WalletAssetCell", "PromoLayout0Cell", "PromoLayout1Cell", "PromoLayout2Cell", "PriceChartCell", "TransactActionsCell"].forEach {
+        ["TabHeaderCell", "BalanceCell", "AlertCardCell", "WalletAssetCell", "PriceChartCell", "TransactActionsCell", PromoContainerCell.identifier].forEach {
             tableView?.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
@@ -67,24 +95,19 @@ class TabHomeVC: TabViewController {
     @objc func pull(_ sender: UIRefreshControl? = nil) {
         viewModel.refresh(features: [.discover])
     }
+
+    @objc nonisolated private func promosDidLoad() {
+        Task { @MainActor [weak self] in
+            self?.viewModel.refresh(features: [.promos])
+        }
+    }
 }
 
 extension TabHomeVC { // navigation
-    func onPromo(promo: Promo, source: PromoScreen) {
-        if promo.is_small == true {
-            PromoManager.shared.promoAction(promo: promo, source: source)
-            if let url = URL(string: promo.link ?? "") {
-                SafeNavigationManager.shared.navigate(url, exitApp: true)
-            }
-        } else {
-            PromoManager.shared.promoOpen(promo: promo, source: source)
-            let storyboard = UIStoryboard(name: "PromoFlow", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "PromoViewController") as? PromoViewController {
-                vc.promo = promo
-                vc.source = source
-                vc.modalPresentationStyle = .overFullScreen
-                present(vc, animated: false, completion: nil)
-            }
+    func onPromo(promo: Promo) {
+        PromoManager.shared.trackPromoAction(promo: promo)
+        if let url = URL(string: promo.cta.url), url.scheme?.lowercased() == "https" {
+            SafeNavigationManager.shared.navigate(url, exitApp: true)
         }
     }
     func promoDismiss() {
@@ -151,12 +174,12 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
             return viewModel.alertCards.count
         case .actions:
             return 1
+        case .promo:
+            return min(viewModel.promos.count, 1)
         case .assets:
             return viewModel.balances?.count ?? 0
         case .chart:
             return 1
-        case .promo:
-            return viewModel.promos.count
         default:
             return 0
         }
@@ -330,6 +353,25 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
+        case .promo:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: PromoContainerCell.identifier, for: indexPath) as? PromoContainerCell {
+                cell.configure(
+                    with: viewModel.promos,
+                    onAction: { [weak self] promo in
+                        self?.onPromo(promo: promo)
+                    },
+                    onDismiss: { [weak self] promo in
+                        PromoManager.shared.trackPromoDismiss(promo: promo)
+                        self?.promoDismiss()
+                    },
+                    onImpression: { promo in
+                        PromoManager.shared.trackPromoImpression(promo: promo)
+                    }
+                )
+                cell.selectionStyle = .none
+                return cell
+            }
+            return UITableViewCell()
         case .assets:
             if let cell = tableView.dequeueReusableCell(withIdentifier: WalletAssetCell.identifier, for: indexPath) as? WalletAssetCell {
                 let item = viewModel.assetAmountList?.amounts[indexPath.row] as? (String, Int64)
@@ -354,40 +396,6 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
-        case .promo:
-            let cellModel = viewModel.promos[indexPath.row]
-            if cellModel.promo.layout_small == 2 {
-                if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout2Cell", for: indexPath) as? PromoLayout2Cell {
-                    cell.configure(cellModel, onAction: { [weak self] in
-                        self?.onPromo(promo: cellModel.promo, source: cellModel.source)
-                    }, onDismiss: { [weak self] in
-                        self?.promoDismiss()
-                    })
-                    cell.selectionStyle = .none
-                    return cell
-                }
-            } else if cellModel.promo.layout_small == 1 {
-                if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout1Cell", for: indexPath) as? PromoLayout1Cell {
-                    cell.configure(cellModel, onAction: { [weak self] in
-                        self?.onPromo(promo: cellModel.promo, source: cellModel.source)
-                    }, onDismiss: { [weak self] in
-                        self?.promoDismiss()
-                    })
-                    cell.selectionStyle = .none
-                    return cell
-                }
-            } else {
-                if let cell = tableView.dequeueReusableCell(withIdentifier: "PromoLayout0Cell", for: indexPath) as? PromoLayout0Cell {
-                    cell.configure(cellModel, onAction: { [weak self] in
-                        self?.onPromo(promo: cellModel.promo, source: cellModel.source)
-                    }, onDismiss: { [weak self] in
-                        self?.promoDismiss()
-                    })
-                    cell.selectionStyle = .none
-                    return cell
-                }
-            }
-
         default:
             break
         }

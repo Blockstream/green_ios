@@ -3,7 +3,7 @@ public extension AnalyticsManager {
     static let countlyRemoteConfigAppReview = "app_review"
     static let countlyRemoteConfigBanners = "banners"
     static let countlyRemoteConfigAssets = "liquid_assets"
-    static let countlyRemoteConfigPromos = "promos"
+    static let countlyRemoteConfigPromos = "promos_v2"
     static let countlyRemoteConfigFeatureOnOffRamps = "feature_on_off_ramps"
     static let countlyRemoteConfigBuyDefaultValues = "buy_default_values"
     static let countlyRemoteConfigEnableBuyIosUk = "enable_buy_ios_uk"

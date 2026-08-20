@@ -8,9 +8,9 @@ enum TabHomeSection: Int, CaseIterable {
     case backup
     case card
     case actions
+    case promo
     case assets
     case chart
-    case promo
 }
 enum TabTransactSection: Int, CaseIterable {
     case header
