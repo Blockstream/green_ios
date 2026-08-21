@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Changed
+- Bump LWK to 0.19.0
+
 ## [5.6.0] - 2026-08-12
 
 ### Added
