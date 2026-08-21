@@ -1,4 +1,4 @@
-enum ChartTimeFrame {
+enum ChartTimeFrame: Sendable {
     case day
     case week
     case month
@@ -27,4 +27,5 @@ struct PriceChartCellModel {
     let priceChartModel: PriceChartModel?
     let currency: String?
     let isReloading: Bool?
+    let showsBuyButton: Bool
 }

@@ -8,7 +8,6 @@ struct WalletState: Sendable {
     var balances: [String: Int64]?
     var totals: (String, Int64)?
     var assetAmountList: AssetAmountList?
-    var priceCache: PriceChartModel?
     var txsGdk: [String: [Transactions]]?
     var currentPage = 0
     var txsMeld: [Transaction] = []
@@ -22,6 +21,9 @@ struct WalletState: Sendable {
     var settings: [SettingSection] = []
     var security: [SecuritySection] = []
     var nestedTxs: [String: [String: [Transaction]]] = [:]
+    var priceChartModel: PriceChartModel?
+    var isPriceChartLoading = false
+    var priceChartTimeFrame: ChartTimeFrame = .day
 
     var hideBalance = UserDefaults.standard.bool(forKey: AppStorageConstants.hideBalance.rawValue) {
         didSet {

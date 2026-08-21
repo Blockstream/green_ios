@@ -238,25 +238,33 @@ actor WalletDataModel {
         }
     }
 
-    var defaultCurrency: String? {
-        if let settings = wm.prominentSession?.settings {
-            return settings.pricing["currency"]
-        }
-        return nil
-    }
-
     private func performFetchPriceChart() async {
+        let currency = wm.prominentSession?.settings?.pricing["currency"] ?? "USD"
+        let currentCurrency = currency.lowercased()
+
+        if let cached = await BitcoinPriceService.shared.cachedPriceChart(currency: currentCurrency) {
+            await update(.priceChart) {
+                $0.priceChartModel = cached
+                $0.isPriceChartLoading = false
+            }
+            return
+        }
+
+        await update(.priceChart) {
+            $0.isPriceChartLoading = $0.priceChartModel == nil
+        }
+
         do {
-            let currency = defaultCurrency ?? "USD"
-            do {
-                try await Api.shared.fetch(currency: currency.lowercased())
-                await update(.priceChart) { $0.priceCache = Api.shared.priceCache }
-            } catch {
-                try await Api.shared.fetch(currency: "USD".lowercased())
-                await update(.priceChart) { $0.priceCache = Api.shared.priceCache }
+            let priceChart = try await BitcoinPriceService.shared.fetch(currency: currentCurrency)
+            await update(.priceChart) {
+                $0.priceChartModel = priceChart
+                $0.isPriceChartLoading = false
             }
         } catch {
             logger.error("WalletDataModel performFetchPriceChart error: \(error.localizedDescription)")
+            await update(.priceChart) {
+                $0.isPriceChartLoading = false
+            }
         }
     }
     private func performAlertCards() async {
@@ -492,6 +500,10 @@ actor WalletDataModel {
         await update(.balance) { $0.hideBalance = value }
     }
 
+    func updatePriceChartTimeFrame(_ timeFrame: ChartTimeFrame) async {
+        await update(.priceChart) { $0.priceChartTimeFrame = timeFrame }
+    }
+
     // finish all active continuations
     func shutdown() {
         logger.info("WalletDataModel shutdown")
@@ -552,7 +564,7 @@ extension WalletDataModel: NewNotificationDelegate {
         case .reconnected:
             logger.info("WalletDataModel reconnect")
             if !wm.isPaused() {
-                await triggerRefresh(features: [.balance, .txs(reset: true)])
+                await triggerRefresh(features: [.balance, .txs(reset: true), .priceChart])
             }
         case .tor:
             break

@@ -19,9 +19,6 @@ class TabHomeVM: TabViewModel {
     var assetAmountList: AssetAmountList? {
         state.assetAmountList
     }
-    var priceCache: PriceChartModel? {
-        state.priceCache
-    }
     var alertCards: [AlertCardType]  {
         state.alertCards
     }
@@ -30,6 +27,16 @@ class TabHomeVM: TabViewModel {
     }
     var balanceDisplayMode: BalanceDisplayMode  {
         state.balanceDisplayMode
+    }
+    var priceChartCellModel: PriceChartCellModel {
+        PriceChartCellModel(
+            priceChartModel: state.priceChartModel,
+            currency: state.priceChartModel?.currency,
+            isReloading: state.isPriceChartLoading,
+            showsBuyButton: true)
+    }
+    var priceChartTimeFrame: ChartTimeFrame {
+        state.priceChartTimeFrame
     }
     var defaultCurrency: String? {
         if let settings = wm.prominentSession?.settings {
@@ -42,6 +49,9 @@ class TabHomeVM: TabViewModel {
     }
     func hideBalance(_ value: Bool) async {
         try? await walletDataModel.hideBalance(value)
+    }
+    func updatePriceChartTimeFrame(_ timeFrame: ChartTimeFrame) async {
+        await walletDataModel.updatePriceChartTimeFrame(timeFrame)
     }
     func relogin() async throws {
         guard let credentials = try? await wm.prominentSession?.getCredentials(password: "") else {

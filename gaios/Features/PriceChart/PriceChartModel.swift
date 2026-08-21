@@ -1,11 +1,11 @@
 import Foundation
 
-struct ChartPoint {
+struct ChartPoint: Sendable {
     let ts: Double
     let value: Double
 }
 
-struct PriceChartModel: Codable {
+struct PriceChartModel: Codable, Sendable {
     var error: String?
     var currency: String
     var last_refresh: String

@@ -12,11 +12,9 @@ protocol DrawerNetworkSelectionDelegate: AnyObject {
 class DrawerNetworkSelectionViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var btnAbout: UIButton!
     @IBOutlet weak var btnSettings: UIButton!
     @IBOutlet weak var newWalletView: UIView!
     @IBOutlet weak var lblNewWallet: UILabel!
-    @IBOutlet weak var lblWallets: UILabel!
     @IBOutlet weak var btnAddWallet: UIButton!
     @IBOutlet weak var btnClose: UIButton!
 
@@ -26,26 +24,46 @@ class DrawerNetworkSelectionViewController: UIViewController {
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
     var isAnimating = false
+    private let priceChartViewModel = PriceChartViewModel()
+    private var activeToken: NSObjectProtocol?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setContent()
         setStyle()
-        tableView.register(UINib(nibName: "WalletListCell", bundle: nil), forCellReuseIdentifier: "WalletListCell")
+        ["WalletListCell", "PriceChartCell"].forEach {
+            tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
+        }
         view.accessibilityIdentifier = AccessibilityIds.DrawerScreen.view
         btnAddWallet.accessibilityIdentifier = AccessibilityIds.DrawerScreen.btnSetUpNewWallet
         btnClose.accessibilityIdentifier = AccessibilityIds.DrawerScreen.btnBack
+        refreshPriceChart()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        activeToken = NotificationCenter.default.addObserver(
+            forName: UIScene.didActivateNotification,
+            object: view.window?.windowScene,
+            queue: .main,
+            using: sceneDidActivate
+        )
         animateShortcut()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if let token = activeToken {
+            NotificationCenter.default.removeObserver(token)
+            activeToken = nil
+        }
     }
 
     func setContent() {
         lblNewWallet.text = "id_set_up_a_new_wallet".localized
-        lblWallets.text = "id_my_wallets".localized
     }
 
     func setStyle() {
@@ -55,7 +73,6 @@ class DrawerNetworkSelectionViewController: UIViewController {
         view.backgroundColor = UIColor.gBlackBg()
         tableView.backgroundColor = UIColor.gBlackBg()
         newWalletView.setStyle(CardStyle.defaultStyle)
-        lblWallets.textColor = UIColor.gGrayTxt()
     }
 
     func getWalletFromTableView(_ indexPath: IndexPath) -> Wallet? {
@@ -100,6 +117,21 @@ class DrawerNetworkSelectionViewController: UIViewController {
     @IBAction func btnClose(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
+
+    private func refreshPriceChart() {
+        Task { [weak self] in
+            guard let self else { return }
+            await self.priceChartViewModel.load()
+            await MainActor.run {
+                self.tableView.reloadData()
+            }
+        }
+    }
+
+    @objc private func sceneDidActivate(_ notification: Notification) {
+        refreshPriceChart()
+    }
+
 }
 
 extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableViewDelegate {
@@ -116,6 +148,8 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             return WalletsStorage.shared.ephs.count
         case .hwWallet:
             return WalletsStorage.shared.hwsVisible.count
+        case .chart:
+            return 1
         default:
             return 0
         }
@@ -156,6 +190,18 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                 cell.buttonView.accessibilityIdentifier = AccessibilityIds.CommonElements.cellWalletSelect(indexPath.row)
                 return cell
             }
+        case .chart:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: PriceChartCell.identifier, for: indexPath) as? PriceChartCell {
+                cell.configure(
+                    priceChartViewModel.cellModel(),
+                    timeFrame: priceChartViewModel.timeFrame,
+                    onBuy: nil,
+                    onNewFrame: { [weak self] timeFrame in
+                        self?.priceChartViewModel.timeFrame = timeFrame
+                    })
+                cell.selectionStyle = .none
+                return cell
+            }
         default:
             break
         }
@@ -167,19 +213,29 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         WalletsRepository.shared
             .get(for: wallet.id)?.activeNetworkIds.count ?? 0 > 0
     }
-
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0.1
+        switch HomeSection(rawValue: section) {
+        case .swWallet:
+            return headerH
+        case .chart:
+            return headerH
+        default:
+            return 0.1
+        }
     }
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
-
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return nil
+        switch HomeSection(rawValue: section) {
+        case .swWallet:
+            return headerView("id_my_wallets".localized)
+        case .chart:
+            return headerView("id_bitcoin_price".localized)
+        default:
+            return nil
+        }
     }
-
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
     }
@@ -187,21 +243,21 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
 
 extension DrawerNetworkSelectionViewController {
     func headerView(_ txt: String) -> UIView {
-        let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
-        section.backgroundColor = .clear
+        guard let tView = tableView else { return UIView(frame: .zero) }
+        let section = UIView(frame: CGRect(x: 0, y: 0, width: tView.frame.width, height: headerH))
+        section.backgroundColor = UIColor.gBlackBg()
         let title = UILabel(frame: .zero)
+        title.setStyle(.txtSectionHeader)
         title.text = txt
+        title.textColor = UIColor.gGrayTxt()
         title.numberOfLines = 0
-        title.setStyle(.txtBigger)
         title.translatesAutoresizingMaskIntoConstraints = false
         section.addSubview(title)
-
         NSLayoutConstraint.activate([
-            title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
+            title.centerYAnchor.constraint(equalTo: section.centerYAnchor, constant: 10.0),
             title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 25),
             title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -25)
         ])
-
         return section
     }
 }

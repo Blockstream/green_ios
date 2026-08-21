@@ -5,7 +5,7 @@ class PriceChartCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var btnBuy: UIButton!
-
+    @IBOutlet weak var btnWrap: UIView!
     @IBOutlet weak var btnD: UIButton!
     @IBOutlet weak var btnW: UIButton!
     @IBOutlet weak var btnM: UIButton!
@@ -79,6 +79,7 @@ class PriceChartCell: UITableViewCell {
 
         iconAsset.image = UIImage(named: "ntw_btc")
         lblAsset.text = "Bitcoin"
+        btnWrap.isHidden = !model.showsBuyButton
         isReloading = model.isReloading == true
         chart()
         loader.isHidden = !isReloading
@@ -86,7 +87,6 @@ class PriceChartCell: UITableViewCell {
     }
 
     func updateBtn(btn: UIButton, isSelected: Bool) {
-        btn.setTitleColor(isSelected ? .white : UIColor.gGrayTxt(), for: .normal)
         btn.backgroundColor = isSelected ? UIColor.gGrayCardBorder() : UIColor.clear
     }
     func chart() {

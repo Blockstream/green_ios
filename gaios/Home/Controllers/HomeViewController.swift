@@ -8,6 +8,7 @@ enum HomeSection: Int, CaseIterable {
     case swWallet
     case ephWallet
     case hwWallet
+    case chart
 }
 
 class HomeViewController: UIViewController {
@@ -15,13 +16,14 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var newWalletView: UIView!
     @IBOutlet weak var lblNewWallet: UILabel!
-    @IBOutlet weak var lblWallets: UILabel!
     @IBOutlet weak var btnNewWallet: UIButton!
 
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
 
     private var remoteAlert: RemoteAlert?
+    private let priceChartViewModel = PriceChartViewModel()
+    private var activeToken: NSObjectProtocol?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +31,7 @@ class HomeViewController: UIViewController {
         setContent()
         setStyle()
 
-        ["WalletListCell", "AlertCardCell"].forEach {
+        ["WalletListCell", "AlertCardCell", "PriceChartCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .home, networks: []).first
@@ -42,9 +44,37 @@ class HomeViewController: UIViewController {
         btnNewWallet.accessibilityIdentifier = AccessibilityIds.HomeScreen.btnSetUpNewWallet
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        Task { [weak self] in
+            guard let self else { return }
+            await self.priceChartViewModel.load()
+            self.tableView.reloadData()
+        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        activeToken = NotificationCenter.default.addObserver(
+            forName: UIScene.didActivateNotification,
+            object: view.window?.windowScene,
+            queue: .main,
+            using: sceneDidActivate
+        )
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if let token = activeToken {
+            NotificationCenter.default.removeObserver(token)
+            activeToken = nil
+        }
+    }
+
     func setContent() {
         lblNewWallet.text = "id_set_up_a_new_wallet".localized
-        lblWallets.text = "id_my_wallets".localized
     }
 
     func setStyle() {
@@ -53,8 +83,6 @@ class HomeViewController: UIViewController {
         }
         tableView.backgroundColor = UIColor.gBlackBg()
         newWalletView.setStyle(CardStyle.defaultStyle)
-        lblWallets.setStyle(.txtBigger)
-        lblWallets.textColor = UIColor.gGrayTxt()
     }
 
     func loadNavigationBtns() {
@@ -130,6 +158,14 @@ class HomeViewController: UIViewController {
             .get(for: wallet.id)?.activeNetworkIds.count ?? 0 > 0
     }
 
+    @objc private func sceneDidActivate(_ notification: Notification) {
+        Task { [weak self] in
+            guard let self else { return }
+            await self.priceChartViewModel.load()
+            self.tableView.reloadData()
+        }
+    }
+
     func onAbout() {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAboutViewController") as? DialogAboutViewController {
@@ -165,10 +201,22 @@ class HomeViewController: UIViewController {
 
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
+    private func canEditRow(at indexPath: IndexPath) -> Bool {
+        switch HomeSection(rawValue: indexPath.section) {
+        case .swWallet, .ephWallet, .hwWallet:
+            return true
+        default:
+            return false
+        }
+    }
+
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
+        return canEditRow(at: indexPath)
     }
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard canEditRow(at: indexPath) else {
+            return nil
+        }
         let renameTitle = "id_rename".localized
         let deleteTitle = "id_delete".localized
 
@@ -245,6 +293,8 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         switch HomeSection(rawValue: section) {
         case .remoteAlerts:
             return remoteAlert != nil ? 1 : 0
+        case .chart:
+            return 1
         case .swWallet:
             return WalletsStorage.shared.sws.count
         case .ephWallet:
@@ -267,6 +317,18 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                                onDismiss: {[weak self] in
                     self?.remoteAlertDismiss()
                 })
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .chart:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: PriceChartCell.identifier, for: indexPath) as? PriceChartCell {
+                cell.configure(
+                    priceChartViewModel.cellModel(),
+                    timeFrame: priceChartViewModel.timeFrame,
+                    onBuy: nil,
+                    onNewFrame: { [weak self] timeFrame in
+                        self?.priceChartViewModel.timeFrame = timeFrame
+                    })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -308,13 +370,27 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         return UITableViewCell()
     }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0.1
+        switch HomeSection(rawValue: section) {
+        case .swWallet:
+            return headerH
+        case .chart:
+            return headerH
+        default:
+            return 0.1
+        }
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return nil
+        switch HomeSection(rawValue: section) {
+        case .swWallet:
+            return headerView("id_my_wallets".localized)
+        case .chart:
+            return headerView("id_bitcoin_price".localized)
+        default:
+            return nil
+        }
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     }
@@ -322,16 +398,18 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension HomeViewController {
     func headerView(_ txt: String) -> UIView {
-        let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
-        section.backgroundColor = .clear
+        guard let tView = tableView else { return UIView(frame: .zero) }
+        let section = UIView(frame: CGRect(x: 0, y: 0, width: tView.frame.width, height: headerH))
+        section.backgroundColor = UIColor.gBlackBg()
         let title = UILabel(frame: .zero)
+        title.setStyle(.txtSectionHeader)
         title.text = txt
+        title.textColor = UIColor.gGrayTxt()
         title.numberOfLines = 0
-        title.setStyle(.txtBigger)
         title.translatesAutoresizingMaskIntoConstraints = false
         section.addSubview(title)
         NSLayoutConstraint.activate([
-            title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
+            title.centerYAnchor.constraint(equalTo: section.centerYAnchor, constant: 10.0),
             title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 25),
             title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -25)
         ])

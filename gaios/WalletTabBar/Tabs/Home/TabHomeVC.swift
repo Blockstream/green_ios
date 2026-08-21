@@ -7,7 +7,6 @@ class TabHomeVC: TabViewController {
     private let viewModel: TabHomeVM
     private lazy var transactActionsCoordinator = TransactActionsCoordinator(viewController: self, dataSource: viewModel)
     @IBOutlet weak var tableView: UITableView?
-    var timeFrame: ChartTimeFrame = .day
 
     init?(coder: NSCoder, viewModel: TabHomeVM) {
         self.viewModel = viewModel
@@ -45,7 +44,12 @@ class TabHomeVC: TabViewController {
 
     func onUpdate(feature: RefreshFeature?) {
         switch feature {
-        case .alertCards, .promos, .balance, .subaccounts, .priceChart, .settings:
+        case .priceChart:
+            if tableView?.refreshControl?.isRefreshing == true {
+                tableView?.refreshControl?.endRefreshing()
+            }
+            tableView?.reloadData()
+        case .alertCards, .promos, .balance, .subaccounts, .settings:
             if tableView?.refreshControl?.isRefreshing == true {
                 tableView?.refreshControl?.endRefreshing()
             }
@@ -74,6 +78,7 @@ class TabHomeVC: TabViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        refreshPriceChart()
         if let url = URLSchemeManager.shared.url {
             URLSchemeManager.shared.url = nil
             transactActionsCoordinator.send(input: url.absoluteString)
@@ -100,6 +105,9 @@ class TabHomeVC: TabViewController {
         Task { @MainActor [weak self] in
             self?.viewModel.refresh(features: [.promos])
         }
+    }
+    private func refreshPriceChart() {
+        viewModel.refresh(features: [.priceChart])
     }
 }
 
@@ -383,15 +391,12 @@ extension TabHomeVC: UITableViewDelegate, UITableViewDataSource {
         case .chart:
             if let cell = tableView.dequeueReusableCell(withIdentifier: PriceChartCell.identifier, for: indexPath) as? PriceChartCell {
                 cell.configure(
-                    PriceChartCellModel(
-                        priceChartModel: viewModel.priceCache,
-                        currency: Api.shared.currency,
-                        isReloading: viewModel.priceCache == nil),
-                    timeFrame: timeFrame,
+                    viewModel.priceChartCellModel,
+                    timeFrame: viewModel.priceChartTimeFrame,
                     onBuy: {[weak self] in
                         self?.buy()
                     }, onNewFrame: {[weak self] timeFrame in
-                        self?.timeFrame = timeFrame
+                        Task { await self?.viewModel.updatePriceChartTimeFrame(timeFrame) }
                     })
                 cell.selectionStyle = .none
                 return cell
