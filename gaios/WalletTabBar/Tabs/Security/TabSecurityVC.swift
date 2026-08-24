@@ -35,6 +35,8 @@ class TabSecurityVC: TabViewController {
                 tableView?.refreshControl?.endRefreshing()
             }
             tableView?.reloadData()
+            let needsBackup = BackupHelper.shared.needsBackup(walletId: viewModel.mainWallet.id)
+            walletTab.setSecurityState(needsBackup ? .alerted : .normal)
         default:
             break
         }
@@ -42,6 +44,7 @@ class TabSecurityVC: TabViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView.reloadData()
+        viewModel.refresh(features: [.security])
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -242,7 +245,11 @@ extension TabSecurityVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.security[section].items.count
+        let sectionModel = viewModel.security[section]
+        if sectionModel.section == .backup {
+            return viewModel.backupCards.count
+        }
+        return sectionModel.items.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

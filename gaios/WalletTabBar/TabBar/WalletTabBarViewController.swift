@@ -97,7 +97,12 @@ class WalletTabBarViewController: UITabBarController {
         let viewControllers = [tabHomeVC, tabTransactVC, tabSecurityVC, tabSettingsVC]
         self.setViewControllers(viewControllers, animated: false)
         delegate = self
-        setSecurityState(BackupHelper.shared.needsBackup(walletId: mainWallet.id) ? .alerted : .normal)
+        
+        var needsBackup = BackupHelper.shared.needsBackup(walletId: mainWallet.id)
+        if walletTabBarModel.isCreated && !wm.isHW && !wm.isWatchonly {
+            needsBackup = true
+        }
+        setSecurityState(needsBackup ? .alerted : .normal)
     }
     func changeTab(_ tab: WalletTab) {
         self.selectedIndex = tab.rawValue
