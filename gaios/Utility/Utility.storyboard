@@ -18,53 +18,31 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Tnr-cR-0Ff">
-                                <rect key="frame" x="0.0" y="118" width="393" height="734"/>
+                                <rect key="frame" x="0.0" y="118" width="393" height="666"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="0Bp-bn-UwN" id="3VC-uh-Wec"/>
                                     <outlet property="delegate" destination="0Bp-bn-UwN" id="ytu-6H-oEl"/>
                                 </connections>
                             </tableView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bg_actions" translatesAutoresizingMaskIntoConstraints="NO" id="tnv-81-tmW">
-                                <rect key="frame" x="0.0" y="660" width="393" height="192"/>
-                            </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N3g-YR-hja" userLabel="btn_advanced">
-                                <rect key="frame" x="20" y="745" width="353" height="29"/>
-                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
-                                <inset key="titleEdgeInsets" minX="5" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="btn_mode">
-                                    <color key="titleColor" name="gGreenMatrix"/>
-                                </state>
-                                <connections>
-                                    <action selector="btnAdvanced:" destination="0Bp-bn-UwN" eventType="touchUpInside" id="BuF-7R-ULs"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="cc0-IF-Wck"/>
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="cc0-IF-Wck" firstAttribute="trailing" secondItem="Tnr-cR-0Ff" secondAttribute="trailing" id="6ho-wf-9Bj"/>
-                            <constraint firstItem="cc0-IF-Wck" firstAttribute="bottom" secondItem="N3g-YR-hja" secondAttribute="bottom" constant="10" id="8PN-5i-dXd"/>
-                            <constraint firstItem="tnv-81-tmW" firstAttribute="trailing" secondItem="Tnr-cR-0Ff" secondAttribute="trailing" id="Bbf-ZV-Duo"/>
-                            <constraint firstItem="tnv-81-tmW" firstAttribute="leading" secondItem="Tnr-cR-0Ff" secondAttribute="leading" id="K9W-Mn-9Mg"/>
-                            <constraint firstItem="N3g-YR-hja" firstAttribute="leading" secondItem="cc0-IF-Wck" secondAttribute="leading" constant="20" id="Sg4-aJ-vDO"/>
-                            <constraint firstItem="cc0-IF-Wck" firstAttribute="trailing" secondItem="N3g-YR-hja" secondAttribute="trailing" constant="20" id="Xep-ks-yj6"/>
-                            <constraint firstItem="tnv-81-tmW" firstAttribute="bottom" secondItem="Tnr-cR-0Ff" secondAttribute="bottom" id="hi6-Cr-6kp"/>
+                            <constraint firstItem="cc0-IF-Wck" firstAttribute="bottom" secondItem="Tnr-cR-0Ff" secondAttribute="bottom" id="e4q-o6-6JV"/>
                             <constraint firstItem="Tnr-cR-0Ff" firstAttribute="top" secondItem="cc0-IF-Wck" secondAttribute="top" id="im1-By-r7M"/>
-                            <constraint firstAttribute="bottom" secondItem="Tnr-cR-0Ff" secondAttribute="bottom" id="nXH-R9-HRX"/>
                             <constraint firstItem="Tnr-cR-0Ff" firstAttribute="leading" secondItem="cc0-IF-Wck" secondAttribute="leading" id="vLN-bQ-unk"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Vss-F0-VMY"/>
                     <connections>
-                        <outlet property="btnAdvanced" destination="N3g-YR-hja" id="20m-9a-ine"/>
                         <outlet property="tableView" destination="Tnr-cR-0Ff" id="K4N-Cz-NPA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o4m-jx-0gn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3186" y="1559"/>
+            <point key="canvasLocation" x="3184" y="1558"/>
         </scene>
         <!--Asset Select View Controller-->
         <scene sceneID="egO-l5-uY8">
@@ -314,7 +292,7 @@
                                                                                 </constraints>
                                                                             </view>
                                                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="F1G-l1-9Ag">
-                                                                                <rect key="frame" x="0.0" y="52.000000000000028" width="393" height="484.33333333333337"/>
+                                                                                <rect key="frame" x="0.0" y="51.999999999999972" width="393" height="484.33333333333326"/>
                                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <connections>
                                                                                     <outlet property="dataSource" destination="pnX-Bd-wI6" id="WXX-qy-nuM"/>
@@ -565,7 +543,7 @@
                                                                                 <nil key="highlightedColor"/>
                                                                             </label>
                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JlP-dt-L4H">
-                                                                                <rect key="frame" x="36" y="231.66666666666669" width="321" height="19.333333333333343"/>
+                                                                                <rect key="frame" x="36" y="231.66666666666663" width="321" height="19.333333333333343"/>
                                                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <nil key="highlightedColor"/>
@@ -867,7 +845,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="bg_actions" width="375" height="192"/>
         <image name="cancel" width="14" height="14"/>
         <image name="ic_hww_arrow" width="60" height="60"/>
         <image name="ic_search" width="16.666666030883789" height="16.666666030883789"/>
@@ -877,9 +854,6 @@
         </namedColor>
         <namedColor name="gGrayCard">
             <color red="0.094117647058823528" green="0.094117647058823528" blue="0.094117647058823528" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="gGreenMatrix">
-            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

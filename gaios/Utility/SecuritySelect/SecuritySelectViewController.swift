@@ -1,11 +1,9 @@
 import UIKit
 import core
 
-
 enum SecuritySelectSection: Int, CaseIterable {
     case asset
     case policy
-    case footer
 }
 
 protocol SecuritySelectViewControllerDelegate: AnyObject {
@@ -14,53 +12,45 @@ protocol SecuritySelectViewControllerDelegate: AnyObject {
 }
 
 class SecuritySelectViewController: UIViewController {
-
-    enum FooterType {
-        case noTransactions
-        case none
-    }
-
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var btnAdvanced: UIButton!
 
-    private var headerH: CGFloat = 54.0
-    private var footerH: CGFloat = 54.0
+    private let headerH: CGFloat = 54.0
+
+    weak var delegate: SecuritySelectViewControllerDelegate?
 
     var viewModel: SecuritySelectViewModel!
-    weak var delegate: SecuritySelectViewControllerDelegate?
-    var visibilityState: Bool = false
     var dialogJadeCheckViewController: DialogJadeCheckViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         viewModel.unarchiveCreateDialog = unarchiveCreateDialog
 
-        ["PolicyCell", "AssetSelectCell" ].forEach {
+        ["PolicyCell", "AssetSelectCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
 
         setContent()
-        setStyle()
 
         let wallet = WalletsStorage.shared.current
         AnalyticsManager.shared.recordView(.addAccountChooseType, sgmt: AnalyticsManager.shared.sessSgmt(wallet))
     }
 
+    func setContent() {
+        title = "id_create_new_account".localized
+    }
+
     func unarchiveCreateDialog(completion: @escaping (Bool) -> Void) {
-        let alert = UIAlertController(title: "id_archived_account".localized,
-                                          message: "id_there_is_already_an_archived".localized,
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "id_unarchive_account".localized,
-                                          style: .cancel) { (_: UIAlertAction) in
-                completion(false)
-            })
-            alert.addAction(UIAlertAction(title: "id_create".localized,
-                                          style: .default) { (_: UIAlertAction) in
-                completion(true)
-            })
-            DispatchQueue.main.async {
-                self.present(alert, animated: true, completion: nil)
-            }
+        let alert = UIAlertController(title: "id_archived_account".localized, message: "id_there_is_already_an_archived".localized, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "id_unarchive_account".localized, style: .cancel) { (_: UIAlertAction) in
+            completion(false)
+        })
+        alert.addAction(UIAlertAction(title: "id_create".localized, style: .default) { (_: UIAlertAction) in
+            completion(true)
+        })
+        DispatchQueue.main.async {
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 
     @MainActor
@@ -73,26 +63,9 @@ class SecuritySelectViewController: UIViewController {
             }
         }
     }
-
-    func setContent() {
-        title = "id_create_new_account".localized
-        btnAdvanced.setTitle( visibilityState ? "id_hide_advanced_options".localized : "id_show_advanced_options".localized, for: .normal)
-    }
-
-    func setStyle() {
-        btnAdvanced.setStyle(.inline)
-    }
-
-    @IBAction func btnAdvanced(_ sender: Any) {
-        viewModel?.showAll.toggle()
-        reloadSections([.policy], animated: true)
-        visibilityState = !visibilityState
-        setContent()
-    }
 }
 
 extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSource {
-
     func numberOfSections(in tableView: UITableView) -> Int {
         return SecuritySelectSection.allCases.count
     }
@@ -110,9 +83,6 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-        btnAdvanced.isHidden = !viewModel.isAdvancedEnable()
-
         switch SecuritySelectSection(rawValue: indexPath.section) {
         case .asset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AssetSelectCell.identifier, for: indexPath) as? AssetSelectCell,
@@ -142,17 +112,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         }
     }
 
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        switch SecuritySelectSection(rawValue: section) {
-        case .footer:
-            return 100.0
-        default:
-            return 0.1
-        }
-    }
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-
         switch SecuritySelectSection(rawValue: indexPath.section) {
         default:
             return UITableView.automaticDimension
@@ -160,21 +120,13 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-
         switch SecuritySelectSection(rawValue: section) {
         case .asset:
-            return headerView( "id_asset".localized )
+            return headerView("id_asset".localized)
         case .policy:
-            return headerView("id_security_policy".localized )
+            return headerView("id_security_policy".localized)
         default:
             return nil
-        }
-    }
-
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        switch SecuritySelectSection(rawValue: section) {
-        default:
-            return footerView(.none)
         }
     }
 
@@ -186,7 +138,6 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
         switch SecuritySelectSection(rawValue: indexPath.section) {
         case .asset:
             let storyboard = UIStoryboard(name: "Utility", bundle: nil)
@@ -280,9 +231,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
 }
 
 extension SecuritySelectViewController {
-
     func headerView(_ txt: String) -> UIView {
-
         let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
         section.backgroundColor = UIColor.clear
         let title = UILabel(frame: .zero)
@@ -301,16 +250,6 @@ extension SecuritySelectViewController {
         ])
 
         return section
-    }
-
-    func footerView(_ type: FooterType) -> UIView {
-
-        switch type {
-        default:
-            let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 1.0))
-            section.backgroundColor = .clear
-            return section
-        }
     }
 }
 

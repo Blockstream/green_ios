@@ -44,39 +44,15 @@ class SecuritySelectViewModel {
 
     var unarchiveCreateDialog: (( @escaping (Bool) -> Void) -> Void)?
 
-    var showAll = false
-    var hasBTCMultisig: Bool { wm.hasBTCMultisig }
-    var hasLiquidMultisig: Bool { wm.hasMultisig }
 
-    func listBitcoin(extended: Bool) -> [PolicyCellType] {
-        var list: [PolicyCellType] = [.NativeSegwit, .LegacySegwit, .TwoFAProtected, .TwoOfThreeWith2FA]
-        if !extended {
-            list = [.NativeSegwit, .LegacySegwit]
-        }
-        return list
+    var listBitcoin: [PolicyCellType] {
+        return [.NativeSegwit, .LegacySegwit, .TwoOfThreeWith2FA, .TwoFAProtected]
     }
 
-    func listLiquid(extended: Bool) -> [PolicyCellType] {
-        var list: [PolicyCellType] = [.NativeSegwit, .LegacySegwit, .TwoFAProtected]
-        if !extended {
-            list = [.NativeSegwit, .LegacySegwit]
-        }
-        return list
+    var listLiquid: [PolicyCellType] {
+        return [.NativeSegwit, .LegacySegwit, .TwoFAProtected]
     }
 
-    func isAdvancedEnable() -> Bool {
-        if anyLiquidAmpAsset || anyLiquidAmpLegacyAsset { // any amp liquid asset
-            return false
-        } else if anyLiquidAsset { // any liquid asset
-            return hasLiquidMultisig
-        } else if AssetInfo.btcId == asset { // btc
-            return hasBTCMultisig
-        } else if let asset = asset, let asset = WalletManager.current?.info(for: asset), asset.amp ?? false { // amp liquid asset
-            return false
-        } else { // liquid
-            return hasLiquidMultisig
-        }
-    }
 
     func resetSelection() {
         anyLiquidAsset = false
@@ -88,23 +64,22 @@ class SecuritySelectViewModel {
         return wm.hasLightning
     }
 
-    /// cell models
     func getPolicyCellModels() -> [PolicyCellModel] {
-        let policies = policiesForAsset(extended: showAll)
+        let policies = policiesForAsset()
         return policies.map { PolicyCellModel.from(policy: $0) }
     }
 
-    func policiesForAsset(extended: Bool) -> [PolicyCellType] {
+    func policiesForAsset() -> [PolicyCellType] {
         if anyLiquidAmpAsset || anyLiquidAmpLegacyAsset { // any amp liquid asset
             return [.Amp]
         } else if anyLiquidAsset { // any liquid asset
-            return listLiquid(extended: extended)
+            return listLiquid
         } else if AssetInfo.btcId == asset { // btc
-            return listBitcoin(extended: extended)
+            return listBitcoin
         } else if let asset = asset, let asset = WalletManager.current?.info(for: asset), asset.amp ?? false { // amp liquid asset
             return [.Amp]
         } else { // liquid
-            return listLiquid(extended: extended)
+            return listLiquid
         }
     }
 
@@ -234,7 +209,4 @@ class SecuritySelectViewModel {
         return "\(type.string)\(network)"
     }
 
-    var linkMore: String {
-        return "https://help.blockstream.com/hc/en-us/articles/23020279153177"
-    }
 }
