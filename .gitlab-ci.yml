@@ -211,7 +211,7 @@ upload_apple_store:
   - echo "https://storage.googleapis.com/$URLPATH/index.html"
 
 cp_gcloud_development:
-  image: harbor.blockstream.io/google/blockstream/public/gcloud-docker-tf:27.3-1.9.8
+  image: harbor.blockstream.io/google/blockstream/public/gcloud-docker-tf:27.3-1.9.8-r1
   needs: ["distribute_development"]
   tags:
     - ga
@@ -223,7 +223,7 @@ cp_gcloud_development:
     - *cp_gcloud
 
 cp_gcloud_production:
-  image: harbor.blockstream.io/google/blockstream/public/gcloud-docker-tf:27.3-1.9.8
+  image: harbor.blockstream.io/google/blockstream/public/gcloud-docker-tf:27.3-1.9.8-r1
   needs: ["distribute_production"]
   tags:
     - ga
@@ -260,7 +260,7 @@ cp_gcloud_production:
 # E2E Upload Template
 .e2e_upload_template:
   stage: e2e
-  image: harbor.blockstream.io/google/blockstream/public/gcloud-docker-tf:27.3-1.9.8
+  image: harbor.blockstream.io/google/blockstream/public/gcloud-docker-tf:27.3-1.9.8-r1
   tags:
     - ga
   script:
