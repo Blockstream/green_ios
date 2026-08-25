@@ -20,7 +20,7 @@ class DialogCustomFeeViewController: KeyboardViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var lblCustomFeeTitle: UILabel!
     @IBOutlet weak var lblCustomFeeHint: UILabel!
-    @IBOutlet weak var feeTextField: UITextField!
+    @IBOutlet weak var feeTextField: DecimalTextField!
     @IBOutlet weak var btnSave: UIButton!
 
     @IBOutlet weak var submitBottom: NSLayoutConstraint!
@@ -74,7 +74,7 @@ class DialogCustomFeeViewController: KeyboardViewController {
             self.view.alpha = 1.0
             self.view.layoutIfNeeded()
         }
-        feeTextField.delegate = self
+        feeTextField.maxDecimalsProvider = { [weak self] in self?.feeRateDecimals }
         feeTextField.becomeFirstResponder()
         feeTextField.keyboardType = .decimalPad
         feeTextField.attributedPlaceholder = NSAttributedString(string: String(Double(feeRate ?? 1000) / 1000),
@@ -182,30 +182,5 @@ class DialogCustomFeeViewController: KeyboardViewController {
 
     @IBAction func btnSave(_ sender: Any) {
         validate()
-    }
-}
-extension DialogCustomFeeViewController: UITextFieldDelegate {
-    func textField(
-        _ textField: UITextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String
-    ) -> Bool {
-        let currentText = textField.text ?? ""
-        guard let range = Range(range, in: currentText) else { return false }
-
-        let proposedValue = currentText.replacingCharacters(in: range, with: string)
-        let sanitizedValue = DecimalInputSanitizer.sanitize(
-            text: proposedValue,
-            maxDecimals: feeRateDecimals
-        )
-
-        guard sanitizedValue != proposedValue else { return true }
-
-        if sanitizedValue != currentText {
-            textField.text = sanitizedValue
-            textField.sendActions(for: .editingChanged)
-        }
-        
-        return false
     }
 }

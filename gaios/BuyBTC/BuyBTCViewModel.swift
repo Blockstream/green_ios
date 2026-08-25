@@ -77,7 +77,7 @@ class BuyBTCViewModel {
     }
     var isJade: Bool { mainWallet?.isJade ?? false }
     func quote(_ amountStr: String) async throws -> [MeldQuoteItem] {
-        let amt = amountStr.replacingOccurrences(of: ",", with: ".")
+        let amt = apiAmount(amountStr)
         let params = MeldQuoteParams(
             destinationCurrencyCode: "BTC",
             countryCode: countryCode(),
@@ -127,7 +127,7 @@ class BuyBTCViewModel {
             .replacingOccurrences(of: "\\", with: "")
     }
     func widget(quote: MeldQuoteItem, amountStr: String) async throws -> String {
-        let amt = amountStr.replacingOccurrences(of: ",", with: ".")
+        let amt = apiAmount(amountStr)
         guard let addressStr = address?.address else {
             throw GaError.GenericError("id_invalid_address".localized)
         }
@@ -148,6 +148,10 @@ class BuyBTCViewModel {
             sessionType: MeldTransactionType.BUY.rawValue,
             externalCustomerId: mainWallet?.xpubHashId ?? "")
         return try await meld.widget(params)
+    }
+
+    private func apiAmount(_ amount: String) -> String {
+        amount.replacingOccurrences(of: DecimalInputSanitizer.separator, with: ".")
     }
     func verifyOnDeviceViewModel() -> HWDialogVerifyOnDeviceViewModel? {
         guard let addressStr = address?.address else { return nil }

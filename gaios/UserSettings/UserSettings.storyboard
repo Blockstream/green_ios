@@ -863,7 +863,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ATM-sF-aud">
                                 <rect key="frame" x="25" y="84" width="343" height="61"/>
                                 <subviews>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="7P8-OH-h8e">
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="7P8-OH-h8e" customClass="DecimalTextField" customModule="gaios" customModuleProvider="target">
                                         <rect key="frame" x="70" y="2" width="213" height="57"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="57" id="nbV-x1-brg"/>

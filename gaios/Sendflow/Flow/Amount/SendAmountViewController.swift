@@ -18,7 +18,7 @@ class SendAmountViewController: KeyboardViewController {
     @IBOutlet weak var lblMultiError: UILabel!
 
     @IBOutlet weak var textBg: UIView!
-    @IBOutlet weak var amountField: UITextField!
+    @IBOutlet weak var amountField: DecimalTextField!
     @IBOutlet weak var btnNext: UIButton!
     @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     @IBOutlet weak var btnClear: UIButton!
@@ -170,9 +170,9 @@ class SendAmountViewController: KeyboardViewController {
             $0.cornerRadius = 4.0
         }
     }
-    
+
     func setAmountField() {
-        amountField.delegate = self
+        amountField.maxDecimalsProvider = { [weak self] in self?.viewModel.maxDecimals }
         amountField.keyboardType = .decimalPad
         amountField.addTarget(
             self,
@@ -180,7 +180,7 @@ class SendAmountViewController: KeyboardViewController {
             for: .editingChanged
         )
     }
-    
+
     @MainActor
     func reloadNavigationBar() {
         if let titleView = Bundle.main.loadNibNamed("SendTitleView", owner: self, options: nil)?.first as? SendTitleView {
@@ -340,31 +340,6 @@ extension SendAmountViewController: SendDialogFeeViewControllerProtocol {
         Task { [weak self] in
             try await self?.viewModel.validate()
         }
-    }
-}
-extension SendAmountViewController: UITextFieldDelegate {
-    func textField(
-        _ textField: UITextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String
-    ) -> Bool {
-        let currentText = textField.text ?? ""
-        guard let range = Range(range, in: currentText) else { return false }
-
-        let proposedValue = currentText.replacingCharacters(in: range, with: string)
-        let sanitizedValue = DecimalInputSanitizer.sanitize(
-            text: proposedValue,
-            maxDecimals: viewModel.maxDecimals
-        )
-
-        guard sanitizedValue != proposedValue else { return true }
-
-        if sanitizedValue != currentText {
-            textField.text = sanitizedValue
-            textField.sendActions(for: .editingChanged)
-        }
-        
-        return false
     }
 }
 extension SendAmountViewController: DialogLiquidAssetToFiatViewControllerDelegate {

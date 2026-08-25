@@ -26,7 +26,7 @@ class DialogAmountViewController: KeyboardViewController {
     @IBOutlet weak var scrollView: UIScrollView!
 
     @IBOutlet weak var lblHint: UILabel!
-    @IBOutlet weak var amountTextField: UITextField!
+    @IBOutlet weak var amountTextField: DecimalTextField!
     @IBOutlet weak var lblDenom: UILabel!
     @IBOutlet weak var btnFiat: UIButton!
     @IBOutlet weak var btnClear: UIButton!
@@ -63,8 +63,8 @@ class DialogAmountViewController: KeyboardViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        amountTextField.delegate = self
+
+        amountTextField.maxDecimalsProvider = { [weak self] in self?.maxDecimals }
         amountTextField.keyboardType = .decimalPad
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00".localeFormattedString(2), attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
         if let satoshi = prefill {
@@ -260,30 +260,5 @@ class DialogAmountViewController: KeyboardViewController {
 
     @IBAction func btnConfirm(_ sender: Any) {
         dismiss(.confirm)
-    }
-}
-extension DialogAmountViewController: UITextFieldDelegate {
-    func textField(
-        _ textField: UITextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String
-    ) -> Bool {
-        let currentText = textField.text ?? ""
-        guard let range = Range(range, in: currentText) else { return false }
-
-        let proposedValue = currentText.replacingCharacters(in: range, with: string)
-        let sanitizedValue = DecimalInputSanitizer.sanitize(
-            text: proposedValue,
-            maxDecimals: maxDecimals
-        )
-
-        guard sanitizedValue != proposedValue else { return true }
-
-        if sanitizedValue != currentText {
-            textField.text = sanitizedValue
-            textField.sendActions(for: .editingChanged)
-        }
-        
-        return false
     }
 }

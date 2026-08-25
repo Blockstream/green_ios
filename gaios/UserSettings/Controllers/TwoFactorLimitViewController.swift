@@ -2,11 +2,10 @@ import Foundation
 import UIKit
 import core
 
-
 class TwoFactorLimitViewController: KeyboardViewController {
 
     @IBOutlet weak var bg: UIView!
-    @IBOutlet weak var limitTextField: UITextField!
+    @IBOutlet weak var limitTextField: DecimalTextField!
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var fiatButton: UIButton!
     @IBOutlet weak var descriptionLabel: UILabel!
@@ -50,6 +49,10 @@ class TwoFactorLimitViewController: KeyboardViewController {
         title = "id_twofactor_threshold".localized
         nextButton.setTitle("id_set_twofactor_threshold".localized, for: .normal)
         nextButton.addTarget(self, action: #selector(nextClick), for: .touchUpInside)
+        limitTextField.maxDecimalsProvider = { [weak self] in
+            guard let self else { return nil }
+            return self.isFiat ? 2 : Int(self.denomination.digits)
+        }
         limitTextField.becomeFirstResponder()
         limitTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         setStyle()

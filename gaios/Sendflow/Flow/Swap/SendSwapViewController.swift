@@ -11,7 +11,7 @@ class SendSwapViewController: UIViewController {
     @IBOutlet weak var assetSelectorFrom: UIStackView!
     @IBOutlet weak var iconAssetFrom: UIImageView!
     @IBOutlet weak var lblAssetFrom: UILabel!
-    @IBOutlet weak var fieldFrom: UITextField!
+    @IBOutlet weak var fieldFrom: DecimalTextField!
     @IBOutlet weak var btnDenomFrom: UIButton!
     @IBOutlet weak var lblAvailableFrom: UILabel!
     @IBOutlet weak var lblFiatFrom: UILabel!
@@ -21,7 +21,7 @@ class SendSwapViewController: UIViewController {
     @IBOutlet weak var assetSelectorTo: UIStackView!
     @IBOutlet weak var iconAssetTo: UIImageView!
     @IBOutlet weak var lblAssetTo: UILabel!
-    @IBOutlet weak var fieldTo: UITextField!
+    @IBOutlet weak var fieldTo: DecimalTextField!
     @IBOutlet weak var btnDenomTo: UIButton!
     @IBOutlet weak var lblAvailableTo: UILabel!
     @IBOutlet weak var lblFiatTo: UILabel!
@@ -259,8 +259,9 @@ class SendSwapViewController: UIViewController {
         lblError.setStyle(.txtSmaller)
     }
     func setBindings() {
+        fieldFrom.maxDecimalsProvider = { [weak self] in self?.viewModel.maxDecimals(for: .from) }
+        fieldTo.maxDecimalsProvider = { [weak self] in self?.viewModel.maxDecimals(for: .to) }
         [fieldFrom, fieldTo].forEach {
-            $0.delegate = self
             $0.keyboardType = .decimalPad
             $0.addTarget(self, action: #selector(SendSwapViewController.textFieldDidChange(_:)), for: .editingChanged)
         }
@@ -419,31 +420,5 @@ extension SendSwapViewController: SendSwapAssetSelectorViewControllerDelegate {
     }
     func didCancel(_ selector: SwapAssetSelectorViewController) {
         resumeEditing()
-    }
-}
-extension SendSwapViewController: UITextFieldDelegate {
-    func textField(
-        _ textField: UITextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String
-    ) -> Bool {
-        let currentText = textField.text ?? ""
-        guard let range = Range(range, in: currentText) else { return false }
-
-        let position: SwapPositionEnum = textField == fieldFrom ? .from : .to
-        let proposedValue = currentText.replacingCharacters(in: range, with: string)
-        let sanitizedValue = DecimalInputSanitizer.sanitize(
-            text: proposedValue,
-            maxDecimals: viewModel.maxDecimals(for: position)
-        )
-
-        guard sanitizedValue != proposedValue else { return true }
-
-        if sanitizedValue != currentText {
-            textField.text = sanitizedValue
-            textField.sendActions(for: .editingChanged)
-        }
-        
-        return false
     }
 }

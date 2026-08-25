@@ -22,7 +22,7 @@ class SendAmountViewControllerLegacy: KeyboardViewController {
     @IBOutlet weak var lblMinMax: UILabel!
 
     @IBOutlet weak var textBg: UIView!
-    @IBOutlet weak var amountField: UITextField!
+    @IBOutlet weak var amountField: DecimalTextField!
     @IBOutlet weak var btnNext: UIButton!
     @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     @IBOutlet weak var btnClear: UIButton!
@@ -190,9 +190,9 @@ class SendAmountViewControllerLegacy: KeyboardViewController {
         lblAvailable.text = "Available:".localized
         btnChangeSpeed.setTitle("id_change_speed".localized, for: .normal)
     }
-    
+
     func setAmountField() {
-        amountField.delegate = self
+        amountField.maxDecimalsProvider = { [weak self] in self?.viewModel.maxDecimals }
         amountField.keyboardType = .decimalPad
         amountField.addTarget(
             self,
@@ -664,31 +664,6 @@ extension SendAmountViewControllerLegacy: SendDialogFeeViewControllerProtocol {
             await self?.validate()
             self?.reloadAmount()
         }
-    }
-}
-extension SendAmountViewControllerLegacy: UITextFieldDelegate {
-    func textField(
-        _ textField: UITextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String
-    ) -> Bool {
-        let currentText = textField.text ?? ""
-        guard let range = Range(range, in: currentText) else { return false }
-
-        let proposedValue = currentText.replacingCharacters(in: range, with: string)
-        let sanitizedValue = DecimalInputSanitizer.sanitize(
-            text: proposedValue,
-            maxDecimals: viewModel.maxDecimals
-        )
-        
-        guard sanitizedValue != proposedValue else { return true }
-
-        if sanitizedValue != currentText {
-            textField.text = sanitizedValue
-            textField.sendActions(for: .editingChanged)
-        }
-        
-        return false
     }
 }
 extension SendAmountViewControllerLegacy: DialogLiquidAssetToFiatViewControllerDelegate {

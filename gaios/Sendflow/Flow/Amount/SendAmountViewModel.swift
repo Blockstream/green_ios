@@ -91,7 +91,7 @@ final class SendAmountViewModel {
         }
         return true
     }
-    
+
     var maxDecimals: Int {
         if isFiat { return 2 }
         if AssetInfo.baseIds.contains(assetId) {

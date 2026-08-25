@@ -134,7 +134,7 @@ class SendAmountViewModelLegacy {
     var fiatCurrency: String? {
         Balance.fromSatoshi(Int64(0), assetId: assetId)?.toFiat().1
     }
-    
+
     var maxDecimals: Int {
         if isFiat { return 2 }
         if AssetInfo.baseIds.contains(assetId) {

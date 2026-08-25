@@ -26,7 +26,7 @@ class BuyBTCViewController: KeyboardViewController {
     @IBOutlet weak var bgProvider: UIView!
 
     @IBOutlet weak var btnAmountClean: UIButton!
-    @IBOutlet weak var amountTextField: UITextField!
+    @IBOutlet weak var amountTextField: DecimalTextField!
     @IBOutlet weak var lblFiat: UILabel!
     @IBOutlet weak var lblDenom: UILabel!
     @IBOutlet weak var tiersView: UIView!
@@ -144,13 +144,13 @@ class BuyBTCViewController: KeyboardViewController {
             bgBackup.isHidden = true
         }
     }
-    
+
     func setAmountField() {
-        amountTextField.delegate = self
+        amountTextField.maxDecimalsProvider = { [weak self] in self?.viewModel.maxDecimals }
         amountTextField.keyboardType = .decimalPad
         amountTextField.addTarget(self, action: #selector(BuyBTCViewController.textFieldDidChange(_:)),for: .editingChanged)
     }
-    
+
     func reload() {
         viewProvider.isHidden = viewModel.showNoQuotes
         viewNoQuotes.isHidden = !viewModel.showNoQuotes
@@ -473,32 +473,6 @@ extension BuyBTCViewController {
         guard amountTextField.text != nil else { return }
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.triggerTextChange), object: nil)
         perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0.7)
-    }
-}
-extension BuyBTCViewController: UITextFieldDelegate {
-    func textField(
-        _ textField: UITextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String
-    ) -> Bool {
-        let currentText = textField.text ?? ""
-        guard let range = Range(range, in: currentText) else { return false }
-        
-        let proposedValue = currentText.replacingCharacters(in: range, with: string)
-        let sanitizedValue = DecimalInputSanitizer.sanitize(
-            text: proposedValue,
-            maxDecimals: viewModel.maxDecimals
-        )
-        
-        guard sanitizedValue != proposedValue else { return true }
-
-        if sanitizedValue != currentText {
-            textField.text = sanitizedValue
-            textField.sendActions(for: .editingChanged)
-        }
-        
-        return false
-
     }
 }
 extension BuyBTCViewController: SelectProviderViewControllerDelegate {

@@ -44,7 +44,7 @@ class ReceiveViewController: KeyboardViewController {
     @IBOutlet weak var viewAmount: UIView!
     @IBOutlet weak var lblAmountSection: UILabel!
     @IBOutlet weak var bgAmount: UIView!
-    @IBOutlet weak var textFieldAmount: UITextField!
+    @IBOutlet weak var textFieldAmount: DecimalTextField!
     @IBOutlet weak var lblAssetAmount: UILabel!
     @IBOutlet weak var lblAmountAmount: UILabel!
     @IBOutlet weak var lblInfoAmount: UILabel!
@@ -570,7 +570,7 @@ extension ReceiveViewController {
         lblConversionAmount.text = ""
         lblConversionAmount.setStyle(.txtCard)
         textFieldAmount.accessibilityIdentifier = AccessibilityIds.ReceiveScreen.textFieldAmount
-        textFieldAmount.delegate = self
+        textFieldAmount.maxDecimalsProvider = { [weak self] in self?.vm.state.maxDecimals }
         textFieldAmount.keyboardType = .decimalPad
         textFieldAmount.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         lblInfoAmount.isUserInteractionEnabled = true
@@ -876,31 +876,5 @@ extension ReceiveViewController: HWDialogConnectViewControllerDelegate {
 
     func failure(err: Error) {
         error(err.description())
-    }
-}
-
-extension ReceiveViewController: UITextFieldDelegate {
-    func textField(
-        _ textField: UITextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String
-    ) -> Bool {
-        let currentText = textField.text ?? ""
-        guard let range = Range(range, in: currentText) else { return false }
-
-        let proposedValue = currentText.replacingCharacters(in: range, with: string)
-        let sanitizedValue = DecimalInputSanitizer.sanitize(
-           text: proposedValue,
-           maxDecimals: vm.state.maxDecimals
-        )
-
-        guard sanitizedValue != proposedValue else { return true }
-
-        if sanitizedValue != currentText {
-           textField.text = sanitizedValue
-           textField.sendActions(for: .editingChanged)
-        }
-
-        return false
     }
 }
