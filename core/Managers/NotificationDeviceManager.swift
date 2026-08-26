@@ -47,8 +47,7 @@ public class NotificationDeviceManager {
         logger.info("Register device token \(fcmToken) for \(walletHashedId) on \(self.notificationBaseUrl) with nodeId: \(nodeId ?? "")")
         if let baseUrl = URL(string: notificationBaseUrl) {
             let url = baseUrl.appending(path: "register-device")
-            let finalNodeId = Bundle.main.dev ? nodeId : nil
-            let params = RegisterDeviceRequest(externalCustomerId: walletHashedId, fcmToken: fcmToken, platform: "ios", nodeId: finalNodeId)
+            let params = RegisterDeviceRequest(externalCustomerId: walletHashedId, fcmToken: fcmToken, platform: "ios", nodeId: nodeId)
             let _: RegisterDeviceResponse = try await NotificationDeviceManager.call(url: url, method: .post, params: params)
         }
     }
