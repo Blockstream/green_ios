@@ -773,8 +773,6 @@
 		81D340A82F29155B003BD537 /* JadeBoltzExportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D340A72F29155B003BD537 /* JadeBoltzExportViewModel.swift */; };
 		81D340AA2F29156E003BD537 /* JadeBoltzExportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D340A92F29156E003BD537 /* JadeBoltzExportViewController.swift */; };
 		81D340AD2F2A224D003BD537 /* JadeBoltzSwapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D340AC2F2A224D003BD537 /* JadeBoltzSwapViewController.swift */; };
-		A11000012F50000100ABCDEF /* SwapsUnavailableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11000022F50000100ABCDEF /* SwapsUnavailableViewController.swift */; };
-		A11000032F50000100ABCDEF /* SwapRescanService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11000042F50000100ABCDEF /* SwapRescanService.swift */; };
 		81D340AF2F2A2263003BD537 /* JadeBoltzSwapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D340AE2F2A2263003BD537 /* JadeBoltzSwapViewModel.swift */; };
 		81D340B22F2AD7C1003BD537 /* SendHWViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D340B12F2AD7C1003BD537 /* SendHWViewController.swift */; };
 		81D340B42F2AD7D1003BD537 /* SendHWViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D340B32F2AD7D1003BD537 /* SendHWViewModel.swift */; };
@@ -832,6 +830,8 @@
 		81FE7C692F860D3C00520095 /* GreenlightMnemonicAndCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE7C682F860D3900520095 /* GreenlightMnemonicAndCredentials.swift */; };
 		81FE7C6D2F86165200520095 /* LightningTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE7C6C2F86164C00520095 /* LightningTypes.swift */; };
 		81FE7C6F2F872C2400520095 /* LiquidWalletKit in Frameworks */ = {isa = PBXBuildFile; productRef = 81FE7C6E2F872C2400520095 /* LiquidWalletKit */; };
+		A11000012F50000100ABCDEF /* SwapsUnavailableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11000022F50000100ABCDEF /* SwapsUnavailableViewController.swift */; };
+		A11000032F50000100ABCDEF /* SwapRescanService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11000042F50000100ABCDEF /* SwapRescanService.swift */; };
 		C705451C2FB7679500411209 /* LTDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C705451B2FB7679500411209 /* LTDetailsViewController.swift */; };
 		C71E2AA02FBB0263003E816A /* LTDetailsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71E2A9F2FBB0263003E816A /* LTDetailsModel.swift */; };
 		C71E2AA32FBB035A003E816A /* LTDetailsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71E2AA22FBB035A003E816A /* LTDetailsCell.swift */; };
@@ -1758,8 +1758,6 @@
 		81D340A72F29155B003BD537 /* JadeBoltzExportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeBoltzExportViewModel.swift; sourceTree = "<group>"; };
 		81D340A92F29156E003BD537 /* JadeBoltzExportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeBoltzExportViewController.swift; sourceTree = "<group>"; };
 		81D340AC2F2A224D003BD537 /* JadeBoltzSwapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeBoltzSwapViewController.swift; sourceTree = "<group>"; };
-		A11000022F50000100ABCDEF /* SwapsUnavailableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapsUnavailableViewController.swift; sourceTree = "<group>"; };
-		A11000042F50000100ABCDEF /* SwapRescanService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRescanService.swift; sourceTree = "<group>"; };
 		81D340AE2F2A2263003BD537 /* JadeBoltzSwapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeBoltzSwapViewModel.swift; sourceTree = "<group>"; };
 		81D340B12F2AD7C1003BD537 /* SendHWViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendHWViewController.swift; sourceTree = "<group>"; };
 		81D340B32F2AD7D1003BD537 /* SendHWViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendHWViewModel.swift; sourceTree = "<group>"; };
@@ -1832,6 +1830,8 @@
 		81FE7C682F860D3900520095 /* GreenlightMnemonicAndCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreenlightMnemonicAndCredentials.swift; sourceTree = "<group>"; };
 		81FE7C6C2F86164C00520095 /* LightningTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningTypes.swift; sourceTree = "<group>"; };
 		88A86540174AD367FC26E586 /* libPods-gaiosTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-gaiosTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A11000022F50000100ABCDEF /* SwapsUnavailableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapsUnavailableViewController.swift; sourceTree = "<group>"; };
+		A11000042F50000100ABCDEF /* SwapRescanService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRescanService.swift; sourceTree = "<group>"; };
 		C705451B2FB7679500411209 /* LTDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTDetailsViewController.swift; sourceTree = "<group>"; };
 		C71E2A9F2FBB0263003E816A /* LTDetailsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTDetailsModel.swift; sourceTree = "<group>"; };
 		C71E2AA22FBB035A003E816A /* LTDetailsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTDetailsCell.swift; sourceTree = "<group>"; };
@@ -6281,7 +6281,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.6.0;
+				MARKETING_VERSION = 5.6.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -6326,7 +6326,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.6.0;
+				MARKETING_VERSION = 5.6.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -6461,7 +6461,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 5.6.0;
+				MARKETING_VERSION = 5.6.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greendev.NotificationService;
@@ -6503,7 +6503,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 5.6.0;
+				MARKETING_VERSION = 5.6.1;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green.NotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6543,7 +6543,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 5.6.0;
+				MARKETING_VERSION = 5.6.1;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greendev.NotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -7265,7 +7265,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.6.0;
+				MARKETING_VERSION = 5.6.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
