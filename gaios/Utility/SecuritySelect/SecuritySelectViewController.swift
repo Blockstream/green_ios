@@ -98,15 +98,11 @@ class SecuritySelectViewController: UIViewController {
         setContent()
 
         if newCount > oldCount {
-            tableView.insertRows(
-                at: [IndexPath(row: newCount - 1, section: SecuritySelectSection.policy.rawValue)],
-                with: .automatic
-            )
-        } else {
-            tableView.deleteRows(
-                at: [IndexPath(row: oldCount - 1, section: SecuritySelectSection.policy.rawValue)],
-                with: .automatic
-            )
+            let indexPaths = (oldCount..<newCount).map { IndexPath(row: $0, section: SecuritySelectSection.policy.rawValue) }
+            tableView.insertRows(at: indexPaths, with: .automatic)
+        } else if newCount < oldCount {
+            let indexPaths = (newCount..<oldCount).map { IndexPath(row: $0, section: SecuritySelectSection.policy.rawValue) }
+            tableView.deleteRows(at: indexPaths, with: .automatic)
         }
     }
 }
