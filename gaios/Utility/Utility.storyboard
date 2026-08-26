@@ -18,31 +18,53 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Tnr-cR-0Ff">
-                                <rect key="frame" x="0.0" y="118" width="393" height="666"/>
+                                <rect key="frame" x="0.0" y="118" width="393" height="578"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="0Bp-bn-UwN" id="3VC-uh-Wec"/>
                                     <outlet property="delegate" destination="0Bp-bn-UwN" id="ytu-6H-oEl"/>
                                 </connections>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N3g-YR-hja" userLabel="btn_advanced">
+                                <rect key="frame" x="20" y="712" width="353" height="56"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="56" id="hOK-rj-7Aa"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                <inset key="titleEdgeInsets" minX="5" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="btn_mode">
+                                    <color key="titleColor" name="gAccent"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnAdvanced:" destination="0Bp-bn-UwN" eventType="touchUpInside" id="IFU-lY-ulz"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="cc0-IF-Wck"/>
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="cc0-IF-Wck" firstAttribute="trailing" secondItem="Tnr-cR-0Ff" secondAttribute="trailing" id="6ho-wf-9Bj"/>
-                            <constraint firstItem="cc0-IF-Wck" firstAttribute="bottom" secondItem="Tnr-cR-0Ff" secondAttribute="bottom" id="e4q-o6-6JV"/>
+                            <constraint firstItem="cc0-IF-Wck" firstAttribute="bottom" secondItem="N3g-YR-hja" secondAttribute="bottom" constant="16" id="8PN-5i-dXd"/>
+                            <constraint firstItem="cc0-IF-Wck" firstAttribute="bottom" secondItem="Tnr-cR-0Ff" secondAttribute="bottom" priority="999" id="QCX-7q-PsA"/>
+                            <constraint firstItem="N3g-YR-hja" firstAttribute="leading" secondItem="cc0-IF-Wck" secondAttribute="leading" constant="20" id="Sg4-aJ-vDO"/>
+                            <constraint firstItem="cc0-IF-Wck" firstAttribute="trailing" secondItem="N3g-YR-hja" secondAttribute="trailing" constant="20" id="Xep-ks-yj6"/>
                             <constraint firstItem="Tnr-cR-0Ff" firstAttribute="top" secondItem="cc0-IF-Wck" secondAttribute="top" id="im1-By-r7M"/>
+                            <constraint firstItem="N3g-YR-hja" firstAttribute="top" secondItem="Tnr-cR-0Ff" secondAttribute="bottom" constant="16" id="oWj-Ma-e2L"/>
                             <constraint firstItem="Tnr-cR-0Ff" firstAttribute="leading" secondItem="cc0-IF-Wck" secondAttribute="leading" id="vLN-bQ-unk"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Vss-F0-VMY"/>
                     <connections>
+                        <outlet property="btnAdvanced" destination="N3g-YR-hja" id="19J-9b-bZy"/>
                         <outlet property="tableView" destination="Tnr-cR-0Ff" id="K4N-Cz-NPA"/>
+                        <outlet property="tableViewToAdvancedButtonConstraint" destination="oWj-Ma-e2L" id="ztX-Hc-iCS"/>
+                        <outlet property="tableViewToSafeAreaConstraint" destination="QCX-7q-PsA" id="kiu-n1-9US"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o4m-jx-0gn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3184" y="1558"/>
+            <point key="canvasLocation" x="3185.4961832061067" y="1558.4507042253522"/>
         </scene>
         <!--Asset Select View Controller-->
         <scene sceneID="egO-l5-uY8">
@@ -849,6 +871,9 @@
         <image name="ic_hww_arrow" width="60" height="60"/>
         <image name="ic_search" width="16.666666030883789" height="16.666666030883789"/>
         <image name="il_jade_load_v1" width="197" height="111"/>
+        <namedColor name="gAccent">
+            <color red="0.0" green="0.73725490196078436" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="gBlackBg">
             <color red="0.070588235294117646" green="0.078431372549019607" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

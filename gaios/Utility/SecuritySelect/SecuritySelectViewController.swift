@@ -13,6 +13,9 @@ protocol SecuritySelectViewControllerDelegate: AnyObject {
 
 class SecuritySelectViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var btnAdvanced: UIButton!
+    @IBOutlet var tableViewToAdvancedButtonConstraint: NSLayoutConstraint!
+    @IBOutlet var tableViewToSafeAreaConstraint: NSLayoutConstraint!
 
     private let headerH: CGFloat = 54.0
 
@@ -29,8 +32,11 @@ class SecuritySelectViewController: UIViewController {
         ["PolicyCell", "AssetSelectCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
+        tableView.sectionHeaderTopPadding = 0
 
         setContent()
+        setStyle()
+        updateAdvancedOptionsLayout()
 
         let wallet = WalletsStorage.shared.current
         AnalyticsManager.shared.recordView(.addAccountChooseType, sgmt: AnalyticsManager.shared.sessSgmt(wallet))
@@ -38,6 +44,24 @@ class SecuritySelectViewController: UIViewController {
 
     func setContent() {
         title = "id_create_new_account".localized
+        btnAdvanced.setTitle(viewModel.isAllPoliciesShown ? "id_hide_advanced_options".localized : "id_show_advanced_options".localized, for: .normal)
+    }
+
+    func setStyle() {
+        btnAdvanced.setStyle(.inline)
+    }
+
+    func updateAdvancedOptionsLayout() {
+        let isAdvancedHidden = !viewModel.isAdvancedEnable()
+        btnAdvanced.isHidden = isAdvancedHidden
+
+        if isAdvancedHidden {
+            tableViewToAdvancedButtonConstraint.isActive = false
+            tableViewToSafeAreaConstraint.isActive = true
+        } else {
+            tableViewToSafeAreaConstraint.isActive = false
+            tableViewToAdvancedButtonConstraint.isActive = true
+        }
     }
 
     func unarchiveCreateDialog(completion: @escaping (Bool) -> Void) {
@@ -55,12 +79,34 @@ class SecuritySelectViewController: UIViewController {
 
     @MainActor
     func reloadSections(_ sections: [SecuritySelectSection], animated: Bool) {
+        updateAdvancedOptionsLayout()
+
         if animated {
             tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
         } else {
             UIView.performWithoutAnimation {
                 tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
             }
+        }
+    }
+
+    @IBAction func btnAdvanced(_ sender: Any) {
+        let oldCount = viewModel.getPolicyCellModels().count
+        viewModel.isAllPoliciesShown.toggle()
+        let newCount = viewModel.getPolicyCellModels().count
+
+        setContent()
+
+        if newCount > oldCount {
+            tableView.insertRows(
+                at: [IndexPath(row: newCount - 1, section: SecuritySelectSection.policy.rawValue)],
+                with: .automatic
+            )
+        } else {
+            tableView.deleteRows(
+                at: [IndexPath(row: oldCount - 1, section: SecuritySelectSection.policy.rawValue)],
+                with: .automatic
+            )
         }
     }
 }
@@ -83,6 +129,8 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        btnAdvanced.isHidden = !viewModel.isAdvancedEnable()
+
         switch SecuritySelectSection(rawValue: indexPath.section) {
         case .asset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AssetSelectCell.identifier, for: indexPath) as? AssetSelectCell,
@@ -110,6 +158,10 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         default:
             return headerH
         }
+    }
+
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return .leastNormalMagnitude
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -244,9 +296,9 @@ extension SecuritySelectViewController {
         section.addSubview(title)
 
         NSLayoutConstraint.activate([
-            title.centerYAnchor.constraint(equalTo: section.centerYAnchor, constant: 10.0),
-            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 30),
-            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: 30)
+            title.topAnchor.constraint(equalTo: section.topAnchor, constant: 20),
+            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 25),
+            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: 25)
         ])
 
         return section

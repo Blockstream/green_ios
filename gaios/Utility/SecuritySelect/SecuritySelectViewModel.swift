@@ -43,16 +43,41 @@ class SecuritySelectViewModel {
     }
 
     var unarchiveCreateDialog: (( @escaping (Bool) -> Void) -> Void)?
+    var isAllPoliciesShown = false
 
-
-    var listBitcoin: [PolicyCellType] {
-        return [.NativeSegwit, .LegacySegwit, .TwoOfThreeWith2FA, .TwoFAProtected]
+    private var supportsLiquidTwoFactor: Bool {
+        // Ledger cannot log in to a new Liquid GDK session. An existing Liquid
+        // multisig backend means the account-creation flow is already supported.
+        return !wm.isLedger || wm.hasLiquidMultisig
     }
 
-    var listLiquid: [PolicyCellType] {
-        return [.NativeSegwit, .LegacySegwit, .TwoFAProtected]
+    func listBitcoin(extended: Bool) -> [PolicyCellType] {
+        var policies: [PolicyCellType] = [.NativeSegwit, .TwoOfThreeWith2FA, .TwoFAProtected]
+        if extended {
+            policies.append(.LegacySegwit)
+        }
+        return policies
     }
 
+    func listLiquid(extended: Bool) -> [PolicyCellType] {
+        var policies: [PolicyCellType] = [.NativeSegwit]
+        if supportsLiquidTwoFactor {
+            policies.append(.TwoFAProtected)
+        }
+        if extended {
+            policies.append(.LegacySegwit)
+        }
+        return policies
+    }
+
+    func isAdvancedEnable() -> Bool {
+        if anyLiquidAmpAsset || anyLiquidAmpLegacyAsset { // any amp liquid asset
+            return false
+        } else if let asset = asset, let asset = WalletManager.current?.info(for: asset), asset.amp ?? false { // amp liquid asset
+            return false
+        }
+        return true
+    }
 
     func resetSelection() {
         anyLiquidAsset = false
@@ -65,21 +90,21 @@ class SecuritySelectViewModel {
     }
 
     func getPolicyCellModels() -> [PolicyCellModel] {
-        let policies = policiesForAsset()
+        let policies = policiesForAsset(extended: isAllPoliciesShown)
         return policies.map { PolicyCellModel.from(policy: $0) }
     }
 
-    func policiesForAsset() -> [PolicyCellType] {
+    func policiesForAsset(extended: Bool) -> [PolicyCellType] {
         if anyLiquidAmpAsset || anyLiquidAmpLegacyAsset { // any amp liquid asset
             return [.Amp]
         } else if anyLiquidAsset { // any liquid asset
-            return listLiquid
+            return listLiquid(extended: extended)
         } else if AssetInfo.btcId == asset { // btc
-            return listBitcoin
+            return listBitcoin(extended: extended)
         } else if let asset = asset, let asset = WalletManager.current?.info(for: asset), asset.amp ?? false { // amp liquid asset
             return [.Amp]
         } else { // liquid
-            return listLiquid
+            return listLiquid(extended: extended)
         }
     }
 
@@ -196,10 +221,6 @@ class SecuritySelectViewModel {
         }
     }
 
-    func getSession(for network: NetworkId) -> SessionManager? {
-        wm.gdkNetworkBackendOrNil(network)?.session
-    }
-
     func uniqueName(_ type: AccountType, liquid: Bool) -> String {
         let network = liquid ? " Liquid " : " "
         let counter = wm.accounts.filter { $0.type == type && $0.gdkNetwork.liquid == liquid }.count
@@ -208,5 +229,4 @@ class SecuritySelectViewModel {
         }
         return "\(type.string)\(network)"
     }
-
 }
