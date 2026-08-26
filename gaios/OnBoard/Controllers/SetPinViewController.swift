@@ -239,6 +239,7 @@ class SetPinViewController: UIViewController {
                 if let account = accountWallet?.0 {
                     WalletsStorage.shared.current = account
                     AnalyticsManager.shared.activeWalletStart()
+                    AnalyticsManager.shared.createWallet(wallet: account)
                     WalletNavigator.navLogged(walletId: account.id, isCreated: true, isRestored: false)
                 }
             case .backup:
