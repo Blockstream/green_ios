@@ -28,10 +28,10 @@ class TransactActionsCell: UITableViewCell {
             $0?.backgroundColor = UIColor.gGrayCard()
             $0?.borderWidth = 1.0
             $0?.borderColor = UIColor.gGrayCardBorder()
-            $0?.cornerRadius = 3.0
+            $0?.cornerRadius = 4.0
         }
         [lblBuy, lblSend, lblReceive, lblSwap].forEach {
-            $0?.setStyle(.txtBigger)
+            $0?.setStyle(.txtCard)
         }
         let tapBuy = UITapGestureRecognizer(target: self, action: #selector(didTapBuy))
         controlBuy.addGestureRecognizer(tapBuy)

@@ -2713,7 +2713,7 @@
                                                                                         <nil key="highlightedColor"/>
                                                                                     </label>
                                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_hint" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nXb-qI-XXr" userLabel="lbl_hint">
-                                                                                        <rect key="frame" x="0.0" y="38.666666666666657" width="343" height="17"/>
+                                                                                        <rect key="frame" x="0.0" y="38.666666666666629" width="343" height="17"/>
                                                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                                         <color key="textColor" white="1" alpha="0.40999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                         <nil key="highlightedColor"/>
@@ -2758,7 +2758,7 @@
                                                                                                         </subviews>
                                                                                                     </stackView>
                                                                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Zmf-VD-RGa">
-                                                                                                        <rect key="frame" x="0.0" y="324.66666666666674" width="343" height="50.666666666666686"/>
+                                                                                                        <rect key="frame" x="0.0" y="324.66666666666663" width="343" height="50.666666666666686"/>
                                                                                                         <subviews>
                                                                                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="uza-nM-DIH">
                                                                                                                 <rect key="frame" x="0.0" y="0.0" width="343" height="33.666666666666664"/>
@@ -2778,7 +2778,7 @@
                                                                                                                 </subviews>
                                                                                                             </stackView>
                                                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_lightning_setup_fee_hint" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZsO-Ra-jEm">
-                                                                                                                <rect key="frame" x="0.0" y="33.666666666666629" width="343" height="17"/>
+                                                                                                                <rect key="frame" x="0.0" y="33.666666666666742" width="343" height="17"/>
                                                                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                                                                 <color key="textColor" name="gGrayTxt"/>
                                                                                                                 <nil key="highlightedColor"/>
@@ -4155,7 +4155,7 @@
                                                                                                 <nil key="highlightedColor"/>
                                                                                             </label>
                                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_sum_fee_value" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fGg-Cd-bGN">
-                                                                                                <rect key="frame" x="204.33333333333334" y="16.666666666666629" width="120.66666666666666" height="17"/>
+                                                                                                <rect key="frame" x="204.33333333333334" y="16.666666666666742" width="120.66666666666666" height="17"/>
                                                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                                                 <color key="textColor" white="1" alpha="0.40999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                                 <nil key="highlightedColor"/>
@@ -4180,7 +4180,7 @@
                                                                                                 <nil key="highlightedColor"/>
                                                                                             </label>
                                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_sum_amount_value" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="N3H-lY-ryy">
-                                                                                                <rect key="frame" x="175.66666666666663" y="16.666666666666629" width="149.33333333333337" height="17"/>
+                                                                                                <rect key="frame" x="175.66666666666663" y="16.666666666666742" width="149.33333333333337" height="17"/>
                                                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                                                 <color key="textColor" white="1" alpha="0.40999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                                 <nil key="highlightedColor"/>
@@ -4659,7 +4659,7 @@
                                     <constraint firstAttribute="width" constant="32" id="fmF-ne-p1Q"/>
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" image="ic_tx_swap"/>
+                                <state key="normal" image="ic_arrows_down_up_light"/>
                                 <connections>
                                     <action selector="btnSwap:" destination="7I7-gN-uce" eventType="touchUpInside" id="vvc-rb-Y65"/>
                                 </connections>
@@ -5020,13 +5020,13 @@
                                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="68.666666666666671"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PwI-Fc-pK2">
-                                                                        <rect key="frame" x="20" y="22.000000000000014" width="335" height="21.666666666666671"/>
+                                                                        <rect key="frame" x="20" y="22" width="335" height="21.666666666666671"/>
                                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="czg-v5-goz">
-                                                                        <rect key="frame" x="329" y="18.000000000000014" width="30" height="30"/>
+                                                                        <rect key="frame" x="329" y="18" width="30" height="30"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="width" constant="30" id="NBq-NI-Csf"/>
                                                                             <constraint firstAttribute="height" constant="30" id="czf-dm-ViF"/>
@@ -6271,6 +6271,7 @@
         <image name="cancel" width="14" height="14"/>
         <image name="ic_amount_clear" width="20" height="20"/>
         <image name="ic_amount_drop_down" width="7.3333334922790527" height="4.3333334922790527"/>
+        <image name="ic_arrows_down_up_light" width="24" height="24"/>
         <image name="ic_caret_right_light" width="24" height="24"/>
         <image name="ic_check_circle" width="23" height="23"/>
         <image name="ic_clipboard" width="24" height="24.333333969116211"/>
@@ -6284,7 +6285,6 @@
         <image name="ic_tx_fail_cancel" width="306" height="306"/>
         <image name="ic_tx_success_bg" width="290.66665649414062" height="290.66665649414062"/>
         <image name="ic_tx_success_check" width="306" height="306"/>
-        <image name="ic_tx_swap" width="20" height="20"/>
         <image name="ic_x_bold" width="16" height="16"/>
         <image name="il_check_addr_ledger" width="119" height="201"/>
         <image name="ntw_btc" width="24" height="24"/>

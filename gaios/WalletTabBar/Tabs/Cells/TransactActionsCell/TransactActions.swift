@@ -21,13 +21,13 @@ enum TransactActions {
     var icon: UIImage {
         switch self {
         case .buy:
-            UIImage(named:"ic_buy")!.maskWithColor(color:.white)
+            UIImage(resource: .icCoinsLight).withTintColor(.white, renderingMode: .alwaysOriginal)
         case .send:
-            UIImage(named:"ic_send")!.maskWithColor(color:.white)
+            UIImage(resource: .icArrowLineUpLight).withTintColor(.white, renderingMode: .alwaysOriginal)
         case .receive:
-            UIImage(named:"ic_receive")!.maskWithColor(color:.white)
+            UIImage(resource: .icArrowLineDownLight).withTintColor(.white, renderingMode: .alwaysOriginal)
         case .swap:
-            UIImage(named:"ic_tx_swap")!.maskWithColor(color:.white)
+            UIImage(resource: .icArrowsDownUpLight).withTintColor(.white, renderingMode: .alwaysOriginal)
         }
     }
 }

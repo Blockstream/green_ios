@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -500,7 +500,7 @@
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                                         <inset key="imageEdgeInsets" minX="-5" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                        <state key="normal" title="Send" image="ic_send"/>
+                                                        <state key="normal" title="Send" image="ic_arrow_line_up_light"/>
                                                         <connections>
                                                             <action selector="btnSend:" destination="cLb-Ee-a9U" eventType="touchUpInside" id="qRV-Jd-fhI"/>
                                                         </connections>
@@ -561,7 +561,7 @@
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                                         <inset key="imageEdgeInsets" minX="-5" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                        <state key="normal" title="Receive" image="ic_receive"/>
+                                                        <state key="normal" title="Receive" image="ic_arrow_line_down_light"/>
                                                         <connections>
                                                             <action selector="btnReceive:" destination="cLb-Ee-a9U" eventType="touchUpInside" id="GN8-vB-Tca"/>
                                                         </connections>
@@ -829,7 +829,7 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="161.5" height="50"/>
                                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                                         <inset key="imageEdgeInsets" minX="-5" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                        <state key="normal" title="Send" image="ic_send"/>
+                                                        <state key="normal" title="Send" image="ic_arrow_line_up_light"/>
                                                         <connections>
                                                             <action selector="btnSend:" destination="YcJ-Ur-Ohg" eventType="touchUpInside" id="OgV-pa-2Pk"/>
                                                         </connections>
@@ -889,7 +889,7 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="161.5" height="50"/>
                                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                                         <inset key="imageEdgeInsets" minX="-5" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                        <state key="normal" title="Receive" image="ic_receive"/>
+                                                        <state key="normal" title="Receive" image="ic_arrow_line_down_light"/>
                                                         <connections>
                                                             <action selector="btnReceive:" destination="YcJ-Ur-Ohg" eventType="touchUpInside" id="5oY-mE-nwD"/>
                                                         </connections>
@@ -975,10 +975,10 @@
     <resources>
         <image name="bg_actions" width="375" height="192"/>
         <image name="ic_actions_plus" width="24" height="24"/>
+        <image name="ic_arrow_line_down_light" width="24" height="24"/>
+        <image name="ic_arrow_line_up_light" width="24" height="24"/>
         <image name="ic_dialog_qr" width="24" height="24"/>
-        <image name="ic_receive" width="24" height="24"/>
         <image name="ic_search" width="17" height="17"/>
-        <image name="ic_send" width="24" height="24"/>
         <namedColor name="customGrayLight">
             <color red="0.42352941176470588" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
