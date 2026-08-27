@@ -1,7 +1,6 @@
 import UIKit
 
-class PolicyCell: UITableViewCell {
-
+class AccountTypeCell: UITableViewCell {
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var btnDisclose: UIButton!
     @IBOutlet weak var imgMS: UIImageView!
@@ -62,7 +61,7 @@ class PolicyCell: UITableViewCell {
         }
     }
 
-    func configure(model: PolicyCellModel, hasLightning: Bool) {
+    func configure(model: AccountTypeCellModel, hasLightning: Bool) {
         imgSS.isHidden = !model.isSS
         imgMS.isHidden = model.isSS
         lblType.text = model.type.uppercased()

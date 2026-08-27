@@ -1,7 +1,7 @@
 import Foundation
 import core
 
-enum PolicyCellType: String, CaseIterable {
+enum AccountTypeOption: String, CaseIterable {
     case NativeSegwit
     case LegacySegwit
     case Lightning
@@ -28,16 +28,16 @@ enum PolicyCellType: String, CaseIterable {
     }
 
     func getNetwork(testnet: Bool, liquid: Bool) -> NetworkId? {
-        let btc: [PolicyCellType: NetworkId] =
+        let btc: [AccountTypeOption: NetworkId] =
         [.LegacySegwit: .electrumMainnet, .Lightning: .lightningMainnet, .TwoFAProtected: .greenMainnet,
          .TwoOfThreeWith2FA: .greenMainnet, .NativeSegwit: .electrumMainnet, .Amp: .greenMainnet]
-        let test: [PolicyCellType: NetworkId] =
+        let test: [AccountTypeOption: NetworkId] =
         [.LegacySegwit: .electrumTestnet, .TwoFAProtected: .greenTestnet,
          .TwoOfThreeWith2FA: .greenTestnet, .NativeSegwit: .electrumTestnet, .Amp: .greenTestnet]
-        let lbtc: [PolicyCellType: NetworkId] =
+        let lbtc: [AccountTypeOption: NetworkId] =
         [.LegacySegwit: .electrumLiquid, .TwoFAProtected: .greenLiquid,
          .TwoOfThreeWith2FA: .greenLiquid, .NativeSegwit: .electrumLiquid, .Amp: .greenLiquid]
-        let ltest: [PolicyCellType: NetworkId] =
+        let ltest: [AccountTypeOption: NetworkId] =
         [.LegacySegwit: .electrumTestnetLiquid, .TwoFAProtected: .greenTestnetLiquid,
          .TwoOfThreeWith2FA: .greenTestnetLiquid, .NativeSegwit: .electrumTestnetLiquid, .Amp: .greenTestnetLiquid]
         if liquid && testnet { return ltest[self] }

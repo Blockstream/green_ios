@@ -270,10 +270,10 @@ extension TabSettingsVC {
     }
 
     func createAccount() {
-        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
-            vc.viewModel = SecuritySelectViewModel(asset: "btc")
-            // vc.delegate = self
+        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "CreateAccountViewController") as? CreateAccountViewController {
+            vc.viewModel = CreateAccountViewModel(asset: "btc")
+            vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -388,6 +388,23 @@ extension TabSettingsVC: AccountArchiveViewControllerDelegate {
         self.tableView.reloadData()
         viewModel.refresh(features: [.subaccounts])
         viewModel.refresh(features: [.balance, .txs(reset: true)])
+    }
+}
+
+extension TabSettingsVC: CreateAccountDelegate {
+    func didCreateAccount() {
+        refreshAfterAccountChange()
+    }
+
+    func didUnarchiveAccount() {
+        refreshAfterAccountChange()
+    }
+
+    private func refreshAfterAccountChange() {
+        Task {
+            await viewModel.walletDataModel.triggerRefresh(features: [.subaccounts])
+            await viewModel.walletDataModel.triggerRefresh(features: [.balance, .txs(reset: true)])
+        }
     }
 }
 

@@ -1835,6 +1835,63 @@ EE5leHQ
             </objects>
             <point key="canvasLocation" x="7068" y="2415"/>
         </scene>
+        <!--Create Account View Controller-->
+        <scene sceneID="JoE-lQ-IEP">
+            <objects>
+                <viewController storyboardIdentifier="CreateAccountViewController" id="9NJ-vE-Mzw" customClass="CreateAccountViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="AhT-C9-w6U">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="WBk-cb-T7s">
+                                <rect key="frame" x="0.0" y="118" width="393" height="578"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="9NJ-vE-Mzw" id="h70-29-rIR"/>
+                                    <outlet property="delegate" destination="9NJ-vE-Mzw" id="R8u-y1-tTl"/>
+                                </connections>
+                            </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pjA-TM-T0e" userLabel="btn_advanced">
+                                <rect key="frame" x="20" y="712" width="353" height="56"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="56" id="oN1-j4-zwi"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                <inset key="titleEdgeInsets" minX="5" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="btn_mode">
+                                    <color key="titleColor" name="gAccent"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnAdvanced:" destination="9NJ-vE-Mzw" eventType="touchUpInside" id="rvZ-Qq-Dan"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="hdz-rZ-FCa"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
+                        <constraints>
+                            <constraint firstItem="hdz-rZ-FCa" firstAttribute="trailing" secondItem="WBk-cb-T7s" secondAttribute="trailing" id="5oA-74-bH3"/>
+                            <constraint firstItem="pjA-TM-T0e" firstAttribute="top" secondItem="WBk-cb-T7s" secondAttribute="bottom" constant="16" id="6Gd-h6-fSy"/>
+                            <constraint firstItem="WBk-cb-T7s" firstAttribute="leading" secondItem="hdz-rZ-FCa" secondAttribute="leading" id="8sC-qu-Pzf"/>
+                            <constraint firstItem="WBk-cb-T7s" firstAttribute="top" secondItem="hdz-rZ-FCa" secondAttribute="top" id="Cxf-UH-E2l"/>
+                            <constraint firstItem="hdz-rZ-FCa" firstAttribute="bottom" secondItem="pjA-TM-T0e" secondAttribute="bottom" constant="16" id="Do4-f1-iou"/>
+                            <constraint firstItem="hdz-rZ-FCa" firstAttribute="trailing" secondItem="pjA-TM-T0e" secondAttribute="trailing" constant="20" id="HIQ-F4-0h0"/>
+                            <constraint firstItem="hdz-rZ-FCa" firstAttribute="bottom" secondItem="WBk-cb-T7s" secondAttribute="bottom" priority="999" id="gkg-6U-hQy"/>
+                            <constraint firstItem="pjA-TM-T0e" firstAttribute="leading" secondItem="hdz-rZ-FCa" secondAttribute="leading" constant="20" id="zDy-GZ-51H"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="n24-gZ-cEo"/>
+                    <connections>
+                        <outlet property="btnAdvanced" destination="pjA-TM-T0e" id="85x-SG-74n"/>
+                        <outlet property="tableView" destination="WBk-cb-T7s" id="pUR-aH-PwM"/>
+                        <outlet property="tableViewToAdvancedButtonConstraint" destination="6Gd-h6-fSy" id="B3d-DV-GmL"/>
+                        <outlet property="tableViewToSafeAreaConstraint" destination="gkg-6U-hQy" id="1n9-VB-kUv"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Dex-pE-zjf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="6734" y="57"/>
+        </scene>
     </scenes>
     <resources>
         <image name="arrow_right" width="25" height="25"/>

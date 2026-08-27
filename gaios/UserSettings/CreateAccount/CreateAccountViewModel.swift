@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import core
-
 import hw
 import greenaddress
 
@@ -9,8 +8,8 @@ enum SubaccountAction {
     case created
     case unarchived
 }
-class SecuritySelectViewModel {
 
+class CreateAccountViewModel {
     var asset: String?
     var anyLiquidAsset: Bool = false
     var anyLiquidAmpAsset: Bool = false
@@ -51,16 +50,16 @@ class SecuritySelectViewModel {
         return !wm.isLedger || wm.hasLiquidMultisig
     }
 
-    func listBitcoin(extended: Bool) -> [PolicyCellType] {
-        var policies: [PolicyCellType] = [.NativeSegwit, .TwoOfThreeWith2FA, .TwoFAProtected]
+    func listBitcoin(extended: Bool) -> [AccountTypeOption] {
+        var policies: [AccountTypeOption] = [.NativeSegwit, .TwoOfThreeWith2FA, .TwoFAProtected]
         if extended {
             policies.append(.LegacySegwit)
         }
         return policies
     }
 
-    func listLiquid(extended: Bool) -> [PolicyCellType] {
-        var policies: [PolicyCellType] = [.NativeSegwit]
+    func listLiquid(extended: Bool) -> [AccountTypeOption] {
+        var policies: [AccountTypeOption] = [.NativeSegwit]
         if supportsLiquidTwoFactor {
             policies.append(.TwoFAProtected)
         }
@@ -89,12 +88,12 @@ class SecuritySelectViewModel {
         return wm.hasLightning
     }
 
-    func getPolicyCellModels() -> [PolicyCellModel] {
+    func getAccountCellModels() -> [AccountTypeCellModel] {
         let policies = policiesForAsset(extended: isAllPoliciesShown)
-        return policies.map { PolicyCellModel.from(policy: $0) }
+        return policies.map { AccountTypeCellModel.from(policy: $0) }
     }
 
-    func policiesForAsset(extended: Bool) -> [PolicyCellType] {
+    func policiesForAsset(extended: Bool) -> [AccountTypeOption] {
         if anyLiquidAmpAsset || anyLiquidAmpLegacyAsset { // any amp liquid asset
             return [.Amp]
         } else if anyLiquidAsset { // any liquid asset
@@ -108,7 +107,7 @@ class SecuritySelectViewModel {
         }
     }
 
-    func create(policy: PolicyCellType, params: CreateSubaccountParams) async throws -> SubaccountAction {
+    func create(policy: AccountTypeOption, params: CreateSubaccountParams) async throws -> SubaccountAction {
         let isLiquid = anyLiquidAsset || anyLiquidAmpAsset || anyLiquidAmpLegacyAsset || asset != "btc"
         let network = policy.getNetwork(testnet: wm.testnet, liquid: isLiquid)!
         let session = try wm.gdkNetworkBackend(network).session

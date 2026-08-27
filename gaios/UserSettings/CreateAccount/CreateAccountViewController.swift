@@ -1,17 +1,17 @@
 import UIKit
 import core
 
-enum SecuritySelectSection: Int, CaseIterable {
+enum CreateAccountListSection: Int, CaseIterable {
     case asset
     case policy
 }
 
-protocol SecuritySelectViewControllerDelegate: AnyObject {
-    func didCreateWallet()
-    func didUnarchiveWallet()
+protocol CreateAccountDelegate: AnyObject {
+    func didCreateAccount()
+    func didUnarchiveAccount()
 }
 
-class SecuritySelectViewController: UIViewController {
+class CreateAccountViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnAdvanced: UIButton!
     @IBOutlet var tableViewToAdvancedButtonConstraint: NSLayoutConstraint!
@@ -19,9 +19,9 @@ class SecuritySelectViewController: UIViewController {
 
     private let headerH: CGFloat = 54.0
 
-    weak var delegate: SecuritySelectViewControllerDelegate?
+    weak var delegate: CreateAccountDelegate?
 
-    var viewModel: SecuritySelectViewModel!
+    var viewModel: CreateAccountViewModel!
     var dialogJadeCheckViewController: DialogJadeCheckViewController?
 
     override func viewDidLoad() {
@@ -29,7 +29,7 @@ class SecuritySelectViewController: UIViewController {
 
         viewModel.unarchiveCreateDialog = unarchiveCreateDialog
 
-        ["PolicyCell", "AssetSelectCell"].forEach {
+        [AccountTypeCell.identifier, AssetSelectCell.identifier].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
         tableView.sectionHeaderTopPadding = 0
@@ -78,7 +78,7 @@ class SecuritySelectViewController: UIViewController {
     }
 
     @MainActor
-    func reloadSections(_ sections: [SecuritySelectSection], animated: Bool) {
+    func reloadSections(_ sections: [CreateAccountListSection], animated: Bool) {
         updateAdvancedOptionsLayout()
 
         if animated {
@@ -91,34 +91,34 @@ class SecuritySelectViewController: UIViewController {
     }
 
     @IBAction func btnAdvanced(_ sender: Any) {
-        let oldCount = viewModel.getPolicyCellModels().count
+        let oldCount = viewModel.getAccountCellModels().count
         viewModel.isAllPoliciesShown.toggle()
-        let newCount = viewModel.getPolicyCellModels().count
+        let newCount = viewModel.getAccountCellModels().count
 
         setContent()
 
         if newCount > oldCount {
-            let indexPaths = (oldCount..<newCount).map { IndexPath(row: $0, section: SecuritySelectSection.policy.rawValue) }
+            let indexPaths = (oldCount..<newCount).map { IndexPath(row: $0, section: CreateAccountListSection.policy.rawValue) }
             tableView.insertRows(at: indexPaths, with: .automatic)
         } else if newCount < oldCount {
-            let indexPaths = (newCount..<oldCount).map { IndexPath(row: $0, section: SecuritySelectSection.policy.rawValue) }
+            let indexPaths = (newCount..<oldCount).map { IndexPath(row: $0, section: CreateAccountListSection.policy.rawValue) }
             tableView.deleteRows(at: indexPaths, with: .automatic)
         }
     }
 }
 
-extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSource {
+extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return SecuritySelectSection.allCases.count
+        return CreateAccountListSection.allCases.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
-        switch SecuritySelectSection(rawValue: section) {
+        switch CreateAccountListSection(rawValue: section) {
         case .asset:
             return 1
         case .policy:
-            return viewModel?.getPolicyCellModels().count ?? 0
+            return viewModel?.getAccountCellModels().count ?? 0
         default:
             return 0
         }
@@ -127,7 +127,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         btnAdvanced.isHidden = !viewModel.isAdvancedEnable()
 
-        switch SecuritySelectSection(rawValue: indexPath.section) {
+        switch CreateAccountListSection(rawValue: indexPath.section) {
         case .asset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AssetSelectCell.identifier, for: indexPath) as? AssetSelectCell,
                let model = viewModel?.assetCellModel {
@@ -136,9 +136,9 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                 return cell
             }
         case .policy:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: PolicyCell.identifier, for: indexPath) as? PolicyCell,
+            if let cell = tableView.dequeueReusableCell(withIdentifier: AccountTypeCell.identifier, for: indexPath) as? AccountTypeCell,
                let model = viewModel {
-                cell.configure(model: model.getPolicyCellModels()[indexPath.row], hasLightning: viewModel.hasLightning())
+                cell.configure(model: model.getAccountCellModels()[indexPath.row], hasLightning: viewModel.hasLightning())
                 cell.selectionStyle = .none
                 return cell
             }
@@ -150,7 +150,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch SecuritySelectSection(rawValue: section) {
+        switch CreateAccountListSection(rawValue: section) {
         default:
             return headerH
         }
@@ -161,14 +161,14 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch SecuritySelectSection(rawValue: indexPath.section) {
+        switch CreateAccountListSection(rawValue: indexPath.section) {
         default:
             return UITableView.automaticDimension
         }
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        switch SecuritySelectSection(rawValue: section) {
+        switch CreateAccountListSection(rawValue: section) {
         case .asset:
             return headerView("id_asset".localized)
         case .policy:
@@ -179,14 +179,14 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        switch SecuritySelectSection(rawValue: indexPath.section) {
+        switch CreateAccountListSection(rawValue: indexPath.section) {
         default:
             return indexPath
         }
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch SecuritySelectSection(rawValue: indexPath.section) {
+        switch CreateAccountListSection(rawValue: indexPath.section) {
         case .asset:
             let storyboard = UIStoryboard(name: "Utility", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
@@ -203,7 +203,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .policy:
-            let policy = viewModel.getPolicyCellModels()[indexPath.row].policy
+            let policy = viewModel.getAccountCellModels()[indexPath.row].policy
             if policy == .TwoOfThreeWith2FA {
                 let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateRecoveryKeyViewController") as? AccountCreateRecoveryKeyViewController {
@@ -247,7 +247,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     @MainActor
-    func createSubaccount(policy: PolicyCellType, params: CreateSubaccountParams) async {
+    func createSubaccount(policy: AccountTypeOption, params: CreateSubaccountParams) async {
         let isHW = WalletsStorage.shared.current?.isHW ?? false
         if isHW {
             showHWCheckDialog()
@@ -278,7 +278,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     }
 }
 
-extension SecuritySelectViewController {
+extension CreateAccountViewController {
     func headerView(_ txt: String) -> UIView {
         let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
         section.backgroundColor = UIColor.clear
@@ -301,7 +301,7 @@ extension SecuritySelectViewController {
     }
 }
 
-extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
+extension CreateAccountViewController: AssetSelectViewControllerDelegate {
     func didSelectAnyOrAsset(_ ref: AnyOrAsset) {
         viewModel?.resetSelection()
         switch ref {
@@ -323,18 +323,18 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
     @MainActor
     func didCreateWallet() {
         DropAlert().success(message: "id_new_account_created".localized)
-        delegate?.didCreateWallet()
+        delegate?.didCreateAccount()
     }
     @MainActor
     func didUnarchiveWallet() {
         DropAlert().success(message: "Account unarchived".localized)
-        delegate?.didUnarchiveWallet()
+        delegate?.didUnarchiveAccount()
     }
 }
 
-extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
+extension CreateAccountViewController: AccountCreateRecoveryKeyDelegate {
     func didPublicKey(_ key: String) {
-        let cellModel = PolicyCellModel.from(policy: .TwoOfThreeWith2FA)
+        let cellModel = AccountTypeCellModel.from(policy: .TwoOfThreeWith2FA)
         let name = viewModel.uniqueName(cellModel.policy.accountType, liquid: viewModel.asset != "btc")
         let params = CreateSubaccountParams(name: name,
                                             type: .twoOfThree,
@@ -344,7 +344,7 @@ extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
     }
 
     func didNewRecoveryPhrase(_ mnemonic: String) {
-        let cellModel = PolicyCellModel.from(policy: .TwoOfThreeWith2FA)
+        let cellModel = AccountTypeCellModel.from(policy: .TwoOfThreeWith2FA)
         let name = viewModel.uniqueName(cellModel.policy.accountType, liquid: viewModel.asset != "btc")
         let params = CreateSubaccountParams(name: name,
                                             type: .twoOfThree,
@@ -354,7 +354,7 @@ extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
     }
 
     func didExistingRecoveryPhrase(_ mnemonic: String) {
-        let cellModel = PolicyCellModel.from(policy: .TwoOfThreeWith2FA)
+        let cellModel = AccountTypeCellModel.from(policy: .TwoOfThreeWith2FA)
         let name = viewModel.uniqueName(cellModel.policy.accountType, liquid: viewModel.asset != "btc")
         let params = CreateSubaccountParams(name: name,
                                             type: .twoOfThree,
