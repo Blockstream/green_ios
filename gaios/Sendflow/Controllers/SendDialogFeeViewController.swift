@@ -14,10 +14,11 @@ class SendDialogFeeViewController: KeyboardViewController {
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var lblTitle: UILabel!
+    @IBOutlet weak var btnClose: UIButton!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
     @IBOutlet weak var btnCustom: UIButton!
-    @IBOutlet weak var btnLearmore: UIButton!
+    @IBOutlet weak var btnLearnMore: UIButton!
 
     var viewModel: SendDialogFeeViewModel!
     var delegate: SendDialogFeeViewControllerProtocol?
@@ -76,29 +77,28 @@ class SendDialogFeeViewController: KeyboardViewController {
         }
     }
 
-    @objc func didTap(gesture: UIGestureRecognizer) {
-        dismiss()
-    }
-
     func setContent() {
         lblTitle.text = "id_network_fee".localized
-        btnCustom.setTitle("id_custom".localized, for: .normal)
-        btnLearmore.setTitle("id_learn_more".localized, for: .normal)
+        btnCustom.setTitle("Custom Fee".localized, for: .normal)
     }
 
     func setStyle() {
         cardView.setStyle(.bottomsheet)
         handle.cornerRadius = 1.5
-        lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
-        btnCustom.setStyle(.inline)
-        btnLearmore.setStyle(.outlined)
-        btnLearmore.setTitleColor(.white, for: .normal)
+        lblTitle.setStyle(.subTitle)
+        btnClose.tintColor = .gGrayTxt()
+        btnClose.backgroundColor = .gGrayCard()
+        btnClose.cornerRadius = btnClose.bounds.height / 2
+        
+        btnCustom.setStyle(.outlined)
+        
+        btnLearnMore.setStyle(.underline(txt: "id_learn_more".localized, color: .gAccent()))
+        btnLearnMore.tintColor = .gAccent()
+        btnLearnMore.setImage(UIImage(named: "ic_squared_out_small")?.maskWithColor(color: .gAccent()), for: .normal)
     }
 
     func register() {
-        ["SendFeeCell"].forEach {
-            tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
-        }
+        tableView.register(UINib(nibName: SendFeeCell.identifier, bundle: nil), forCellReuseIdentifier: SendFeeCell.identifier)
     }
 
     func dismiss() {
@@ -107,9 +107,37 @@ class SendDialogFeeViewController: KeyboardViewController {
             self.view.alpha = 0.0
             self.view.layoutIfNeeded()
         }, completion: { _ in
-            self.dismiss(animated: false, completion: {
-            })
+            self.dismiss(animated: false, completion: nil)
         })
+    }
+
+    func presentDialogCustomFeeViewController() {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCustomFeeViewController") as? DialogCustomFeeViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            vc.minFeeRate = viewModel.feeEstimator?.defaultMinFee
+            if viewModel.transaction.txType == .bumpFee {
+                vc.feeRate = (viewModel.transaction.previousTransaction?["fee_rate"] as? UInt64 ?? 0) + (viewModel.feeEstimator?.defaultMinFee ?? 1)
+            } else if viewModel.transaction.feeRate > 0 {
+                vc.feeRate = viewModel.transaction.feeRate
+            } else {
+                vc.feeRate = viewModel.feeEstimator?.defaultMinFee ?? 1
+            }
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    @IBAction func tapCustomFee(_ sender: Any) {
+        presentDialogCustomFeeViewController()
+    }
+
+    @IBAction func btnLearmore(_ sender: Any) {
+        SafeNavigationManager.shared.navigate( ExternalUrls.feesInfo )
+    }
+
+    @IBAction func closeButtonTapped(_ sender: Any) {
+        dismiss()
     }
 
     @objc func didSwipe(gesture: UIGestureRecognizer) {
@@ -124,27 +152,8 @@ class SendDialogFeeViewController: KeyboardViewController {
         }
     }
 
-    @IBAction func tapCustomFee(_ sender: Any) {
-        presentDialogCustomFeeViewController()
-    }
-
-    @IBAction func btnLearmore(_ sender: Any) {
-        SafeNavigationManager.shared.navigate( ExternalUrls.feesInfo )
-    }
-
-    func presentDialogCustomFeeViewController() {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCustomFeeViewController") as? DialogCustomFeeViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.delegate = self
-            vc.minFeeRate = viewModel.feeEstimator?.defaultMinFee
-            if viewModel.transaction.txType == .bumpFee {
-                vc.feeRate = (viewModel.transaction.previousTransaction?["fee_rate"] as? UInt64 ?? 0) + (viewModel.feeEstimator?.defaultMinFee ?? 1)
-            } else {
-                vc.feeRate = viewModel.feeEstimator?.defaultMinFee ?? 1
-            }
-            present(vc, animated: false, completion: nil)
-        }
+    @objc func didTap(gesture: UIGestureRecognizer) {
+        dismiss()
     }
 }
 
@@ -156,7 +165,6 @@ extension SendDialogFeeViewController: DialogCustomFeeViewControllerDelegate {
 }
 
 extension SendDialogFeeViewController: UITableViewDelegate, UITableViewDataSource {
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }

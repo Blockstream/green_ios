@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 
-
 protocol DialogCustomFeeViewControllerDelegate: AnyObject {
     func didSave(fee: UInt64?)
 }
@@ -18,11 +17,15 @@ class DialogCustomFeeViewController: KeyboardViewController {
     @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var lblCustomFeeTitle: UILabel!
-    @IBOutlet weak var lblCustomFeeHint: UILabel!
-    @IBOutlet weak var feeTextField: DecimalTextField!
-    @IBOutlet weak var btnSave: UIButton!
 
+    @IBOutlet weak var lblTitle: UILabel!
+    @IBOutlet weak var btnClose: UIButton!
+
+    @IBOutlet weak var textFieldContainerView: UIView!
+    @IBOutlet weak var feeTextField: DecimalTextField!
+    @IBOutlet weak var lblRate: UILabel!
+
+    @IBOutlet weak var btnSave: UIButton!
     @IBOutlet weak var submitBottom: NSLayoutConstraint!
 
     weak var delegate: DialogCustomFeeViewControllerDelegate?
@@ -76,42 +79,6 @@ class DialogCustomFeeViewController: KeyboardViewController {
         }
         feeTextField.maxDecimalsProvider = { [weak self] in self?.feeRateDecimals }
         feeTextField.becomeFirstResponder()
-        feeTextField.keyboardType = .decimalPad
-        feeTextField.attributedPlaceholder = NSAttributedString(string: String(Double(feeRate ?? 1000) / 1000),
-                                                                attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-    }
-
-    func setContent() {
-        lblCustomFeeTitle.text = "id_set_custom_fee_rate".localized
-        lblCustomFeeHint.text = "satoshi/vbyte"
-        btnSave.setTitle("id_save".localized, for: .normal)
-    }
-
-    func setStyle() {
-        btnSave.cornerRadius = 4.0
-        feeTextField.placeholder = ""
-        feeTextField.setLeftPaddingPoints(10.0)
-        feeTextField.setRightPaddingPoints(10.0)
-        cardView.setStyle(.bottomsheet)
-        feeTextField.setStyle(.input)
-        handle.cornerRadius = 1.5
-    }
-
-    func updateUI() {
-        if feeTextField.text?.count ?? 0 > 0 {
-            btnSave.isEnabled = true
-            btnSave.backgroundColor = UIColor.gAccent()
-            btnSave.setTitleColor(.white, for: .normal)
-        } else {
-            btnSave.isEnabled = false
-            btnSave.backgroundColor = UIColor.customBtnOff()
-            btnSave.setTitleColor(UIColor.customGrayLight(), for: .normal)
-        }
-    }
-
-    @objc func didTap(gesture: UIGestureRecognizer) {
-
-        dismiss(.cancel, feeRate: nil)
     }
 
     override func keyboardWillShow(notification: Notification) {
@@ -125,9 +92,40 @@ class DialogCustomFeeViewController: KeyboardViewController {
 
     override func keyboardWillHide(notification: Notification) {
         super.keyboardWillHide(notification: notification)
+
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
             self.submitBottom.constant = 36.0
         })
+    }
+
+    func setContent() {
+        lblTitle.text = "Custom Fee".localized
+        lblRate.text = "sats/vB".localized
+        btnSave.setTitle("id_save".localized, for: .normal)
+        feeTextField.keyboardType = .decimalPad
+    }
+
+    func setStyle() {
+        cardView.setStyle(.bottomsheet)
+        handle.cornerRadius = 1.5
+        lblTitle.setStyle(.subTitle)
+
+        btnClose.tintColor = .gGrayTxt()
+        btnClose.backgroundColor = .gGrayCard()
+        btnClose.cornerRadius = btnClose.bounds.height / 2
+
+        textFieldContainerView.setStyle(.defaultStyle)
+        feeTextField.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+
+        btnSave.setStyle(.primary)
+    }
+
+    func updateUI() {
+        if feeTextField.text?.count ?? 0 > 0 {
+            btnSave.setStyle(.primary)
+        } else {
+            btnSave.setStyle(.primaryDisabled)
+        }
     }
 
     func validate() {
@@ -176,11 +174,19 @@ class DialogCustomFeeViewController: KeyboardViewController {
         }
     }
 
+    @objc func didTap(gesture: UIGestureRecognizer) {
+        dismiss(.cancel, feeRate: nil)
+    }
+
     @IBAction func feeDidChange(_ sender: Any) {
         updateUI()
     }
 
     @IBAction func btnSave(_ sender: Any) {
         validate()
+    }
+
+    @IBAction func btnCloseTapped(_ sender: Any) {
+        dismiss(.cancel, feeRate: nil)
     }
 }

@@ -3,7 +3,7 @@ import UIKit
 class SendFeeCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
-    @IBOutlet weak var btnDisclose: UIButton!
+    @IBOutlet weak var btnSelect: UIButton!
     @IBOutlet weak var bgTopBox: UIView!
 
     @IBOutlet weak var lblSpeedName: UILabel!
@@ -14,32 +14,30 @@ class SendFeeCell: UITableViewCell {
     @IBOutlet weak var lblRate: UILabel!
     @IBOutlet weak var lblFiat: UILabel!
 
-    @IBOutlet weak var noFundsView: UIView!
-    @IBOutlet weak var iconNoFunds: UIImageView!
-    @IBOutlet weak var lblNoFunds: UILabel!
+    @IBOutlet weak var errorView: UIView!
+    @IBOutlet weak var iconError: UIImageView!
+    @IBOutlet weak var lblError: UILabel!
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
-        
-        bg.cornerRadius = 4.0
-        bgTopBox.cornerRadius = 4.0
-        bgTopBox.backgroundColor = UIColor.gGrayElement()
-        btnDisclose.isUserInteractionEnabled = false
-        btnDisclose.cornerRadius = 4.0
 
-        lblSpeedName.setStyle(.txtBigger)
-        [lblAmount, lblRate, lblFiat].forEach {
-            $0?.setStyle(.txtCard)
-            $0?.textColor = .white.withAlphaComponent(0.7)
-        }
-        lblNoFunds.setStyle(.txt)
-        iconNoFunds.image = UIImage(named: "ic_lightning_info")!.maskWithColor(color: .white)
+        bg.setStyle(.defaultStyle)
+        bgTopBox.setStyle(.defaultStyle)
 
+        bgTime.backgroundColor = .gGrayCardBorder()
         bgTime.cornerRadius = bgTime.frame.size.height / 2.0
-        bgTime.borderWidth = 1.0
-        bgTime.borderColor = .white.withAlphaComponent(0.3)
-        lblNoFunds.text = ""
+
+        [lblSpeedName, lblAmount].forEach {
+            $0.setStyle(.txt)
+            $0.font = UIFont.systemFont(ofSize: $0.font.pointSize, weight: .semibold)
+        }
+
+        [lblRate, lblFiat].forEach {
+            $0?.setStyle(.txtSmaller)
+            $0?.textColor = .gGrayTxt()
+        }
+
+        lblError.setStyle(.txtSmaller)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -48,22 +46,20 @@ class SendFeeCell: UITableViewCell {
 
     class var identifier: String { return String(describing: self) }
 
-    override func prepareForReuse() {
-        super.prepareForReuse()
-    }
-
     func configure(model: SendFeeCellModel) {
         if let error = model.error {
-            bg.backgroundColor = UIColor.gRedWarn()
-            btnDisclose.backgroundColor = UIColor.gW60()
-            btnDisclose.alpha = 0.3
-            lblNoFunds.text = error.localized
-            noFundsView.isHidden = false
+            bg.backgroundColor = .gRedWarn()
+            bg.borderColor = .gRedSwapErr2()
+            bgTopBox.borderColor = .gRedSwapErr2()
+            btnSelect.tintColor = .gGrayTxtDisabled()
+            lblError.text = error
+            errorView.isHidden = false
         } else {
             bg.backgroundColor = .clear
-            btnDisclose.backgroundColor = UIColor.gAccent()
-            btnDisclose.alpha = 1.0
-            noFundsView.isHidden = true
+            bg.borderColor = .clear
+            bgTopBox.borderColor = .gGrayCardBorder()
+            btnSelect.tintColor = .white
+            errorView.isHidden = true
         }
         lblSpeedName.text = model.speedName
         lblTime.text = model.time

@@ -13,7 +13,7 @@ class SendSwapFeeViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
     @IBOutlet weak var btnCustom: UIButton!
-    @IBOutlet weak var btnLearmore: UIButton!
+    @IBOutlet weak var btnLearnMore: UIButton!
 
     let viewModel: SendSwapFeeViewModel
     private var obs: NSKeyValueObservation?
@@ -89,8 +89,9 @@ class SendSwapFeeViewController: UIViewController {
         handle.cornerRadius = 1.5
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         btnCustom.setStyle(.outlined)
-        btnLearmore.setStyle(.underline(txt: "id_learn_more".localized, color: UIColor.gAccent()))
-        btnLearmore.setTitleColor(.white, for: .normal)
+        btnLearnMore.setStyle(.underline(txt: "id_learn_more".localized, color: UIColor.gAccent()))
+        btnLearnMore.setTitleColor(.white, for: .normal)
+        btnLearnMore.setImage(UIImage(named: "ic_squared_out_small")?.maskWithColor(color: .gAccent()), for: .normal)
     }
 
     func register() {

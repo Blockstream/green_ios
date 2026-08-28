@@ -65,35 +65,40 @@ class SendDialogFeeViewModel {
     func feeRateWithUnit(_ value: UInt64?) -> String? {
         guard let value = value else { return nil }
         let feePerByte = Double(value) / 1000.0
-        return String(format: "%.2f sats / vbyte", feePerByte)
+        return String(format: "%.2f sats / vB", feePerByte)
+    }
+
+    private func formatFiat(_ satoshi: UInt64?) -> String {
+        guard let fiat = btcToFiat(satoshi), !fiat.isEmpty else { return "" }
+        return "≈ \(fiat)"
     }
 
     var fastSendFeeCellModel: SendFeeCellModel {
         SendFeeCellModel(speedName: "id_fast".localized,
-                         time: TransactionPriority.High.time(isLiquid: subaccount?.networkId.liquid ?? false),
+                         time: "≈ \(TransactionPriority.High.shortTime(isLiquid: subaccount?.networkId.liquid ?? false))",
                          amount: btcToText(fastFeeTx?.fee) ?? "",
                          rate: feeRateWithUnit(fastFeeRate) ?? "",
-                         fiat: "~ \(btcToFiat(fastFeeTx?.fee) ?? "")",
+                         fiat: formatFiat(fastFeeTx?.fee),
                          error: severe(fastFeeTx?.error) ? fastFeeTx?.error : nil,
                          feeRate: fastFeeRate,
                          transactionPriority: TransactionPriority.High)
     }
     var mediumSendFeeCellModel: SendFeeCellModel {
         SendFeeCellModel(speedName: "id_medium".localized,
-                         time: TransactionPriority.Medium.time(isLiquid: subaccount?.networkId.liquid ?? false),
+                         time: "≈ \(TransactionPriority.Medium.shortTime(isLiquid: subaccount?.networkId.liquid ?? false))",
                          amount: btcToText(mediumFeeTx?.fee) ?? "",
                          rate: feeRateWithUnit(mediumFeeRate) ?? "",
-                         fiat: "~ \(btcToFiat(mediumFeeTx?.fee) ?? "")",
+                         fiat: formatFiat(mediumFeeTx?.fee),
                          error: severe(mediumFeeTx?.error) ? mediumFeeTx?.error : nil,
                          feeRate: mediumFeeRate,
                          transactionPriority: TransactionPriority.Medium)
     }
     var lowSendFeeCellModel: SendFeeCellModel {
         SendFeeCellModel(speedName: "id_slow".localized,
-                         time: TransactionPriority.Low.time(isLiquid: subaccount?.networkId.liquid ?? false),
+                         time: "≈ \(TransactionPriority.Low.shortTime(isLiquid: subaccount?.networkId.liquid ?? false))",
                          amount: btcToText(lowFeeTx?.fee) ?? "",
                          rate: feeRateWithUnit(lowFeeRate) ?? "",
-                         fiat: "~ \(btcToFiat(lowFeeTx?.fee) ?? "")",
+                         fiat: formatFiat(lowFeeTx?.fee),
                          error: severe(lowFeeTx?.error) ? lowFeeTx?.error : nil,
                          feeRate: lowFeeRate,
                          transactionPriority: TransactionPriority.Low)

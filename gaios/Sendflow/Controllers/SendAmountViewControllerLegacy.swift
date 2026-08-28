@@ -536,7 +536,11 @@ class SendAmountViewControllerLegacy: KeyboardViewController {
     @MainActor
     func reloadFee() {
         lblFeeRate.text = viewModel?.feeRateText ?? ""
-        lblTime.text = "~\(viewModel?.feeTimeText ?? "")"
+        if let timeText = viewModel?.feeTimeText, !timeText.isEmpty {
+            lblTime.text = "~\(timeText)"
+        } else {
+            lblTime.text = ""
+        }
         lblNtwFee.text = viewModel?.feeText ?? ""
         lblFeeConvert.text = viewModel?.feeConvertText ?? ""
     }

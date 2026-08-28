@@ -11,6 +11,14 @@ extension TransactionPriority {
         return String(format: "%d %@", n, time)
     }
 
+    public func shortTime(isLiquid: Bool) -> String {
+        let blocksPerHour = isLiquid ? 60 : 6
+        let blocks = self.rawValue
+        let n = (blocks % blocksPerHour) == 0 ? blocks / blocksPerHour : blocks * (60 / blocksPerHour)
+        let time = (blocks % blocksPerHour) == 0 ? "h" : "min"
+        return String(format: "%d%@", n, time)
+    }
+
     public func description(isLiquid: Bool) -> String {
         let confirmationInBlocks = String(format: "id_confirmation_in_d_blocks".localized, self.rawValue)
         return confirmationInBlocks + ", " + time(isLiquid: isLiquid) + " " + "id_on_average".localized

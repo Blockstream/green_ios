@@ -251,12 +251,13 @@ class SendLwkSignViewController: UIViewController {
     }
 
     func sendFeeInfoViewController() -> SendFeeInfoViewController {
+        let fiatValue = viewModel.convertFeeToFiat(satoshi: viewModel.totalFee ?? 0) ?? ""
         let scope = SendFeeScope.lwkSwap(
             networkFee: viewModel.convertFeeToDenom(satoshi: viewModel.networkFee ?? 0) ?? "",
             lightningSetupFee: viewModel.lightningSetupFee != nil ? viewModel.convertFeeToDenom(satoshi: viewModel.lightningSetupFee ?? 0) : nil,
             swapFee: viewModel.convertFeeToDenom(satoshi: viewModel.swapFee ?? 0) ?? "",
             total: viewModel.convertFeeToDenom(satoshi: viewModel.totalFee ?? 0) ?? "",
-            fiat: "≈ " + (viewModel.convertFeeToFiat(satoshi: viewModel.totalFee ?? 0) ?? ""))
+            fiat: fiatValue.isEmpty ? "" : "≈ \(fiatValue)")
         let storyboard = UIStoryboard(name: "SendFlow", bundle: nil)
         // swiftlint:disable:next force_cast
         let vc = storyboard.instantiateViewController(withIdentifier: "SendFeeInfoViewController") as! SendFeeInfoViewController
