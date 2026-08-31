@@ -79,7 +79,7 @@ class SendDialogFeeViewModel {
                          amount: btcToText(fastFeeTx?.fee) ?? "",
                          rate: feeRateWithUnit(fastFeeRate) ?? "",
                          fiat: formatFiat(fastFeeTx?.fee),
-                         error: severe(fastFeeTx?.error) ? fastFeeTx?.error : nil,
+                         error: severe(fastFeeTx?.error) ? fastFeeTx?.error?.localized : nil,
                          feeRate: fastFeeRate,
                          transactionPriority: TransactionPriority.High)
     }
@@ -89,7 +89,7 @@ class SendDialogFeeViewModel {
                          amount: btcToText(mediumFeeTx?.fee) ?? "",
                          rate: feeRateWithUnit(mediumFeeRate) ?? "",
                          fiat: formatFiat(mediumFeeTx?.fee),
-                         error: severe(mediumFeeTx?.error) ? mediumFeeTx?.error : nil,
+                         error: severe(mediumFeeTx?.error) ? mediumFeeTx?.error?.localized : nil,
                          feeRate: mediumFeeRate,
                          transactionPriority: TransactionPriority.Medium)
     }
@@ -99,7 +99,7 @@ class SendDialogFeeViewModel {
                          amount: btcToText(lowFeeTx?.fee) ?? "",
                          rate: feeRateWithUnit(lowFeeRate) ?? "",
                          fiat: formatFiat(lowFeeTx?.fee),
-                         error: severe(lowFeeTx?.error) ? lowFeeTx?.error : nil,
+                         error: severe(lowFeeTx?.error) ? lowFeeTx?.error?.localized : nil,
                          feeRate: lowFeeRate,
                          transactionPriority: TransactionPriority.Low)
     }
