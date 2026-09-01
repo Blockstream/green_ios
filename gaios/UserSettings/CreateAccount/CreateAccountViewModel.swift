@@ -110,21 +110,24 @@ class CreateAccountViewModel {
     func create(policy: AccountTypeOption, params: CreateSubaccountParams) async throws -> SubaccountAction {
         let isLiquid = anyLiquidAsset || anyLiquidAmpAsset || anyLiquidAmpLegacyAsset || asset != "btc"
         let network = policy.getNetwork(testnet: wm.testnet, liquid: isLiquid)!
-        let session = try wm.gdkNetworkBackend(network).session
+        let backend = try wm.gdkNetworkBackend(network)
+        let session = backend.session
         if !session.logged {
             if wm.isHW {
-                try await loginHW(session: session)
+                try await loginHW(backend: backend)
             } else {
-                try await loginCredentials(session: session)
+                try await loginCredentials(backend: backend)
             }
         }
+        backend.isLoggedIn = session.logged
         let action = try await self.createOrUnarchiveSubaccount(session: session, params: params)
         let subaccounts = try await self.wm.getAccounts()
         _ = try await self.wm.balances(subaccounts: subaccounts)
         return action
     }
 
-    func loginHW(session: SessionManager) async throws {
+    func loginHW(backend: GdkNetworkBackend) async throws {
+        let session = backend.session
         guard let wallet = WalletsStorage.shared.current else {
             throw GaError.GenericError("No account provided")
         }
@@ -147,6 +150,7 @@ class CreateAccountViewModel {
                 throw error
             }
         }
+        backend.isLoggedIn = session.logged
         let subaccounts = try await session.subaccounts(true)
         let used = try await self.isUsedDefaultAccount(for: session, account: subaccounts.first)
         if !used {
@@ -156,13 +160,15 @@ class CreateAccountViewModel {
         _ = try await wm.getAccounts()
     }
 
-    func loginCredentials(session: SessionManager) async throws {
+    func loginCredentials(backend: GdkNetworkBackend) async throws {
+        let session = backend.session
         let prominentSession = wm.prominentSession
         guard let credentials = try await prominentSession?.getCredentials(password: "") else {
             throw GaError.GenericError("No credential provided")
         }
         try await session.register(credentials: credentials)
         _ = try await session.loginUser(credentials)
+        backend.isLoggedIn = session.logged
         let subaccounts = try await session.subaccounts(true)
         let used = try await self.isUsedDefaultAccount(for: session, account: subaccounts.first)
         if !used {

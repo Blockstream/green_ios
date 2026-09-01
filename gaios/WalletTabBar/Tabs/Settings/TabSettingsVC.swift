@@ -403,7 +403,7 @@ extension TabSettingsVC: CreateAccountDelegate {
     private func refreshAfterAccountChange() {
         Task {
             await viewModel.walletDataModel.triggerRefresh(features: [.subaccounts])
-            await viewModel.walletDataModel.triggerRefresh(features: [.balance, .txs(reset: true)])
+            await viewModel.walletDataModel.triggerRefresh(features: [.settings, .balance, .txs(reset: true)])
         }
     }
 }
