@@ -96,11 +96,15 @@ public class ConverterManager {
               let val = Decimal(string: fiat, locale: Self.enUSLocale) else {
             return nil
         }
-        if withCurrency, let fiatCurrency = b.fiatCurrency {
+        if withCurrency, let fiatCurrency = displayFiatCurrency(b.fiatCurrency) {
             return formatFiat(value: val, currency: fiatCurrency, withGroupSeparator: withGroupSeparator)
         } else {
             return formatFiat(value: val, currency: nil, withGroupSeparator: withGroupSeparator)
         }
+    }
+    public func displayFiatCurrency(_ currency: String?) -> String? {
+        guard let currency else { return nil }
+        return testnet ? "FIAT" : currency
     }
     public func formatFiat(value: Decimal, currency: String? = nil, withGroupSeparator: Bool = true) -> String? {
 
@@ -108,7 +112,7 @@ public class ConverterManager {
         guard let numberStr = formatter.string(from: value as NSDecimalNumber) else {
             return nil
         }
-        if let currency {
+        if let currency = displayFiatCurrency(currency) {
             return "\(numberStr) \(currency)"
         } else {
             return numberStr

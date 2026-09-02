@@ -151,7 +151,7 @@ class BalanceCell: UITableViewCell {
         if let fiatAmount, let currency, let result = converter?.formatFiat(value: fiatAmount, currency: currency, withGroupSeparator: true) {
             return result
         } else {
-            return "-/- \(currency ?? "")"
+            return "-/- \(converter?.displayFiatCurrency(currency) ?? currency ?? "")"
         }
     }
     @IBAction func onBalanceTap(_ sender: Any) {

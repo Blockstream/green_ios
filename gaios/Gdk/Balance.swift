@@ -74,13 +74,14 @@ extension Balance {
     }
 
     func toFiat(locale: Bool = true) -> (String, String) {
+        let currency = WalletManager.current?.converter?.displayFiatCurrency(self.fiatCurrency) ?? self.fiatCurrency ?? ""
         guard let value = WalletManager.current?.converter?.formatFiat(self, withCurrency: false, withGroupSeparator: locale) else {
             if self.assetId == nil {
-                return ("n/a", self.fiatCurrency ?? "")
+                return ("n/a", currency)
             }
             return ("", "")
         }
-        return (value, self.fiatCurrency ?? "")
+        return (value, currency)
     }
 
     func toDenom(_ denomination: DenominationType? = nil, locale: Bool = true) -> (String, String) {

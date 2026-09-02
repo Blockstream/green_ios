@@ -73,7 +73,7 @@ public struct AssetInfo: Codable, Equatable {
     public static var test: AssetInfo {
         let denom = WalletManager.current?.prominentSession?.settings?.denomination ?? .BTC
         return AssetInfo(assetId: testId,
-                         name: "Testnet",
+                         name: "Testnet Bitcoin",
                          precision: denom.digits,
                          ticker: DenominationType.denominationsTEST[denom])
     }
@@ -89,7 +89,7 @@ public struct AssetInfo: Codable, Equatable {
     public static var ltest: AssetInfo {
         let denom = WalletManager.current?.prominentSession?.settings?.denomination ?? .BTC
         return AssetInfo(assetId: ltestId,
-                         name: "Liquid Testnet",
+                         name: "Testnet Liquid Bitcoin",
                          precision: denom.digits,
                          ticker: DenominationType.denominationsLTEST[denom])
     }

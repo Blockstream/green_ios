@@ -43,6 +43,9 @@ public class AssetsManager {
     }
 
     private func getInfo(for key: String, provider: AssetsProvider) -> AssetInfo? {
+        if key == AssetInfo.btcId && testnet {
+            return AssetInfo.test
+        }
         let main = AssetInfo.all.filter { $0.assetId == key }.first
         if let main = main {
             return main
