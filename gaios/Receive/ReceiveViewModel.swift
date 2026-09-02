@@ -317,15 +317,11 @@ final class ReceiveViewModel: Sendable {
     var showSegmented: Bool {
         if state.anyOrAsset.assetId != AssetInfo.lbtcId { return false }
         if state.type == .lwkSwap { return true }
-        if wm.lwkBoltzBackend?.logged ?? false {
-            switch state.anyOrAsset {
-            case .anyLiquid, .anyAmp, .anyAmpLegacy:
-                return false
-            default:
-                return true
-            }
-        } else {
+        switch state.anyOrAsset {
+        case .anyLiquid, .anyAmp, .anyAmpLegacy:
             return false
+        default:
+            return true
         }
     }
     var maxLimitAmount: String? {
