@@ -291,7 +291,7 @@ public struct JadeRequest<T: Codable>: Decodable, Encodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
         method = try container.decode(String.self, forKey: .method)
-        params = try T(from: decoder)
+        params = try container.decodeIfPresent(T.self, forKey: .params)
     }
 
     public init(id: String? = nil, method: String, params: T? = nil) {
@@ -305,9 +305,7 @@ public struct JadeRequest<T: Codable>: Decodable, Encodable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(method, forKey: .method)
-        if params != nil {
-            try container.encode(params, forKey: .params)
-        }
+        try container.encodeIfPresent(params, forKey: .params)
     }
 
     public var encoded: Data? {
@@ -318,12 +316,26 @@ public struct JadeRequest<T: Codable>: Decodable, Encodable {
 public struct JadeResponseError: Codable {
     public let code: Int
     public let message: String
-    public let data: Data? = nil
+    public let data: Data?
 
     private enum CodingKeys: String, CodingKey {
         case code
         case message
         case data
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        code = try container.decode(Int.self, forKey: .code)
+        message = try container.decode(String.self, forKey: .message)
+        data = try? container.decode(Data.self, forKey: .data)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(code, forKey: .code)
+        try container.encode(message, forKey: .message)
+        try container.encodeIfPresent(data, forKey: .data)
     }
 }
 
