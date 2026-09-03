@@ -37,7 +37,7 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
 
     var account = { WalletsStorage.shared.current }()
     var buttonConstraint: NSLayoutConstraint?
-    var session: SessionManager!
+    var backend: GdkNetworkBackend!
     var username: String?
     var preDeleteFlag = false
 
@@ -132,7 +132,13 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         startAnimating()
         Task {
             do {
-                try await session.register(credentials: Credentials(username: username, password: password))
+                try await backend.session
+                    .register(
+                        credentials: Credentials(
+                            username: username,
+                            password: password
+                        )
+                    )
                 load()
                 dismiss(action)
             } catch {
@@ -144,7 +150,7 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
 
     func load() {
         Task {
-            username = try? await session.getWatchOnlyUsername()
+            username = try? await backend.session.getWatchOnlyUsername()
             if username != "" {
                 self.btnSave.setTitle("id_update".localized, for: .normal)
                 self.usernameField.text = username

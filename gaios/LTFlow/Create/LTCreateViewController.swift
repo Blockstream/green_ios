@@ -19,9 +19,18 @@ class LTCreateViewController: UIViewController {
     @IBOutlet weak var lblInfo2: UILabel!
     @IBOutlet weak var lblInfo3: UILabel!
 
-    var viewModel: LTCreateViewModel!
+    private var viewModel: LTCreateViewModel
     private var riveView: RiveView?
     private var isJadeEnableAnalyticsStarted = false
+
+    init?(coder: NSCoder, viewModel: LTCreateViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()

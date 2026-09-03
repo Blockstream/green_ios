@@ -2,7 +2,6 @@ import Foundation
 import UIKit
 import core
 
-
 class SetGauthViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -13,20 +12,24 @@ class SetGauthViewController: UIViewController {
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var btnCopy: UIButton!
 
-    var session: SessionManager!
+    private var viewModel: Set2FAViewModel
+    weak var coordinator: SettingsCoordinator?
     private var gauthData: String?
-    private var connected = true
-    private var updateToken: NSObjectProtocol?
+
+    init?(coder: NSCoder, viewModel: Set2FAViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         lblTitle.text = "id_authenticator_qr_code".localized
-
-        guard let session = session.session,
-              let dataTwoFactorConfig = try? session.getTwoFactorConfig(),
-              let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: [])) else { return }
-        gauthData = twoFactorConfig.gauth.data
-        guard let secret = twoFactorConfig.gauthSecret() else {
+        gauthData = viewModel.backend?.twoFactorConfig?.gauth.data
+        guard let secret = viewModel.backend?.twoFactorConfig?.gauthSecret() else {
             DropAlert().error(message: "id_operation_failure".localized)
             return
         }
@@ -48,29 +51,9 @@ class SetGauthViewController: UIViewController {
         qrCodeView.addGestureRecognizer(longPressRecognizer)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if let token = updateToken {
-            NotificationCenter.default.removeObserver(token)
-        }
-    }
-
     func copyToClipboard() {
         UIPasteboard.general.string = secretLabel.text
         DropAlert().info(message: "id_copy_to_clipboard".localized)
-    }
-
-    func updateConnection(_ notification: Notification) {
-        if let data = notification.userInfo,
-              let json = try? JSONSerialization.data(withJSONObject: data, options: []),
-              let connection = try? JSONDecoder().decode(Connection.self, from: json) {
-            self.connected = connection.connected
-        }
     }
 
     func magnifyQR() {
@@ -99,20 +82,17 @@ class SetGauthViewController: UIViewController {
             do {
                 let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: gauth)
                 let params = ChangeSettingsTwoFactorParams(method: .gauth, config: config)
-                try await session.changeSettingsTwoFactor(params)
-                try await self.session.loadTwoFactorConfig()
-                self.navigationController?.popViewController(animated: true)
-            } catch {
-                if let twofaError = error as? TwoFactorCallError {
-                    switch twofaError {
-                    case .failure(let localizedDescription), .cancel(let localizedDescription):
-                        DropAlert().error(message: localizedDescription.localized)
-                    }
+                try await viewModel.changeSettingsTwoFactor(params)
+                self.stopAnimating()
+                if let coordinator {
+                    coordinator.pop()
                 } else {
-                    DropAlert().error(message: error.localizedDescription.localized)
+                    self.navigationController?.popViewController(animated: true)
                 }
+            } catch {
+                self.stopAnimating()
+                DropAlert().error(message: error.description().localized)
             }
-            self.stopAnimating()
         }
     }
 

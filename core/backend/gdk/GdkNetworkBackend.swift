@@ -26,6 +26,11 @@ public final class GdkNetworkBackend: NetworkBackend {
     private let blockDebouncer = NotificationDebouncer(interval: .milliseconds(300))
     private let transactionDebouncer = NotificationDebouncer(interval: .milliseconds(300))
 
+
+    public var twoFactorConfig: TwoFactorConfig?
+    public var settings: Settings?
+
+
     public init(
         network: GdkNetwork,
         popupResolver: PopupResolverDelegate? = nil,
@@ -352,7 +357,7 @@ public final class GdkNetworkBackend: NetworkBackend {
                 walletHashId: walletIdentifier.walletHashId,
                 refresh: refresh,
                 hasGdkCache: hasGdkCache || network.multisig)
-            _ = try? await session.loadSettings()
+            try? await loadSettings()
             // Allow initialization calls to have priority over notifications initiated updates
             disableNotificationHandling = false
             return res
@@ -424,6 +429,49 @@ public final class GdkNetworkBackend: NetworkBackend {
             hidden: hidden ?? account.hidden
         )
     }
+
+    public func loadSettings() async throws {
+        self.settings = try await self.session.getSettings()
+        if networkId.multisig {
+            self.twoFactorConfig = try await session.getTwoFactorConfig()
+        }
+    }
+    public func setCsvTimeLock(csv: CsvTime) async throws {
+        guard let values = csv.value(for: gdkNetwork) else {
+            throw GaError.GenericError("Invalid csv")
+        }
+        try await session.setCSVTime(value: values)
+        try await loadSettings()
+    }
+    public func resetTwoFactor(email: String, isDispute: Bool) async throws {
+        try await session.resetTwoFactor(email: email, isDispute: isDispute)
+        try await loadSettings()
+    }
+    public func cancelTwoFactorReset() async throws {
+        try await session.cancelTwoFactorReset()
+        try await loadSettings()
+    }
+    public func undoTwoFactorReset(email: String) async throws {
+        try await session.undoTwoFactorReset(email: email)
+        try await loadSettings()
+    }
+    public func changeSettings(_ param: Settings) async throws {
+        try await session.changeSettings(param)
+        try await loadSettings()
+    }
+    public func changeSettingsTwoFactor(_ param: ChangeSettingsTwoFactorParams) async throws {
+        try await session.changeSettingsTwoFactor(param)
+        try await loadSettings()
+    }
+    public func setTwoFactorLimit(_ param: TwoFactorConfigLimits) async throws {
+        try await session.setTwoFactorLimit(param)
+        try await loadSettings()
+    }
+    public func sendNlocktimes() async throws {
+        try await session.session?.sendNlocktimes()
+        try await loadSettings()
+    }
+
 }
 
 extension GdkNetworkBackend: NewNotificationDelegate {
@@ -449,9 +497,8 @@ extension GdkNetworkBackend: NewNotificationDelegate {
                 .info(
                     "GdkNetworkBackend didReceive twoFactorReset on \(networkId.network)"
                 )
-            Task { [weak session, weak newNotificationDelegate] in
-                _ = try await session?.loadSettings()
-                try await session?.loadTwoFactorConfig()
+            Task { [weak self, weak newNotificationDelegate] in
+                try await self?.loadSettings()
                 newNotificationDelegate?
                     .didReceive(event: event, networkId: networkId)
             }
@@ -460,8 +507,8 @@ extension GdkNetworkBackend: NewNotificationDelegate {
                 .info(
                     "GdkNetworkBackend didReceive updateSettings on \(networkId.network)"
                 )
-            Task { [weak session, weak newNotificationDelegate] in
-                _ = try await session?.loadSettings()
+            Task { [weak self, weak newNotificationDelegate] in
+                try await self?.loadSettings()
                 newNotificationDelegate?
                     .didReceive(event: event, networkId: networkId)
             }

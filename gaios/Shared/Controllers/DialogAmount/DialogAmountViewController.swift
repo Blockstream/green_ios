@@ -43,7 +43,7 @@ class DialogAmountViewController: KeyboardViewController {
     var feeAsset: String { account?.gdkNetwork.getFeeAsset() ?? "btc" }
     var maxDecimals: Int {
         if selectedType == .FIAT { return 2 }
-        let denomination = WalletManager.current?.prominentSession?.settings?.denomination ?? .BTC
+        let denomination = WalletManager.current?.settings?.denomination ?? .BTC
         return Int(denomination.digits)
     }
 
@@ -130,8 +130,8 @@ class DialogAmountViewController: KeyboardViewController {
     }
 
     func setDenomination() {
-        guard let session = WalletManager.current?.prominentSession,
-                let settings = session.settings else {
+        guard let wm = WalletManager.current,
+                let settings = wm.settings else {
             return
         }
         if selectedType == TransactionBaseType.BTC, let account {

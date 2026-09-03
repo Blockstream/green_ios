@@ -17,7 +17,17 @@ class RecoveryTransactionsViewController: UIViewController {
     @IBOutlet weak var lblTitle3: UILabel!
     @IBOutlet weak var actionSwitch: UISwitch!
 
-    var viewModel: RecoveryTransactionsViewModel!
+    private var viewModel: RecoveryTransactionsViewModel
+    weak var coordinator: SettingsCoordinator?
+
+    init?(coder: NSCoder, viewModel: RecoveryTransactionsViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,20 +60,15 @@ class RecoveryTransactionsViewController: UIViewController {
     @MainActor
     func update() {
         emailIsSet(false)
-        Task {
-            do {
-                let twoFactorEmail = try await viewModel.getTwoFactorItemEmail()
-                if let twoFactorEmail = twoFactorEmail {
-                    if let maskedData = twoFactorEmail.maskedData, maskedData.count > 1, twoFactorEmail.confirmed == true {
-                        self.emailIsSet(true)
-                    } else {
-                        self.emailIsSet(false)
-                    }
-                }
-            } catch { print(error) }
-            if let notifications = viewModel?.session.settings?.notifications {
-                actionSwitch.isOn = notifications.emailIncoming == true
+        if let twoFactorEmail = viewModel.getTwoFactorItemEmail {
+            if let maskedData = twoFactorEmail.maskedData, maskedData.count > 1, twoFactorEmail.confirmed == true {
+                self.emailIsSet(true)
+            } else {
+                self.emailIsSet(false)
             }
+        }
+        if let notifications = viewModel.backend?.settings?.notifications {
+            actionSwitch.isOn = notifications.emailIncoming == true
         }
     }
 
@@ -75,15 +80,12 @@ class RecoveryTransactionsViewController: UIViewController {
     }
 
     func enableRecoveryTransactions(_ enable: Bool) {
-        guard let session = viewModel?.session, var settings = viewModel?.session.settings else { return }
-        settings.notifications = SettingsNotifications(emailIncoming: enable,
-                                                       emailOutgoing: enable)
-        Task {
+        Task { [weak self] in
             do {
-                _ = try await session.changeSettings(settings: settings)
-                self.update()
+                _ = try await self?.viewModel.enableRecoveryTransactions(enable: enable)
+                self?.update()
             } catch {
-                self.showError(error)
+                self?.showError(error)
             }
         }
     }
@@ -93,28 +95,25 @@ class RecoveryTransactionsViewController: UIViewController {
     }
 
     @IBAction func btnRequest(_ sender: Any) {
-        guard let session = viewModel?.session else { return }
         self.startAnimating()
         Task {
             do {
-                try await session.session?.sendNlocktimes()
+                try await viewModel.sendNlocktimes()
                 await MainActor.run {
                     DropAlert().success(message: "id_recovery_transaction_request".localized)
                 }
             } catch {
-                self.showError(error)
+                self.showError(error.description().localized)
             }
+            self.stopAnimating()
         }
-        self.stopAnimating()
     }
 
     @IBAction func btnSetEmail(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SetEmailViewController") as? SetEmailViewController {
-            vc.session = viewModel.session
-            vc.isSetRecovery = true
-            navigationController?.pushViewController(vc, animated: true)
-        }
+        guard let coordinator else { return }
+        coordinator.navigate(to: .setEmailViewController(
+            coordinator.set2FAViewModel(networkId: viewModel.networkId, method: .email, isSetRecovery: true)
+        ))
     }
 
     @IBAction func btnMoreInfo(_ sender: Any) {

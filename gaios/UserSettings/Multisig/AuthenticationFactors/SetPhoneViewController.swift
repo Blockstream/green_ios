@@ -2,7 +2,6 @@ import Foundation
 import UIKit
 import core
 
-
 class SetPhoneViewController: KeyboardViewController {
 
     @IBOutlet weak var iconNetwork: UIImageView!
@@ -17,16 +16,20 @@ class SetPhoneViewController: KeyboardViewController {
 
     @IBOutlet weak var btnCountryPicker: UIButton!
 
-    var sms = false
-    var phoneCall = false
-    var network = NetworkId.greenMainnet
-    var session: SessionManager? {
-        WalletManager.current?.gdkNetworkBackendOrNil(network)?.session
-    }
-    var isSmsBackup = false
+    private var viewModel: Set2FAViewModel
+    weak var coordinator: SettingsCoordinator?
+    var sms: Bool { viewModel.sms }
+    var phoneCall: Bool { viewModel.phoneCall }
+    var isSmsBackup: Bool { viewModel.isSmsBackup }
 
-    private var connected = true
-    private var updateToken: NSObjectProtocol?
+    init?(coder: NSCoder, viewModel: Set2FAViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 
     @IBOutlet weak var lblAgree: UILabel!
     @IBOutlet weak var lblFrequency: UILabel!
@@ -34,7 +37,7 @@ class SetPhoneViewController: KeyboardViewController {
 
     var icon: UIImage {
         get {
-            switch network {
+            switch viewModel.networkId {
             case .greenMainnet:
                 return UIImage(named: "ntw_btc")!
             case .greenLiquid:
@@ -65,20 +68,8 @@ class SetPhoneViewController: KeyboardViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
         countryCodeField.addTarget(self, action: #selector(onTapCountry), for: UIControl.Event.touchDown)
 
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if let token = updateToken {
-            NotificationCenter.default.removeObserver(token)
-        }
     }
 
     func setContent() {
@@ -158,14 +149,6 @@ class SetPhoneViewController: KeyboardViewController {
         lblHelp.addGestureRecognizer(tapGesture2)
     }
 
-    func updateConnection(_ notification: Notification) {
-        if let data = notification.userInfo,
-              let json = try? JSONSerialization.data(withJSONObject: data, options: []),
-              let connection = try? JSONDecoder().decode(Connection.self, from: json) {
-            self.connected = connection.connected
-        }
-    }
-
     @objc func onTapLblAgree(_ gesture: UITapGestureRecognizer) {
         guard let text = lblAgree.text else { return }
         let rangeTerms = (text.lowercased() as NSString).range(of: strTerms.lowercased())
@@ -218,30 +201,24 @@ class SetPhoneViewController: KeyboardViewController {
             return
         }
         self.startAnimating()
-        Task {
+        let isSmsBackup = self.isSmsBackup
+        Task { [weak self] in
             do {
-                guard let session else { return }
                 let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: countryCode + phone, isSmsBackup: isSmsBackup)
                 let params = ChangeSettingsTwoFactorParams(method: method, config: config)
-                try await session.changeSettingsTwoFactor(params)
-                _ = try await session.loadTwoFactorConfig()
-                await MainActor.run {
-                    self.stopAnimating()
-                    if self.isSmsBackup {
-                        DropAlert().success(message: "id_2fa_call_is_now_enabled".localized)
-                    }
-                    self.navigationController?.popViewController(animated: true)
+                try await self?.viewModel.changeSettingsTwoFactor(params)
+                self?.stopAnimating()
+                if isSmsBackup {
+                    DropAlert().success(message: "id_2fa_call_is_now_enabled".localized)
+                }
+                if let coordinator = self?.coordinator {
+                    coordinator.pop()
+                } else {
+                    self?.navigationController?.popViewController(animated: true)
                 }
             } catch {
-                self.stopAnimating()
-                if let twofaError = error as? TwoFactorCallError {
-                    switch twofaError {
-                    case .failure(let localizedDescription), .cancel(let localizedDescription):
-                        DropAlert().error(message: localizedDescription.localized)
-                    }
-                } else {
-                    DropAlert().error(message: error.localizedDescription)
-                }
+                self?.stopAnimating()
+                DropAlert().error(message: error.description().localized)
             }
         }
     }

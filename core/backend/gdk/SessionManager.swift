@@ -16,8 +16,6 @@ public enum LoginError: Error, Equatable {
 
 public class SessionManager {
 
-    public var twoFactorConfig: TwoFactorConfig?
-    public var settings: Settings?
     public var session: GDKSession?
     public var networkId: NetworkId
     public var gdkNetwork: GdkNetwork
@@ -36,10 +34,6 @@ public class SessionManager {
 
     // Serial reconnect queue for network events
     public let reconnectionTasks = SerialTasks<Void>()
-
-    public var isResetActive: Bool? {
-        get { twoFactorConfig?.twofactorReset.isResetActive }
-    }
 
     public init(_ networkId: NetworkId) {
         self.networkId = networkId
@@ -193,6 +187,15 @@ public class SessionManager {
         return try await rm.run()
     }
 
+    @discardableResult
+    func resolve(
+        bcurResolver: BcurResolver? = nil,
+        enableLogs: Bool = true,
+        _ call: (Session) throws -> TwoFactorCall?
+    ) async throws -> [String: Any]? {
+        try await resolve(try call(try await getSession()), bcurResolver: bcurResolver, enableLogs: enableLogs)
+    }
+
     public func transactions(subaccount: UInt32, first: Int = 0, count: Int = 30) async throws -> Transactions {
         let params = GetTransactionsParams(
             subaccount: subaccount,
@@ -242,21 +245,11 @@ public class SessionManager {
         return try await self.wrapper(fun: self.session?.validate, params: addressees)
     }
 
-    @discardableResult
-    public func loadTwoFactorConfig() async throws -> TwoFactorConfig? {
-        if let dataTwoFactorConfig = try self.session?.getTwoFactorConfig() {
-            print(dataTwoFactorConfig)
-            let res = TwoFactorConfig.from(dataTwoFactorConfig) as? TwoFactorConfig
-            self.twoFactorConfig = res
+    public func getSession() async throws -> Session {
+        guard let session else {
+            throw GaError.GenericError("Not connected")
         }
-        return self.twoFactorConfig
-    }
-
-    public func loadSettings() async throws -> Settings? {
-        if let data = try self.session?.getSettings() {
-            self.settings = Settings.from(data)
-        }
-        return self.settings
+        return session
     }
 
     // create a default segwit account if doesn't exist on singlesig
@@ -481,14 +474,17 @@ public class SessionManager {
         _ = try await wrap(fun: self.session?.setCSVTime, params: ["value": value])
     }
 
-    public func setTwoFactorLimit(details: [String: Any]) async throws {
-        _ = try await wrap(fun: self.session?.setTwoFactorLimit, params: details)
+    public func setTwoFactorLimit(_ details: TwoFactorConfigLimits) async throws {
+        _ = try await wrap(
+            fun: self.session?.setTwoFactorLimit,
+            params: details.asDictionary()
+        )
     }
 
     public func convertAmount(input: [String: Any]) throws -> [String: Any] {
         try self.session?.convertAmount(input: input) ?? [:]
     }
-    
+
     public func convertAmount(params: Balance) throws -> Balance? {
         let res = try self.session?.convertAmount(input: params.toDict() ?? [:])
         return Balance.from(res ?? [:]) as? Balance
@@ -509,19 +505,6 @@ public class SessionManager {
         return res["result"] as? [String: Int64] ?? [:]
     }
 
-    public func changeSettingsTwoFactor(_ params: ChangeSettingsTwoFactorParams) async throws {
-        do {
-            log("changeSettingsTwoFactor", params.toDict() ?? [:])
-            let res = try self.session?.changeSettingsTwoFactor(method: params.method.rawValue, details: params.config.toDict() ?? [:])
-            if let res = try await resolve(res) {
-                log("changeSettingsTwoFactor", res)
-            }
-        } catch {
-            logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \("changeSettingsTwoFactor") \(error)")
-            throw error
-        }
-    }
-
     public func updateSubaccount(_ params: UpdateSubaccountParams) async throws {
         _ = try await wrap(fun: self.session?.updateSubaccount, params: params.toDict() ?? [:])
     }
@@ -534,16 +517,6 @@ public class SessionManager {
 
     public func renameSubaccount(_ params: UpdateSubaccountParams) async throws {
         _ = try await wrap(fun: self.session?.updateSubaccount, params: params.toDict() ?? [:])
-    }
-
-    public func changeSettings(settings: Settings) async throws {
-        if let details = settings.toDict(),
-            let res = try self.session?.changeSettings(
-            details: details
-            ) {
-            _ = try await resolve(res, bcurResolver: nil)
-            self.settings = settings
-        }
     }
 
     public func getUnspentOutputsForPrivateKey(_ params: UnspentOutputsForPrivateKeyParams) async throws -> [String: Any]? {
@@ -735,6 +708,26 @@ public class SessionManager {
     }
 }
 
+
+extension SessionManager {
+    public func getTwoFactorConfig() async throws -> TwoFactorConfig {
+        return try await getSession().getTwoFactorConfig().decode()
+    }
+
+    public func getSettings() async throws -> Settings {
+        return try await getSession().getSettings().decode()
+    }
+
+    public func changeSettings(_ params: Settings) async throws {
+        try await resolve {
+            try $0.changeSettings(details: params.asDictionary())
+        }
+    }
+    public func changeSettingsTwoFactor(_ params: ChangeSettingsTwoFactorParams) async throws {
+        try await resolve { try $0.changeSettingsTwoFactor(method: params.method.rawValue, details: params.config.asDictionary()) }
+    }
+}
+
 extension SessionManager {
     public func newNotification(notification: [String: Any]?) {
         guard let notificationEvent = notification?["event"] as? String,
@@ -756,14 +749,12 @@ extension SessionManager {
             guard let txEvent = TransactionEvent.from(data) as? TransactionEvent else { break }
             newNotificationDelegate?.didReceive(event: .newTransaction(transaction: txEvent), networkId: networkId)
         case .TwoFactorReset:
-            Task {
-                _ = try? await loadTwoFactorConfig()
                 newNotificationDelegate?.didReceive(event: .twoFactorReset, networkId: networkId)
-            }
         case .Settings:
-            guard let settings = Settings.from(data) else { break }
-            self.settings = settings
-            newNotificationDelegate?.didReceive(event: .updateSettings(settings: settings), networkId: networkId)
+            if let settings = try? data.decode(Settings.self) {
+                newNotificationDelegate?
+                    .didReceive(event: .updateSettings(settings: settings), networkId: networkId)
+            }
         case .Network:
             guard let connection = Connection.from(data) as? Connection else { return }
             let hasElectrumUrl = !(getPersonalElectrumServer()?.isEmpty ?? true)

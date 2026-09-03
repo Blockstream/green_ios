@@ -245,10 +245,14 @@ class TxDetailsViewModel {
     }
 
     func showBumpFee() -> Bool {
-        let subaccount =  WalletManager.current?.accounts.filter { $0.id == transaction.accountId }.first
-        let showBumpFee = !transaction.isLiquid && transaction.canRBF && !(
-            subaccount?.gdkSession?.isResetActive ?? false
-        )
+        guard let wm = WalletManager.current, let subaccount =  wm.accounts.filter({ $0.id == transaction.accountId }).first else {
+            return false
+        }
+        let isResetActive = wm
+            .gdkNetworkBackendOrNil(
+                subaccount.networkId
+            )?.twoFactorConfig?.twofactorReset.isResetActive ?? false
+        let showBumpFee = !transaction.isLiquid && transaction.canRBF && !isResetActive
         return showBumpFee
     }
 

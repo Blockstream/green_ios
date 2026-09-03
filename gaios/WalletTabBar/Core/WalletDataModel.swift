@@ -25,6 +25,10 @@ actor WalletDataModel {
         wm.newNotificationDelegate = self
     }
 
+    func updateMainWallet(_ wallet: Wallet) {
+        mainWallet = wallet
+    }
+
     // Async Multi-Subscriber Stream in actor-isolated
     func states() -> AsyncStream<SubscriberUpdate> {
         let id = UUID()
@@ -239,7 +243,7 @@ actor WalletDataModel {
     }
 
     private func performFetchPriceChart() async {
-        let currency = wm.prominentSession?.settings?.pricing["currency"] ?? "USD"
+        let currency = wm.settings?.pricing["currency"] ?? "USD"
         let currentCurrency = currency.lowercased()
 
         if let cached = await BitcoinPriceService.shared.cachedPriceChart(currency: currentCurrency) {
@@ -381,10 +385,10 @@ actor WalletDataModel {
             }.map { AlertCardType.login($0.key.network, $0.value) }
         // Load dispute on not wo session
         if !mainWallet.isWatchonly {
-            wm.activeGdkMultisigBackends.map{$0.session}.forEach { session in
-                if session.logged && session.isResetActive ?? false,
-                   let twoFaReset = session.twoFactorConfig?.twofactorReset {
-                    let message = TwoFactorResetMessage(twoFactorReset: twoFaReset, network: session.gdkNetwork.network)
+            wm.activeGdkMultisigBackends.forEach { backend in
+                if backend.logged && backend.twoFactorConfig?.twofactorReset.isResetActive ?? false,
+                   let twoFaReset = backend.twoFactorConfig?.twofactorReset {
+                    let message = TwoFactorResetMessage(twoFactorReset: twoFaReset, network: backend.gdkNetwork.network)
                     if twoFaReset.isDisputeActive {
                         cards.append(.dispute(message))
                     } else {

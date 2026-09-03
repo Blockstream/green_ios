@@ -10,8 +10,6 @@ struct SendHWConfirmViewModel {
     var subaccount: Account?
     var isMultiAddressees: Bool = false
 
-    var session: SessionManager? { subaccount?.gdkSession }
-
     var addressee: Addressee? { tx.addressees.first }
     var address: String? { addressee?.address }
     var assetId: String {

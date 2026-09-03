@@ -6,6 +6,7 @@ class TabHomeVC: TabViewController {
 
     private let viewModel: TabHomeVM
     private lazy var transactActionsCoordinator = TransactActionsCoordinator(viewController: self, dataSource: viewModel)
+    private var settingsCoordinator: SettingsCoordinator? { walletTab.settingsCoordinator }
     @IBOutlet weak var tableView: UITableView?
 
     init?(coder: NSCoder, viewModel: TabHomeVM) {
@@ -36,6 +37,16 @@ class TabHomeVC: TabViewController {
             name: PromoManager.promosDidLoad,
             object: nil
         )
+        attachSettingsCoordinator()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        attachSettingsCoordinator()
+    }
+
+    private func attachSettingsCoordinator() {
+        walletTab.attachSettingsCoordinator()
     }
 
     deinit {
@@ -144,11 +155,10 @@ extension TabHomeVC { // navigation
         }
     }
     func twoFactorResetMessageScreen(msg: TwoFactorResetMessage) {
-        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "Learn2faViewController") as? Learn2faViewController {
-            vc.message = msg
-            navigationController?.pushViewController(vc, animated: true)
-        }
+        attachSettingsCoordinator()
+        guard let coordinator = settingsCoordinator else { return }
+        let networkId = NetworkId(network: msg.network) ?? coordinator.defaultMultisigNetworkId
+        coordinator.navigate(to: .learn2fa(coordinator.learn2faViewModel(networkId: networkId, message: msg)))
     }
     func receive() {
         transactActionsCoordinator.receive()

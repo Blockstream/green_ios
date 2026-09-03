@@ -41,6 +41,7 @@ public struct TwoFactorConfigLimits: Codable {
         case mbtc = "mbtc"
         case ubtc = "ubtc"
         case sats = "sats"
+        case satoshi = "satoshi"
     }
     public let isFiat: Bool
     public let fiat: String?
@@ -50,10 +51,23 @@ public struct TwoFactorConfigLimits: Codable {
     public let mbtc: String?
     public let ubtc: String?
     public let sats: String?
+    public let satoshi: Int64?
 
     public func get<T>(_ key: CodingKeys) -> T? {
         let value = Mirror(reflecting: self).children.filter { $0.label == key.rawValue }.map { return $0.value as? T }
         return value.first ?? nil
+    }
+
+    public init(isFiat: Bool, fiat: String? = nil, fiatCurrency: String? = nil, btc: String? = nil, bits: String? = nil, mbtc: String? = nil, ubtc: String? = nil, sats: String? = nil, satoshi: Int64? = nil) {
+        self.isFiat = isFiat
+        self.fiat = fiat
+        self.fiatCurrency = fiatCurrency
+        self.btc = btc
+        self.bits = bits
+        self.mbtc = mbtc
+        self.ubtc = ubtc
+        self.sats = sats
+        self.satoshi = satoshi
     }
 }
 

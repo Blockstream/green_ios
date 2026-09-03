@@ -577,12 +577,12 @@ extension ManageAssetViewController {
     func getBitcoinSubaccounts() -> [Account] {
         WalletManager.current?.bitcoinSubaccounts.sorted() ?? []
     }
-    func openWatchOnly(session: SessionManager) {
+    func openWatchOnly(backend: GdkNetworkBackend) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWatchOnlySetUpViewController") as? DialogWatchOnlySetUpViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
-            vc.session = session
+            vc.backend = backend
             present(vc, animated: false, completion: nil)
         }
     }
@@ -601,8 +601,8 @@ extension ManageAssetViewController: AccountSettingsViewControllerDelegate {
             if viewModel.selectedSubaccount?.isSinglesig == true {
                 showDescriptor()
             } else if viewModel.selectedSubaccount?.isMultisig == true {
-                if let session = viewModel.selectedSubaccount?.gdkSession {
-                    openWatchOnly(session: session)
+                if let backend = viewModel.selectedSubaccount?.networkBackend as? GdkNetworkBackend {
+                    openWatchOnly(backend: backend)
                 }
             }
         case .archive:
@@ -618,6 +618,7 @@ extension ManageAssetViewController: DialogRenameViewControllerDelegate {
 }
 extension ManageAssetViewController: AccountArchivedViewControllerDelegate {
     func onDismissArchived() {
+        self.viewModel.refresh()
         self.navigationController?.popViewController(animated: true)
     }
 

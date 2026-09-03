@@ -54,7 +54,7 @@ final class SendSwapViewModel {
             account: defaultAccountAndAssetTo.account,
             assetId: defaultAccountAndAssetTo.assetId,
             amount: nil)
-        let denomination = wm.prominentSession?.settings?.denomination
+        let denomination = wm.settings?.denomination
         self.state = SwapPositionState(from: positionFrom, to: positionTo, priority: .Medium, denomination: denomination ?? .Sats)
         self.delegate = delegate
         if let networkId = wm.activeBitcoinNetworkIds.first,

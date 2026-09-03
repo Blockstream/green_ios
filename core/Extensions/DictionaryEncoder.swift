@@ -1,6 +1,7 @@
 import Foundation
 public enum CodingError: Error {
     case dictEncodingFailed
+    case dictDecodingFailed
 }
 
 // MARK: - Dictionary Encoder & Decoder
@@ -29,7 +30,10 @@ public final class DictionaryDecoder {
         self.decoder = decoder
     }
 
-    public func decode<T: Decodable>(_ type: T.Type = T.self, from dictionary: [String: Any]) throws -> T {
+    public func decode<T: Decodable>(_ type: T.Type = T.self, from dictionary: [String: Any]?) throws -> T {
+        guard let dictionary else {
+            throw CodingError.dictDecodingFailed
+        }
         let data = try JSONSerialization.data(withJSONObject: dictionary, options: [])
         return try data.decode(type, using: decoder)
     }
@@ -53,6 +57,14 @@ public extension Encodable {
 
 public extension Dictionary where Key == String, Value == Any {
     /// Decodes a [String: Any] dictionary into a Decodable object.
+    func decode<T: Decodable>(_ type: T.Type = T.self, using decoder: JSONDecoder = JSONDecoder()) throws -> T {
+        return try DictionaryDecoder(decoder: decoder).decode(type, from: self)
+    }
+}
+
+public extension Optional where Wrapped == [String: Any] {
+    /// Decodes an optional [String: Any] dictionary into a Decodable object.
+    /// Throws `CodingError.dictDecodingFailed` when the dictionary is nil.
     func decode<T: Decodable>(_ type: T.Type = T.self, using decoder: JSONDecoder = JSONDecoder()) throws -> T {
         return try DictionaryDecoder(decoder: decoder).decode(type, from: self)
     }

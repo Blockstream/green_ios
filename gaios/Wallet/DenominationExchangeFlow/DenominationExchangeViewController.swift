@@ -28,8 +28,17 @@ class DenominationExchangeViewController: UIViewController {
     @IBOutlet weak var btnCancel: UIButton!
     @IBOutlet weak var btnOk: UIButton!
 
-    let viewModel = DenominationExchangeViewModel()
+    private let viewModel: DenominationExchangeViewModel
     weak var delegate: DenominationExchangeViewControllerDelegate?
+
+    init?(coder: NSCoder, viewModel: DenominationExchangeViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()

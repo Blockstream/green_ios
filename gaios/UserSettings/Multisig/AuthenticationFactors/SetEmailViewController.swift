@@ -2,7 +2,6 @@ import Foundation
 import UIKit
 import core
 
-
 class SetEmailViewController: KeyboardViewController {
 
     @IBOutlet weak var headerTitle: UILabel!
@@ -11,11 +10,18 @@ class SetEmailViewController: KeyboardViewController {
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
 
-    private var connected = true
-    private var updateToken: NSObjectProtocol?
+    private var viewModel: Set2FAViewModel
+    weak var coordinator: SettingsCoordinator?
+    var isSetRecovery: Bool { viewModel.isSetRecovery }
 
-    var isSetRecovery: Bool = false
-    var session: SessionManager!
+    init?(coder: NSCoder, viewModel: Set2FAViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,18 +41,6 @@ class SetEmailViewController: KeyboardViewController {
         setRecoveryLabel.textColor = .white.withAlphaComponent(0.6)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if let token = updateToken {
-            NotificationCenter.default.removeObserver(token)
-        }
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         textField.becomeFirstResponder()
@@ -57,36 +51,26 @@ class SetEmailViewController: KeyboardViewController {
         buttonConstraint.constant = keyboardFrame.height
     }
 
-    func updateConnection(_ notification: Notification) {
-        if let data = notification.userInfo,
-              let json = try? JSONSerialization.data(withJSONObject: data, options: []),
-              let connection = try? JSONDecoder().decode(Connection.self, from: json) {
-            self.connected = connection.connected
-        }
-    }
-
     @objc func click(_ sender: UIButton) {
         guard let text = textField.text else { return }
         view.endEditing(true)
         self.startAnimating()
-        Task {
+        Task { [weak self] in
             do {
-                let config = TwoFactorConfigItem(enabled: self.isSetRecovery ? false : true, confirmed: true, data: text)
+                let config = TwoFactorConfigItem(enabled: self?.isSetRecovery ?? false ? false : true, confirmed: true, data: text)
                 let params = ChangeSettingsTwoFactorParams(method: .email, config: config)
-                try await session.changeSettingsTwoFactor(params)
-                try await session.loadTwoFactorConfig()
-                self.navigationController?.popViewController(animated: true)
-            } catch {
-                if let twofaError = error as? TwoFactorCallError {
-                    switch twofaError {
-                    case .failure(let localizedDescription), .cancel(let localizedDescription):
-                        DropAlert().error(message: localizedDescription.localized)
-                    }
+                try await self?.viewModel.changeSettingsTwoFactor(params)
+                self?.stopAnimating()
+                if let coordinator = self?.coordinator {
+                    coordinator.pop()
                 } else {
-                    DropAlert().error(message: error.localizedDescription)
+                    self?.navigationController?.popViewController(animated: true)
                 }
+            } catch {
+                self?.stopAnimating()
+                DropAlert()
+                    .error(message: error.description().localized)
             }
-            self.stopAnimating()
         }
     }
 

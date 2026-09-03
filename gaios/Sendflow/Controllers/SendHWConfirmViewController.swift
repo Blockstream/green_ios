@@ -76,7 +76,7 @@ class SendHWConfirmViewController: UIViewController {
             }
         }
 
-        if viewModel.assetId != viewModel.session?.gdkNetwork.getFeeAsset() {
+        if viewModel.assetId != viewModel.subaccount?.gdkNetwork.getFeeAsset() {
             [lblConversion].forEach {
                 $0?.isHidden = true
             }

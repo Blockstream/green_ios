@@ -39,7 +39,7 @@ class TabHomeVM: TabViewModel {
         state.priceChartTimeFrame
     }
     var defaultCurrency: String? {
-        if let settings = wm.prominentSession?.settings {
+        if let settings = wm.settings {
             return settings.pricing["currency"]
         }
         return nil

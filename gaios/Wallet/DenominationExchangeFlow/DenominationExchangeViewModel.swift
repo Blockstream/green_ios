@@ -4,9 +4,19 @@ import core
 
 class DenominationExchangeViewModel {
 
-    var wm: WalletManager { WalletManager.current! }
-    var session: SessionManager? { wm.prominentSession }
-    var settings: Settings? { session?.settings }
+    let mainWallet: Wallet
+    let manager: WalletManager
+
+    var backend: GdkNetworkBackend? {
+        manager.prominentNetworkBackend
+    }
+    var settings: Settings? { backend?.settings }
+    var networkId: NetworkId? { backend?.networkId }
+
+    internal init(mainWallet: Wallet, manager: WalletManager) {
+        self.mainWallet = mainWallet
+        self.manager = manager
+    }
     var editingDenomination: DenominationType?
     var editingExchange: CurrencyItem?
 
@@ -20,7 +30,7 @@ class DenominationExchangeViewModel {
         if let denom = denominations.filter({ $0.key == currentSymbol() }).first?.value {
             return denom
         }
-        return denominations[.BTC]!
+        return denominations[.BTC] ?? "btc"
     }
 
     func currentExchange() -> String {
@@ -42,20 +52,17 @@ class DenominationExchangeViewModel {
     }
 
     func dialogDenominationViewModel() -> DialogDenominationViewModel? {
-        guard let session = session, let settings = session.settings else { return nil }
-
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
-        let selected = settings.denomination
-        let network: NetworkId = session.gdkNetwork.mainnet ? .electrumMainnet : .electrumTestnet
-        return DialogDenominationViewModel(denomination: selected,
+        guard let backend = backend, let settings = backend.settings else { return nil }
+        return DialogDenominationViewModel(denomination: settings.denomination,
                                            denominations: list,
-                                           network: network)
+                                           network: backend.networkId)
     }
 
     func updateSettings(_ settings: Settings) async throws {
-        for networkId in wm.activeNetworkIds {
-            let backend = try? wm.gdkNetworkBackend(networkId)
-            _ = try? await backend?.session.changeSettings(settings: settings)
+        for networkId in manager.activeNetworkIds {
+            let backend = try? manager.gdkNetworkBackend(networkId)
+            _ = try? await backend?.changeSettings(settings)
         }
     }
 }

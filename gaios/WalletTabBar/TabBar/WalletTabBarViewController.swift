@@ -15,6 +15,7 @@ class WalletTabBarViewController: UITabBarController {
     var walletDataModel: WalletDataModel { walletTabBarModel.walletDataModel }
     var wm: WalletManager { walletTabBarModel.wm }
     var mainWallet: Wallet { walletTabBarModel.mainWallet }
+    private(set) var settingsCoordinator: SettingsCoordinator?
 
     init?(coder: NSCoder, walletTabBarModel: WalletTabBarModel) {
         self.walletTabBarModel = walletTabBarModel
@@ -32,6 +33,7 @@ class WalletTabBarViewController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        attachSettingsCoordinator()
         setTabBar()
         AppNotifications.shared.checkNotificationStatusAndPromptIfNeeded(from: self)
         walletTabBarModel.startup()
@@ -44,9 +46,28 @@ class WalletTabBarViewController: UITabBarController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        attachSettingsCoordinator()
         if walletTabBarModel.showWelcomeStatus() {
             addWelcomeDialog()
         }
+    }
+
+    func attachSettingsCoordinator() {
+        guard settingsCoordinator == nil, let nav = navigationController else { return }
+        settingsCoordinator = SettingsCoordinator(
+            nav: nav,
+            wallet: walletDataModel,
+            mainWallet: mainWallet,
+            onFinish: { [weak self] in self?.userLogout() }
+        )
+    }
+
+    func openSmsBackup(networkId: NetworkId) {
+        attachSettingsCoordinator()
+        guard let coordinator = settingsCoordinator else { return }
+        coordinator.navigate(to: .setPhoneViewController(
+            coordinator.set2FAViewModel(networkId: networkId, method: .phone, isSmsBackup: true)
+        ))
     }
 
     func addWelcomeDialog() {

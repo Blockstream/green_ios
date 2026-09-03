@@ -8,6 +8,7 @@ class TabSettingsVC: TabViewController {
 
     @IBOutlet weak var tableView: UITableView!
     let viewModel: TabSettingsVM
+    private var settingsCoordinator: SettingsCoordinator? { walletTab.settingsCoordinator }
 
     init?(coder: NSCoder, viewModel: TabSettingsVM) {
         self.viewModel = viewModel
@@ -23,11 +24,21 @@ class TabSettingsVC: TabViewController {
         view.backgroundColor = UIColor.gBlackBg()
         register()
         setContent()
+        attachCoordinator()
         viewModel.onUpdate = { [weak self] feature in
             DispatchQueue.main.async {
                 self?.onUpdate(feature: feature)
             }
         }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        attachCoordinator()
+    }
+
+    private func attachCoordinator() {
+        walletTab.attachSettingsCoordinator()
     }
 
     func onUpdate(feature: RefreshFeature?) {
@@ -132,40 +143,36 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        attachCoordinator()
+        guard let coordinator = settingsCoordinator else { return }
         let item = viewModel.settings[indexPath.section].items[indexPath.row]
         switch item {
-        case .header:
+        case .header, .version:
             return
         case .support:
-            walletTab.presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true), isPush: true)
+            coordinator.navigate(to: .support(ZendeskErrorRequest(shareLogs: true)))
         case .unifiedDenominationExchange:
-            presentDenominationExchange()
+            coordinator.navigate(to: .denominationExchange(coordinator.denominationExchangeViewModel()))
         case .logout:
-            walletTab.userLogout()
+            coordinator.navigate(to: .logout)
         case .rename:
-            presentDialogRenameViewController()
+            coordinator.navigate(to: .rename)
         case .lightning:
-            if viewModel.hasLightning() {
-                pushLTDetailsViewController()
+            if coordinator.hasLightning(), let model = coordinator.lightningDetailsViewModel() {
+                coordinator.navigate(to: .lightningDetails(model))
             } else {
-                pushLTCreateViewController()
+                coordinator.navigate(to: .lightningCreate(coordinator.lightningCreateViewModel()))
             }
         case .ampID:
-            let model = DialogAmpViewModel()
-            let storyboard = UIStoryboard(name: "AmpFlow", bundle: nil)
-            let vc = storyboard.instantiateViewController(identifier: "DialogAmpViewController") { coder in
-                DialogAmpViewController(coder: coder, model: model)
-            }
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
+            coordinator.navigate(to: .amp(coordinator.dialogAmpViewModel()))
         case .autoLogout:
-            showAutoLogout()
+            if let model = coordinator.dialogAutoLogoutViewModel() {
+                coordinator.navigate(to: .autologout(model))
+            }
         case .twoFactorAuthication:
-            openTwoFactorAuthentication()
+            coordinator.navigate(to: .twoFactorAuth(coordinator.tfaViewModel()))
         case .pgpKey:
-            openPgp()
-        case .version:
-            break
+            coordinator.navigate(to: .pgp(coordinator.pgpViewModel()))
         case .supportID:
             Task {
                 let supportId = await SupportManager.shared.str()
@@ -176,16 +183,13 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
                 }
             }
         case .archievedAccounts:
-            openArchivedAccounts()
+            coordinator.navigate(to: .archivedAccounts)
         case .watchOnly:
-            let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlySettingsViewController") as? WatchOnlySettingsViewController {
-                navigationController?.pushViewController(vc, animated: true)
-            }
+            coordinator.navigate(to: .watchonly(coordinator.watchOnlySettingsViewModel()))
         case .createAccount:
-            createAccount()
+            coordinator.navigate(to: .createAccount(coordinator.createAccountViewModel()))
         case .swaps:
-            pushJadeBoltzSwapViewController()
+            coordinator.navigate(to: .jadeBoltzSwap(coordinator.jadeBoltzSwapViewModel()))
         case .rescanSwaps:
             Task { await self.rescanSwaps() }
         }
@@ -204,17 +208,6 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
             stopLoader()
             showError(err.description().localized)
         }
-    }
-
-    @MainActor
-    func pushJadeBoltzSwapViewController() {
-        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        let viewModel = JadeBoltzSwapViewModel(wm: viewModel.wm, mainWallet: viewModel.mainWallet)
-        let vc = storyboard.instantiateViewController(identifier: "JadeBoltzSwapViewController") { coder in
-            JadeBoltzSwapViewController(coder: coder, viewModel: viewModel)
-        }
-        vc.delegate = self
-        navigationController?.pushViewController(vc, animated: true)
     }
 }
 extension TabSettingsVC {
@@ -238,196 +231,5 @@ extension TabSettingsVC {
         ])
 
         return section
-    }
-}
-
-extension TabSettingsVC {
-
-    func showAlert(_ error: Error) {
-        let text: String
-        if let error = error as? TwoFactorCallError {
-            switch error {
-            case .failure(let localizedDescription), .cancel(let localizedDescription):
-                text = localizedDescription
-            }
-            self.showError(text)
-        }
-    }
-
-    func openPgp() {
-        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "PgpViewController") as? PgpViewController {
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
-    func openArchivedAccounts() {
-        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
-            vc.delegate = self
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
-    func createAccount() {
-        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "CreateAccountViewController") as? CreateAccountViewController {
-            vc.viewModel = CreateAccountViewModel(asset: "btc")
-            vc.delegate = self
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-    
-    func pushLTDetailsViewController() {
-        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "LTDetailsViewController") as? LTDetailsViewController {
-            vc.viewModel = viewModel.lTDetailsViewModel()
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
-
-    func pushLTCreateViewController() {
-        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "LTCreateViewController") as? LTCreateViewController {
-            vc.viewModel = viewModel.lTCreateViewModel()
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
-    func openTwoFactorAuthentication() {
-        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "TFAViewController") as? TFAViewController {
-            vc.delegate = self
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
-    func presentDenominationExchange() {
-        let ltFlow = UIStoryboard(name: "DenominationExchangeFlow", bundle: nil)
-        if let vc = ltFlow.instantiateViewController(withIdentifier: "DenominationExchangeViewController") as? DenominationExchangeViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.delegate = self
-            self.present(vc, animated: false, completion: nil)
-        }
-    }
-
-    func showAutoLogout() {
-        guard var settings = viewModel.wm.prominentSession?.settings else { return }
-        let list = [AutoLockType.minute.string, AutoLockType.twoMinutes.string, AutoLockType.fiveMinutes.string, AutoLockType.tenMinutes.string, AutoLockType.sixtyMinutes.string]
-        let dialogViewModel = DialogListViewModel(
-            title: "id_auto_logout_timeout".localized,
-            type: .autoLogoutPrefs,
-            items: list
-                .enumerated()
-                .map { index, element in AutoLogoutCellModel(
-                    title: element,
-                    index: index,
-                    selected: element == settings.autolock.string,
-                    onSelected: { [weak self] index in
-                        guard let self = self else { return }
-                        settings.autolock = AutoLockType.from(list[index])
-                        Task {
-                            self.startAnimating()
-                            do {
-                                _ = try await self.viewModel.session?.changeSettings(settings: settings)
-                                await MainActor.run {
-                                    self.stopAnimating()
-                                    self.viewModel.refresh(features: [.settings])
-                                    self.dismiss(animated: true)
-                                }
-                            } catch {
-                                self.stopAnimating()
-                                self.showError(error)
-                            }
-                        }
-                    }
-                )
-            })
-
-        let dialogStoryboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let dialogViewController = dialogStoryboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
-            dialogViewController.viewModel = dialogViewModel
-            dialogViewController.modalPresentationStyle = .overFullScreen
-            self.present(dialogViewController, animated: true, completion: nil)
-        }
-    }
-
-    func presentDialogRenameViewController() {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRenameViewController") as? DialogRenameViewController {
-            vc.delegate = self
-            vc.index = nil
-            vc.prefill = viewModel.mainWallet.name
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-        }
-    }
-}
-
-extension TabSettingsVC: DialogWatchOnlySetUpViewControllerDelegate {
-    func watchOnlyDidUpdate(_ action: WatchOnlySetUpAction) {
-        switch action {
-        case .save, .delete:
-            viewModel.refresh(features: [.settings])
-        default:
-            break
-        }
-    }
-}
-
-extension TabSettingsVC: DenominationExchangeViewControllerDelegate {
-    func onDenominationExchangeSave() {
-        self.tableView.reloadData()
-        viewModel.refresh(features: [.balance, .txs(reset: true), .priceChart])
-    }
-}
-
-extension TabSettingsVC: AccountArchiveViewControllerDelegate {
-    func archiveDidChange() {
-        self.tableView.reloadData()
-        viewModel.refresh(features: [.subaccounts])
-        viewModel.refresh(features: [.balance, .txs(reset: true)])
-    }
-}
-
-extension TabSettingsVC: CreateAccountDelegate {
-    func didCreateAccount() {
-        refreshAfterAccountChange()
-    }
-
-    func didUnarchiveAccount() {
-        refreshAfterAccountChange()
-    }
-
-    private func refreshAfterAccountChange() {
-        Task {
-            await viewModel.walletDataModel.triggerRefresh(features: [.subaccounts])
-            await viewModel.walletDataModel.triggerRefresh(features: [.settings, .balance, .txs(reset: true)])
-        }
-    }
-}
-
-extension TabSettingsVC: TFAViewControllerDelegate {
-    func sendLogout() {
-        walletTab.userLogout()
-    }
-}
-
-extension TabSettingsVC: DialogRenameViewControllerDelegate {
-
-    func didRename(name: String, index: String?) {
-        viewModel.mainWallet.name = name
-        WalletsStorage.shared.upsert(viewModel.mainWallet)
-        viewModel.refresh(features: [.subaccounts])
-        viewModel.refresh(features: [.settings, .balance, .txs(reset: true)])
-    }
-    func didCancel() {
-    }
-}
-
-extension TabSettingsVC: JadeBoltzSwapViewControllerDelegate {
-    func onSwapsUpdated() {
-        viewModel.refresh(features: [.settings])
     }
 }

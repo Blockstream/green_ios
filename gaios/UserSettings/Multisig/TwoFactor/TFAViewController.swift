@@ -9,9 +9,19 @@ protocol TFAViewControllerDelegate: AnyObject {
 class TFAViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
-    var viewModel = TFAViewModel()
+    var viewModel: TFAViewModel
     var sectionHeaderH: CGFloat = 54.0
     weak var delegate: TFAViewControllerDelegate?
+    weak var coordinator: SettingsCoordinator?
+
+    init?(coder: NSCoder, viewModel: TFAViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,11 +51,7 @@ class TFAViewController: UIViewController {
         }
     }
     func reload() {
-        Task {
-            let res = try? await viewModel.getTwoFactors()
-            viewModel.factors = res
-            UIView.transition(with: tableView, duration: 0.3, options: .transitionCrossDissolve, animations: {self.tableView.reloadData()}, completion: nil)
-        }
+        tableView.reloadData()
     }
     func setCsvTimeLock(csv: CsvTime) {
         self.startLoader()
@@ -86,13 +92,15 @@ class TFAViewController: UIViewController {
         startLoader()
         Task {
             do {
-                try await self.viewModel.resetTwoFactor(session: self.viewModel.session, email: email)
-                self.reload()
+                try await self.viewModel.resetTwoFactor(email: email)
+                self.tableView.reloadData()
+                stopLoader()
                 DropAlert().success(message: "id_2fa_reset_in_progress".localized)
                 let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
                 NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
                 self.delegate?.sendLogout()
             } catch {
+                stopLoader()
                 if let twofaError = error as? TwoFactorCallError {
                     switch twofaError {
                     case .failure(let localizedDescription), .cancel(let localizedDescription):
@@ -102,18 +110,14 @@ class TFAViewController: UIViewController {
                     DropAlert().error(message: error.localizedDescription)
                 }
             }
-            stopLoader()
         }
     }
     func onReset2fa() {
         showResetTwoFactor()
     }
     func on2faThreshold() {
-        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorLimitViewController") as? TwoFactorLimitViewController {
-            vc.session = viewModel.session
-            navigationController?.pushViewController(vc, animated: true)
-        }
+        guard let coordinator else { return }
+        coordinator.navigate(to: .tfaLimit(coordinator.tfaLimitViewModel(networkId: viewModel.selectedNetwork)))
     }
     func onRecoveryTool() {
         if let url = URL(string: "https://github.com/greenaddress/garecovery") {
@@ -121,10 +125,21 @@ class TFAViewController: UIViewController {
         }
     }
     func onRecoveryTransactions() {
-        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryTransactionsViewController") as? RecoveryTransactionsViewController {
-            vc.viewModel = RecoveryTransactionsViewModel(session: viewModel.session)
-            navigationController?.pushViewController(vc, animated: true)
+        guard let coordinator else { return }
+        coordinator.navigate(to: .recoveryTransactions(coordinator.recoveryTransactionsViewModel(networkId: viewModel.selectedNetwork)))
+    }
+    func enableMethod(_ type: TwoFactorType) {
+        guard let coordinator else { return }
+        let networkId = viewModel.selectedNetwork
+        switch type {
+        case .email:
+            coordinator.navigate(to: .setEmailViewController(coordinator.set2FAViewModel(networkId: networkId, method: .email)))
+        case .sms:
+            coordinator.navigate(to: .setPhoneViewController(coordinator.set2FAViewModel(networkId: networkId, method: .sms)))
+        case .phone:
+            coordinator.navigate(to: .setPhoneViewController(coordinator.set2FAViewModel(networkId: networkId, method: .phone)))
+        case .gauth:
+            coordinator.navigate(to: .setGauthViewController(coordinator.set2FAViewModel(networkId: networkId, method: .gauth)))
         }
     }
     func disable(_ type: TwoFactorType) {
@@ -132,7 +147,7 @@ class TFAViewController: UIViewController {
         Task {
             do {
                 try await viewModel.disable(type: type)
-                self.reload()
+                self.tableView.reloadData()
                 let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
                 NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
             } catch {
@@ -158,15 +173,11 @@ extension TFAViewController: UITableViewDelegate, UITableViewDataSource {
         case .header, .warnMulti, .networkSelect, .infoExpire, .reset, .threshold, .recActions:
             return 1
         case .methods:
-            return viewModel.factors?.count ?? 0
+            return viewModel.selectedFactors.count
         case .empty:
-            if let factors = viewModel.factors {
-                return factors.count == 0 ? 1 : 0
-            } else {
-                return 0
-            }
+            return viewModel.selectedFactors.isEmpty ? 1 : 0
         case .expiry:
-            return viewModel.csvTypes.count
+            return viewModel.selectedCsvTypes.count
         }
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -179,25 +190,23 @@ extension TFAViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case .networkSelect:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TFANetworkSelectCell.identifier, for: indexPath) as? TFANetworkSelectCell {
-                cell.configure(networks: viewModel.networks, onChange: { [weak self] value in
-                    self?.viewModel.selectedSegmentIndex = value
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
-                        self?.reload()
-                    }
+                cell.configure(networks: viewModel.networks, selectedIndex: viewModel.selectedSegmentIndex, onChange: { [weak self] value in
+                    self?.viewModel.selectNetwork(value)
+                    self?.tableView.reloadData()
                 })
                 cell.selectionStyle = .none
                 return cell
             }
         case .methods:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: TFAMethodCell.identifier) as? TFAMethodCell, let factors = viewModel.factors {
-                let item: TwoFactorItem = factors[indexPath.row]
+            if let cell = tableView.dequeueReusableCell(withIdentifier: TFAMethodCell.identifier) as? TFAMethodCell {
+                let item: TwoFactorItem = viewModel.selectedFactors[indexPath.row]
                 cell.configure(item)
                 cell.selectionStyle = .none
                 return cell
             }
         case .empty:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TFAEmptyCell.identifier, for: indexPath) as? TFAEmptyCell {
-                cell.configure(isLiquid: viewModel.session.gdkNetwork.liquid)
+                cell.configure(isLiquid: viewModel.isLiquid)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -209,7 +218,7 @@ extension TFAViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case .threshold:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TFACell.identifier, for: indexPath) as? TFACell {
-                cell.configure(title: "id_twofactor_threshold".localized, hint: viewModel.threshold)
+                cell.configure(title: "id_twofactor_threshold".localized, hint: viewModel.selectedThreshold)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -220,9 +229,9 @@ extension TFAViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case .expiry:
-            let item: CsvTime = viewModel.csvTypes[indexPath.row]
+            let item: CsvTime = viewModel.selectedCsvTypes[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TFATimeCell") as? TFATimeCell {
-                cell.configure(item: item, current: viewModel.session.settings?.csvtime, gdkNetwork: viewModel.session.gdkNetwork)
+                cell.configure(item: item, current: viewModel.selectedCsv, gdkNetwork: viewModel.gdkNetwork)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -281,40 +290,12 @@ extension TFAViewController: UITableViewDelegate, UITableViewDataSource {
         case .header, .warnMulti, .networkSelect:
             return
         case .methods:
-            guard let factors = viewModel.factors else { return }
-            let selectedFactor: TwoFactorItem = factors[indexPath.row]
+            let selectedFactor: TwoFactorItem = viewModel.selectedFactors[indexPath.row]
             if selectedFactor.enabled {
                 disable(selectedFactor.type)
                 return
             }
-            switch selectedFactor.type {
-            case .email:
-                let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "SetEmailViewController") as? SetEmailViewController {
-                    vc.session = viewModel.session
-                    navigationController?.pushViewController(vc, animated: true)
-                }
-            case .sms:
-                let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "SetPhoneViewController") as? SetPhoneViewController {
-                    vc.sms = true
-                    vc.network = viewModel.session.networkId
-                    navigationController?.pushViewController(vc, animated: true)
-                }
-            case .phone:
-                let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "SetPhoneViewController") as? SetPhoneViewController {
-                    vc.phoneCall = true
-                    vc.network = viewModel.session.networkId
-                    navigationController?.pushViewController(vc, animated: true)
-                }
-            case .gauth:
-                let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "SetGauthViewController") as? SetGauthViewController {
-                    vc.session = viewModel.session
-                    navigationController?.pushViewController(vc, animated: true)
-                }
-            }
+            enableMethod(selectedFactor.type)
         case .empty:
             return
         case .reset:
@@ -322,11 +303,11 @@ extension TFAViewController: UITableViewDelegate, UITableViewDataSource {
         case .threshold:
             on2faThreshold()
         case .expiry:
-            let selected = viewModel.csvTypes[indexPath.row]
-            if let newCsv = selected.value(for: viewModel.session.gdkNetwork),
-               let index = viewModel.csvValues.firstIndex(of: newCsv),
-               newCsv != viewModel.session.settings?.csvtime ?? 0 {
-                setCsvTimeLock(csv: viewModel.csvTypes[index])
+            let selected = viewModel.selectedCsvTypes[indexPath.row]
+            if let newCsv = selected.value(for: viewModel.gdkNetwork),
+               let index = viewModel.selectedCsvValues.firstIndex(of: newCsv),
+               newCsv != viewModel.selectedCsv ?? 0 {
+                setCsvTimeLock(csv: viewModel.selectedCsvTypes[index])
             } else {
                 self.showAlert(title: "id_error".localized, message: "id_select_a_new_value_to_change_csv".localized)
             }

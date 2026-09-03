@@ -32,8 +32,8 @@ extension Balance {
     static func from(_ value: String, assetId: String, denomination: DenominationType? = nil) -> Balance? {
         let value = value.unlocaleFormattedString()
         if AssetInfo.baseIds.contains(assetId) {
-            let session = WalletManager.current?.prominentSession
-            let denomination = denomination ?? session?.settings?.denomination ?? .BTC
+            let wm = WalletManager.current
+            let denomination = denomination ?? wm?.settings?.denomination ?? .BTC
             let balance = Balance.fromBtcDenomination(value: value, denomination: denomination, assetId: assetId)
             return Balance.convert(balance ?? Balance(assetId: assetId, assetValue: value))
         } else {
@@ -85,14 +85,14 @@ extension Balance {
     }
 
     func toDenom(_ denomination: DenominationType? = nil, locale: Bool = true) -> (String, String) {
-        let session = WalletManager.current?.prominentSession
-        let denomination = denomination ?? session?.settings?.denomination ?? .BTC
+        let wm = WalletManager.current
+        let denomination = denomination ?? wm?.settings?.denomination ?? .BTC
         let network: NetworkId = {
             switch assetId {
             case AssetInfo.lbtcId: return .electrumLiquid
             case AssetInfo.ltestId: return .electrumTestnetLiquid
             case AssetInfo.lightningId: return .lightningMainnet
-            default: return session?.gdkNetwork.mainnet ?? true ? .electrumMainnet : .electrumTestnet
+            default: return wm?.prominentNetwork.mainnet ?? true ? .electrumMainnet : .electrumTestnet
             }
         }()
         let denominationText = denomination.string(for: network.gdkNetwork)

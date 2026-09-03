@@ -10,8 +10,17 @@ class PgpViewController: KeyboardViewController {
     @IBOutlet weak var btnSave: UIButton!
     @IBOutlet weak var textareaBottomConstraint: NSLayoutConstraint?
     
-    private var updateToken: NSObjectProtocol?
-    
+    private let viewModel: PgpViewModel
+
+    init?(coder: NSCoder, viewModel: PgpViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "id_pgp_key".localized
@@ -20,12 +29,7 @@ class PgpViewController: KeyboardViewController {
         btnSave.addTarget(self, action: #selector(save), for: .touchUpInside)
         setStyle()
         textarea.addDoneAndPasteButtonOnKeyboard(myAction: #selector(self.textarea.resignFirstResponder))
-        Task { [weak self] in
-            let pgp = try? await self?.getPgp()
-           await MainActor.run {
-               self?.textarea.text = pgp ?? ""
-            }
-        }
+        textarea.text = viewModel.getPgp()
     }
 
     func setStyle() {
@@ -39,17 +43,6 @@ class PgpViewController: KeyboardViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         textarea.becomeFirstResponder()
-    }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "KeyboardPaste"), object: nil, queue: .main, using: keyboardPaste)
-
-    }
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if let token = updateToken {
-            NotificationCenter.default.removeObserver(token)
-        }
     }
     
     override func keyboardWillShow(notification: Notification) {
@@ -78,37 +71,6 @@ class PgpViewController: KeyboardViewController {
         }
     }
     
-    func getPgp() -> String? {
-        return WalletManager.current?.loggedInGdkNetworkBackends
-            .values
-            .map { $0.session }
-            .filter { !$0.gdkNetwork.electrum }
-            .map { $0.settings?.pgp ?? "" }
-            .filter { !$0.isEmpty }
-            .first
-    }
-
-    func setPgp(pgp: String) async throws {
-        let sessions = WalletManager.current?.loggedInGdkNetworkBackends
-            .values
-            .map { $0.session }
-            .filter { !$0.gdkNetwork.electrum }
-        if let sessions = sessions {
-            for session in sessions {
-                try await self.changeSettings(session: session, pgp: pgp)
-            }
-        }
-    }
-    func keyboardPaste(_ notification: Notification) {
-        if let txt = UIPasteboard.general.string {
-            textarea.text = txt
-        }
-    }
-    func changeSettings(session: SessionManager, pgp: String) async throws {
-        guard var settings = session.settings else { return }
-        settings.pgp = pgp
-        _ = try await session.changeSettings(settings: settings)
-    }
 
     @objc func save(_ sender: UIButton) {
         let txt = self.textarea.text
@@ -116,16 +78,17 @@ class PgpViewController: KeyboardViewController {
             .replacingOccurrences(of: "\r\n", with: "\n")
 
         self.startAnimating()
-        Task {
+        Task { [weak self] in
             do {
-                try await self.setPgp(pgp: txt)
+                try await self?.viewModel.setPgp(pgp: txt)
                 _ = await MainActor.run {
-                    self.navigationController?.popViewController(animated: true)
+                    self?.stopAnimating()
+                    self?.navigationController?.popViewController(animated: true)
                 }
             } catch {
-                self.showError(error)
+                self?.stopAnimating()
+                self?.showError(error.description().localized)
             }
-            self.stopAnimating()
         }
     }
 }

@@ -176,7 +176,7 @@ class ManageAssetViewModel {
         ) > 0
     }
     func currency() -> String? {
-        wm.prominentSession?.settings?.pricing["currency"]
+        wm.settings?.pricing["currency"]
     }
     func canSwap() -> Bool {
         // baseIds already includes lightningId so Lightning asset page can open Swap.

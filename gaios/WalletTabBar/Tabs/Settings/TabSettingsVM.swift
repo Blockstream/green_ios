@@ -11,20 +11,10 @@ class TabSettingsVM: TabViewModel {
     }
 
     // load wallet manager for current logged session
-    var session: SessionManager? { wm.prominentSession }
     var isWatchonly: Bool { wm.isWatchonly }
     var isEphemeral: Bool { wm.isEphemeral }
     var isWatchonlySinglesig: Bool { (wm.isWatchonly) && (mainWallet.username?.isEmpty ?? true) }
-    var isSinglesig: Bool { session?.gdkNetwork.electrum ?? true }
     var isHW: Bool { WalletsStorage.shared.current?.isHW ?? false }
-    var multiSigSession: SessionManager? {
-        wm
-            .multisigNetworkIds
-            .compactMap { wm.gdkNetworkBackendOrNil($0) }
-            .compactMap(\.session)
-            .filter { $0.logged }
-            .filter { !$0.gdkNetwork.electrum }.first
-    }
 
     func getSettingsItemCellModel(for setting: SettingsItem) -> TabSettingsCellModel? {
         switch setting {
@@ -40,12 +30,12 @@ class TabSettingsVM: TabViewModel {
                 subtitle: "",
                 type: setting)
         case .unifiedDenominationExchange:
-            guard let session = WalletManager.current?.prominentSession, let settings = session.settings else { return nil }
+            guard let backend = wm.prominentNetworkBackend, let settings = backend.settings else { return nil }
             return gaios.TabSettingsCellModel(
                 title: SettingsItem.unifiedDenominationExchange.string,
                 icon: UIImage(named: "rightArrow"),
                 subtitle: "",
-                attributed: getDenominationExchangeInfo(settings: settings, network: session.networkId),
+                attributed: getDenominationExchangeInfo(settings: settings, network: backend.networkId),
                 type: setting)
         case .support:
             return gaios.TabSettingsCellModel(
@@ -78,7 +68,7 @@ class TabSettingsVM: TabViewModel {
                 subtitle: "",
                 type: .pgpKey)
         case .autoLogout:
-            guard let session = WalletManager.current?.prominentSession, let settings = session.settings else { return nil }
+            guard let settings = wm.settings else { return nil }
             return gaios.TabSettingsCellModel(
                 title: SettingsItem.autoLogout.string,
                 icon: UIImage(named: "rightArrow"),
@@ -149,81 +139,7 @@ class TabSettingsVM: TabViewModel {
         return attrStr
     }
 
-    func hasSubaccountAmp() -> Bool {
-        !getSubaccountsAmp().isEmpty
-    }
-
-    func getSubaccountsAmp() -> [Account] {
-        wm.accounts.filter({ $0.type == .ampAccount || $0.type == .amp2Account })
-    }
-
-    func createSubaccountAmp() async throws {
-        let session = try wm.gdkNetworkBackend(
-            wm.liquidMultisigNetworkId
-        ).session
-        let wasLoggedMultisig = session.logged
-        try await session.connect()
-        guard session.connected else {
-            throw GaError.GenericError("id_connection_failed".localized)
-        }
-        if let device = wm.hwDevice {
-            try await session.register(credentials: nil, hw: device)
-            _ = try await session.loginUser(device)
-        } else {
-            if let credentials = try await wm.prominentSession?.getCredentials(password: "") {
-                try await session.register(credentials: credentials, hw: nil)
-                _ = try await session.loginUser(credentials)
-            }
-        }
-        _ = try await session
-            .createSubaccount(
-                CreateSubaccountParams(name: uniqueAmpName(), type: .ampAccount)
-            )
-        if !wasLoggedMultisig {
-            // hide default 0 multisig subaccount when creating a new multisig
-            _ = try await session.updateSubaccount(UpdateSubaccountParams(subaccount: 0, hidden: true))
-        }
-        _ = try await wm.getAccounts()
-    }
-
-    func uniqueAmpName() -> String {
-        let counter = wm.accounts.filter(
-            { $0.type == .ampAccount && $0.gdkNetwork.liquid
-            }).count
-        if counter > 0 {
-            return "Liquid AMP \(counter+1)"
-        }
-        return "Liquid AMP"
-    }
-
-    func dialogAccountsModel() -> DialogAccountsViewModel {
-        return DialogAccountsViewModel(
-            title: "id_account_selector".localized,
-            hint: "id_select_an_account_to_get_the".localized,
-            isSelectable: true,
-            assetId: nil,
-            accounts: getSubaccountsAmp(),
-            hideBalance: false)
-    }
-
-    func hasLightning() -> Bool {
-        return AuthenticationTypeHandler.findAuth(
-            method: .AuthKeyLightning,
-            forNetwork: mainWallet.keychainLightning)
-    }
-
     func rescanSwaps() async throws {
         try await SwapRescanService(wm: wm).rescan()
-    }
-
-    func lTDetailsViewModel() -> LTDetailsViewModel? {
-        guard let lightningSession = wm.lightningSession else { return nil }
-        return LTDetailsViewModel(lightningSession: lightningSession)
-    }
-
-    func lTCreateViewModel() -> LTCreateViewModel? {
-        return LTCreateViewModel(
-            mainWallet: mainWallet,
-            wallet: walletDataModel)
     }
 }

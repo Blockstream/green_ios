@@ -36,6 +36,10 @@ class TxDetailsViewController: UIViewController {
     var isSinglesig: Bool {
         vm.transaction.accountInjected?.isSinglesig ?? true
     }
+    var isResetActive: Bool {
+        let backend = vm.account.networkBackend as? GdkNetworkBackend
+        return backend?.twoFactorConfig?.twofactorReset.isResetActive ?? false
+    }
 
     var viewInExplorerPreference: Bool {
         get {
@@ -49,8 +53,7 @@ class TxDetailsViewController: UIViewController {
     private var transactionToken: NSObjectProtocol?
     private var blockToken: NSObjectProtocol?
     private var cantBumpFees: Bool {
-        return vm.account.gdkSession?.isResetActive ?? false ||
-        !vm.transaction.canRBF
+        return isResetActive || !vm.transaction.canRBF
     }
 
     var headerH: CGFloat = 44.0

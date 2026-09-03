@@ -7,9 +7,18 @@ class LTDetailsViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnLearnMore: UIButton!
     
-    var viewModel: LTDetailsViewModel!
+    private var viewModel: LTDetailsViewModel
     private var nodeCellTypes: [LTDetailsCellType] { viewModel.cellTypes }
-    
+
+    init?(coder: NSCoder, viewModel: LTDetailsViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         registerTableView()

@@ -51,7 +51,7 @@ public class WalletManager {
     public var testnet: Bool { !prominentNetwork.mainnet}
     public var connected: Bool { prominentNetworkBackend?.isConnected ?? false }
     public var logged: Bool { prominentNetworkBackend?.isLoggedIn ?? false }
-    public var settings: Settings? { prominentNetworkBackend?.session.settings }
+    public var settings: Settings? { prominentNetworkBackend?.settings }
 
     // Cached list of subaccounts and balances
     public var allAccounts: [Account] {
@@ -262,17 +262,17 @@ public class WalletManager {
 
     public func settings(for network: NetworkId? = nil) -> Settings? {
         let targetNet = network ?? prominentNetworkId
-        return gdkNetworkBackendOrNil(targetNet)?.session.settings
+        return gdkNetworkBackendOrNil(targetNet)?.settings
     }
 
     public func twoFactorConfig(for network: NetworkId? = nil) -> TwoFactorConfig? {
         let targetNet = network ?? prominentNetworkId
-        return gdkNetworkBackendOrNil(targetNet)?.session.twoFactorConfig
+        return gdkNetworkBackendOrNil(targetNet)?.twoFactorConfig
     }
 
     public func twoFactorReset(for network: NetworkId? = nil) -> TwoFactorReset? {
         let targetNet = network ?? prominentNetworkId
-        return gdkNetworkBackendOrNil(targetNet)?.session.twoFactorConfig?.twofactorReset
+        return gdkNetworkBackendOrNil(targetNet)?.twoFactorConfig?.twofactorReset
     }
 
     func syncSettings(restore: Bool) async throws {
@@ -287,13 +287,14 @@ public class WalletManager {
             }
         }
         // align settings across network backends
-        guard let settings = try await backend?.session.loadSettings() else {
+        try await backend?.loadSettings()
+        guard let settings = backend?.settings else {
             return
         }
-        for b in loggedInGdkNetworkBackends where b.key != backend?.networkId && settings != b.value.session.settings {
+        for b in loggedInGdkNetworkBackends where b.key != backend?.networkId && settings != b.value.settings {
             _ = try? await b.value.session
-                .changeSettings(settings: settings)
-            _ = try? await b.value.session.loadSettings()
+                .changeSettings(settings)
+            try? await b.value.loadSettings()
         }
     }
 

@@ -21,7 +21,7 @@ class DialogExchangeViewModel {
 
     var wm: WalletManager { WalletManager.current! }
     var session: SessionManager? { wm.prominentSession }
-    var settings: Settings? { session?.settings }
+    var settings: Settings? { wm.settings }
 
     var exchangeList: [CurrencyItem] = []
     var currentExchange: CurrencyItem?
@@ -29,7 +29,7 @@ class DialogExchangeViewModel {
 
     init(onReady: (() -> Void)?) {
         self.onReady = onReady
-        guard let session = session, let settings = session.settings else { return }
+        guard let settings else { return }
         self.currentExchange = CurrencyItem(exchange: settings.pricing["exchange"] ?? "",
                                             currency: settings.pricing["currency"] ?? "")
         getExchanges()

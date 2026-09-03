@@ -79,14 +79,8 @@ public class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate
             self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: ""))
 
             DispatchQueue.main.async {
-                let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "SetPhoneViewController") as? SetPhoneViewController {
-                    vc.phoneCall = true
-                    vc.network = network
-                    vc.isSmsBackup = true
-                    if let controller = UIApplication.topViewController() as? WalletTabBarViewController {
-                        controller.navigationController?.pushViewController(vc, animated: true)
-                    }
+                if let controller = UIApplication.topViewController() as? WalletTabBarViewController {
+                    controller.openSmsBackup(networkId: network)
                 }
             }
         }

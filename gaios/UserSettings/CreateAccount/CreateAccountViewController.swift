@@ -18,11 +18,18 @@ class CreateAccountViewController: UIViewController {
     @IBOutlet var tableViewToSafeAreaConstraint: NSLayoutConstraint!
 
     private let headerH: CGFloat = 54.0
-
     weak var delegate: CreateAccountDelegate?
-
-    var viewModel: CreateAccountViewModel!
+    private var viewModel: CreateAccountViewModel
     var dialogJadeCheckViewController: DialogJadeCheckViewController?
+
+    init?(coder: NSCoder, viewModel: CreateAccountViewModel) {
+        self.viewModel = viewModel
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -118,7 +125,7 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
         case .asset:
             return 1
         case .policy:
-            return viewModel?.getAccountCellModels().count ?? 0
+            return viewModel.getAccountCellModels().count ?? 0
         default:
             return 0
         }
@@ -130,15 +137,18 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
         switch CreateAccountListSection(rawValue: indexPath.section) {
         case .asset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AssetSelectCell.identifier, for: indexPath) as? AssetSelectCell,
-               let model = viewModel?.assetCellModel {
+               let model = viewModel.assetCellModel {
                 cell.configure(model: model, showEditIcon: true)
                 cell.selectionStyle = .none
                 return cell
             }
         case .policy:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: AccountTypeCell.identifier, for: indexPath) as? AccountTypeCell,
-               let model = viewModel {
-                cell.configure(model: model.getAccountCellModels()[indexPath.row], hasLightning: viewModel.hasLightning())
+            if let cell = tableView.dequeueReusableCell(withIdentifier: AccountTypeCell.identifier, for: indexPath) as? AccountTypeCell {
+                cell
+                    .configure(
+                        model: viewModel.getAccountCellModels()[indexPath.row],
+                        hasLightning: viewModel.hasLightning()
+                    )
                 cell.selectionStyle = .none
                 return cell
             }
@@ -303,19 +313,19 @@ extension CreateAccountViewController {
 
 extension CreateAccountViewController: AssetSelectViewControllerDelegate {
     func didSelectAnyOrAsset(_ ref: AnyOrAsset) {
-        viewModel?.resetSelection()
+        viewModel.resetSelection()
         switch ref {
         case .anyLiquid:
-            viewModel?.anyLiquidAsset = true
+            viewModel.anyLiquidAsset = true
             reloadSections([.asset, .policy], animated: true)
         case .anyAmp:
-            viewModel?.anyLiquidAmpAsset = true
+            viewModel.anyLiquidAmpAsset = true
             reloadSections([.asset, .policy], animated: true)
         case .anyAmpLegacy:
-            viewModel?.anyLiquidAmpLegacyAsset = true
+            viewModel.anyLiquidAmpLegacyAsset = true
             reloadSections([.asset, .policy], animated: true)
         case .asset(let assetId):
-            viewModel?.asset = assetId
+            viewModel.asset = assetId
             reloadSections([.asset, .policy], animated: true)
         }
     }
