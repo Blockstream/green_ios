@@ -1,15 +1,10 @@
 import Foundation
 import UIKit
 import core
-import hw
-import greenaddress
-
-enum SubaccountAction {
-    case created
-    case unarchived
-}
 
 class CreateAccountViewModel {
+    let mainWallet: Wallet
+    let wm: WalletManager
     var asset: String?
     var anyLiquidAsset: Bool = false
     var anyLiquidAmpAsset: Bool = false
@@ -27,13 +22,20 @@ class CreateAccountViewModel {
         }
         return nil
     }
-    var wm: WalletManager { WalletManager.current! }
+    private var service: CreateAccountService {
+        CreateAccountService(wm: wm, mainWallet: mainWallet)
+    }
 
-    init(asset: String? = nil,
+    init(
+        wm: WalletManager,
+        mainWallet: Wallet,
+        asset: String? = nil,
          anyLiquidAsset: Bool = false,
          anyLiquidAmpAsset: Bool = false,
          anyLiquidAmpLegacyAsset: Bool = false,
          onlyBtc: Bool = false) {
+        self.wm = wm
+        self.mainWallet = mainWallet
         self.asset = asset
         self.anyLiquidAsset = anyLiquidAsset
         self.anyLiquidAmpAsset = anyLiquidAmpAsset
@@ -43,6 +45,10 @@ class CreateAccountViewModel {
 
     var unarchiveCreateDialog: (( @escaping (Bool) -> Void) -> Void)?
     var isAllPoliciesShown = false
+
+    var isLiquidSelection: Bool {
+        anyLiquidAsset || anyLiquidAmpAsset || anyLiquidAmpLegacyAsset || asset != "btc"
+    }
 
     private var supportsLiquidTwoFactor: Bool {
         // Ledger cannot log in to a new Liquid GDK session. An existing Liquid
@@ -108,97 +114,27 @@ class CreateAccountViewModel {
     }
 
     func create(policy: AccountTypeOption, params: CreateSubaccountParams) async throws -> SubaccountAction {
-        let isLiquid = anyLiquidAsset || anyLiquidAmpAsset || anyLiquidAmpLegacyAsset || asset != "btc"
-        let network = policy.getNetwork(testnet: wm.testnet, liquid: isLiquid)!
-        let backend = try wm.gdkNetworkBackend(network)
-        let session = backend.session
-        if !session.logged {
-            if wm.isHW {
-                try await loginHW(backend: backend)
-            } else {
-                try await loginCredentials(backend: backend)
+        try await service.create(
+            policy: policy,
+            params: params,
+            isLiquid: isLiquidSelection,
+            shouldCreateNew: { [weak self] in
+                await self?.askCreateOrUnarchive() ?? false
             }
-        }
-        backend.isLoggedIn = session.logged
-        let action = try await self.createOrUnarchiveSubaccount(session: session, params: params)
-        let subaccounts = try await self.wm.getAccounts()
-        _ = try await self.wm.balances(subaccounts: subaccounts)
-        return action
+        )
     }
 
-    func loginHW(backend: GdkNetworkBackend) async throws {
-        let session = backend.session
-        guard let wallet = WalletsStorage.shared.current else {
-            throw GaError.GenericError("No account provided")
+    func uniqueName(_ type: AccountType, liquid: Bool) -> String {
+        let network = liquid ? " Liquid " : " "
+        let counter = wm.accounts.filter { $0.type == type && $0.gdkNetwork.liquid == liquid }.count
+        if counter > 0 {
+            return "\(type.string)\(network)\(counter+1)"
         }
-        if session.gdkNetwork.liquid && wallet.isLedger {
-            throw GaError.GenericError("Liquid not supported on Ledger Nano X")
-        }
-        let hw = wallet.isJade ? HWDevice.defaultJade(fmwVersion: nil) : HWDevice.defaultLedger()
-        do {
-            try await session.register(hw: hw)
-            _ = try await session.loginUser(hw)
-        } catch {
-            switch error {
-            case TwoFactorCallError.failure(let txt):
-                if txt.contains("HWW must enable host unblinding for singlesig wallets") {
-                    try? await session.disconnect()
-                    throw LoginError.hostUnblindingDisabled("Account creation is not possible without exporting master blinding key.")
-                }
-                throw error
-            default:
-                throw error
-            }
-        }
-        backend.isLoggedIn = session.logged
-        let subaccounts = try await session.subaccounts(true)
-        let used = try await self.isUsedDefaultAccount(for: session, account: subaccounts.first)
-        if !used {
-            let params = UpdateSubaccountParams(subaccount: 0, hidden: true)
-            try await session.updateSubaccount(params)
-        }
-        _ = try await wm.getAccounts()
+        return "\(type.string)\(network)"
     }
 
-    func loginCredentials(backend: GdkNetworkBackend) async throws {
-        let session = backend.session
-        let prominentSession = wm.prominentSession
-        guard let credentials = try await prominentSession?.getCredentials(password: "") else {
-            throw GaError.GenericError("No credential provided")
-        }
-        try await session.register(credentials: credentials)
-        _ = try await session.loginUser(credentials)
-        backend.isLoggedIn = session.logged
-        let subaccounts = try await session.subaccounts(true)
-        let used = try await self.isUsedDefaultAccount(for: session, account: subaccounts.first)
-        if !used {
-            let params = UpdateSubaccountParams(subaccount: 0, hidden: true)
-            try await session.updateSubaccount(params)
-        }
-        _ = try await wm.getAccounts()
-    }
-
-    func isUsedDefaultAccount(for session: SessionManager, account: Account?) async throws -> Bool {
-        guard let account = account else {
-            throw GaError.GenericError("No subaccount found")
-        }
-        if account.gdkNetwork.multisig {
-            // check balance for multisig
-            let balance = try await session.getBalance(subaccount: account.pointer, numConfs: 0)
-            return balance.map { $0.value }.reduce(0, +) > 0
-        }
-        // check bip44Discovered on singlesig
-        return account.bip44Discovered ?? false
-    }
-
-    func createOrUnarchiveSubaccount(session: SessionManager, params: CreateSubaccountParams) async throws -> SubaccountAction {
-        let accounts = self.wm.accounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.type != .twoOfThree && $0.hidden }
-        guard let account = accounts.first else {
-            _ = try await session.createSubaccount(params)
-            return .created
-        }
-
-        let createNew = await withCheckedContinuation { (continuation: CheckedContinuation<Bool, Never>) in
+    private func askCreateOrUnarchive() async -> Bool {
+        await withCheckedContinuation { (continuation: CheckedContinuation<Bool, Never>) in
             if let dialog = unarchiveCreateDialog {
                 dialog { create in
                     Task { @MainActor in
@@ -211,27 +147,5 @@ class CreateAccountViewModel {
                 }
             }
         }
-
-        if createNew {
-            _ = try await session.createSubaccount(params)
-            return .created
-        } else {
-            let updateParams = UpdateSubaccountParams(subaccount: account.pointer, hidden: false)
-            try await session.updateSubaccount(updateParams)
-            if (try? await session.subaccount(account.pointer)) != nil {
-                return .unarchived
-            } else {
-                throw GaError.GenericError("Failed to unarchive subaccount")
-            }
-        }
-    }
-
-    func uniqueName(_ type: AccountType, liquid: Bool) -> String {
-        let network = liquid ? " Liquid " : " "
-        let counter = wm.accounts.filter { $0.type == type && $0.gdkNetwork.liquid == liquid }.count
-        if counter > 0 {
-            return "\(type.string)\(network)\(counter+1)"
-        }
-        return "\(type.string)\(network)"
     }
 }

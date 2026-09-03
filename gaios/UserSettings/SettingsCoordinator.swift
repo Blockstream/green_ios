@@ -143,7 +143,15 @@ final class SettingsCoordinator {
     }
 
     func createAccountViewModel() -> CreateAccountViewModel {
-        CreateAccountViewModel()
+        CreateAccountViewModel(
+            wm: wallet.wm,
+            mainWallet: mainWallet,
+            asset: wallet.wm.prominentNetwork.getFeeAsset(),
+            anyLiquidAsset: false,
+            anyLiquidAmpAsset: false,
+            anyLiquidAmpLegacyAsset: false,
+            onlyBtc: false
+        )
     }
 
     func jadeBoltzSwapViewModel() -> JadeBoltzSwapViewModel {

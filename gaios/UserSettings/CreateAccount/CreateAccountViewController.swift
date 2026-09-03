@@ -21,6 +21,7 @@ class CreateAccountViewController: UIViewController {
     weak var delegate: CreateAccountDelegate?
     private var viewModel: CreateAccountViewModel
     var dialogJadeCheckViewController: DialogJadeCheckViewController?
+    private var isCreating = false
 
     init?(coder: NSCoder, viewModel: CreateAccountViewModel) {
         self.viewModel = viewModel
@@ -31,10 +32,23 @@ class CreateAccountViewController: UIViewController {
         fatalError()
     }
 
+    deinit {
+        viewModel.unarchiveCreateDialog = nil
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if isMovingFromParent || isBeingDismissed {
+            viewModel.unarchiveCreateDialog = nil
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        viewModel.unarchiveCreateDialog = unarchiveCreateDialog
+        viewModel.unarchiveCreateDialog = { [weak self] completion in
+            self?.unarchiveCreateDialog(completion: completion)
+        }
 
         [AccountTypeCell.identifier, AssetSelectCell.identifier].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
@@ -228,7 +242,7 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
                     }
                 }
             } else {
-                let isLiquid = viewModel.anyLiquidAsset || viewModel.anyLiquidAmpAsset || viewModel.asset != "btc"
+                let isLiquid = viewModel.isLiquidSelection
                 let params = CreateSubaccountParams(
                     name: viewModel.uniqueName(policy.accountType, liquid: isLiquid),
                     type: policy.accountType,
@@ -257,33 +271,44 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
     }
 
     @MainActor
-    func createSubaccount(policy: AccountTypeOption, params: CreateSubaccountParams) async {
+    func createSubaccount(policy: AccountTypeOption, params: CreateSubaccountParams) {
+        guard !isCreating else { return }
+        isCreating = true
+        tableView.isUserInteractionEnabled = false
         let isHW = WalletsStorage.shared.current?.isHW ?? false
         if isHW {
             showHWCheckDialog()
         } else {
             startLoader(message: String(format: "id_creating_your_s_account".localized, policy.accountType.description))
         }
-        let task = Task { try await viewModel.create(policy: policy, params: params) }
-        switch await task.result {
-        case .success(let action):
-            self.stopLoader()
-            if isHW {
-                self.hideHWCheckDialog()
+        Task { [weak self] in
+            let task = Task { [weak self] in
+                try await self?.viewModel.create(policy: policy, params: params)
             }
-            switch action {
-            case .created:
-                self.didCreateWallet()
-            case .unarchived:
-                self.didUnarchiveWallet()
+            switch await task.result {
+            case .success(let action):
+                self?.stopLoader()
+                if isHW {
+                    self?.hideHWCheckDialog()
+                }
+                switch action {
+                case .created:
+                    self?.didCreateWallet()
+                case .unarchived:
+                    self?.didUnarchiveWallet()
+                case .none:
+                    break
+                }
+                self?.navigationController?.popToRootViewController(animated: true)
+            case .failure(let error):
+                self?.isCreating = false
+                self?.tableView.isUserInteractionEnabled = true
+                self?.stopLoader()
+                if isHW {
+                    self?.hideHWCheckDialog()
+                }
+                self?.showError(error)
             }
-            navigationController?.popToRootViewController(animated: true)
-        case .failure(let error):
-            self.stopLoader()
-            if isHW {
-                self.hideHWCheckDialog()
-            }
-            self.showError(error)
         }
     }
 }
@@ -350,7 +375,7 @@ extension CreateAccountViewController: AccountCreateRecoveryKeyDelegate {
                                             type: .twoOfThree,
                                             recoveryMnemonic: nil,
                                             recoveryXpub: key)
-        Task { await createSubaccount(policy: .TwoOfThreeWith2FA, params: params) }
+        createSubaccount(policy: .TwoOfThreeWith2FA, params: params)
     }
 
     func didNewRecoveryPhrase(_ mnemonic: String) {
@@ -360,7 +385,7 @@ extension CreateAccountViewController: AccountCreateRecoveryKeyDelegate {
                                             type: .twoOfThree,
                                             recoveryMnemonic: mnemonic,
                                             recoveryXpub: nil)
-        Task { await createSubaccount(policy: .TwoOfThreeWith2FA, params: params) }
+        createSubaccount(policy: .TwoOfThreeWith2FA, params: params)
     }
 
     func didExistingRecoveryPhrase(_ mnemonic: String) {
@@ -370,6 +395,6 @@ extension CreateAccountViewController: AccountCreateRecoveryKeyDelegate {
                                             type: .twoOfThree,
                                             recoveryMnemonic: mnemonic,
                                             recoveryXpub: nil)
-        Task { await createSubaccount(policy: .TwoOfThreeWith2FA, params: params) }
+        createSubaccount(policy: .TwoOfThreeWith2FA, params: params)
     }
 }

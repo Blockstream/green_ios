@@ -34,6 +34,10 @@ extension WalletManager {
         try await backend
             .connect(params: createConnectionParams(network: backend.network))
         if let backend = backend as? GdkNetworkBackend {
+            // Disable gdk login on multisig on new wallet
+            if creation && backend.network.multisig {
+                return nil
+            }
             logger.info("Connecting to gdk backend \(backend.network.network)")
             return try await backend.login(
                 credentials: credentials,

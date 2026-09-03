@@ -99,7 +99,7 @@ class AmpService: Sendable {
                     credentials: credentials,
                     device: wm.hwDevice,
                     fullRestore: true,
-                    creation: false,
+                    creation: true,
                     prominentNetworkId: wm.prominentNetworkId
                 )
             // hide default 2FA subaccounts

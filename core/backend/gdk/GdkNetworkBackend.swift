@@ -304,9 +304,6 @@ public final class GdkNetworkBackend: NetworkBackend {
     async throws -> LoginUserResult? {
         disableNotificationHandling = true
         // Disable gdk login on multisig on new wallet
-        if creation && network.multisig {
-            return nil
-        }
         // Disable gdl liquid login, if hw doesn't support it
         if network.liquid && device?.supportsLiquid ?? 1 == 0 {
             logger.error("WM login disable liquid if is unsupported on hw")
@@ -355,8 +352,9 @@ public final class GdkNetworkBackend: NetworkBackend {
             let refresh = fullRestore || (!creation && !hasGdkCache)
             try? await discoveryAndSetupDefaultsAccounts(
                 walletHashId: walletIdentifier.walletHashId,
-                refresh: refresh,
-                hasGdkCache: hasGdkCache || network.multisig)
+                discovery: refresh,
+                setDefaultAccounts: (!hasGdkCache && !network.multisig) || creation || fullRestore
+            )
             try? await loadSettings()
             // Allow initialization calls to have priority over notifications initiated updates
             disableNotificationHandling = false
@@ -373,12 +371,15 @@ public final class GdkNetworkBackend: NetworkBackend {
         }
     }
 
-    func discoveryAndSetupDefaultsAccounts(walletHashId: String, refresh: Bool, hasGdkCache: Bool) async throws {
-        let networkAccounts = try await getAccounts(refresh: refresh)
+    func discoveryAndSetupDefaultsAccounts(
+        walletHashId: String,
+        discovery: Bool,
+        setDefaultAccounts: Bool) async throws {
+        let networkAccounts = try await getAccounts(refresh: discovery)
         let walletIsFunded = !networkAccounts.filter {
             $0.bip44Discovered == true
         }.isEmpty
-        if walletIsFunded && refresh {
+        if walletIsFunded && discovery {
             // Archive no-history default account
             if let firstAccount = networkAccounts.first, firstAccount.pointer == 0 {
                 let accountBackend = accountBackend(
@@ -394,15 +395,21 @@ public final class GdkNetworkBackend: NetworkBackend {
                     )
                 }
             }
-        } else if !hasGdkCache { // Newly discovered Wallet
-            // Archive GDK default account
+        } else if setDefaultAccounts { // Newly discovered Wallet
+            // Archive GDK default account only when it has no history
             logger.info("WM \(self.network.network) Archive GDK default account")
             if let defaultAccount = networkAccounts.first {
-                _ = try await updateAccount(
-                    account: defaultAccount,
-                    name: defaultAccount.type.title,
-                    hidden: true
-                )
+                let accountBackend = accountBackend(
+                    defaultAccount
+                ) as? GdkAccountBackend
+                let hasHistory = await accountBackend?.hasHistory() ?? false
+                if !hasHistory {
+                    _ = try await updateAccount(
+                        account: defaultAccount,
+                        name: defaultAccount.type.title,
+                        hidden: true
+                    )
+                }
             }
         }
         // Create GDK bip84Segwit account

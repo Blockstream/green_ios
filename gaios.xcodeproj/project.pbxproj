@@ -78,6 +78,7 @@
 		3420470C291A6FE100EDE945 /* MultiLabelViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3420470B291A6FE100EDE945 /* MultiLabelViewModel.swift */; };
 		34204711291B919600EDE945 /* CreateAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204710291B919600EDE945 /* CreateAccountViewController.swift */; };
 		34204713291B91B000EDE945 /* CreateAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204712291B91B000EDE945 /* CreateAccountViewModel.swift */; };
+		81EAFF8B3048300100A4FD5D /* CreateAccountService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EAFF8A3048300100A4FD5D /* CreateAccountService.swift */; };
 		34204717291B9A8600EDE945 /* AccountTypeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204715291B9A8600EDE945 /* AccountTypeCell.swift */; };
 		34204718291B9A8600EDE945 /* AccountTypeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34204716291B9A8600EDE945 /* AccountTypeCell.xib */; };
 		3420471A291B9AA700EDE945 /* AccountTypeCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204719291B9AA700EDE945 /* AccountTypeCellModel.swift */; };
@@ -1074,6 +1075,7 @@
 		3420470B291A6FE100EDE945 /* MultiLabelViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiLabelViewModel.swift; sourceTree = "<group>"; };
 		34204710291B919600EDE945 /* CreateAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountViewController.swift; sourceTree = "<group>"; };
 		34204712291B91B000EDE945 /* CreateAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountViewModel.swift; sourceTree = "<group>"; };
+		81EAFF8A3048300100A4FD5D /* CreateAccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountService.swift; sourceTree = "<group>"; };
 		34204715291B9A8600EDE945 /* AccountTypeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountTypeCell.swift; sourceTree = "<group>"; };
 		34204716291B9A8600EDE945 /* AccountTypeCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountTypeCell.xib; sourceTree = "<group>"; };
 		34204719291B9AA700EDE945 /* AccountTypeCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountTypeCellModel.swift; sourceTree = "<group>"; };
@@ -2195,6 +2197,7 @@
 				34204714291B9A2900EDE945 /* Cells */,
 				34204710291B919600EDE945 /* CreateAccountViewController.swift */,
 				34204712291B91B000EDE945 /* CreateAccountViewModel.swift */,
+				81EAFF8A3048300100A4FD5D /* CreateAccountService.swift */,
 			);
 			path = CreateAccount;
 			sourceTree = "<group>";
@@ -5470,6 +5473,7 @@
 				34F980AE29151C6600C12D48 /* TransactionCell.swift in Sources */,
 				8134AE592EEA511900E7E325 /* WalletDataModel.swift in Sources */,
 				34204713291B91B000EDE945 /* CreateAccountViewModel.swift in Sources */,
+				81EAFF8B3048300100A4FD5D /* CreateAccountService.swift in Sources */,
 				81C3BC362F26F31B00CD4F2D /* SendTxSuccessViewController.swift in Sources */,
 				346F00DF2CB3CD8200F28A44 /* QRPsbtShowViewController.swift in Sources */,
 				812872D42F020F4C00DE995D /* Refresh.swift in Sources */,
