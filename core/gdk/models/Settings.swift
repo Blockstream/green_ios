@@ -228,7 +228,7 @@ public enum CsvTime: Int {
 
     public static func all(for gdkNetwork: GdkNetwork) -> [CsvTime] {
         if gdkNetwork.liquid {
-            return [Long]
+            return []
         } else {
             return [Short, Medium, Long]
         }
