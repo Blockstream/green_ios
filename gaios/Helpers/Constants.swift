@@ -60,6 +60,7 @@ enum ExternalUrls {
     static let understandingLightningSupport = "https://help.blockstream.com/hc/en-us/articles/18788578831897-Understand-Lightning-support-in-the-Blockstream-app"
     static let lnFundingFee = "https://help.blockstream.com/hc/en-us/articles/18788499177753-Understand-receive-capacity-and-funding-fees-on-your-Instant-Lightning-account"
     static let ampCreateInfo = "https://help.blockstream.com/blockstream-app/use-liquid-bitcoin/generate-amp-id"
+    static let bip39Login = "https://help.blockstream.com/hc/en-us/articles/8712301763737"
 }
 
 enum RiveModel {

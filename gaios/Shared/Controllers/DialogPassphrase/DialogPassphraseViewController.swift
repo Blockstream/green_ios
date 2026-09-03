@@ -23,7 +23,6 @@ class DialogPassphraseViewController: KeyboardViewController {
     @IBOutlet weak var fieldPassphrase: UITextField!
     @IBOutlet weak var lblHint1: UILabel!
     @IBOutlet weak var lblAskTitle: UILabel!
-//    @IBOutlet weak var switchAsk: UISwitch!
     @IBOutlet weak var btnConfirm: UIButton!
     @IBOutlet weak var btnClear: UIButton!
     @IBOutlet weak var btnsStack: UIStackView!
@@ -31,6 +30,7 @@ class DialogPassphraseViewController: KeyboardViewController {
     @IBOutlet weak var iconAsk: UIImageView!
     @IBOutlet weak var btnAlwaysAsk: UIButton!
     @IBOutlet weak var stackBottom: NSLayoutConstraint!
+    @IBOutlet weak var btnLearnMore: UIButton!
 
     weak var delegate: DialogPassphraseViewControllerDelegate?
     var isAlwaysAsk: Bool = false
@@ -49,6 +49,11 @@ class DialogPassphraseViewController: KeyboardViewController {
         return containerView
     }()
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        dismissDisabled = true
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -60,8 +65,6 @@ class DialogPassphraseViewController: KeyboardViewController {
 
         view.alpha = 0.0
         anchorBottom.constant = -cardView.frame.size.height
-
-//        switchAsk.isOn = isAlwaysAsk
         updateAsk()
 
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
@@ -90,15 +93,6 @@ class DialogPassphraseViewController: KeyboardViewController {
         fieldPassphrase.becomeFirstResponder()
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
     @objc func didTap(gesture: UIGestureRecognizer) {
 
         dismiss(.cancel)
@@ -115,7 +109,7 @@ class DialogPassphraseViewController: KeyboardViewController {
     override func keyboardWillHide(notification: Notification) {
         super.keyboardWillHide(notification: notification)
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
-            self.stackBottom.constant = 36.0
+            self.stackBottom.constant = 0.0
         })
     }
 
@@ -125,8 +119,9 @@ class DialogPassphraseViewController: KeyboardViewController {
         fieldPassphrase.attributedPlaceholder = NSAttributedString(string: hint, attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         lblHint1.text = "id_different_passphrases_generate".localized
         lblAskTitle.text = "id_always_ask".localized
-        btnClear.setTitle("Login without Passphrase", for: .normal)
+        btnClear.setTitle("Login without Passphrase".localized, for: .normal)
         btnConfirm.setTitle("id_submit".localized, for: .normal)
+        btnLearnMore.setTitle("id_learn_more".localized, for: .normal)
     }
 
     func setStyle() {
@@ -144,6 +139,7 @@ class DialogPassphraseViewController: KeyboardViewController {
         btnClear.setStyle(.inline)
         btnConfirm.isUserInteractionEnabled = false
         btnConfirm.setStyle(.primaryGray)
+        btnLearnMore.setStyle(.inline)
     }
 
     func dismiss(_ action: PassphraseAction) {
@@ -204,5 +200,9 @@ class DialogPassphraseViewController: KeyboardViewController {
     @IBAction func btnAlwaysAsk(_ sender: Any) {
         isAlwaysAsk = !isAlwaysAsk
         updateAsk()
+    }
+
+    @IBAction func btnLearnMore(_ sender: Any) {
+        SafeNavigationManager.shared.navigate(ExternalUrls.bip39Login)
     }
 }
