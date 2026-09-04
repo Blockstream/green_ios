@@ -548,12 +548,12 @@ class SendAmountViewControllerLegacy: KeyboardViewController {
     @MainActor
     func reloadCoinSelection() {
         let isSupportedNetwork = viewModel.createTx.isBitcoin || viewModel.createTx.isLiquid
-        let isNotBumpFee = viewModel.createTx.txType != .bumpFee
+        let isTransactionTxType = viewModel.createTx.txType == .transaction
 
         let session = (viewModel.accountBackend as? GdkAccountBackend)?.session
         let isPolicyAsset = viewModel.assetId == session?.gdkNetwork.getFeeAsset()
 
-        let isCoinSelectionAllowed = isSupportedNetwork && isNotBumpFee && isPolicyAsset
+        let isCoinSelectionAllowed = isSupportedNetwork && isTransactionTxType && isPolicyAsset
         btnSelectCoins.isHidden = !isCoinSelectionAllowed
 
         if let selectedCoins = viewModel.createTx.selectedUtxos, !selectedCoins.isEmpty {
