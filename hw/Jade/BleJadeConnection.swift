@@ -72,7 +72,7 @@ public class BleJadeConnection: HWConnectionProtocol {
             .map { try? $0.parsedValue() as Data? } // replace `String?` with your type
             .sink(receiveValue: { [self] value in
                 buffer.append((value ?? Data())!)
-                let decode = try? CBOR.decode([UInt8](buffer))
+                let decode = try? CBOR.decode([UInt8](buffer), options: CBOROptions(maximumDepth: 1024))
                 if decode != nil {
                     self.queue.append(buffer)
                     semaphoreQueue.signal()

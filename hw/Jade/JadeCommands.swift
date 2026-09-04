@@ -155,7 +155,7 @@ public class JadeCommands {
     }
 
     func cbor2dict(_ response: Data) async throws -> [String: Any?] {
-        let decoded = try CBOR.decode([UInt8](response))
+        let decoded = try CBOR.decode([UInt8](response), options: CBOROptions(maximumDepth: 1024))
         let map = CBOR.getDictionary(map: decoded ?? [:])
         return try CBOR.convertCBORMapToDictionary(map ?? [:])
     }
