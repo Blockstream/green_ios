@@ -18,6 +18,134 @@ public struct JadeSignTx: Codable {
     let txn: Data
 }
 
+public struct JadeAssetInfo: Codable {
+    enum CodingKeys: String, CodingKey {
+        case assetId = "asset_id"
+        case contract
+        case issuancePrevout = "issuance_prevout"
+    }
+
+    // Jade hashes the contract in a 768-byte buffer; skip oversized entries instead of
+    // failing the whole signing request.
+    private static let maxContractJsonSize = 700
+
+    let assetId: String
+    let contract: [String: JadeAssetInfoValue]
+    let issuancePrevout: JadeAssetInfoPrevout
+
+    init?(_ details: [String: Any]) {
+        guard let assetId = details["asset_id"] as? String,
+              let contract = details["contract"] as? [String: Any],
+              let issuancePrevout = details["issuance_prevout"] as? [String: Any],
+              let txid = issuancePrevout["txid"] as? String,
+              let vout = (issuancePrevout["vout"] as? NSNumber)?.uint32Value,
+              let contractJson = try? JSONSerialization.data(withJSONObject: contract, options: []),
+              contractJson.count <= JadeAssetInfo.maxContractJsonSize else {
+            return nil
+        }
+        // Jade asserts the ticker fits its 8-byte buffer; a missing, empty, or overlong
+        // ticker would abort the device, so drop the entry (truncating breaks the hash).
+        // TODO: remove once fixed in Jade firmware (Blockstream/Jade#313).
+        guard let ticker = contract["ticker"] as? String,
+              (1...7).contains(ticker.utf8.count) else {
+            return nil
+        }
+        var contractValues = [String: JadeAssetInfoValue]()
+        for (key, value) in contract {
+            guard let value = JadeAssetInfoValue(value) else { return nil }
+            contractValues[key] = value
+        }
+        self.assetId = assetId
+        self.contract = contractValues
+        self.issuancePrevout = JadeAssetInfoPrevout(txid: txid, vout: vout)
+    }
+}
+
+public struct JadeAssetInfoPrevout: Codable {
+    let txid: String
+    let vout: UInt32
+}
+
+public indirect enum JadeAssetInfoValue: Codable {
+    case array([JadeAssetInfoValue])
+    case boolean(Bool)
+    case double(Double)
+    case integer(Int64)
+    case null
+    case object([String: JadeAssetInfoValue])
+    case string(String)
+
+    init?(_ value: Any) {
+        switch value {
+        case is NSNull:
+            self = .null
+        case let value as String:
+            self = .string(value)
+        case let value as NSNumber:
+            // CFGetTypeID is required: "as? Bool" bridges NSNumber 0 to false and 1 to true.
+            if CFGetTypeID(value) == CFBooleanGetTypeID() {
+                self = .boolean(value.boolValue)
+            } else if ["f", "d"].contains(String(cString: value.objCType)) {
+                self = .double(value.doubleValue)
+            } else {
+                self = .integer(value.int64Value)
+            }
+        case let value as [Any]:
+            let values = value.compactMap(JadeAssetInfoValue.init)
+            guard values.count == value.count else { return nil }
+            self = .array(values)
+        case let value as [String: Any]:
+            var values = [String: JadeAssetInfoValue]()
+            for (key, item) in value {
+                guard let item = JadeAssetInfoValue(item) else { return nil }
+                values[key] = item
+            }
+            self = .object(values)
+        default:
+            return nil
+        }
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if container.decodeNil() {
+            self = .null
+        } else if let value = try? container.decode(Bool.self) {
+            self = .boolean(value)
+        } else if let value = try? container.decode(Int64.self) {
+            self = .integer(value)
+        } else if let value = try? container.decode(Double.self) {
+            self = .double(value)
+        } else if let value = try? container.decode(String.self) {
+            self = .string(value)
+        } else if let value = try? container.decode([JadeAssetInfoValue].self) {
+            self = .array(value)
+        } else {
+            self = .object(try container.decode([String: JadeAssetInfoValue].self))
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .array(let value):
+            try container.encode(value)
+        case .boolean(let value):
+            try container.encode(value)
+        case .double(let value):
+            try container.encode(value)
+        case .integer(let value):
+            try container.encode(value)
+        case .null:
+            try container.encodeNil()
+        case .object(let value):
+            try container.encode(value)
+        case .string(let value):
+            try container.encode(value)
+        }
+    }
+}
+
 public struct JadeGetReceiveMultisigAddress: Codable {
     enum CodingKeys: String, CodingKey {
         case network = "network"
