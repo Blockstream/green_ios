@@ -3,7 +3,7 @@ import Foundation
 public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, CustomStringConvertible, Sendable {
 
     // Multisig
-    case standard = "2of2"
+    case twoOfTwo = "2of2"
     case ampAccount = "2of2_no_recovery"
     case twoOfThree = "2of3"
 
@@ -29,7 +29,7 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, C
         case .bip84Segwit: return "Standard"
         case .bip86Taproot: return "Taproot"
         case .lightning: return "Lightning"
-        case .standard: return "2FA Protected"
+        case .twoOfTwo: return "2FA Protected"
         case .ampAccount: return ampLegacyTitle
         case .amp2Account: return "AMP"
         case .twoOfThree: return "2of3 with 2FA"
@@ -39,7 +39,7 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, C
 
     public var title: String {
         switch self {
-        case .standard: return "2FA Protected"
+        case .twoOfTwo: return "2FA Protected"
         case .ampAccount: return ampLegacyTitle
         case .amp2Account: return "AMP"
         case .twoOfThree: return "2of3 with 2FA"
@@ -82,7 +82,7 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable, C
             .bip84Segwit,
             .bip86Taproot,
             .amp2Account,
-            .standard,
+            .twoOfTwo,
             .ampAccount,
             .twoOfThree,
             .lightning

@@ -139,7 +139,7 @@ public struct Account: Codable, Equatable, Comparable, Sendable {
             } else {
                 return "\(typeString) \(accountNumber)"
             }
-        case .standard: return "2FA Protected"
+        case .twoOfTwo: return "2FA Protected"
         case .ampAccount: return "AMP Liquid"
         case .amp2Account: return "AMP Liquid"
         case .twoOfThree: return "2of3"

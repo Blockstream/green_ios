@@ -17,7 +17,7 @@ enum AccountTypeOption: String, CaseIterable {
         case .Lightning:
             return .lightning
         case .TwoFAProtected:
-            return .standard
+            return .twoOfTwo
         case .TwoOfThreeWith2FA:
             return .twoOfThree
         case .LegacySegwit:

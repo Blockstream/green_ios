@@ -33,7 +33,7 @@ enum CoinFilter: CaseIterable {
             filters.append(.dust)
         }
 
-        if subaccount?.gdkNetwork.liquid != true && subaccount?.type == .standard {
+        if subaccount?.gdkNetwork.liquid != true && subaccount?.type == .twoOfTwo {
             filters.append(.legacyRecovery)
         }
 
