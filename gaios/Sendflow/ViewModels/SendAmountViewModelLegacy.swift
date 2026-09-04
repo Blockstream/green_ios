@@ -79,6 +79,8 @@ class SendAmountViewModelLegacy {
     var sendAllEnabled: Bool {
         if createTx.isLightning {
             return false
+        } else if createTx.bip21 {
+            return false
         } else {
             return createTx.txType == .transaction
         }
