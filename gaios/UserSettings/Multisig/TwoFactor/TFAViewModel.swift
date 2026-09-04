@@ -56,7 +56,9 @@ class TFAViewModel {
             if selectedBackend?.network.liquid == false {
                 list.append(.threshold)
             }
-            list.append(.expiry)
+            if !selectedCsvTypes.isEmpty {
+                list.append(.expiry)
+            }
             list.append(.infoExpire)
             list.append(.recActions)
         }
