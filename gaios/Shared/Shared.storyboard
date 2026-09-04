@@ -2409,7 +2409,7 @@
                                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VVq-df-6PE">
                                                                                 <rect key="frame" x="16" y="0.0" width="382" height="76"/>
                                                                                 <subviews>
-                                                                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="1.0" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="qSX-Yj-1YH">
+                                                                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="1.0" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="qSX-Yj-1YH" customClass="DecimalTextField" customModule="gaios" customModuleProvider="target">
                                                                                         <rect key="frame" x="16" y="0.0" width="282" height="76"/>
                                                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
