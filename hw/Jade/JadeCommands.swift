@@ -20,7 +20,8 @@ public class JadeCommands {
 
     public static let MIN_ALLOWED_FW_VERSION = "1.0.40"
     public static let FEATURE_SECURE_BOOT = "SB"
-    
+    public static let MAX_HTTP_REQUEST_ITERATIONS = 1024
+
     public let pinServerOverrideUrl: String?
 
     public var blockstreamUrls: [String] {
@@ -165,6 +166,7 @@ public class JadeCommands {
 #endif
         let request = try await request2cbor(request)
         var res = try await connection.exchange(request)
+        var requestCount = 0
         while true {
             let response = try await cbor2dict(res)
             if let error = dictionary(response["error"]),
@@ -175,6 +177,10 @@ public class JadeCommands {
             if let result = dictionary(response["result"]),
                let httpRequest = dictionary(result["http_request"]),
                let onReply = httpRequest["on-reply"] as? String {
+                guard requestCount < JadeCommands.MAX_HTTP_REQUEST_ITERATIONS else {
+                    throw HWError.Abort("Too many HTTP requests from device")
+                }
+                requestCount += 1
                 let httpResponse = try await makeHttpRequest(httpRequest)
                 let package = [
                     "id": "\(JadeRequestId)",
@@ -227,7 +233,6 @@ public class JadeCommands {
         if let overrideUrl = pinServerOverrideUrl, !overrideUrl.isEmpty {
             let pinServerUrlHost = URLComponents(string: JadeCommands.PIN_SERVER_HTTPS)?.host
             let pinServerV2UrlHost = URLComponents(string: JadeCommands.PIN_SERVERv2_HTTPS)?.host
-
             urls = urls.map { url in
                 guard var urlComponents = URLComponents(string: url),
                       let overrideUrlComponents = URLComponents(string: overrideUrl) else {
