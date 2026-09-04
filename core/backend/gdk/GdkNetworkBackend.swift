@@ -372,7 +372,9 @@ public final class GdkNetworkBackend: NetworkBackend {
             try? await discoveryAndSetupDefaultsAccounts(
                 walletHashId: walletIdentifier.walletHashId,
                 discovery: refresh,
-                setDefaultAccounts: (!hasGdkCache && !network.multisig) || creation || fullRestore
+                setDefaultAccounts: (!hasGdkCache && network.singlesig) || creation || (
+                    fullRestore && network
+                        .singlesig)
             )
             try? await loadSettings()
             // Allow initialization calls to have priority over notifications initiated updates
