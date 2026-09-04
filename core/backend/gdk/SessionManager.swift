@@ -20,8 +20,9 @@ public class SessionManager {
     public var networkId: NetworkId
     public var gdkNetwork: GdkNetwork
     public var blockHeight: UInt32 = 0
-    public var popupResolver: PopupResolverDelegate?
-    public var hwInterfaceResolver: HwInterfaceResolver?
+    public weak var popupResolver: PopupResolverDelegate?
+    public weak var hwResolver: HwResolverDelegate?
+    public weak var hwInterfaceResolver: HwInterfaceResolver?
     public var loginData: LoginUserResult?
 
     public var connected = false
@@ -66,6 +67,10 @@ public class SessionManager {
         connected = false
         gdkFailures = []
         paused = false
+        popupResolver = nil
+        hwResolver = nil
+        hwInterfaceResolver = nil
+        hwProtocol = nil
         try? await reconnectionTasks.add {
             self.session = GDKSession()
         }
@@ -181,6 +186,7 @@ public class SessionManager {
             hwDevice: hwProtocol,
             session: self,
             popupResolver: popupResolver,
+            hwResolver: hwResolver,
             hwInterfaceDelegate: hwInterfaceResolver,
             bcurResolver: bcurResolver,
             enableLogs: enableLogs)
@@ -250,19 +256,6 @@ public class SessionManager {
             throw GaError.GenericError("Not connected")
         }
         return session
-    }
-
-    // create a default segwit account if doesn't exist on singlesig
-    public func createDefaultSubaccount(wallets: [Account]) async throws {
-        let notFound = !wallets.contains(
-            where: {$0.type == AccountType.bip84Segwit
-            })
-        if gdkNetwork.electrum && notFound {
-            _ = try await wrap(
-                fun: self.session?.createSubaccount,
-                params: ["name": "", "type": AccountType.bip84Segwit.rawValue]
-            )
-        }
     }
 
     public func reconnect() async throws {
@@ -419,16 +412,6 @@ public class SessionManager {
 
     public func decryptWithPin(_ params: DecryptWithPinParams) async throws -> Credentials {
         return try await wrapper(fun: self.session?.decryptWithPin, params: params)
-    }
-
-    public func load(refreshSubaccounts: Bool = true) async throws {
-        if refreshSubaccounts {
-            do {
-                _ = try await self.subaccounts(true)
-            } catch { }
-            let subaccounts = try await self.subaccounts(false)
-            _ = try await createDefaultSubaccount(wallets: subaccounts)
-        }
     }
 
     public func getCredentials(password: String) async throws -> Credentials? {

@@ -16,6 +16,7 @@ public class ResolverManager {
         hwDevice: HWProtocol?,
         session: SessionManager? = nil,
         popupResolver: PopupResolverDelegate? = nil,
+        hwResolver: HwResolverDelegate? = nil,
         hwInterfaceDelegate: HwInterfaceResolver? = nil,
         bcurResolver: BcurResolver? = nil,
         enableLogs: Bool = true) {
@@ -24,7 +25,7 @@ public class ResolverManager {
             factor,
             gdkSession: session?.session,
             popupDelegate: popupResolver,
-            hwDelegate: HWResolver(),
+            hwDelegate: hwResolver,
             hwInterfaceDelegate: hwInterfaceDelegate,
             bcurDelegate: bcurResolver,
             hwDevice: hwDevice,

@@ -134,6 +134,8 @@ class OnboardViewModel {
         let mnemonic = try generateMnemonic12()
         var credentials = Credentials(mnemonic: mnemonic)
         let wm = WalletsRepository.shared.getOrAdd(for: wallet)
+        wm.popupResolver = await PopupResolver()
+        wm.hwInterfaceResolver = HwPopupResolver()
         if let pin = pin {
             credentials = try await addPinData(wm: wm, wallet: wallet, credentials: credentials, pin: pin)
         } else {

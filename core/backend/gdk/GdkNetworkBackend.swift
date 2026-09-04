@@ -20,12 +20,19 @@ public final class GdkNetworkBackend: NetworkBackend {
     public var networkType: NetworkId { network.networkId }
     private var accountBackends = [String: AccountBackend]()
     public weak var newNotificationDelegate: NewNotificationDelegate?
+    public weak var popupResolver: PopupResolverDelegate?
+    public var hwResolver: HwResolverDelegate?
+    public weak var hwInterfaceResolver: HwInterfaceResolver?
+    public var hwProtocol: HWProtocol? {
+        didSet {
+            session.hwProtocol = hwProtocol
+        }
+    }
     //  Disable notification handling until all networks are initialized
     var disableNotificationHandling = false
 
     private let blockDebouncer = NotificationDebouncer(interval: .milliseconds(300))
     private let transactionDebouncer = NotificationDebouncer(interval: .milliseconds(300))
-
 
     public var twoFactorConfig: TwoFactorConfig?
     public var settings: Settings?
@@ -34,19 +41,30 @@ public final class GdkNetworkBackend: NetworkBackend {
     public init(
         network: GdkNetwork,
         popupResolver: PopupResolverDelegate? = nil,
+        hwResolver: HwResolverDelegate? = nil,
         hwProtocol: HWProtocol? = nil,
         hwInterfaceResolver: HwInterfaceResolver? = nil,
         newNotificationDelegate: NewNotificationDelegate?
     ) {
         self.network = network
         self.accounts = []
-        self.session = SessionManager(network.networkId)
-        self.session.newNotificationDelegate = self
-        self.session.popupResolver = popupResolver
-        self.session.hwProtocol = hwProtocol
-        self.session.hwInterfaceResolver = hwInterfaceResolver
+        self.popupResolver = popupResolver
+        self.hwResolver = hwResolver
+        self.hwProtocol = hwProtocol
+        self.hwInterfaceResolver = hwInterfaceResolver
         self.newNotificationDelegate = newNotificationDelegate
         self.disableNotificationHandling = true
+        self.session = SessionManager(network.networkId)
+        self.session.newNotificationDelegate = self
+        self.setupSession()
+    }
+
+    private func setupSession() {
+        session.hwProtocol = self.hwProtocol
+        session.hwResolver = self.hwResolver
+        session.newNotificationDelegate = self
+        session.popupResolver = self
+        session.hwInterfaceResolver = self
     }
 
     deinit {
@@ -233,6 +251,7 @@ public final class GdkNetworkBackend: NetworkBackend {
         try await session.disconnect()
         isLoggedIn = false
         isConnected = false
+        hwResolver = nil
     }
 
     public func createAccount(params: CreateSubaccountParams) async throws -> Account {
@@ -504,6 +523,9 @@ extension GdkNetworkBackend: NewNotificationDelegate {
                 .info(
                     "GdkNetworkBackend didReceive twoFactorReset on \(networkId.network)"
                 )
+            guard !disableNotificationHandling else {
+                return
+            }
             Task { [weak self, weak newNotificationDelegate] in
                 try await self?.loadSettings()
                 newNotificationDelegate?
@@ -514,6 +536,9 @@ extension GdkNetworkBackend: NewNotificationDelegate {
                 .info(
                     "GdkNetworkBackend didReceive updateSettings on \(networkId.network)"
                 )
+            guard !disableNotificationHandling else {
+                return
+            }
             Task { [weak self, weak newNotificationDelegate] in
                 try await self?.loadSettings()
                 newNotificationDelegate?
@@ -590,5 +615,55 @@ private final class NotificationDebouncer {
                 buffer.removeAll()
             }
         }
+    }
+}
+
+extension GdkNetworkBackend: PopupResolverDelegate {
+    public func code(_ method: String, attemptsRemaining: Int?, enable2faCallMethod: Bool, network: NetworkId, failure: Bool) async throws -> String {
+        guard let popupResolver else {
+            throw GaError.GenericError("2FA resolver failed")
+        }
+        return try await popupResolver.code(
+            method,
+            attemptsRemaining: attemptsRemaining,
+            enable2faCallMethod: enable2faCallMethod,
+            network: network,
+            failure: failure
+        )
+    }
+
+    public func method(_ methods: [String]) async throws -> String {
+        guard let popupResolver else {
+            throw GaError.GenericError("2FA resolver failed")
+        }
+        return try await popupResolver.method(methods)
+    }
+
+}
+
+extension GdkNetworkBackend: HwResolverDelegate {
+    public func resolveCode(action: String, device: hw.HWDevice, requiredData: [String : Any], chain: String?, hwDevice: (any hw.HWProtocol)?, interfaceDelegate: HwInterfaceResolver?) async throws -> hw.HWResolverResult {
+        guard let hwResolver else {
+            throw GaError.GenericError("2FA resolver failed")
+        }
+        return try await hwResolver
+            .resolveCode(
+                action: action,
+                device: device,
+                requiredData: requiredData,
+                chain: chain,
+                hwDevice: hwDevice,
+                interfaceDelegate: self
+            )
+    }
+}
+
+extension GdkNetworkBackend: HwInterfaceResolver {
+    public func showMasterBlindingKeyRequest() async {
+        await hwInterfaceResolver?.showMasterBlindingKeyRequest()
+    }
+
+    public func dismiss() async {
+        await hwInterfaceResolver?.dismiss()
     }
 }

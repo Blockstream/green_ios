@@ -4,8 +4,7 @@ import Combine
 import Semaphore
 
 public protocol HwResolverDelegate: AnyObject {
-    func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?, hwDevice: HWProtocol?) async throws -> HWResolverResult
-    func setInterfaceDelegate(_ interfaceDelegate: HwInterfaceResolver?)
+    func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?, hwDevice: HWProtocol?, interfaceDelegate: HwInterfaceResolver?) async throws -> HWResolverResult
 }
 
 public protocol HwInterfaceResolver: AnyObject {
@@ -15,23 +14,26 @@ public protocol HwInterfaceResolver: AnyObject {
 
 public class HWResolver: HwResolverDelegate {
     static let semaphore = AsyncSemaphore(value: 1)
-    var interfaceDelegate: HwInterfaceResolver?
     public init() {}
-
-    public func setInterfaceDelegate(_ interfaceDelegate: HwInterfaceResolver?) {
-        self.interfaceDelegate = interfaceDelegate
-    }
 
     public func resolveCode(
         action: String,
         device: HWDevice,
         requiredData: [String: Any],
         chain: String?,
-        hwDevice: HWProtocol?)
+        hwDevice: HWProtocol?,
+        interfaceDelegate: HwInterfaceResolver?)
     async throws -> HWResolverResult {
         await HWResolver.semaphore.wait()
         do {
-            let res = try await resolve(action: action, device: device, requiredData: requiredData, chain: chain, hwDevice: hwDevice)
+            let res = try await resolve(
+                action: action,
+                device: device,
+                requiredData: requiredData,
+                chain: chain,
+                hwDevice: hwDevice,
+                interfaceDelegate: interfaceDelegate
+            )
             HWResolver.semaphore.signal()
             return res
         } catch {
@@ -45,7 +47,8 @@ public class HWResolver: HwResolverDelegate {
         device: HWDevice,
         requiredData: [String: Any],
         chain: String?,
-        hwDevice: HWProtocol?)
+        hwDevice: HWProtocol?,
+        interfaceDelegate: HwInterfaceResolver?)
     async throws -> HWResolverResult {
         guard let hw = hwDevice else {
             throw HWError.Abort("No hw found")
@@ -108,11 +111,11 @@ public class HWResolver: HwResolverDelegate {
                 let res = try await hw.getMasterBlindingKey(onlyIfSilent: true)
                 return HWResolverResult(masterBlindingKey: res)
             } catch {
-                if let interfaceDelegate = interfaceDelegate {
+                if let interfaceDelegate {
                     await interfaceDelegate.showMasterBlindingKeyRequest()
                 }
                 let res = try await hw.getMasterBlindingKey(onlyIfSilent: false)
-                if let interfaceDelegate = interfaceDelegate {
+                if let interfaceDelegate {
                     await interfaceDelegate.dismiss()
                 }
                 return HWResolverResult(masterBlindingKey: res)

@@ -36,6 +36,7 @@ public class GDKResolver {
     let progressDelegate: ProgressDelegate?
     let bcurDelegate: BcurResolver?
     let hwDelegate: HwResolverDelegate?
+    let hwInterfaceDelegate: HwInterfaceResolver?
     let hwDevice: HWProtocol?
     let gdkSession: GDKSession?
     let enableLogs: Bool
@@ -57,7 +58,7 @@ public class GDKResolver {
         self.popupDelegate = popupDelegate
         self.bcurDelegate = bcurDelegate
         self.hwDelegate = hwDelegate
-        self.hwDelegate?.setInterfaceDelegate(hwInterfaceDelegate)
+        self.hwInterfaceDelegate = hwInterfaceDelegate
         self.network = network
         self.connected = connected
         self.hwDevice = hwDevice
@@ -94,12 +95,17 @@ public class GDKResolver {
             try self.twoFactorCall?.call()
         case "request_code":
             let methods = res["methods"] as? [String] ?? []
-            if methods.count > 1 {
-                let method = try await self.popupDelegate?.method(methods)
+            if methods.isEmpty {
+                throw TwoFactorCallError.failure(localizedDescription: "No 2FA method available")
+            } else if methods.count == 1 {
+                try self.twoFactorCall?.requestCode(method: methods[0])
+            } else {
+                guard let popupDelegate else {
+                    throw TwoFactorCallError.failure(localizedDescription: "2FA method selection failure")
+                }
+                let method = try await popupDelegate.method(methods)
                 try await self.waitConnection()
                 try self.twoFactorCall?.requestCode(method: method)
-            } else {
-                try self.twoFactorCall?.requestCode(method: methods[0])
             }
         case "resolve_code":
             // Hardware wallet interface resolver
@@ -107,7 +113,14 @@ public class GDKResolver {
                 let action = requiredData["action"] as? String,
                 let device = requiredData["device"] as? [String: Any],
                 let hwdevice = HWDevice.from(device) as? HWDevice {
-                let res = try await hwDelegate?.resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: network.chain, hwDevice: hwDevice)
+                let res = try await hwDelegate?.resolveCode(
+                    action: action,
+                    device: hwdevice,
+                    requiredData: requiredData,
+                    chain: network.chain,
+                    hwDevice: hwDevice,
+                    interfaceDelegate: hwInterfaceDelegate
+                )
                 try self.twoFactorCall?.resolveCode(code: res.stringify())
             } else if name == "bcur_decode", let bcurDelegate = bcurDelegate {
                 let authData = res["auth_data"] as? [String: Any]
@@ -122,7 +135,10 @@ public class GDKResolver {
                 if let config = TwoFactorConfig.from(res ?? [:]) as? TwoFactorConfig {
                     enable2faCallMethod = config.enableMethods.count == 1 && config.enableMethods.contains("sms")
                 }
-                let code = try await self.popupDelegate?.code(
+                guard let popupDelegate else {
+                    throw TwoFactorCallError.failure(localizedDescription: "2FA code selection failure")
+                }
+                let code = try await popupDelegate.code(
                     resolveCode?.method ?? "",
                     attemptsRemaining: resolveCode?.attemptsRemaining,
                     enable2faCallMethod: enable2faCallMethod,

@@ -73,21 +73,21 @@ public class WalletManager {
     public var popupResolver: PopupResolverDelegate? {
         didSet {
             for network in networkBackends.keys {
-                gdkNetworkBackendOrNil(network)?.session.popupResolver = popupResolver
+                gdkNetworkBackendOrNil(network)?.popupResolver = popupResolver
             }
         }
     }
     public var hwProtocol: HWProtocol? {
         didSet {
             for network in networkBackends.keys {
-                gdkNetworkBackendOrNil(network)?.session.hwProtocol = hwProtocol
+                gdkNetworkBackendOrNil(network)?.hwProtocol = hwProtocol
             }
         }
     }
     public var hwInterfaceResolver: HwInterfaceResolver? {
         didSet {
             for network in networkBackends.keys {
-                gdkNetworkBackendOrNil(network)?.session.hwInterfaceResolver = hwInterfaceResolver
+                gdkNetworkBackendOrNil(network)?.hwInterfaceResolver = hwInterfaceResolver
             }
         }
     }
@@ -216,6 +216,7 @@ public class WalletManager {
                 networkBackends[target] = GdkNetworkBackend(
                     network: target.gdkNetwork,
                     popupResolver: popupResolver,
+                    hwResolver: HWResolver(),
                     hwProtocol: hwProtocol,
                     hwInterfaceResolver: hwInterfaceResolver,
                     newNotificationDelegate: self
