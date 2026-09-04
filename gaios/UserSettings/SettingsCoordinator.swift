@@ -139,8 +139,7 @@ final class SettingsCoordinator {
     func pgpViewModel(networkId: NetworkId? = nil) -> PgpViewModel {
         PgpViewModel(
             mainWallet: mainWallet,
-            manager: wallet.wm,
-            networkId: networkId ?? defaultMultisigNetworkId
+            manager: wallet.wm
         )
     }
 

@@ -6,25 +6,33 @@ class PgpViewModel {
 
     let mainWallet: Wallet
     let manager: WalletManager
-    let networkId: NetworkId
-
-    var backend: GdkNetworkBackend? {
-        manager.gdkNetworkBackendOrNil(networkId)
+    var networkIds: [NetworkId] {
+        manager.activeGdkMultisigNetworkIds
+    }
+    var backends: [GdkNetworkBackend] {
+        networkIds.map { manager.gdkNetworkBackendOrNil($0) }.compactMap { $0 }
+    }
+    var pgp: String? {
+        backends
+            .compactMap { $0.settings?.pgp }
+            .filter { !$0.isEmpty }
+            .first
     }
 
-    internal init(mainWallet: Wallet, manager: WalletManager, networkId: NetworkId) {
+    internal init(mainWallet: Wallet, manager: WalletManager) {
         self.mainWallet = mainWallet
         self.manager = manager
-        self.networkId = networkId
     }
 
     func getPgp() -> String? {
-        return backend?.settings?.pgp
+        return pgp
     }
 
     func setPgp(pgp: String) async throws {
-        guard var settings = backend?.settings else { return }
+        guard var settings = manager.settings else { return }
         settings.pgp = pgp
-        try await backend?.changeSettings(settings)
+        for backend in backends {
+            try await backend.changeSettings(settings)
+        }
     }
 }
