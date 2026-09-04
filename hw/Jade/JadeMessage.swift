@@ -3,6 +3,7 @@ import SwiftCBOR
 
 public struct JadeSignTx: Codable {
     enum CodingKeys: String, CodingKey {
+        case assetInfo = "asset_info"
         case change = "change"
         case network = "network"
         case numInputs = "num_inputs"
@@ -10,6 +11,7 @@ public struct JadeSignTx: Codable {
         case useAeProtocol = "use_ae_signatures"
         case txn = "txn"
     }
+    let assetInfo: [JadeAssetInfo]?
     let change: [TxChangeOutput?]
     let network: String
     let numInputs: Int
@@ -437,7 +439,20 @@ public struct JadeRequest<T: Codable>: Decodable, Encodable {
     }
 
     public var encoded: Data? {
-        try? CodableCBOREncoder().encode(self)
+        do {
+            let data = try CodableCBOREncoder().encode(self)
+            // asset_info contracts must reach Jade in alphabetical key order (it hashes
+            // them in wire order), and Swift dictionaries do not preserve key order.
+            guard method == "sign_liquid_tx",
+                  let signTx = params as? JadeSignTx,
+                  signTx.assetInfo?.isEmpty == false,
+                  let value = try CBOR.decode([UInt8](data)) else {
+                return data
+            }
+            return Data(value.encodeWithAlphabeticallySortedMaps())
+        } catch {
+            return nil
+        }
     }
 }
 

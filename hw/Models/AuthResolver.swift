@@ -171,18 +171,21 @@ public struct HWSignTxParams {
         case txOutputs = "transaction_outputs"
         case signingTxs = "signing_transactions"
         case useAeProtocol = "use_ae_protocol"
+        case assetInfo = "asset_info"
     }
     let transaction: String?
     let signingInputs: [InputOutput]
     let txOutputs: [InputOutput]
     let signingTxs: [String: String]
     let useAeProtocol: Bool
+    let assetInfo: [JadeAssetInfo]
     init(_ details: [String: Any]) {
         transaction = details["transaction"] as? String
         signingInputs = details["transaction_inputs"] as? [InputOutput] ?? []
         txOutputs = details["transaction_outputs"] as? [InputOutput] ?? []
         signingTxs = details["signing_transactions"] as? [String: String] ?? [:]
         useAeProtocol = details["use_ae_protocol"] as? Bool ?? false
+        assetInfo = (details["asset_info"] as? [[String: Any]] ?? []).compactMap(JadeAssetInfo.init)
     }
 }
 

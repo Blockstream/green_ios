@@ -109,10 +109,13 @@ public class GDKResolver {
             }
         case "resolve_code":
             // Hardware wallet interface resolver
-            if let requiredData = res["required_data"] as? [String: Any],
+            if var requiredData = res["required_data"] as? [String: Any],
                 let action = requiredData["action"] as? String,
                 let device = requiredData["device"] as? [String: Any],
                 let hwdevice = HWDevice.from(device) as? HWDevice {
+                if action == "sign_tx" {
+                    requiredData = addLiquidAssetInfo(to: requiredData)
+                }
                 let res = try await hwDelegate?.resolveCode(
                     action: action,
                     device: hwdevice,
@@ -153,6 +156,52 @@ public class GDKResolver {
         default:
             break
         }
+    }
+
+    // Registry metadata so Jade can display tickers and precision-formatted amounts.
+    // Outputs only; any lookup or entry problem degrades to no metadata, never a failure.
+    private func addLiquidAssetInfo(to requiredData: [String: Any]) -> [String: Any] {
+        guard network.liquid, requiredData["asset_info"] == nil else {
+            return requiredData
+        }
+
+        let outputs = requiredData["transaction_outputs"] as? [[String: Any]] ?? []
+        let assetIds = Set(outputs.compactMap { $0["asset_id"] as? String })
+            .subtracting([network.gdkNetwork.getFeeAsset()])
+            .sorted()
+        guard !assetIds.isEmpty else {
+            return requiredData
+        }
+
+        let registryResult: [String: Any]?
+        do {
+            registryResult = try gdkSession?.getAssets(params: ["assets_id": assetIds])
+        } catch {
+            return requiredData
+        }
+        guard let assets = registryResult?["assets"] as? [String: Any] else {
+            return requiredData
+        }
+
+        let assetInfo = assetIds.compactMap { assetId -> [String: Any]? in
+            guard let entry = assets[assetId] as? [String: Any],
+                  let contract = entry["contract"] as? [String: Any],
+                  let issuancePrevout = entry["issuance_prevout"] as? [String: Any] else {
+                return nil
+            }
+            return [
+                "asset_id": entry["asset_id"] as? String ?? assetId,
+                "contract": contract,
+                "issuance_prevout": issuancePrevout
+            ]
+        }
+        guard !assetInfo.isEmpty else {
+            return requiredData
+        }
+
+        var requiredData = requiredData
+        requiredData["asset_info"] = assetInfo
+        return requiredData
     }
 
     func prevResolveCodeMethod() -> String? {

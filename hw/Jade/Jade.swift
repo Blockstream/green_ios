@@ -183,7 +183,8 @@ public class Jade: JadeCommands, HWProtocol {
         }
 
         let changes = getChangeData(outputs: params.txOutputs)
-        let signtx = JadeSignTx(change: changes,
+        let signtx = JadeSignTx(assetInfo: nil,
+                                change: changes,
                                 network: network,
                                 numInputs: params.signingInputs.count,
                                 trustedCommitments: nil,
@@ -291,7 +292,8 @@ public class Jade: JadeCommands, HWProtocol {
         // Get the change outputs and paths
         let change = getChangeData(outputs: params.txOutputs)
         // Make jade-api call to sign the txn
-        let params = JadeSignTx(change: change,
+        let params = JadeSignTx(assetInfo: params.assetInfo.isEmpty ? nil : params.assetInfo,
+                                change: change,
                                 network: network,
                                 numInputs: txInputs.count,
                                 trustedCommitments: trustedCommitments,

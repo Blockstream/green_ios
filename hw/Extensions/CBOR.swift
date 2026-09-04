@@ -2,6 +2,41 @@ import Foundation
 import SwiftCBOR
 
 extension CBOR {
+    // Re-encodes preserving values but with map text keys in alphabetical order.
+    // SwiftCBOR's shouldSortMapKeys is not a substitute: it sorts length-first.
+    func encodeWithAlphabeticallySortedMaps() -> [UInt8] {
+        switch self {
+        case .array(let values):
+            return CBOR.containerHeader(majorType: 4, count: values.count)
+                + values.flatMap { $0.encodeWithAlphabeticallySortedMaps() }
+        case .map(let values):
+            let sortedValues = values.sorted { lhs, rhs in
+                switch (lhs.key, rhs.key) {
+                case (.utf8String(let lhs), .utf8String(let rhs)):
+                    return lhs < rhs
+                default:
+                    return lhs.key.encode().lexicographicallyPrecedes(rhs.key.encode())
+                }
+            }
+            return CBOR.containerHeader(majorType: 5, count: sortedValues.count)
+                + sortedValues.flatMap {
+                    $0.key.encodeWithAlphabeticallySortedMaps()
+                        + $0.value.encodeWithAlphabeticallySortedMaps()
+                }
+        case .tagged(let tag, let value):
+            return CBOR.containerHeader(majorType: 6, count: Int(tag.rawValue))
+                + value.encodeWithAlphabeticallySortedMaps()
+        default:
+            return encode()
+        }
+    }
+
+    private static func containerHeader(majorType: UInt8, count: Int) -> [UInt8] {
+        var header = CBOR.unsignedInt(UInt64(count)).encode()
+        header[0] |= majorType << 5
+        return header
+    }
+
     static func getDictionary(map: CBOR) -> [CBOR: CBOR]? {
         var extractedDict = [CBOR: CBOR]()
         switch map {
