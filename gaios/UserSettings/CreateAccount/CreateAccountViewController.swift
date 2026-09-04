@@ -1,5 +1,6 @@
 import UIKit
 import core
+import hw
 
 enum CreateAccountListSection: Int, CaseIterable {
     case asset
@@ -22,6 +23,8 @@ class CreateAccountViewController: UIViewController {
     private var viewModel: CreateAccountViewModel
     var dialogJadeCheckViewController: DialogJadeCheckViewController?
     private var isCreating = false
+    private var pendingPolicy: AccountTypeOption?
+    private var pendingParams: CreateSubaccountParams?
 
     init?(coder: NSCoder, viewModel: CreateAccountViewModel) {
         self.viewModel = viewModel
@@ -248,7 +251,7 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
                     type: policy.accountType,
                     recoveryMnemonic: nil,
                     recoveryXpub: nil)
-                Task { await createSubaccount(policy: policy, params: params) }
+                requestCreateSubaccount(policy: policy, params: params)
             }
         default:
             break
@@ -271,6 +274,44 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
     }
 
     @MainActor
+    func presentConnectViewController() {
+        let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "HWDialogConnectViewController") as? HWDialogConnectViewController {
+            vc.delegate = self
+            vc.authentication = true
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    @MainActor
+    func requestCreateSubaccount(policy: AccountTypeOption, params: CreateSubaccountParams) {
+        if viewModel.needsBluetoothAccess(policy: policy) {
+            showJadeBluetoothDiscoveryAlert() {
+                self.pendingPolicy = policy
+                self.pendingParams = params
+                self.connectOrCreatePendingSubaccount()
+            } cancel: {
+                self.pendingPolicy = nil
+                self.pendingParams = nil
+            }
+            return
+        }
+        createSubaccount(policy: policy, params: params)
+    }
+
+    func connectOrCreatePendingSubaccount() {
+        if !BleHwManager.shared.isConnected() || !BleHwManager.shared.isLogged() {
+            presentConnectViewController()
+            return
+        }
+        guard let policy = pendingPolicy, let params = pendingParams else { return }
+        pendingPolicy = nil
+        pendingParams = nil
+        createSubaccount(policy: policy, params: params)
+    }
+
+    @MainActor
     func createSubaccount(policy: AccountTypeOption, params: CreateSubaccountParams) {
         guard !isCreating else { return }
         isCreating = true
@@ -290,6 +331,9 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
                 self?.stopLoader()
                 if isHW {
                     self?.hideHWCheckDialog()
+                    if self?.viewModel.needsBluetoothAccess(policy: policy) == true {
+                        self?.viewModel.disableBiometric()
+                    }
                 }
                 switch action {
                 case .created:
@@ -310,6 +354,31 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
                 self?.showError(error)
             }
         }
+    }
+
+    func showJadeBluetoothDiscoveryAlert(next: @escaping () -> Void, cancel: @escaping () -> Void) {
+        let alert = UIAlertController(
+            title: "id_connect_with_bluetooth".localized,
+            message: "Connect your Jade via Bluetooth to show all subaccounts. Watch-only biometric access will be disabled.",
+            preferredStyle: .alert
+        )
+        alert
+            .addAction(
+                UIAlertAction(
+                    title: "id_cancel".localized,
+                    style: .cancel
+                ) {_ in 
+            cancel()
+        })
+        alert
+            .addAction(
+                UIAlertAction(
+                    title: "id_continue".localized,
+                    style: .default
+                ) {_ in 
+            next()
+        })
+        present(alert, animated: true)
     }
 }
 
@@ -362,7 +431,7 @@ extension CreateAccountViewController: AssetSelectViewControllerDelegate {
     }
     @MainActor
     func didUnarchiveWallet() {
-        DropAlert().success(message: "Account unarchived".localized)
+        DropAlert().success(message: "id_unarchive_account".localized)
         delegate?.didUnarchiveAccount()
     }
 }
@@ -375,7 +444,7 @@ extension CreateAccountViewController: AccountCreateRecoveryKeyDelegate {
                                             type: .twoOfThree,
                                             recoveryMnemonic: nil,
                                             recoveryXpub: key)
-        createSubaccount(policy: .TwoOfThreeWith2FA, params: params)
+        requestCreateSubaccount(policy: .TwoOfThreeWith2FA, params: params)
     }
 
     func didNewRecoveryPhrase(_ mnemonic: String) {
@@ -385,7 +454,7 @@ extension CreateAccountViewController: AccountCreateRecoveryKeyDelegate {
                                             type: .twoOfThree,
                                             recoveryMnemonic: mnemonic,
                                             recoveryXpub: nil)
-        createSubaccount(policy: .TwoOfThreeWith2FA, params: params)
+        requestCreateSubaccount(policy: .TwoOfThreeWith2FA, params: params)
     }
 
     func didExistingRecoveryPhrase(_ mnemonic: String) {
@@ -395,6 +464,28 @@ extension CreateAccountViewController: AccountCreateRecoveryKeyDelegate {
                                             type: .twoOfThree,
                                             recoveryMnemonic: mnemonic,
                                             recoveryXpub: nil)
-        createSubaccount(policy: .TwoOfThreeWith2FA, params: params)
+        requestCreateSubaccount(policy: .TwoOfThreeWith2FA, params: params)
+    }
+}
+
+extension CreateAccountViewController: HWDialogConnectViewControllerDelegate {
+    func connected() {}
+
+    func logged() {
+        guard let policy = pendingPolicy, let params = pendingParams else { return }
+        pendingPolicy = nil
+        pendingParams = nil
+        createSubaccount(policy: policy, params: params)
+    }
+
+    func cancel() {
+        pendingPolicy = nil
+        pendingParams = nil
+    }
+
+    func failure(err: Error) {
+        pendingPolicy = nil
+        pendingParams = nil
+        showError(err)
     }
 }

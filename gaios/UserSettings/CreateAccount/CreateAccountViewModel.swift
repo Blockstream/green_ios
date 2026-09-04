@@ -113,6 +113,21 @@ class CreateAccountViewModel {
         }
     }
 
+    func needsBluetoothAccess(policy: AccountTypeOption) -> Bool {
+        policy.accountType.multisig && mainWallet.isJade && mainWallet.isWatchonly
+    }
+
+    func disableBiometric() {
+        guard mainWallet.isJade && mainWallet.isWatchonly else {
+            return
+        }
+        _ = AuthenticationTypeHandler
+            .removeAuth(
+                method: .AuthKeyWoBioCredentials,
+                for: mainWallet.keychain
+            )
+    }
+
     func create(policy: AccountTypeOption, params: CreateSubaccountParams) async throws -> SubaccountAction {
         try await service.create(
             policy: policy,
