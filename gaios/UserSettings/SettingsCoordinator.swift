@@ -18,7 +18,7 @@ enum SettingsRoute {
     case lightningDetails(LTDetailsViewModel)
     case lightningCreate(LTCreateViewModel)
     case amp(DialogAmpViewModel)
-    case support(ZendeskErrorRequest)
+    case contactSupport(ZendeskErrorRequest)
     case jadeBoltzSwap(JadeBoltzSwapViewModel)
     case denominationExchange(DenominationExchangeViewModel)
     case autologout(DialogListViewModel)
@@ -85,8 +85,14 @@ final class SettingsCoordinator {
             let vc = dialogAmpViewController(model)
             vc.modalPresentationStyle = .overFullScreen
             nav.present(vc, animated: false, completion: nil)
-        case .support(let request):
-            nav.presentContactUsViewController(request: request, isPush: true)
+        case .contactSupport(let request):
+            if AppSettings.shared.gdkSettings?.tor ?? false {
+                nav.showOpenSupportUrl(request)
+                return
+            }
+            if let vc = contactUsViewController(request) {
+                nav.pushViewController(vc, animated: true)
+            }
         case .jadeBoltzSwap(let model):
             let vc = jadeBoltzSwapViewController(model)
             nav.pushViewController(vc, animated: true)
@@ -228,6 +234,16 @@ final class SettingsCoordinator {
             message: message
         )
     }
+
+    func contactUsViewController(_ request: ZendeskErrorRequest) -> ContactUsViewController? {
+        if let vc = UIStoryboard(name: "HelpCenter", bundle: nil)
+            .instantiateViewController(withIdentifier: "ContactUsViewController") as? ContactUsViewController {
+            vc.request = request
+            return vc
+        }
+        return nil
+    }
+
     func learn2faViewController(_ model: Learn2faViewModel) -> Learn2faViewController {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         let vc = storyboard.instantiateViewController(identifier: "Learn2faViewController") { coder in
