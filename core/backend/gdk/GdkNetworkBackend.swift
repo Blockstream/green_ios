@@ -214,6 +214,9 @@ public final class GdkNetworkBackend: NetworkBackend {
     public func connect(params: ConnectionParams) async throws {
         guard !isConnected else { return }
         try await session.connect(network: self.gdkNetwork.network)
+        // SessionManager.disconnect() clears resolvers and swaps in a fresh
+        // GDKSession; re-wire so a disconnected backend instance stays reusable.
+        setupSession()
         isConnected = true
         AnalyticsManager.shared.setupSession(session: session.session)
     }
@@ -251,7 +254,6 @@ public final class GdkNetworkBackend: NetworkBackend {
         try await session.disconnect()
         isLoggedIn = false
         isConnected = false
-        hwResolver = nil
     }
 
     public func createAccount(params: CreateSubaccountParams) async throws -> Account {
