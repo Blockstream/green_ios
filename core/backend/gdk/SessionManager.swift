@@ -422,6 +422,7 @@ public class SessionManager {
 
     public func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
         try await self.connect()
+        var credentials = credentials?.mnemonic == nil ? nil : credentials
         let res = try self.session?.registerUser(details: credentials?.toDict() ?? [:], hw_device: ["device": hw?.toDict() ?? [:]])
         _ = try await resolve(res)
     }

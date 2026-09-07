@@ -96,9 +96,17 @@ class CreateAccountViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "id_create".localized, style: .default) { (_: UIAlertAction) in
             completion(true)
         })
-        DispatchQueue.main.async {
-            self.present(alert, animated: true, completion: nil)
+        DispatchQueue.main.async { [weak self] in
+            self?.presentOnTop(alert)
         }
+    }
+
+    func presentOnTop(_ viewController: UIViewController, animated: Bool = true) {
+        var presenter: UIViewController = navigationController ?? self
+        while let presented = presenter.presentedViewController, !presented.isBeingDismissed {
+            presenter = presented
+        }
+        presenter.present(viewController, animated: animated)
     }
 
     @MainActor
@@ -269,8 +277,16 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
     }
 
     @MainActor
-    func hideHWCheckDialog() {
-        dialogJadeCheckViewController?.dismiss()
+    func hideHWCheckDialog(completion: (() -> Void)? = nil) {
+        guard let dialog = dialogJadeCheckViewController, dialog.presentingViewController != nil else {
+            dialogJadeCheckViewController = nil
+            completion?()
+            return
+        }
+        dialog.dismiss(animated: false) { [weak self] in
+            self?.dialogJadeCheckViewController = nil
+            completion?()
+        }
     }
 
     @MainActor
@@ -349,9 +365,12 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
                 self?.tableView.isUserInteractionEnabled = true
                 self?.stopLoader()
                 if isHW {
-                    self?.hideHWCheckDialog()
+                    self?.hideHWCheckDialog {
+                        self?.showError(error)
+                    }
+                } else {
+                    self?.showError(error)
                 }
-                self?.showError(error)
             }
         }
     }
@@ -375,10 +394,12 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
                 UIAlertAction(
                     title: "id_continue".localized,
                     style: .default
-                ) {_ in 
-            next()
+                ) {_ in
+            DispatchQueue.main.async {
+                next()
+            }
         })
-        present(alert, animated: true)
+        presentOnTop(alert)
     }
 }
 

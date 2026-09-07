@@ -202,11 +202,8 @@ class HWDialogConnectViewController: UIViewController {
         let task = Task.detached { [weak self] in
             try await self?.viewModel?.connect()
             if await self?.authentication ?? true {
-            let version = try await self?.viewModel?.bleHwManager.jade?.version()
                 if await self?.isJade ?? true {
-                    if version?.jadeState != "READY" {
-                        try await self?.viewModel?.loginJade()
-                    }
+                    try await self?.viewModel?.loginJade()
                 } else {
                     try await self?.viewModel?.loginLedger()
                 }

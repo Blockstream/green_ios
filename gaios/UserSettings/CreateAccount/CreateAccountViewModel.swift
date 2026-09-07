@@ -4,7 +4,7 @@ import core
 
 class CreateAccountViewModel {
     let mainWallet: Wallet
-    let wm: WalletManager
+    var wm: WalletManager
     var asset: String?
     var anyLiquidAsset: Bool = false
     var anyLiquidAmpAsset: Bool = false
@@ -114,16 +114,16 @@ class CreateAccountViewModel {
     }
 
     func needsBluetoothAccess(policy: AccountTypeOption) -> Bool {
-        policy.accountType.multisig && mainWallet.isJade && mainWallet.isWatchonly
+        policy.accountType.multisig && mainWallet.isJade && wm.isWatchonly
     }
 
     func disableBiometric() {
-        guard mainWallet.isJade && mainWallet.isWatchonly else {
+        guard mainWallet.isJade && wm.isWatchonly else {
             return
         }
         _ = AuthenticationTypeHandler
             .removeAuth(
-                method: .AuthKeyWoBioCredentials,
+                method: .AuthKeyWoCredentials,
                 for: mainWallet.keychain
             )
     }

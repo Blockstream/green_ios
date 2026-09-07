@@ -147,13 +147,19 @@ class ConnectViewModel: NSObject {
         }
         // check silently master blinding key
         _ = try await bleHwManager.jade?.silentMasterBlindingKey()
-        // login
         updateState?(.login)
+        if bleHwManager.isLogged() {
+            return
+        }
         let (wallet, wm) = try await bleHwManager.login(wallet: wallet, fullRestore: firstConnection)
         self.wallet = wallet
-        WalletsStorage.shared.current = wallet
         if storeConnection {
+            WalletsStorage.shared.current = wallet
             WalletsRepository.shared.add(for: wallet, wm: wm)
+        } else {
+            let wm = try await applyMultisigBackends(from: wm)
+            bleHwManager.walletManager = wm
+            WalletsStorage.shared.current = wallet
         }
     }
 
@@ -183,15 +189,41 @@ class ConnectViewModel: NSObject {
                 throw HWError.Abort("Authentication failure")
             }
         }
-        // login
         updateState?(.login)
         let (wallet, wm) = try await bleHwManager.login(wallet: wallet, fullRestore: firstConnection)
-        // use updated account
         self.wallet = wallet
-        WalletsStorage.shared.current = wallet
         if storeConnection {
+            WalletsStorage.shared.current = wallet
             WalletsRepository.shared.add(for: wallet, wm: wm)
+        } else {
+            let wm = try await applyMultisigBackends(from: wm)
+            bleHwManager.walletManager = wm
+            WalletsStorage.shared.current = wallet
         }
+    }
+
+    func applyMultisigBackends(from hwWm: WalletManager) async throws -> WalletManager {
+        guard let current = WalletManager.current else {
+            throw GaError.GenericError("No wallet session")
+        }
+        current.hwDevice = hwWm.hwDevice
+        for networkId in current.multisigNetworkIds {
+            if let old = current.networkBackends[networkId] {
+                try? await old.disconnect()
+            }
+            guard let backend = hwWm.networkBackends.removeValue(forKey: networkId) else {
+                continue
+            }
+            if let gdk = backend as? GdkNetworkBackend {
+                gdk.newNotificationDelegate = current
+                gdk.popupResolver = current.popupResolver ?? hwWm.popupResolver
+                gdk.hwInterfaceResolver = current.hwInterfaceResolver ?? hwWm.hwInterfaceResolver
+            }
+            current.networkBackends[networkId] = backend
+        }
+        await hwWm.disconnect()
+        _ = try await current.getAccounts()
+        return current
     }
 
     func getCredentials(method: AuthenticationTypeHandler.AuthType) async throws -> Credentials {

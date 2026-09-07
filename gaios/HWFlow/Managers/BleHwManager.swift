@@ -133,10 +133,17 @@ class BleHwManager {
     }
 
     func isLogged() -> Bool {
-        walletManager?.logged ?? false
+        guard isConnected(),
+              let walletManager,
+              let current = WalletManager.current,
+              walletManager === current else {
+            return false
+        }
+        return current.logged
     }
 
     func disconnect() async throws {
+        walletManager = nil
         switch type {
         case .Jade:
             try await jade?.disconnect()

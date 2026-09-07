@@ -301,7 +301,13 @@ class ConnectViewController: HWFlowBaseViewController {
         await viewModel.stopScan()
         try await viewModel.connect()
         if isJade {
-            try await viewModel.loginJade()
+            let bleHw = viewModel.bleHwManager
+            let alreadyLogged = bleHw.isConnected()
+                && bleHw.walletManager != nil
+                && (bleHw.walletManager?.logged ?? false)
+            if !alreadyLogged {
+                try await viewModel.loginJade()
+            }
         } else {
             try await viewModel.loginLedger()
         }
