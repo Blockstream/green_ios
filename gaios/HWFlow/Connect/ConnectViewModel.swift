@@ -207,20 +207,18 @@ class ConnectViewModel: NSObject {
             throw GaError.GenericError("No wallet session")
         }
         current.hwDevice = hwWm.hwDevice
-        for networkId in current.multisigNetworkIds {
-            if let old = current.networkBackends[networkId] {
+        let loggedGdkBackends = hwWm.loggedInGdkNetworkBackends
+        for (networkId, backend) in loggedGdkBackends {
+            if let old = current.networkBackends[networkId], old !== backend {
                 try? await old.disconnect()
             }
-            guard let backend = hwWm.networkBackends.removeValue(forKey: networkId) else {
-                continue
-            }
-            if let gdk = backend as? GdkNetworkBackend {
-                gdk.newNotificationDelegate = current
-                gdk.popupResolver = current.popupResolver ?? hwWm.popupResolver
-                gdk.hwInterfaceResolver = current.hwInterfaceResolver ?? hwWm.hwInterfaceResolver
-            }
+            hwWm.networkBackends.removeValue(forKey: networkId)
+            backend.newNotificationDelegate = current
+            backend.popupResolver = current.popupResolver ?? hwWm.popupResolver
+            backend.hwInterfaceResolver = current.hwInterfaceResolver ?? hwWm.hwInterfaceResolver
             current.networkBackends[networkId] = backend
         }
+        current.hwProtocol = hwWm.hwProtocol
         await hwWm.disconnect()
         _ = try await current.getAccounts()
         return current
