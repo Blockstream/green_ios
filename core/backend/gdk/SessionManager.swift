@@ -422,7 +422,10 @@ public class SessionManager {
 
     public func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
         try await self.connect()
-        var credentials = credentials?.mnemonic == nil ? nil : credentials
+        // Device registration must not carry credentials (gdk rejects master_xpub
+        // on multisig registration). Keep them otherwise: mnemonic registration and
+        // watch-only username/password setup both go through details.
+        let credentials = hw != nil ? nil : credentials
         let res = try self.session?.registerUser(details: credentials?.toDict() ?? [:], hw_device: ["device": hw?.toDict() ?? [:]])
         _ = try await resolve(res)
     }
