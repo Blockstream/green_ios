@@ -302,9 +302,10 @@ class ConnectViewController: HWFlowBaseViewController {
         try await viewModel.connect()
         if isJade {
             let bleHw = viewModel.bleHwManager
-            let alreadyLogged = bleHw.isConnected()
-                && bleHw.walletManager != nil
-                && (bleHw.walletManager?.logged ?? false)
+            // Skip login only if the ble session belongs to this wallet:
+            // two wallets on the same device must not share a session.
+            let alreadyLogged = bleHw.isLogged()
+                && WalletsStorage.shared.current?.id == viewModel.wallet.id
             if !alreadyLogged {
                 try await viewModel.loginJade()
             }
