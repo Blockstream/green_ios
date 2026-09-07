@@ -378,7 +378,7 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
     func showJadeBluetoothDiscoveryAlert(next: @escaping () -> Void, cancel: @escaping () -> Void) {
         let alert = UIAlertController(
             title: "id_connect_with_bluetooth".localized,
-            message: "Connect your Jade via Bluetooth to show all subaccounts. Watch-only biometric access will be disabled.",
+            message: "Multisig accounts require your Jade. Connect it via Bluetooth to continue.\n\nFrom then on, this wallet can only be accessed with your Jade connected via Bluetooth — watch-only access with biometrics will be disabled.",
             preferredStyle: .alert
         )
         alert
@@ -386,7 +386,7 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
                 UIAlertAction(
                     title: "id_cancel".localized,
                     style: .cancel
-                ) {_ in 
+                ) {_ in
             cancel()
         })
         alert
