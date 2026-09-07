@@ -194,11 +194,12 @@ class ConnectViewModel: NSObject {
         self.wallet = wallet
         if storeConnection {
             WalletsStorage.shared.current = wallet
-            WalletsRepository.shared.add(for: wallet, wm: wm)
+            WalletsRepository.shared.wallets[wallet.id] = wm
         } else {
             let wm = try await applyMultisigBackends(from: wm)
             bleHwManager.walletManager = wm
             WalletsStorage.shared.current = wallet
+            WalletsRepository.shared.wallets[wallet.id] = wm
         }
     }
 

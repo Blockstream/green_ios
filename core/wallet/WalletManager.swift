@@ -52,6 +52,7 @@ public class WalletManager {
     public var connected: Bool { prominentNetworkBackend?.isConnected ?? false }
     public var logged: Bool { prominentNetworkBackend?.isLoggedIn ?? false }
     public var settings: Settings? { prominentNetworkBackend?.settings }
+    public var isWatchonly: Bool { prominentNetworkBackend?.isWatchOnly ?? false}
 
     // Cached list of subaccounts and balances
     public var allAccounts: [Account] {
@@ -61,7 +62,6 @@ public class WalletManager {
 
     // Variables
     public var networkErrors = [NetworkId: Error]()
-    public var isWatchonly: Bool = false
     public var isEphemeral: Bool = false
     public var isHW: Bool { hwDevice != nil }
     public var isJade: Bool { hwDevice?.isJade ?? false }

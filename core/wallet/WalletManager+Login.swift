@@ -86,7 +86,6 @@ extension WalletManager {
     ) async throws -> LoginUserResult? {
         isEphemeral = !(credentials.bip39Passphrase ?? "").isEmpty
         let lightningRestoreOnly = isEphemeral
-        isWatchonly = credentials.isWatchonly
         hwDevice = device
         let resolvedParentXpub = try await resolveParentXpub(
             credentials: credentials,

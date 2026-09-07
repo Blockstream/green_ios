@@ -302,14 +302,23 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
 
     @MainActor
     func requestCreateSubaccount(policy: AccountTypeOption, params: CreateSubaccountParams) {
-        if viewModel.needsBluetoothAccess(policy: policy) {
-            showJadeBluetoothDiscoveryAlert() {
+        /// Require to connect jade bluetooth, if user logged into a jade watchonly wallet
+        if viewModel.needsBluetoothAccess() {
+            /// Show disabling biometric access message only for multisig account, befor connect jade
+            if policy.accountType.multisig {
+                showJadeBluetoothDiscoveryAlert() {
+                    self.pendingPolicy = policy
+                    self.pendingParams = params
+                    self.connectOrCreatePendingSubaccount()
+                } cancel: {
+                    self.pendingPolicy = nil
+                    self.pendingParams = nil
+                }
+            } else {
+                /// Connect jade
                 self.pendingPolicy = policy
                 self.pendingParams = params
                 self.connectOrCreatePendingSubaccount()
-            } cancel: {
-                self.pendingPolicy = nil
-                self.pendingParams = nil
             }
             return
         }
@@ -347,7 +356,7 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
                 self?.stopLoader()
                 if isHW {
                     self?.hideHWCheckDialog()
-                    if self?.viewModel.needsBluetoothAccess(policy: policy) == true {
+                    if self?.viewModel.needsBluetoothAccess() == true {
                         self?.viewModel.disableBiometric()
                     }
                 }

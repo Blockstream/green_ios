@@ -324,6 +324,7 @@ public final class GdkNetworkBackend: NetworkBackend {
     )
     async throws -> LoginUserResult? {
         disableNotificationHandling = true
+        isWatchOnly = credentials.isWatchonly
         // Disable gdk login on multisig on new wallet
         // Disable gdl liquid login, if hw doesn't support it
         if network.liquid && device?.supportsLiquid ?? 1 == 0 {

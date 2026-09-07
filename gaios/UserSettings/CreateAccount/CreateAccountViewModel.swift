@@ -113,8 +113,8 @@ class CreateAccountViewModel {
         }
     }
 
-    func needsBluetoothAccess(policy: AccountTypeOption) -> Bool {
-        policy.accountType.multisig && mainWallet.isJade && wm.isWatchonly
+    func needsBluetoothAccess() -> Bool {
+        mainWallet.isJade && wm.isWatchonly
     }
 
     func disableBiometric() {
