@@ -150,7 +150,7 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
         case .asset:
             return 1
         case .policy:
-            return viewModel.getAccountCellModels().count ?? 0
+            return viewModel.getAccountCellModels().count
         default:
             return 0
         }
@@ -302,38 +302,31 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
 
     @MainActor
     func requestCreateSubaccount(policy: AccountTypeOption, params: CreateSubaccountParams) {
-        /// Require to connect jade bluetooth, if user logged into a jade watchonly wallet
-        if viewModel.needsBluetoothAccess() {
-            /// Show disabling biometric access message only for multisig account, befor connect jade
-            if policy.accountType.multisig {
-                showJadeBluetoothDiscoveryAlert() {
-                    self.pendingPolicy = policy
-                    self.pendingParams = params
-                    self.connectOrCreatePendingSubaccount()
-                } cancel: {
-                    self.pendingPolicy = nil
-                    self.pendingParams = nil
-                }
-            } else {
-                /// Connect jade
-                self.pendingPolicy = policy
-                self.pendingParams = params
-                self.connectOrCreatePendingSubaccount()
-            }
-            return
-        }
-        createSubaccount(policy: policy, params: params)
-    }
-
-    func connectOrCreatePendingSubaccount() {
-        if !BleHwManager.shared.isConnected() || !BleHwManager.shared.isLogged() {
+        pendingPolicy = policy
+        pendingParams = params
+        // Jade singlesig and multisig both require a live BLE session
+        if viewModel.needsBluetoothConnection() {
             presentConnectViewController()
             return
         }
-        guard let policy = pendingPolicy, let params = pendingParams else { return }
+        // Confirm only for Jade multisig when a watch-only key is still stored
+        if viewModel.shouldConfirmWatchonlyExit(policy: policy) {
+            showJadeBluetoothDiscoveryAlert {
+                self.clearPendingCreate()
+                self.createSubaccount(policy: policy, params: params)
+            } cancel: {
+                self.clearPendingCreate()
+            }
+            return
+        }
+        // Create subaccount
+        clearPendingCreate()
+        createSubaccount(policy: policy, params: params)
+    }
+
+    func clearPendingCreate() {
         pendingPolicy = nil
         pendingParams = nil
-        createSubaccount(policy: policy, params: params)
     }
 
     @MainActor
@@ -356,8 +349,8 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
                 self?.stopLoader()
                 if isHW {
                     self?.hideHWCheckDialog()
-                    if self?.viewModel.needsBluetoothAccess() == true {
-                        self?.viewModel.disableBiometric()
+                    if self?.viewModel.shouldRemoveWatchonlyKey(policy: policy) == true {
+                        self?.viewModel.removeWatchonlyKeys()
                     }
                 }
                 switch action {
@@ -503,19 +496,15 @@ extension CreateAccountViewController: HWDialogConnectViewControllerDelegate {
 
     func logged() {
         guard let policy = pendingPolicy, let params = pendingParams else { return }
-        pendingPolicy = nil
-        pendingParams = nil
-        createSubaccount(policy: policy, params: params)
+        requestCreateSubaccount(policy: policy, params: params)
     }
 
     func cancel() {
-        pendingPolicy = nil
-        pendingParams = nil
+        clearPendingCreate()
     }
 
     func failure(err: Error) {
-        pendingPolicy = nil
-        pendingParams = nil
+        clearPendingCreate()
         showError(err)
     }
 }

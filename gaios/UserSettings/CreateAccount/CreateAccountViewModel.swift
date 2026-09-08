@@ -113,19 +113,29 @@ class CreateAccountViewModel {
         }
     }
 
-    func needsBluetoothAccess() -> Bool {
-        mainWallet.isJade && wm.isWatchonly
+    func needsBluetoothConnection() -> Bool {
+        mainWallet.isJade && (
+            !BleHwManager.shared.isConnected() || !BleHwManager.shared.isLogged()
+        )
     }
 
-    func disableBiometric() {
-        guard mainWallet.isJade && wm.isWatchonly else {
-            return
-        }
+    func hasWatchonlyKey() -> Bool {
+        mainWallet.hasWoCredentials || mainWallet.hasWoBioCredentials
+    }
+
+    func shouldConfirmWatchonlyExit(policy: AccountTypeOption) -> Bool {
+        mainWallet.isJade && policy.accountType.multisig && hasWatchonlyKey()
+    }
+
+    func shouldRemoveWatchonlyKey(policy: AccountTypeOption) -> Bool {
+        mainWallet.isJade && policy.accountType.multisig
+    }
+
+    func removeWatchonlyKeys() {
         _ = AuthenticationTypeHandler
-            .removeAuth(
-                method: .AuthKeyWoCredentials,
-                for: mainWallet.keychain
-            )
+            .removeAuth(method: .AuthKeyWoCredentials, for: mainWallet.keychain)
+        _ = AuthenticationTypeHandler
+            .removeAuth(method: .AuthKeyWoBioCredentials, for: mainWallet.keychain)
     }
 
     func create(policy: AccountTypeOption, params: CreateSubaccountParams) async throws -> SubaccountAction {
