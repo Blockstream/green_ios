@@ -94,7 +94,7 @@ class SetupNewViewController: UIViewController {
     }
 
     func create() async {
-        startLoader(message: "id_finishing_up".localized, scope: .create)
+        startLoader(message: "id_finishing_up".localized, isRive: true, scope: .create)
         let task = Task.detached { [weak self] in
             try await self?.viewModel.createWallet(pin: nil)
         }
