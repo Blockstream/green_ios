@@ -5,6 +5,7 @@ import RiveRuntime
 enum LoaderScope {
     case unknown
     case login
+    case create
 }
 @IBDesignable
 class Loader: UIView {
@@ -22,13 +23,13 @@ class Loader: UIView {
     @IBOutlet weak var bottomIconImageView: UIImageView!
 
     static let tag = 0x70726f6772657373
-    private var loginScopeTimer: Timer?
-    private let loginDelayMessage = "Login is taking longer than usual\n\nMore information: status.blockstream.com"
-    private let loginMoreInfoText = "More information: status.blockstream.com"
-    private let loginStatusHost = "status.blockstream.com"
-    private let loginStatusURL = URL(string: "https://status.blockstream.com")
-    private var loginStatusRange: NSRange?
-    private var loginStatusTimerTime = 15.0
+    private var statusScopeTimer: Timer?
+    private let statusDelayMessage = "Login is taking longer than usual\n\nMore information: status.blockstream.com"
+    private let statusMoreInfoText = "More information: status.blockstream.com"
+    private let statusHost = "status.blockstream.com"
+    private let statusURL = URL(string: "https://status.blockstream.com")
+    private var statusRange: NSRange?
+    private var statusTimerTime = 15.0
     var message: NSMutableAttributedString? {
         didSet { applyStyledMessage() }
     }
@@ -57,7 +58,7 @@ class Loader: UIView {
     }
 
     deinit {
-        invalidateLoginScopeTimer()
+        invalidateStatusScopeTimer()
     }
 
     func activateConstraints(in window: UIWindow) {
@@ -99,40 +100,40 @@ class Loader: UIView {
 
     func stop() {
         loadingIndicator.isAnimating = false
-        invalidateLoginScopeTimer()
+        invalidateStatusScopeTimer()
         bottomIconImageView.layer.removeAllAnimations()
         bottomIconImageView.alpha = 1.0
     }
 
-    func scheduleLoginScopeTimerIfNeeded(scope: LoaderScope) {
-        invalidateLoginScopeTimer()
-        guard scope == .login else { return }
-        loginScopeTimer = Timer.scheduledTimer(withTimeInterval: loginStatusTimerTime, repeats: false) { [weak self] timer in
+    func scheduleStatusScopeTimerIfNeeded(scope: LoaderScope) {
+        invalidateStatusScopeTimer()
+        guard scope == .login || scope == .create else { return }
+        statusScopeTimer = Timer.scheduledTimer(withTimeInterval: statusTimerTime, repeats: false) { [weak self] timer in
             timer.invalidate()
             guard let self = self else { return }
-            self.loginScopeTimer = nil
+            self.statusScopeTimer = nil
             Task { @MainActor in
-                self.message = NSMutableAttributedString(string: self.loginDelayMessage)
+                self.message = NSMutableAttributedString(string: self.statusDelayMessage)
             }
         }
     }
 
-    private func invalidateLoginScopeTimer() {
-        loginScopeTimer?.invalidate()
-        loginScopeTimer = nil
+    private func invalidateStatusScopeTimer() {
+        statusScopeTimer?.invalidate()
+        statusScopeTimer = nil
     }
 
     private func applyStyledMessage() {
         guard let message else {
-            loginStatusRange = nil
+            statusRange = nil
             lblHint.attributedText = nil
             return
         }
 
         let styledMessage = NSMutableAttributedString(attributedString: message)
         let fullText = styledMessage.string as NSString
-        let moreInfoRange = fullText.range(of: loginMoreInfoText)
-        let statusRange = fullText.range(of: loginStatusHost)
+        let moreInfoRange = fullText.range(of: statusMoreInfoText)
+        let hostRange = fullText.range(of: statusHost)
 
         if moreInfoRange.location != NSNotFound {
             styledMessage.addAttribute(
@@ -142,20 +143,20 @@ class Loader: UIView {
             )
         }
 
-        if statusRange.location != NSNotFound {
+        if hostRange.location != NSNotFound {
             styledMessage.addAttributes([
                 .foregroundColor: UIColor.gAccent(),
                 .underlineStyle: NSUnderlineStyle.single.rawValue
-            ], range: statusRange)
+            ], range: hostRange)
 
             if let linkIcon = statusLinkIconAttributedString() {
-                styledMessage.insert(linkIcon, at: statusRange.location + statusRange.length)
-                loginStatusRange = NSRange(location: statusRange.location, length: statusRange.length + linkIcon.length)
+                styledMessage.insert(linkIcon, at: hostRange.location + hostRange.length)
+                statusRange = NSRange(location: hostRange.location, length: hostRange.length + linkIcon.length)
             } else {
-                loginStatusRange = statusRange
+                statusRange = hostRange
             }
         } else {
-            loginStatusRange = nil
+            statusRange = nil
         }
 
         lblHint.attributedText = styledMessage
@@ -171,9 +172,9 @@ class Loader: UIView {
     }
 
     @objc private func onHintTap(_ gesture: UITapGestureRecognizer) {
-        guard let range = loginStatusRange,
+        guard let range = statusRange,
               let attributedText = lblHint.attributedText,
-              let url = loginStatusURL else {
+              let url = statusURL else {
             return
         }
 
@@ -262,7 +263,7 @@ extension UIViewController {
             }
             loader?.message = message
             loader?.bottomIcon = bottomIcon
-            loader?.scheduleLoginScopeTimerIfNeeded(scope: scope)
+            loader?.scheduleStatusScopeTimerIfNeeded(scope: scope)
         }
     }
 

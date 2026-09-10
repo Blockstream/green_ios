@@ -219,7 +219,7 @@ class SetPinViewController: UIViewController {
                 }
                 return try await self?.viewModel.restoreWallet(credentials: credentials, pin: pin)
             case .create:
-                await self?.startLoader(message: "id_finishing_up".localized, isRive: true)
+                await self?.startLoader(message: "id_finishing_up".localized, isRive: true, scope: .create)
                 return try await self?.viewModel.createWallet(pin: pin)
             }
         }
