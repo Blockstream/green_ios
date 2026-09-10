@@ -185,7 +185,9 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         let task = Task.detached { [weak self] in
             let credentials = Credentials(mnemonic: mnemonic, password: password)
             OnboardViewModel.credentials = credentials
-            return try await self?.viewModel.restoreWallet(credentials: credentials, pin: nil)
+            return try await self?.viewModel.restoreWallet(credentials: credentials, pin: nil, onLoginStart: { [weak self] in
+                self?.startLoader(message: "id_restoring_your_wallet".localized, isRive: true, scope: .login)
+            })
         }
         switch await task.result {
         case .success(let accountWallet):

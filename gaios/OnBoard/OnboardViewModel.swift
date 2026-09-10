@@ -76,7 +76,11 @@ class OnboardViewModel {
         return Credentials(mnemonic: pinData.plaintextBiometric, pinData: pinData)
     }
 
-    func restoreWallet(credentials: Credentials, pin: String?) async throws -> (Wallet, WalletManager) {
+    func restoreWallet(
+        credentials: Credentials,
+        pin: String?,
+        onLoginStart: (@MainActor () -> Void)? = nil
+    ) async throws -> (Wallet, WalletManager) {
         var credentials = credentials
         try await self.validateMnemonic(credentials.mnemonic ?? "")
         var wallet = try await createWallet()
@@ -91,6 +95,7 @@ class OnboardViewModel {
         }
         try await checkWalletsJustRestored(wallet: wallet, credentials: credentials)
         // login
+        await onLoginStart?()
         let boltzCredentials = try wm.deriveBoltzCredentials(from: credentials)
         let lightningCredentials = try wm.deriveLightningCredentials(from: credentials)
         // add boltz auth into keychain
@@ -121,7 +126,10 @@ class OnboardViewModel {
         return (wallet, wm)
     }
 
-    func createWallet(pin: String?) async throws -> (Wallet, WalletManager) {
+    func createWallet(
+        pin: String?,
+        onLoginStart: (@MainActor () -> Void)? = nil
+    ) async throws -> (Wallet, WalletManager) {
         var wallet = try await createWallet()
         let mnemonic = try generateMnemonic12()
         var credentials = Credentials(mnemonic: mnemonic)
@@ -131,6 +139,7 @@ class OnboardViewModel {
         } else {
             credentials = try await addBiometricData(wm: wm, wallet: wallet, credentials: credentials)
         }
+        await onLoginStart?()
         let boltzCredentials = try wm.deriveBoltzCredentials(from: credentials)
         try AuthenticationTypeHandler.setCredentials(method: .AuthKeyBoltz, credentials: boltzCredentials, for: wallet.keychain)
         let res = try await wm.login(

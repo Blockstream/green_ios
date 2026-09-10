@@ -94,9 +94,11 @@ class SetupNewViewController: UIViewController {
     }
 
     func create() async {
-        startLoader(message: "id_finishing_up".localized, isRive: true, scope: .create)
+        startLoader()
         let task = Task.detached { [weak self] in
-            try await self?.viewModel.createWallet(pin: nil)
+            try await self?.viewModel.createWallet(pin: nil, onLoginStart: { [weak self] in
+                self?.startLoader(message: "id_finishing_up".localized, isRive: true, scope: .login)
+            })
         }
         switch await task.result {
         case .success(let accountWallet):

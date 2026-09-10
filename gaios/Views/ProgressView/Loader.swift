@@ -5,7 +5,6 @@ import RiveRuntime
 enum LoaderScope {
     case unknown
     case login
-    case create
 }
 @IBDesignable
 class Loader: UIView {
@@ -107,7 +106,7 @@ class Loader: UIView {
 
     func scheduleStatusScopeTimerIfNeeded(scope: LoaderScope) {
         invalidateStatusScopeTimer()
-        guard scope == .login || scope == .create else { return }
+        guard scope == .login else { return }
         statusScopeTimer = Timer.scheduledTimer(withTimeInterval: statusTimerTime, repeats: false) { [weak self] timer in
             timer.invalidate()
             guard let self = self else { return }

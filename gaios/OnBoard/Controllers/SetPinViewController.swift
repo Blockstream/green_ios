@@ -217,10 +217,14 @@ class SetPinViewController: UIViewController {
                 guard let credentials = OnboardViewModel.credentials else {
                     throw LoginError.failed("")
                 }
-                return try await self?.viewModel.restoreWallet(credentials: credentials, pin: pin)
+                return try await self?.viewModel.restoreWallet(credentials: credentials, pin: pin, onLoginStart: { [weak self] in
+                    self?.startLoader(message: "id_restoring_your_wallet".localized, isRive: true, scope: .login)
+                })
             case .create:
-                await self?.startLoader(message: "id_finishing_up".localized, isRive: true, scope: .create)
-                return try await self?.viewModel.createWallet(pin: pin)
+                await self?.startLoader(message: "id_finishing_up".localized, isRive: true)
+                return try await self?.viewModel.createWallet(pin: pin, onLoginStart: { [weak self] in
+                    self?.startLoader(message: "id_finishing_up".localized, isRive: true, scope: .login)
+                })
             }
         }
         switch await task.result {
