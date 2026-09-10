@@ -23,7 +23,8 @@ class Loader: UIView {
 
     static let tag = 0x70726f6772657373
     private var loginScopeTimer: Timer?
-    private let loginDelayMessage = "Login is taking longer than usual.\nMore information:\nstatus.blockstream.com"
+    private let loginDelayMessage = "Login is taking longer than usual\n\nMore information: status.blockstream.com"
+    private let loginMoreInfoText = "More information: status.blockstream.com"
     private let loginStatusHost = "status.blockstream.com"
     private let loginStatusURL = URL(string: "https://status.blockstream.com")
     private var loginStatusRange: NSRange?
@@ -130,19 +131,43 @@ class Loader: UIView {
 
         let styledMessage = NSMutableAttributedString(attributedString: message)
         let fullText = styledMessage.string as NSString
+        let moreInfoRange = fullText.range(of: loginMoreInfoText)
         let statusRange = fullText.range(of: loginStatusHost)
+
+        if moreInfoRange.location != NSNotFound {
+            styledMessage.addAttribute(
+                .font,
+                value: UIFont.systemFont(ofSize: 11, weight: .regular),
+                range: moreInfoRange
+            )
+        }
 
         if statusRange.location != NSNotFound {
             styledMessage.addAttributes([
                 .foregroundColor: UIColor.gAccent(),
                 .underlineStyle: NSUnderlineStyle.single.rawValue
             ], range: statusRange)
-            loginStatusRange = statusRange
+
+            if let linkIcon = statusLinkIconAttributedString() {
+                styledMessage.insert(linkIcon, at: statusRange.location + statusRange.length)
+                loginStatusRange = NSRange(location: statusRange.location, length: statusRange.length + linkIcon.length)
+            } else {
+                loginStatusRange = statusRange
+            }
         } else {
             loginStatusRange = nil
         }
 
         lblHint.attributedText = styledMessage
+    }
+
+    private func statusLinkIconAttributedString() -> NSAttributedString? {
+        guard let image = UIImage(named: "ic_squared_out") else { return nil }
+
+        let attachment = NSTextAttachment()
+        attachment.image = image.withTintColor(UIColor.gAccent(), renderingMode: .alwaysOriginal)
+        attachment.bounds = CGRect(x: 6, y: -4, width: 18, height: 18)
+        return NSAttributedString(attachment: attachment)
     }
 
     @objc private func onHintTap(_ gesture: UITapGestureRecognizer) {
