@@ -96,7 +96,7 @@ class BiometricLoginViewController: UIViewController {
         AnalyticsManager.shared.loginWalletStart()
         let isTorActive = AppSettings.shared.gdkSettings?.tor == true
         let torIcon = isTorActive ? UIImage(named: "ic_tor") : nil
-        self.startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon)
+        self.startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon, scope: .login)
         let wallet = viewModel.wallet
         let task = Task.detached { [weak self] in
             switch usingAuth {

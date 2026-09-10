@@ -191,7 +191,7 @@ class WOLoginViewController: KeyboardViewController {
         dismissKeyboard()
         let isTorActive = AppSettings.shared.gdkSettings?.tor == true
         let torIcon = isTorActive ? UIImage(named: "ic_tor") : nil
-        startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon)
+        startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon, scope: .login)
         let task = Task.detached { [weak self] in
             if await self?.isSS ?? false {
                 try await self?.loginSinglesig()

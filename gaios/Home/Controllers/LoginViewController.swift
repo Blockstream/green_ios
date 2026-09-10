@@ -239,10 +239,10 @@ class LoginViewController: UIViewController {
             }
         }
     }
-    
+
     @MainActor
     fileprivate func decryptMnemonic(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) async {
-        self.startLoader(message: "id_logging_in".localized)
+        self.startLoader(message: "id_logging_in".localized, scope: .login)
         let viewModel = self.viewModel!
         let task = Task() {
             return try await viewModel.decryptCredentials(usingAuth: usingAuth, withPIN: withPIN)
@@ -255,7 +255,7 @@ class LoginViewController: UIViewController {
             failure(error: error, enableFailingCounter: true)
         }
     }
-    
+
     @MainActor
     fileprivate func successDecrypt(_ credentials: Credentials) {
         self.stopLoader()
@@ -267,13 +267,13 @@ class LoginViewController: UIViewController {
         self.pinCode = ""
         self.reloadPin()
     }
-    
+
     @MainActor
     fileprivate func login(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) async {
         AnalyticsManager.shared.loginWalletStart()
         let isTorActive = AppSettings.shared.gdkSettings?.tor == true
         let torIcon = isTorActive ? UIImage(named: "ic_tor") : nil
-        self.startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon)
+        self.startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon, scope: .login)
         let account = viewModel.wallet
         let task = Task.detached { [weak self] in
             if usingAuth == .AuthKeyWoCredentials {

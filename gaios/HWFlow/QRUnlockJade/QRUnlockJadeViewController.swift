@@ -290,7 +290,7 @@ extension QRUnlockJadeViewController: QRUnlockSuccessAlertViewControllerDelegate
         guard let credentials = credentials else { return }
         let isTorActive = AppSettings.shared.gdkSettings?.tor == true
         let torIcon = isTorActive ? UIImage(named: "ic_tor") : nil
-        startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon)
+        startLoader(message: "id_logging_in".localized, isRive: false, bottomIcon: torIcon, scope: .login)
         Task {
             let task = Task.detached { [weak self] in
                 try await self?.vm.exportXpub(enableBio: action == .bio, credentials: credentials)

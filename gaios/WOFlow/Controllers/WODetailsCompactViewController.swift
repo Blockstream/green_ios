@@ -110,7 +110,7 @@ class WODetailsCompactViewController: KeyboardViewController {
             showError(error.description().localized)
             return
         }
-        startLoader(message: "id_logging_in".localized)
+        startLoader(message: "id_logging_in".localized, scope: .login)
         let wallet = WOViewModel.newAccountSinglesig(for: input.network.gdkNetwork)
         var viewModel = WOViewModel(wallet: wallet)
         do {

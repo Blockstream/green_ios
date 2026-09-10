@@ -2,6 +2,10 @@ import UIKit
 import Foundation
 import RiveRuntime
 
+enum LoaderScope {
+    case unknown
+    case login
+}
 @IBDesignable
 class Loader: UIView {
 
@@ -16,10 +20,16 @@ class Loader: UIView {
     @IBOutlet weak var rectangle: UIView!
     @IBOutlet weak var animateView: UIView!
     @IBOutlet weak var bottomIconImageView: UIImageView!
-    
+
     static let tag = 0x70726f6772657373
+    private var loginScopeTimer: Timer?
+    private let loginDelayMessage = "Login is taking longer than usual.\nMore information:\nstatus.blockstream.com"
+    private let loginStatusHost = "status.blockstream.com"
+    private let loginStatusURL = URL(string: "https://status.blockstream.com")
+    private var loginStatusRange: NSRange?
+    private var loginStatusTimerTime = 15.0
     var message: NSMutableAttributedString? {
-        didSet { self.lblHint.attributedText = self.message }
+        didSet { applyStyledMessage() }
     }
     var bottomIcon: UIImage? {
         didSet {
@@ -27,7 +37,7 @@ class Loader: UIView {
             bottomIconImageView?.isHidden = (bottomIcon == nil)
         }
     }
-    
+
     var isRive = false
 
     init() {
@@ -36,11 +46,17 @@ class Loader: UIView {
         translatesAutoresizingMaskIntoConstraints = false
         setup()
         lblHint.setStyle(.txtBigger)
+        lblHint.isUserInteractionEnabled = true
+        lblHint.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onHintTap(_:))))
         rectangle.backgroundColor = UIColor.gBlackBg().withAlphaComponent(0.9)
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        invalidateLoginScopeTimer()
     }
 
     func activateConstraints(in window: UIWindow) {
@@ -71,10 +87,9 @@ class Loader: UIView {
             animateView.addSubview(riveView)
             riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
         }
-        
+
         if bottomIcon != nil {
             self.bottomIconImageView.alpha = 1.0
-            
             UIView.animate(withDuration: 0.5, delay: 0, options: [.repeat, .autoreverse], animations: {
                 self.bottomIconImageView.alpha = 0.75
             })
@@ -83,8 +98,91 @@ class Loader: UIView {
 
     func stop() {
         loadingIndicator.isAnimating = false
+        invalidateLoginScopeTimer()
         bottomIconImageView.layer.removeAllAnimations()
         bottomIconImageView.alpha = 1.0
+    }
+
+    func scheduleLoginScopeTimerIfNeeded(scope: LoaderScope) {
+        invalidateLoginScopeTimer()
+        guard scope == .login else { return }
+        loginScopeTimer = Timer.scheduledTimer(withTimeInterval: loginStatusTimerTime, repeats: false) { [weak self] timer in
+            timer.invalidate()
+            guard let self = self else { return }
+            self.loginScopeTimer = nil
+            Task { @MainActor in
+                self.message = NSMutableAttributedString(string: self.loginDelayMessage)
+            }
+        }
+    }
+
+    private func invalidateLoginScopeTimer() {
+        loginScopeTimer?.invalidate()
+        loginScopeTimer = nil
+    }
+
+    private func applyStyledMessage() {
+        guard let message else {
+            loginStatusRange = nil
+            lblHint.attributedText = nil
+            return
+        }
+
+        let styledMessage = NSMutableAttributedString(attributedString: message)
+        let fullText = styledMessage.string as NSString
+        let statusRange = fullText.range(of: loginStatusHost)
+
+        if statusRange.location != NSNotFound {
+            styledMessage.addAttributes([
+                .foregroundColor: UIColor.gAccent(),
+                .underlineStyle: NSUnderlineStyle.single.rawValue
+            ], range: statusRange)
+            loginStatusRange = statusRange
+        } else {
+            loginStatusRange = nil
+        }
+
+        lblHint.attributedText = styledMessage
+    }
+
+    @objc private func onHintTap(_ gesture: UITapGestureRecognizer) {
+        guard let range = loginStatusRange,
+              let attributedText = lblHint.attributedText,
+              let url = loginStatusURL else {
+            return
+        }
+
+        if didTap(label: lblHint, inRange: range, attributedText: attributedText, gesture: gesture) {
+            SafeNavigationManager.shared.navigate(url)
+        }
+    }
+
+    private func didTap(label: UILabel,
+                        inRange targetRange: NSRange,
+                        attributedText: NSAttributedString,
+                        gesture: UITapGestureRecognizer) -> Bool {
+        let layoutManager = NSLayoutManager()
+        let textContainer = NSTextContainer(size: .zero)
+        let textStorage = NSTextStorage(attributedString: attributedText)
+
+        layoutManager.addTextContainer(textContainer)
+        textStorage.addLayoutManager(layoutManager)
+
+        textContainer.lineFragmentPadding = 0
+        textContainer.lineBreakMode = label.lineBreakMode
+        textContainer.maximumNumberOfLines = label.numberOfLines
+        textContainer.size = label.bounds.size
+
+        let tapLocation = gesture.location(in: label)
+        let textBounds = layoutManager.usedRect(for: textContainer)
+        let xOffset = (label.bounds.width - textBounds.width) * 0.5 - textBounds.origin.x
+        let yOffset = (label.bounds.height - textBounds.height) * 0.5 - textBounds.origin.y
+        let locationInTextContainer = CGPoint(x: tapLocation.x - xOffset, y: tapLocation.y - yOffset)
+
+        let characterIndex = layoutManager.characterIndex(for: locationInTextContainer,
+                                                          in: textContainer,
+                                                          fractionOfDistanceBetweenInsertionPoints: nil)
+        return NSLocationInRange(characterIndex, targetRange)
     }
 
     static func resume() {
@@ -110,12 +208,21 @@ extension UIViewController {
     }
 
     @MainActor
-    func startLoader(message: String = "", isRive: Bool = false, bottomIcon: UIImage? = nil) {
-        startLoader(message: NSMutableAttributedString(string: message), isRive: isRive, bottomIcon: bottomIcon)
+    func startLoader(message: String = "",
+                     isRive: Bool = false,
+                     bottomIcon: UIImage? = nil,
+                     scope: LoaderScope = .unknown) {
+        startLoader(message: NSMutableAttributedString(string: message),
+                    isRive: isRive,
+                    bottomIcon: bottomIcon,
+                    scope: scope)
     }
 
     @MainActor
-    @objc func startLoader(message: NSMutableAttributedString, isRive: Bool = false, bottomIcon: UIImage? = nil) {
+    func startLoader(message: NSMutableAttributedString,
+                     isRive: Bool = false,
+                     bottomIcon: UIImage? = nil,
+                     scope: LoaderScope = .unknown) {
         if let window = UIApplication.activeKeyWindow {
             if loader == nil {
                 let loader = Loader()
@@ -130,6 +237,7 @@ extension UIViewController {
             }
             loader?.message = message
             loader?.bottomIcon = bottomIcon
+            loader?.scheduleLoginScopeTimerIfNeeded(scope: scope)
         }
     }
 
