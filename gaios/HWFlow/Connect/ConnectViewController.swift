@@ -38,6 +38,8 @@ class ConnectViewController: HWFlowBaseViewController {
     @IBOutlet weak var progressView: ProgressView!
 
     private var activeToken: NSObjectProtocol?
+    private var loginStatusTimer: Timer?
+    private var statusRange: NSRange?
     var firmwareContinuation: CheckedContinuation<Firmware?, Never>?
     var watchonlyContinuation: CheckedContinuation<EnableBiometricsDialogAction, Never>?
 
@@ -50,9 +52,30 @@ class ConnectViewController: HWFlowBaseViewController {
     var state: ConnectionState = .none {
         didSet {
             DispatchQueue.main.async { [weak self] in
+                self?.updateLoginStatusTimer(for: self?.state ?? .none)
                 self?.reload()
             }
         }
+    }
+
+    @MainActor
+    private func updateLoginStatusTimer(for state: ConnectionState) {
+        invalidateLoginStatusTimer()
+        guard state == .login else { return }
+        loginStatusTimer = Timer.scheduledTimer(withTimeInterval: StatusPageMessageHelper.delaySeconds, repeats: false) { [weak self] timer in
+            timer.invalidate()
+            guard let self = self else { return }
+            self.loginStatusTimer = nil
+            Task { @MainActor in
+                self.showStatusDelayMessage()
+            }
+        }
+    }
+
+    @MainActor
+    private func invalidateLoginStatusTimer() {
+        loginStatusTimer?.invalidate()
+        loginStatusTimer = nil
     }
 
     @MainActor
@@ -213,10 +236,31 @@ class ConnectViewController: HWFlowBaseViewController {
         retryButton.setStyle(.inline)
         lblTitle.setStyle(.subTitle24)
         lblSubtitle.setStyle(.txtCard)
+        lblSubtitle.isUserInteractionEnabled = true
+        lblSubtitle.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onSubtitleTap(_:))))
         lblSubtitle.numberOfLines = 0
         lblSubtitle.translatesAutoresizingMaskIntoConstraints = false
         retryWoButton.backgroundColor = UIColor.gAccent()
         retryWoButton.cornerRadius = retryWoButton.frame.size.width / 2
+    }
+
+    @MainActor
+    private func showStatusDelayMessage() {
+        let styled = StatusPageMessageHelper.styleMessage(NSAttributedString(string: StatusPageMessageHelper.delayMessage))
+        statusRange = styled.statusRange
+        lblSubtitle.attributedText = styled.message
+    }
+
+    @objc private func onSubtitleTap(_ gesture: UITapGestureRecognizer) {
+        guard let range = statusRange,
+              let attributedText = lblSubtitle.attributedText,
+              let url = StatusPageMessageHelper.url else {
+            return
+        }
+
+        if StatusPageMessageHelper.didTap(label: lblSubtitle, inRange: range, attributedText: attributedText, gesture: gesture) {
+            SafeNavigationManager.shared.navigate(url)
+        }
     }
 
     @objc func progressTor(_ notification: NSNotification) {
@@ -398,6 +442,7 @@ class ConnectViewController: HWFlowBaseViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        invalidateLoginStatusTimer()
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
         Task { [weak self] in
             await self?.stopScan()
@@ -409,6 +454,7 @@ class ConnectViewController: HWFlowBaseViewController {
     }
 
     deinit {
+        loginStatusTimer?.invalidate()
         print("deinit")
     }
 
@@ -453,6 +499,7 @@ class ConnectViewController: HWFlowBaseViewController {
 
     @MainActor
     func progress(_ txt: String) {
+        statusRange = nil
         DispatchQueue.main.async { [weak self] in
             self?.lblSubtitle.text = txt
         }

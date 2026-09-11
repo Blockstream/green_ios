@@ -6,6 +6,7 @@ enum LoaderScope {
     case unknown
     case login
 }
+
 @IBDesignable
 class Loader: UIView {
 
@@ -23,12 +24,8 @@ class Loader: UIView {
 
     static let tag = 0x70726f6772657373
     private var statusScopeTimer: Timer?
-    private let statusDelayMessage = "Login is taking longer than usual\n\nMore information: status.blockstream.com"
-    private let statusMoreInfoText = "More information: status.blockstream.com"
-    private let statusHost = "status.blockstream.com"
-    private let statusURL = URL(string: "https://status.blockstream.com")
     private var statusRange: NSRange?
-    private var statusTimerTime = 15.0
+
     var message: NSMutableAttributedString? {
         didSet { applyStyledMessage() }
     }
@@ -102,112 +99,6 @@ class Loader: UIView {
         invalidateStatusScopeTimer()
         bottomIconImageView.layer.removeAllAnimations()
         bottomIconImageView.alpha = 1.0
-    }
-
-    func scheduleStatusScopeTimerIfNeeded(scope: LoaderScope) {
-        invalidateStatusScopeTimer()
-        guard scope == .login else { return }
-        statusScopeTimer = Timer.scheduledTimer(withTimeInterval: statusTimerTime, repeats: false) { [weak self] timer in
-            timer.invalidate()
-            guard let self = self else { return }
-            self.statusScopeTimer = nil
-            Task { @MainActor in
-                self.message = NSMutableAttributedString(string: self.statusDelayMessage)
-            }
-        }
-    }
-
-    private func invalidateStatusScopeTimer() {
-        statusScopeTimer?.invalidate()
-        statusScopeTimer = nil
-    }
-
-    private func applyStyledMessage() {
-        guard let message else {
-            statusRange = nil
-            lblHint.attributedText = nil
-            return
-        }
-
-        let styledMessage = NSMutableAttributedString(attributedString: message)
-        let fullText = styledMessage.string as NSString
-        let moreInfoRange = fullText.range(of: statusMoreInfoText)
-        let hostRange = fullText.range(of: statusHost)
-
-        if moreInfoRange.location != NSNotFound {
-            styledMessage.addAttribute(
-                .font,
-                value: UIFont.systemFont(ofSize: 11, weight: .regular),
-                range: moreInfoRange
-            )
-        }
-
-        if hostRange.location != NSNotFound {
-            styledMessage.addAttributes([
-                .foregroundColor: UIColor.gAccent(),
-                .underlineStyle: NSUnderlineStyle.single.rawValue
-            ], range: hostRange)
-
-            if let linkIcon = statusLinkIconAttributedString() {
-                styledMessage.insert(linkIcon, at: hostRange.location + hostRange.length)
-                statusRange = NSRange(location: hostRange.location, length: hostRange.length + linkIcon.length)
-            } else {
-                statusRange = hostRange
-            }
-        } else {
-            statusRange = nil
-        }
-
-        lblHint.attributedText = styledMessage
-    }
-
-    private func statusLinkIconAttributedString() -> NSAttributedString? {
-        guard let image = UIImage(named: "ic_squared_out") else { return nil }
-
-        let attachment = NSTextAttachment()
-        attachment.image = image.withTintColor(UIColor.gAccent(), renderingMode: .alwaysOriginal)
-        attachment.bounds = CGRect(x: 6, y: -4, width: 18, height: 18)
-        return NSAttributedString(attachment: attachment)
-    }
-
-    @objc private func onHintTap(_ gesture: UITapGestureRecognizer) {
-        guard let range = statusRange,
-              let attributedText = lblHint.attributedText,
-              let url = statusURL else {
-            return
-        }
-
-        if didTap(label: lblHint, inRange: range, attributedText: attributedText, gesture: gesture) {
-            SafeNavigationManager.shared.navigate(url)
-        }
-    }
-
-    private func didTap(label: UILabel,
-                        inRange targetRange: NSRange,
-                        attributedText: NSAttributedString,
-                        gesture: UITapGestureRecognizer) -> Bool {
-        let layoutManager = NSLayoutManager()
-        let textContainer = NSTextContainer(size: .zero)
-        let textStorage = NSTextStorage(attributedString: attributedText)
-
-        layoutManager.addTextContainer(textContainer)
-        textStorage.addLayoutManager(layoutManager)
-
-        textContainer.lineFragmentPadding = 0
-        textContainer.lineBreakMode = label.lineBreakMode
-        textContainer.maximumNumberOfLines = label.numberOfLines
-        textContainer.size = label.bounds.size
-
-        let tapLocation = gesture.location(in: label)
-        let textBounds = layoutManager.usedRect(for: textContainer)
-        let xOffset = (label.bounds.width - textBounds.width) * 0.5 - textBounds.origin.x
-        let yOffset = (label.bounds.height - textBounds.height) * 0.5 - textBounds.origin.y
-        let locationInTextContainer = CGPoint(x: tapLocation.x - xOffset, y: tapLocation.y - yOffset)
-
-        let characterIndex = layoutManager.characterIndex(for: locationInTextContainer,
-                                                          in: textContainer,
-                                                          fractionOfDistanceBetweenInsertionPoints: nil)
-        return NSLocationInRange(characterIndex, targetRange)
     }
 
     static func resume() {
@@ -301,6 +192,50 @@ extension UIViewController {
                     loader.removeFromSuperview()
                 }
             }
+        }
+    }
+}
+
+private extension Loader {
+    func scheduleStatusScopeTimerIfNeeded(scope: LoaderScope) {
+        invalidateStatusScopeTimer()
+        guard scope == .login else { return }
+        statusScopeTimer = Timer.scheduledTimer(withTimeInterval: StatusPageMessageHelper.delaySeconds, repeats: false) { [weak self] timer in
+            timer.invalidate()
+            guard let self = self else { return }
+            self.statusScopeTimer = nil
+            Task { @MainActor in
+                self.message = NSMutableAttributedString(string: StatusPageMessageHelper.delayMessage)
+            }
+        }
+    }
+
+    func invalidateStatusScopeTimer() {
+        statusScopeTimer?.invalidate()
+        statusScopeTimer = nil
+    }
+
+    private func applyStyledMessage() {
+        guard let message else {
+            statusRange = nil
+            lblHint.attributedText = nil
+            return
+        }
+
+        let styled = StatusPageMessageHelper.styleMessage(message)
+        statusRange = styled.statusRange
+        lblHint.attributedText = styled.message
+    }
+
+    @objc private func onHintTap(_ gesture: UITapGestureRecognizer) {
+        guard let range = statusRange,
+              let attributedText = lblHint.attributedText,
+              let url = StatusPageMessageHelper.url else {
+            return
+        }
+
+        if StatusPageMessageHelper.didTap(label: lblHint, inRange: range, attributedText: attributedText, gesture: gesture) {
+            SafeNavigationManager.shared.navigate(url)
         }
     }
 }

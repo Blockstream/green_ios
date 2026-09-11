@@ -487,6 +487,7 @@
 		34FB697927FEFE5400A13197 /* PopoverMenuUnarchiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB697827FEFE5400A13197 /* PopoverMenuUnarchiveViewController.swift */; };
 		34FE20172A1CADC200301746 /* DialogDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FE20152A1CADC200301746 /* DialogDetailCell.swift */; };
 		34FE20182A1CADC200301746 /* DialogDetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34FE20162A1CADC200301746 /* DialogDetailCell.xib */; };
+		34FF14763053FA5900436ED4 /* StatusPageMessageHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FF14753053FA5900436ED4 /* StatusPageMessageHelper.swift */; };
 		586EB69D2EFB1EF200DFAEF6 /* AutoLogoutCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586EB69C2EFB1EEB00DFAEF6 /* AutoLogoutCell.swift */; };
 		586EB69F2EFB1EFC00DFAEF6 /* AutoLogoutCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586EB69E2EFB1EF400DFAEF6 /* AutoLogoutCellModel.swift */; };
 		586EB6A52EFB223300DFAEF6 /* AutoLogoutCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 586EB6A42EFB223300DFAEF6 /* AutoLogoutCell.xib */; };
@@ -846,9 +847,9 @@
 		C71E2AA52FBB03F9003E816A /* LTDetailsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71E2AA42FBB03F9003E816A /* LTDetailsCellModel.swift */; };
 		C71E2AA72FBB0419003E816A /* LTDetailsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C71E2AA62FBB0419003E816A /* LTDetailsCell.xib */; };
 		C742272B2FC0991800BDE83E /* LTSettingsDialogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C742272A2FC0991800BDE83E /* LTSettingsDialogViewController.swift */; };
+		C744C0FB2FC98786000E5CF7 /* DecimalTextFieldSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C744C0FA2FC98786000E5CF7 /* DecimalTextFieldSanitizer.swift */; };
 		C74D3FB230373AE500E3737E /* PromoContainerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74D3FB030373AE500E3737E /* PromoContainerCell.swift */; };
 		C74D3FB330373AE500E3737E /* PromoContainerCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C74D3FB130373AE500E3737E /* PromoContainerCell.xib */; };
-		C744C0FB2FC98786000E5CF7 /* DecimalTextFieldSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C744C0FA2FC98786000E5CF7 /* DecimalTextFieldSanitizer.swift */; };
 		C78788722FB74648009F2907 /* lightning_success.riv in Resources */ = {isa = PBXBuildFile; fileRef = C78788712FB74648009F2907 /* lightning_success.riv */; };
 		C79C85A62FD9881A00501B33 /* LightningTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A52FD9881A00501B33 /* LightningTask.swift */; };
 		C79C85A82FD98CEE00501B33 /* NotificationDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79C85A72FD98CEE00501B33 /* NotificationDeviceManager.swift */; };
@@ -1506,6 +1507,7 @@
 		34FB697827FEFE5400A13197 /* PopoverMenuUnarchiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuUnarchiveViewController.swift; sourceTree = "<group>"; };
 		34FE20152A1CADC200301746 /* DialogDetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogDetailCell.swift; sourceTree = "<group>"; };
 		34FE20162A1CADC200301746 /* DialogDetailCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DialogDetailCell.xib; sourceTree = "<group>"; };
+		34FF14753053FA5900436ED4 /* StatusPageMessageHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPageMessageHelper.swift; sourceTree = "<group>"; };
 		586EB69C2EFB1EEB00DFAEF6 /* AutoLogoutCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoLogoutCell.swift; sourceTree = "<group>"; };
 		586EB69E2EFB1EF400DFAEF6 /* AutoLogoutCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoLogoutCellModel.swift; sourceTree = "<group>"; };
 		586EB6A42EFB223300DFAEF6 /* AutoLogoutCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AutoLogoutCell.xib; sourceTree = "<group>"; };
@@ -1867,9 +1869,9 @@
 		C71E2AA42FBB03F9003E816A /* LTDetailsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTDetailsCellModel.swift; sourceTree = "<group>"; };
 		C71E2AA62FBB0419003E816A /* LTDetailsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LTDetailsCell.xib; sourceTree = "<group>"; };
 		C742272A2FC0991800BDE83E /* LTSettingsDialogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTSettingsDialogViewController.swift; sourceTree = "<group>"; };
+		C744C0FA2FC98786000E5CF7 /* DecimalTextFieldSanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalTextFieldSanitizer.swift; sourceTree = "<group>"; };
 		C74D3FB030373AE500E3737E /* PromoContainerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoContainerCell.swift; sourceTree = "<group>"; };
 		C74D3FB130373AE500E3737E /* PromoContainerCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PromoContainerCell.xib; sourceTree = "<group>"; };
-		C744C0FA2FC98786000E5CF7 /* DecimalTextFieldSanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalTextFieldSanitizer.swift; sourceTree = "<group>"; };
 		C78788712FB74648009F2907 /* lightning_success.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = lightning_success.riv; sourceTree = "<group>"; };
 		C79C85A52FD9881A00501B33 /* LightningTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningTask.swift; sourceTree = "<group>"; };
 		C79C85A72FD98CEE00501B33 /* NotificationDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDeviceManager.swift; sourceTree = "<group>"; };
@@ -2941,6 +2943,7 @@
 		3497935C25F8B18C0029ECB1 /* ProgressView */ = {
 			isa = PBXGroup;
 			children = (
+				34FF14753053FA5900436ED4 /* StatusPageMessageHelper.swift */,
 				3497935D25F8B18C0029ECB1 /* StrokeColorAnimation.swift */,
 				3497935E25F8B18C0029ECB1 /* RotationAnimation.swift */,
 				3497935F25F8B18C0029ECB1 /* ProgressView.swift */,
@@ -5491,6 +5494,7 @@
 				34A883B02BA85F3E004A1826 /* TxDetailsInfoCell.swift in Sources */,
 				34E016F12F4D9ECE0007ED2C /* EnableBiometricsDialogViewController.swift in Sources */,
 				34204722291C12DB00EDE945 /* AssetSelectViewModel.swift in Sources */,
+				34FF14763053FA5900436ED4 /* StatusPageMessageHelper.swift in Sources */,
 				34465B9B2D075785002E5033 /* GenuineCheckDialogViewController.swift in Sources */,
 				349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */,
 				C7E400EB2FE9599400188624 /* ShowMnemonicHeaderView.swift in Sources */,
