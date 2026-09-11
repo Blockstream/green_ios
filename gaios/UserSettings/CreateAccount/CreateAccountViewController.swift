@@ -335,7 +335,7 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
         isCreating = true
         tableView.isUserInteractionEnabled = false
         let isHW = WalletsStorage.shared.current?.isHW ?? false
-        if isHW {
+        if isHW && policy.accountType == .twoOfThree {
             showHWCheckDialog()
         } else {
             startLoader(message: String(format: "id_creating_your_s_account".localized, policy.accountType.description))
