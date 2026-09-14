@@ -60,14 +60,18 @@ class DialogAmpViewController: UIViewController {
         tappableBg.addGestureRecognizer(tapToClose)
 
         obs = tableView.observe(\UITableView.contentSize, options: .new) { [weak self] table, _ in
-            guard let self = self else { return }
-            guard table.numberOfSections > 0 else {
-                self.tableViewHeight.constant = 0
-                return
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                guard table.numberOfSections > 0 else {
+                    self.tableViewHeight.constant = 0
+                    return
+                }
+                self.updateBottomSheetTableViewHeight(
+                    table,
+                    heightConstraint: self.tableViewHeight,
+                    inside: self.cardView
+                )
             }
-            self.updateBottomSheetTableViewHeight(table,
-                                                  heightConstraint: self.tableViewHeight,
-                                                  inside: self.cardView)
         }
     }
     override func viewWillAppear(_ animated: Bool) {
@@ -84,11 +88,13 @@ class DialogAmpViewController: UIViewController {
         }
     }
     func onUpdate(_ feature: RefreshAmpFeature? = nil) {
+        stopLoader()
         lblTitle.text = vm.title
         lblHint.text = vm.hint
         btnCreate.setStyle(.primary)
         btnCreate.setTitle(vm.btnCreateTitle, for: .normal)
         btnCreate.isHidden = vm.sectionCount != 0
+        btnCreate.isUserInteractionEnabled = true
         if vm.sectionCount == 0 {
             tableViewHeight.constant = 0
         }
@@ -104,7 +110,9 @@ class DialogAmpViewController: UIViewController {
     }
     func bind() {
         vm.onUpdate = { [weak self] feature in
-            self?.onUpdate(feature)
+            Task { @MainActor in
+                self?.onUpdate(feature)
+            }
         }
     }
     @objc func didTap(gesture: UIGestureRecognizer) {
@@ -150,12 +158,81 @@ class DialogAmpViewController: UIViewController {
         dismiss()
     }
     @IBAction func btnCreate(_ sender: Any) {
-        btnCreate.setStyle(.primaryLoading)
-        btnCreate.setTitle("Creating AMP Account...".localized, for: .normal)
-        vm.onCreate(vm.defaultCreateType)
+        requestCreateAmpLegacySubaccount()
     }
+
+    func showJadeBluetoothDiscoveryAlert(next: @escaping () -> Void, cancel: @escaping () -> Void) {
+        let alert = UIAlertController(
+            title: "id_connect_with_bluetooth".localized,
+            message: "Multisig accounts require your Jade. Connect it via Bluetooth to continue.\n\nFrom then on, this wallet can only be accessed with your Jade connected via Bluetooth — watch-only access with biometrics will be disabled.",
+            preferredStyle: .alert
+        )
+        alert
+            .addAction(
+                UIAlertAction(
+                    title: "id_cancel".localized,
+                    style: .cancel
+                ) {_ in
+                    cancel()
+                })
+        alert
+            .addAction(
+                UIAlertAction(
+                    title: "id_continue".localized,
+                    style: .default
+                ) {_ in
+                    DispatchQueue.main.async {
+                        next()
+                    }
+                })
+        presentOnTop(alert, animated: true)
+    }
+
+    func presentOnTop(_ viewController: UIViewController, animated: Bool = true) {
+        var presenter: UIViewController = navigationController ?? self
+        while let presented = presenter.presentedViewController, !presented.isBeingDismissed {
+            presenter = presented
+        }
+        presenter.present(viewController, animated: animated)
+    }
+
+    @MainActor
+    func requestCreateAmpLegacySubaccount() {
+        if vm.needsBluetoothConnection() {
+            presentConnectViewController()
+            return
+        }
+        if vm.shouldConfirmWatchonlyExit() {
+            showJadeBluetoothDiscoveryAlert {
+                // Create Amp multisig subaccount
+                self.create(self.vm.defaultCreateType)
+            } cancel: {}
+            return
+        }
+        // Create Amp multisig subaccount
+        create(vm.defaultCreateType)
+    }
+
+    func create(_ type: CreateAmpType) {
+        btnCreate.setStyle(.primaryLoading)
+        btnCreate.isUserInteractionEnabled = false
+        startLoader(message: "Creating AMP Account...".localized)
+        vm.onCreate(type)
+    }
+
     @IBAction func btnLearnMore(_ sender: Any) {
         SafeNavigationManager.shared.navigate(ExternalUrls.ampCreateInfo)
+    }
+
+    @MainActor
+    func presentConnectViewController() {
+        let storyboard = UIStoryboard(name: "HWDialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "HWDialogConnectViewController") as? HWDialogConnectViewController {
+            vc.delegate = self
+            vc.authentication = true
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
     }
 }
 
@@ -177,7 +254,7 @@ extension DialogAmpViewController: UITableViewDelegate, UITableViewDataSource {
             let type = vm.createType(indexPath)
             cell.configure(model: model,
                            onCreate: { [weak self] in
-                self?.vm.onCreate(type)
+                self?.create(type)
             }, onCopy: {
                 if let hash = model.hash {
                     UIPasteboard.general.string = hash
@@ -220,5 +297,21 @@ extension DialogAmpViewController: UITableViewDelegate, UITableViewDataSource {
         ])
 
         return section
+    }
+}
+
+extension DialogAmpViewController: HWDialogConnectViewControllerDelegate {
+    func connected() {
+    }
+
+    func logged() {
+        requestCreateAmpLegacySubaccount()
+    }
+
+    func cancel() {
+    }
+
+    func failure(err: Error) {
+        showError(err)
     }
 }

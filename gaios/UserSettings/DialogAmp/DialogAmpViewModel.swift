@@ -28,12 +28,19 @@ private enum AmpSectionType {
 @MainActor
 class DialogAmpViewModel: Sendable {
 
+    var mainWallet: Wallet
+    var wm: WalletManager
     var service: AmpService?
     var onUpdate: (@MainActor @Sendable (RefreshAmpFeature?) -> Void)?
 
-    init(onUpdate: (@MainActor @Sendable (RefreshAmpFeature?) -> Void)? = nil) {
+    init(mainWallet: Wallet, wm: WalletManager, onUpdate: (@MainActor @Sendable (RefreshAmpFeature?) -> Void)? = nil) {
         self.onUpdate = onUpdate
-        self.service = AmpService(onUpdate: {[weak self] feature in
+        self.mainWallet = mainWallet
+        self.wm = wm
+        self.service = AmpService(
+            mainWallet: mainWallet,
+            wm: wm,
+            onUpdate: {[weak self] feature in
             self?.onUpdate?(feature)
         })
     }
@@ -160,5 +167,19 @@ class DialogAmpViewModel: Sendable {
     }
     func onCreate(_ type: CreateAmpType) {
         service?.onCreate(type)
+    }
+
+    func needsBluetoothConnection() -> Bool {
+        mainWallet.isJade && (
+            !BleHwManager.shared.isConnected() || !BleHwManager.shared.isLogged()
+        )
+    }
+
+    func hasWatchonlyKey() -> Bool {
+        mainWallet.hasWoCredentials || mainWallet.hasWoBioCredentials
+    }
+
+    func shouldConfirmWatchonlyExit() -> Bool {
+        mainWallet.isJade && hasWatchonlyKey()
     }
 }

@@ -190,7 +190,7 @@ final class SettingsCoordinator {
 
     func dialogAmpViewModel() -> DialogAmpViewModel {
         let wallet = self.wallet
-        return DialogAmpViewModel { _ in
+        return DialogAmpViewModel(mainWallet: mainWallet, wm: wallet.wm) { _ in
             Task {
                 await wallet.triggerRefresh(features: [.subaccounts, .settings, .balance])
             }

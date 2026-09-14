@@ -1,6 +1,7 @@
 import Foundation
 import core
 import greenaddress
+import hw
 
 enum RefreshAmpFeature: Sendable, Hashable {
     case success
@@ -12,11 +13,11 @@ enum CreateAmpType {
 }
 @MainActor
 class AmpService: Sendable {
-    var mainWallet: Wallet? { WalletsStorage.shared.current }
+    var mainWallet: Wallet
+    var wm: WalletManager
     private var createTask: Task<Void, Never>?
     private var onUpdate: (@MainActor @Sendable (RefreshAmpFeature?) -> Void)?
 
-    private var wm: WalletManager { WalletManager.current! }
     private var lwkNetworkId: NetworkId {
         if wm.testnet {
             return NetworkId.lwkTestnet
@@ -46,11 +47,13 @@ class AmpService: Sendable {
     /// AMP2 is limited to software testnet wallets for now.
     /// Hardware, watch-only, and mainnet keep the AMP0 path only.
     var canCreateAmp2: Bool {
-        guard wm.testnet, let mainWallet else { return false }
+        guard wm.testnet else { return false }
         return !mainWallet.isHW && !mainWallet.isWatchonly
     }
 
-    init(onUpdate: (@MainActor @Sendable (RefreshAmpFeature?) -> Void)? = nil) {
+    init(mainWallet: Wallet, wm: WalletManager, onUpdate: (@MainActor @Sendable (RefreshAmpFeature?) -> Void)? = nil) {
+        self.mainWallet = mainWallet
+        self.wm = wm
         self.onUpdate = onUpdate
     }
     func getAmpAccounts() -> [Account] {
@@ -60,6 +63,27 @@ class AmpService: Sendable {
 
     func getLegacyAmpAccounts() -> [Account] {
         return gdkGreenLiquidNetworkBackend?.accounts.filter { $0.type == .ampAccount } ?? []
+    }
+
+    func getCredentials(networkId: NetworkId) async throws -> Credentials {
+        if mainWallet.isHW {
+            let xpub = try await BleHwManager.shared.getMasterXpub(chain: networkId.chain)
+            return Credentials(masterXpub: xpub)
+        } else {
+            if let res = try await wm.prominentNetworkBackend?.session.getCredentials(password: "") {
+                return res
+            }
+            throw GaError.GenericError("Failed to get credentials")
+        }
+    }
+    func getDevice() -> HWDevice? {
+        if mainWallet.isJade {
+            return HWDevice.defaultJade(fmwVersion: nil)
+        } else if mainWallet.isLedger {
+            return HWDevice.defaultLedger()
+        } else {
+            return nil
+        }
     }
 
     func createAmp2Account() async throws {
@@ -87,31 +111,30 @@ class AmpService: Sendable {
             )
             try await gdkGreenLiquidNetworkBackend.connect(params: connParams)
         }
+        /// If multisig is no registered and 1st login
         if !gdkGreenLiquidNetworkBackend.isLoggedIn {
-            guard let credentials = try await wm.prominentSession?.getCredentials(
-                password: ""
-            ) else {
-                throw GaError.GenericError("No wallet credentials data found")
-            }
-            try await gdkGreenLiquidNetworkBackend.session.register(credentials: credentials, hw: wm.hwDevice)
+            let credentials = try await getCredentials(networkId: gdkGreenLiquidNetworkBackend.networkId)
+            let device = getDevice()
+            try await gdkGreenLiquidNetworkBackend.session.register(credentials: credentials, hw: device)
             _ = try await gdkGreenLiquidNetworkBackend
                 .login(
                     credentials: credentials,
-                    device: wm.hwDevice,
-                    fullRestore: true,
+                    device: device,
+                    fullRestore: false,
                     creation: true,
                     prominentNetworkId: wm.prominentNetworkId
                 )
-            // hide default 2FA subaccounts
             let accounts = try await gdkGreenLiquidNetworkBackend.getAccounts(
                 refresh: false
             )
+            // Hide default 1st multisig account
             if let firstAccount = accounts.first {
                 try? await wm
                     .gdkAccountBackend(firstAccount)
                     .updateAccount(hidden: true)
             }
         }
+        // Create amp0 legacy multisig account
         _ = try await gdkGreenLiquidNetworkBackend
             .createAccount(
                 params: CreateSubaccountParams(name: "", type: .ampAccount)
@@ -122,7 +145,7 @@ class AmpService: Sendable {
 
     func onCreate(_ type: CreateAmpType) {
         createTask?.cancel()
-        createTask = Task { [weak self] in
+        createTask = Task { @MainActor [weak self] in
             guard let self else { return }
             do {
                 switch type {
@@ -132,6 +155,10 @@ class AmpService: Sendable {
                     try await self.createAmp2Account()
                 }
                 guard !Task.isCancelled else { return }
+                // Remove watchonly key
+                if mainWallet.isJade {
+                    removeWatchonlyKeys()
+                }
                 self.onUpdate?(.success)
             } catch is CancellationError {
                 self.onUpdate?(nil)
@@ -141,6 +168,14 @@ class AmpService: Sendable {
             }
         }
     }
+
+    func removeWatchonlyKeys() {
+        _ = AuthenticationTypeHandler
+            .removeAuth(method: .AuthKeyWoCredentials, for: mainWallet.keychain)
+        _ = AuthenticationTypeHandler
+            .removeAuth(method: .AuthKeyWoBioCredentials, for: mainWallet.keychain)
+    }
+
     deinit {
         createTask?.cancel()
     }
