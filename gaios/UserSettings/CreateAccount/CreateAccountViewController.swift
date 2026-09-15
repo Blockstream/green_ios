@@ -354,9 +354,15 @@ extension CreateAccountViewController: UITableViewDelegate, UITableViewDataSourc
                     }
                 }
                 switch action {
-                case .created:
+                case .created(let account):
+                    if let wallet = self?.viewModel.mainWallet {
+                        AnalyticsManager.shared.createAccount(wallet: wallet, account: account)
+                    }
                     self?.didCreateWallet()
-                case .unarchived:
+                case .unarchived(let account):
+                    if let wallet = self?.viewModel.mainWallet {
+                        AnalyticsManager.shared.createAccount(wallet: wallet, account: account)
+                    }
                     self?.didUnarchiveWallet()
                 case .none:
                     break

@@ -13,7 +13,7 @@ struct LTCreateViewModel {
         self.mainWallet = mainWallet
     }
 
-    func enableLightning() async throws {
+    func enableLightning() async throws -> Account {
         guard let credentials = try await wallet.wm.prominentSession?.getCredentials(password: "") else {
             throw GaError.GenericError("Invalid credentials")
         }
@@ -33,6 +33,9 @@ struct LTCreateViewModel {
                 restore: false,
                 parentXpub: xpubHashId
             )
+        guard let account = try await backend.getAccounts(refresh: false).first else {
+            throw GaError.GenericError("Lightning account not available")
+        }
         // Get lightning session
         guard let session = await wallet.wm.lightningSession else {
             throw GaError.GenericError("Invalid lightning session")
@@ -57,5 +60,6 @@ struct LTCreateViewModel {
             .triggerRefresh(
                 features: [.balance, .txs(reset: true)]
             )
+        return account
     }
 }

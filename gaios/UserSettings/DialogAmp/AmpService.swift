@@ -93,12 +93,13 @@ class AmpService: Sendable {
         guard let lwkNetworkBackend else {
             throw GaError.GenericError("No LWK backend")
         }
-        _ = try await lwkNetworkBackend
+        let account = try await lwkNetworkBackend
             .createAccount(
                 params: CreateSubaccountParams(name: "", type: .amp2Account)
             )
         _ = try await lwkNetworkBackend.getAccounts(refresh: true)
         notifyWalletDataRefresh(networkId: lwkNetworkId)
+        AnalyticsManager.shared.createAccount(wallet: mainWallet, account: account)
     }
 
     func createAmpLegacyAccount() async throws {
@@ -134,13 +135,13 @@ class AmpService: Sendable {
                     .updateAccount(hidden: true)
             }
         }
-        // Create amp0 legacy multisig account
-        _ = try await gdkGreenLiquidNetworkBackend
+        let account = try await gdkGreenLiquidNetworkBackend
             .createAccount(
                 params: CreateSubaccountParams(name: "", type: .ampAccount)
             )
         _ = try await gdkGreenLiquidNetworkBackend.getAccounts(refresh: true)
-         notifyWalletDataRefresh(networkId: gdkGreenLiquidNetworkId)
+        notifyWalletDataRefresh(networkId: gdkGreenLiquidNetworkId)
+        AnalyticsManager.shared.createAccount(wallet: mainWallet, account: account)
     }
 
     func onCreate(_ type: CreateAmpType) {

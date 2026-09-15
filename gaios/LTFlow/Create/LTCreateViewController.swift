@@ -148,21 +148,16 @@ class LTCreateViewController: UIViewController {
     func enableLightning() async {
         AnalyticsManager.shared.enableStart(wallet: viewModel.mainWallet)
         startLoader(message: "Enabling Lightning...")
-        let task = Task.detached { [weak self] in
-            try await self?.viewModel.enableLightning()
+        let viewModel = self.viewModel
+        let task = Task.detached { [viewModel] () throws -> Account in
+            try await viewModel.enableLightning()
         }
         switch await task.result {
-        case .success:
+        case .success(let account):
             stopLoader()
             DropAlert().success(message: "Lightning enabled".localized)
-            var account: Account?
-            if let backend = WalletManager.current?.glNetworkBackendOrNil(),
-                backend.isLoggedIn {
-                account = backend.account
-            }
             AnalyticsManager.shared.createAccount(wallet: viewModel.mainWallet,
                                                   account: account)
-
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.newSubaccount.rawValue), object: nil, userInfo: nil)
             if viewModel.isHW {
                 pushLTExportJadeViewController()

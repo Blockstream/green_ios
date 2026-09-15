@@ -4,8 +4,8 @@ import hw
 import greenaddress
 
 enum SubaccountAction {
-    case created
-    case unarchived
+    case created(Account)
+    case unarchived(Account)
 }
 
 struct CreateAccountService {
@@ -94,18 +94,18 @@ struct CreateAccountService {
         if let archivedAccount = archivedAccounts.first {
             if archivedAccount.pointer == 0 {
                 try await backend.updateAccount(account: archivedAccount, hidden: false)
-                return .created
+                return .created(archivedAccount)
             } else if await shouldCreateNew() {
-                _ = try await backend.createAccount(params: params)
-                return .created
+                let createdAccount = try await backend.createAccount(params: params)
+                return .created(createdAccount)
             } else {
                 try await backend.updateAccount(account: archivedAccount, hidden: false)
-                return .unarchived
+                return .unarchived(archivedAccount)
             }
 
         }
         /// Create new account
-        _ = try await backend.createAccount(params: params)
-        return .created
+        let createdAccount = try await backend.createAccount(params: params)
+        return .created(createdAccount)
     }
 }

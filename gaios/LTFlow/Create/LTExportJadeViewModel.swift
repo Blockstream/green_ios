@@ -37,7 +37,7 @@ class LTExportJadeViewModel {
         return Credentials(mnemonic: lightningMnemonic)
     }
 
-    func enableLightning(lightningCredentials: Credentials) async throws {
+    func enableLightning(lightningCredentials: Credentials) async throws -> Account {
         // Get lightning session
         guard let walletManager = wm, let mainWallet else {
             throw HWError.Abort("Invalid lightning session")
@@ -56,7 +56,9 @@ class LTExportJadeViewModel {
                 restore: false,
                 parentXpub: xpubHashId
             )
-        _ = try await backend.getAccounts(refresh: false)
+        guard let account = try await backend.getAccounts(refresh: false).first else {
+            throw HWError.Abort("Lightning account not available")
+        }
         // Add auth into keychain
         try AuthenticationTypeHandler.setCredentials(method: .AuthKeyLightning, credentials: lightningCredentials, for: mainWallet.keychainLightning)
         // Register device to receive notifications
@@ -67,5 +69,6 @@ class LTExportJadeViewModel {
         // Update subaccounts and UI
         await wallet.triggerRefresh(features: [.subaccounts])
         await wallet.triggerRefresh(features: [.balance, .txs(reset: true)])
+        return account
     }
 }

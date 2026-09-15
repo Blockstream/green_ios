@@ -180,7 +180,7 @@ extension AnalyticsManager {
         recordEvent(.walletImport, sgmt: s)
     }
 
-    public func createAccount(wallet: Wallet?, account: Account?) {
+    public func createAccount(wallet: Wallet?, account: Account) {
         let s = subAccSeg(wallet, account: account)
         recordEvent(.createAccount, sgmt: s)
     }

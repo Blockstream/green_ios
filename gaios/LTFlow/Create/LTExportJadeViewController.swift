@@ -118,23 +118,18 @@ extension LTExportJadeViewController: QrScannerViewControllerDelegate {
     }
     func enableLightning(value: ScanResult) async {
         startLoader(message: String(format: "id_creating_your_s_account".localized, "id_lightning".localized.lowercased()))
-        let task = Task.detached { [weak self] in
-            guard let credentials = try await self?.viewModel.reply(
-                publicKey: value.bcur?.publicΚey ?? "",
-                encrypted: value.bcur?.encrypted ?? "") else {
-                throw HWError.Abort("id_operation_failure")
+        let task = Task.detached { [weak self] () throws -> Account in
+            guard let self else {
+                throw CancellationError()
             }
-            try await self?.viewModel.enableLightning(lightningCredentials: credentials)
-            return credentials
+            let credentials = try await self.viewModel.reply(
+                publicKey: value.bcur?.publicΚey ?? "",
+                encrypted: value.bcur?.encrypted ?? "")
+            return try await self.viewModel.enableLightning(lightningCredentials: credentials)
         }
         switch await task.result {
-        case .success:
+        case .success(let account):
             self.stopLoader()
-            var account: Account?
-            if let backend = WalletManager.current?.glNetworkBackendOrNil(),
-               backend.isLoggedIn {
-                account = backend.account
-            }
             AnalyticsManager.shared.createAccount(
                 wallet: WalletsStorage.shared.current,
                 account: account
