@@ -2,8 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UIDesignRequiresCompatibility</key>
-	<true/>
+	<key>APPGROUP</key>
+	<string>$(APPGROUP)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -67,10 +67,16 @@
 	<string>$(COUNTLY_APP_KEY)</string>
 	<key>COUNTLY_APP_MAX_OFFSET</key>
 	<string>$(COUNTLY_APP_MAX_OFFSET)</string>
-	<key>MELD_REDIRECT_URL</key>
-	<string>$(MELD_REDIRECT_URL)</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
+	<key>GOOGLE_SERVICE_INFO</key>
+	<string>$(GOOGLE_SERVICE_INFO)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>MELD_REDIRECT_URL</key>
+	<string>$(MELD_REDIRECT_URL)</string>
+	<key>NOTIFICATION_SERVICE</key>
+	<string>$(NOTIFICATION_SERVICE)</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -84,17 +90,12 @@
 	<string>We use the camera to scan QR codes</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Blockstream uses biometric authentication to allow easy access to the wallet</string>
-	<key>NSUserNotificationsUsageDescription</key>
-	<string>Enable push notifications for seamless lightning payments. No need to keep your app open to receive.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We use the camera to scan QR codes</string>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>bluetooth-central</string>
-		<string>remote-notification</string>
-	</array>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Enable push notifications for seamless lightning payments. No need to keep your app open to receive.</string>
+	<key>TeamIdentifierPrefix</key>
+	<string>$(DEVELOPMENT_TEAM)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -112,6 +113,15 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-central</string>
+		<string>remote-notification</string>
+	</array>
+	<key>UIDesignRequiresCompatibility</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -145,15 +155,5 @@
 	<false/>
 	<key>ZENDESK_CLIENT_ID</key>
 	<string>$(ZENDESK_CLIENT_ID)</string>
-	<key>APPGROUP</key>
-	<string>$(APPGROUP)</string>
-	<key>FirebaseAppDelegateProxyEnabled</key>
-	<false/>
-	<key>GOOGLE_SERVICE_INFO</key>
-	<string>$(GOOGLE_SERVICE_INFO)</string>
-	<key>NOTIFICATION_SERVICE</key>
-	<string>$(NOTIFICATION_SERVICE)</string>
-	<key>TeamIdentifierPrefix</key>
-	<string>$(DEVELOPMENT_TEAM)</string>
 </dict>
 </plist>

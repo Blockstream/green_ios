@@ -78,7 +78,6 @@
 		3420470C291A6FE100EDE945 /* MultiLabelViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3420470B291A6FE100EDE945 /* MultiLabelViewModel.swift */; };
 		34204711291B919600EDE945 /* CreateAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204710291B919600EDE945 /* CreateAccountViewController.swift */; };
 		34204713291B91B000EDE945 /* CreateAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204712291B91B000EDE945 /* CreateAccountViewModel.swift */; };
-		81EAFF8B3048300100A4FD5D /* CreateAccountService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EAFF8A3048300100A4FD5D /* CreateAccountService.swift */; };
 		34204717291B9A8600EDE945 /* AccountTypeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204715291B9A8600EDE945 /* AccountTypeCell.swift */; };
 		34204718291B9A8600EDE945 /* AccountTypeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34204716291B9A8600EDE945 /* AccountTypeCell.xib */; };
 		3420471A291B9AA700EDE945 /* AccountTypeCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204719291B9AA700EDE945 /* AccountTypeCellModel.swift */; };
@@ -811,6 +810,7 @@
 		81EAFF803047FC4600A4FD5D /* Learn2faViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EAFF7F3047FC3F00A4FD5D /* Learn2faViewModel.swift */; };
 		81EAFF873048014500A4FD5D /* PgpViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EAFF863048014100A4FD5D /* PgpViewModel.swift */; };
 		81EAFF89304824B300A4FD5D /* SettingsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EAFF88304824A400A4FD5D /* SettingsCoordinator.swift */; };
+		81EAFF8B3048300100A4FD5D /* CreateAccountService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EAFF8A3048300100A4FD5D /* CreateAccountService.swift */; };
 		81EC465B293503A8000AA0E8 /* AlerCardCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EC465A293503A8000AA0E8 /* AlerCardCellModel.swift */; };
 		81F328F429E9ABBE00D54F1D /* AuthResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328F329E9ABBE00D54F1D /* AuthResolver.swift */; };
 		81F328F529E9C0FF00D54F1D /* Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81865F42299D5AA5002CBA87 /* Codable.swift */; };
@@ -1075,7 +1075,6 @@
 		3420470B291A6FE100EDE945 /* MultiLabelViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiLabelViewModel.swift; sourceTree = "<group>"; };
 		34204710291B919600EDE945 /* CreateAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountViewController.swift; sourceTree = "<group>"; };
 		34204712291B91B000EDE945 /* CreateAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountViewModel.swift; sourceTree = "<group>"; };
-		81EAFF8A3048300100A4FD5D /* CreateAccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountService.swift; sourceTree = "<group>"; };
 		34204715291B9A8600EDE945 /* AccountTypeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountTypeCell.swift; sourceTree = "<group>"; };
 		34204716291B9A8600EDE945 /* AccountTypeCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountTypeCell.xib; sourceTree = "<group>"; };
 		34204719291B9AA700EDE945 /* AccountTypeCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountTypeCellModel.swift; sourceTree = "<group>"; };
@@ -1825,6 +1824,7 @@
 		81EAFF7F3047FC3F00A4FD5D /* Learn2faViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Learn2faViewModel.swift; sourceTree = "<group>"; };
 		81EAFF863048014100A4FD5D /* PgpViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PgpViewModel.swift; sourceTree = "<group>"; };
 		81EAFF88304824A400A4FD5D /* SettingsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCoordinator.swift; sourceTree = "<group>"; };
+		81EAFF8A3048300100A4FD5D /* CreateAccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountService.swift; sourceTree = "<group>"; };
 		81EB9F9C2F582CAE00C335AE /* SwapMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapMonitor.swift; sourceTree = "<group>"; };
 		81EC465A293503A8000AA0E8 /* AlerCardCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlerCardCellModel.swift; sourceTree = "<group>"; };
 		81F328EE29E93ED100D54F1D /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -6466,7 +6466,7 @@
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = D9W37S9468;
 				ENABLE_BITCODE = NO;
@@ -6481,7 +6481,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.6.1;
+				MARKETING_VERSION = 5.7.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -6513,7 +6513,7 @@
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = D9W37S9468;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D9W37S9468;
 				ENABLE_BITCODE = NO;
@@ -6526,7 +6526,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.6.1;
+				MARKETING_VERSION = 5.7.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -6646,7 +6646,7 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationServiceDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = D9W37S9468;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -6661,7 +6661,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 5.6.1;
+				MARKETING_VERSION = 5.7.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greendev.NotificationService;
@@ -6687,7 +6687,7 @@
 				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = D9W37S9468;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D9W37S9468;
@@ -6703,7 +6703,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 5.6.1;
+				MARKETING_VERSION = 5.7.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green.NotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6727,7 +6727,7 @@
 				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = D9W37S9468;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D9W37S9468;
@@ -6743,7 +6743,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 5.6.1;
+				MARKETING_VERSION = 5.7.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greendev.NotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -7450,7 +7450,7 @@
 				CODE_SIGN_ENTITLEMENTS = gaios/gaiosStaging.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution: Blockstream Corporation (D9W37S9468)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = D9W37S9468;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D9W37S9468;
 				ENABLE_BITCODE = NO;
@@ -7465,7 +7465,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.6.1;
+				MARKETING_VERSION = 5.7.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",

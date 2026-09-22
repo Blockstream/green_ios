@@ -3,11 +3,43 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [5.7.0] - 2026-09-25
+
+### Added
+- Manual coin selection for Bitcoin and Liquid transactions
+- Bitcoin price chart to the wallet list
+- Transaction actions to the Home screen
+- Status page link when login takes longer than expected
+- Learn More guidance to the BIP39 passphrase login screen
 
 ### Changed
+- Restore 2FA Protected and 2of3 account creation
+- Revamp account creation and multisig settings
+- Move Legacy SegWit accounts under Advanced options
+- Improve account creation from Jade hardware watch-only sessions
+- Display Liquid asset information and correctly formatted amounts when signing with Jade
+- Update promotional banners on the Home screen
+- Redesign transaction actions and network fee selection
+- Improve login and wallet creation progress messages
+- Improve Testnet asset and fiat currency presentation
+- Add support for the iOS scene lifecycle
+- Improve wallet and account creation analytics
 - Bump GDK to 0.78.0
+- Bump SwiftCBOR to 0.6.0
 - Bump LWK to 0.19.1
+
+### Fixed
+- Fix wallet and account analytics events
+- Fix a crash after requesting a 2FA reset
+- Prevent duplicate or incorrectly archived multisig accounts during account creation
+- Fix decimal amount input validation across send, receive, swap, and buy flows
+- Fix a crash when opening the custom fee dialog
+- Disable Send All for fixed-amount BIP21 payments
+- Fix wallet session restoration and reconnection issues
+- Fix incorrect backup warnings and Security tab badges
+- Restore account settings for Bitcoin and Liquid accounts
+- Fix missing account creation controls and settings navigation issues
+- Improve redaction of sensitive data in support logs
 
 ## [5.6.1] - 2026-08-26
 
