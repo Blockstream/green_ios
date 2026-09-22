@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Bump GDK to 0.78.0
+- Bump LWK to 0.19.1
 
 ## [5.6.1] - 2026-08-26
 

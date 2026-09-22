@@ -7712,7 +7712,7 @@
 			repositoryURL = "https://github.com/blockstream/lwk-swift";
 			requirement = {
 				kind = exactVersion;
-				version = 0.19.0;
+				version = 0.19.1;
 			};
 		};
 		81D6B3052EE8189400A637C4 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
