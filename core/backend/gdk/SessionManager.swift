@@ -293,39 +293,65 @@ public class SessionManager {
         "device_key",
         "master_blinding_key",
         "pin_data",
-        "encrypted_data"
+        "encrypted_data",
+        "core_descriptors",
+        "slip132_extended_pubkey",
+        "slip132_extended_pubkeys",
+        "plaintext",
+        "salt",
+        "gauth",
+        "master_xpub",
+        "xpub",
+        "xpubs",
+        "amountblinder",
+        "amountblinders",
+        "assetblinder",
+        "assetblinders",
+        "blinding_key",
+        "blinding_nonce",
+        "nonces",
+        "address",
+        "addresses",
+        "addressee",
+        "addressees",
+        "script",
+        "scripts",
+        "scriptpubkey",
+        "txhash",
+        "txid"
     ]
 
-    private func mask(_ params: [String: Any]) -> [String: Any] {
-        var masked: [String: Any] = [:]
-        for (key, value) in params {
-            if maskFields.contains(key) {
-                masked[key] = "***"
-            } else if let dict = value as? [String: Any] {
-                masked[key] = mask(dict)
-            } else if let array = value as? [[String: Any]] {
-                masked[key] = array.map { mask($0) }
-            } else {
-                masked[key] = value
+    private let redactedValue = "**Redacted**"
+
+    private func isSensitive(_ key: String) -> Bool {
+        // Suffix match, mirrors Android's key.endsWith(field) behaviour
+        maskFields.contains { key.hasSuffix($0) }
+    }
+
+    private func redact(_ value: Any) -> Any {
+        if let dict = value as? [String: Any] {
+            var masked: [String: Any] = [:]
+            for (key, value) in dict {
+                masked[key] = isSensitive(key) ? redactedValue : redact(value)
             }
+            return masked
         }
-        return masked
+        if let array = value as? [Any] {
+            return array.map { redact($0) }
+        }
+        return value
+    }
+
+    private func mask(_ params: [String: Any]) -> [String: Any] {
+        redact(params) as? [String: Any] ?? params
     }
 
     func log(
         _ funcName: String,
         _ params: [String: Any]
     ) {
-        var sensitive = !params.keys.filter { maskFields.contains($0) }.isEmpty
-        if let result = params["result"] as? [String: Any] {
-            sensitive = sensitive || !result.keys.filter { maskFields.contains($0) }.isEmpty
-        }
-        if sensitive {
-            logger.info("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public)")
-        } else {
-            let params = params.stringify() ?? ""
-            logger.info("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(params, privacy: .public)")
-        }
+        let params = mask(params).stringify() ?? ""
+        logger.info("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(params, privacy: .public)")
     }
 
     func logError(_ funcName: String, error: Error) {
