@@ -346,37 +346,29 @@ public class SessionManager {
         redact(params) as? [String: Any] ?? params
     }
 
-    func log(
+    func logInfo(
         _ funcName: String,
-        _ params: [String: Any]
+        _ params: [String: Any]?
     ) {
-        let params = mask(params).stringify() ?? ""
-        logger.info("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(params, privacy: .public)")
+        let params = mask(params ?? [:]).stringify() ?? ""
+        gdkLogger.info("\(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(params, privacy: .public)")
     }
 
-    func logError(_ funcName: String, error: Error) {
+    func logError(
+        _ funcName: String,
+        _ error: Error) {
         if let error = error as? TwoFactorCallError {
             switch error {
-            case .failure(let txt):
-                logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt, privacy: .public)")
-            case .cancel(let txt):
-                logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt, privacy: .public)")
+            case .failure(let txt), .cancel(let txt):
+                gdkLogger.error("\(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt, privacy: .public)")
             }
         } else if let error = error as? GaError {
             switch error {
-            case .GenericError(let txt):
-                logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public)")
-            case .ReconnectError(let txt):
-                logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
-            case .SessionLost(let txt):
-                logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
-            case .TimeoutError(let txt):
-                logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
-            case .NotAuthorizedError(let txt):
-                logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
+            case .GenericError(let txt), .ReconnectError(let txt), .SessionLost(let txt), .TimeoutError(let txt), .NotAuthorizedError(let txt):
+                gdkLogger.error("\(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public): \(txt ?? "", privacy: .public)")
             }
         } else {
-            logger.error("GDK \(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public)")
+            gdkLogger.error("\(self.gdkNetwork.network, privacy: .public) \(funcName, privacy: .public) \(error, privacy: .public)")
         }
     }
 
@@ -389,20 +381,20 @@ public class SessionManager {
     )
     async throws -> Dictionary<String, Any> {
         if enableLogs {
-            log(funcName, params)
+            logInfo(funcName, params)
         }
         do {
             if let fun = try fun?(params) {
                 if let res = try await resolve(fun, bcurResolver: bcurResolver, enableLogs: enableLogs) {
                     if enableLogs {
-                        log(funcName, res)
+                        logInfo(funcName, res)
                     }
                     return res
                 }
             }
         } catch {
             if enableLogs {
-                logError(funcName, error: error)
+                logError(funcName, error)
             }
             throw error
         }
@@ -432,7 +424,7 @@ public class SessionManager {
             }
         }
         let error = GaError.GenericError("Invalid conversion")
-        logError(funcName, error: error)
+        logError(funcName, error)
         throw error
     }
 
@@ -624,7 +616,7 @@ public class SessionManager {
     public func networkConnect() async {
         try? await reconnectionTasks.add {
             let hint = ReconnectHintParams(torHint: "connect", hint: "connect")
-            self.log("reconnectHint", hint.toDict() ?? [:])
+            self.logInfo("reconnectHint", hint.toDict() ?? [:])
             try? self.session?.reconnectHint(hint: hint.toDict() ?? [:])
         }
     }
@@ -633,7 +625,7 @@ public class SessionManager {
         paused = true
         try? await reconnectionTasks.add {
             let hint = ReconnectHintParams(torHint: "disconnect", hint: "disconnect")
-            self.log("reconnectHint", hint.toDict() ?? [:])
+            self.logInfo("reconnectHint", hint.toDict() ?? [:])
             try? self.session?.reconnectHint(hint: hint.toDict() ?? [:])
         }
     }
@@ -787,13 +779,11 @@ extension SessionManager {
             // Restore connection through hidden login
             Task {
                 do {
-                    logger.info("GDK \(self.gdkNetwork.network, privacy: .public) reconnect")
                     try await reconnect()
-                    logger.info("GDK \(self.gdkNetwork.network, privacy: .public) reconnected")
                     paused = false
                     newNotificationDelegate?.didReceive(event: .reconnected, networkId: networkId)
                 } catch {
-                    logger.error("GDK Error on reconnected: \(error.localizedDescription, privacy: .public)")
+                    logError("reconnect", error)
                 }
             }
         case .Tor:

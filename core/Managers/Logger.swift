@@ -1,29 +1,42 @@
 import Foundation
 import OSLog
 
+public enum LoggerCategory: String, CaseIterable {
+    case app = "App"
+    case gdk = "Gdk"
+    case lightning = "Lightning"
+    case lwk = "Lwk"
+}
 public var logger = Logger(
     subsystem: Bundle.main.bundleIdentifier!,
-    category: "Green")
+    category: LoggerCategory.app.rawValue)
 
 public var lwkLogger = Logger(
     subsystem: Bundle.main.bundleIdentifier!,
-    category: "Lwk")
+    category: LoggerCategory.lwk.rawValue)
 
 public var lightningLogger = Logger(
     subsystem: Bundle.main.bundleIdentifier!,
-    category: "Lightning")
+    category: LoggerCategory.lightning.rawValue)
 
+public var gdkLogger = Logger(
+    subsystem: Bundle.main.bundleIdentifier!,
+    category: LoggerCategory.gdk.rawValue)
 
 extension Logger {
 
-    public func export(category: String) -> [String] {
+    public func export(category: LoggerCategory) -> [String] {
         do {
             let store = try OSLogStore(scope: .currentProcessIdentifier)
             let position = store.position(timeIntervalSinceLatestBoot: 1)
             let logs = try store
                 .getEntries(at: position)
                 .compactMap { $0 as? OSLogEntryLog }
-                .filter { $0.subsystem == Bundle.main.bundleIdentifier! && (category == $0.category)  }
+                .filter {
+                    $0.subsystem == Bundle.main.bundleIdentifier! && (
+                        category.rawValue == $0.category
+                    )
+                }
                 .map { "[\($0.date.formatted())] [\($0.category)] \($0.composedMessage)" }
 
             return logs
@@ -32,19 +45,13 @@ extension Logger {
         }
     }
 
-    public func logFile(category: String) -> URL {
+    public func logFile(category: LoggerCategory) -> URL {
         let basePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        if category == "Lwk" {
-            return basePath.appendingPathComponent("Lwk.log")
-        } else if category == "Lightning" {
-            return basePath.appendingPathComponent("Greenlight.log")
-        } else {
-            return basePath.appendingPathComponent("Green.log")
-        }
+        return basePath.appendingPathComponent("\(category.rawValue).log")
     }
 
-    public func write(category: String) {
+    public func write(category: LoggerCategory) {
         let contents = export(category: category).joined(separator: "\n").data(using: .utf8)
-        let _ = FileManager.default.createFile(atPath: logFile(category: category).path, contents: contents, attributes: nil)
+        _ = FileManager.default.createFile(atPath: logFile(category: category).path, contents: contents, attributes: nil)
     }
 }

@@ -82,8 +82,7 @@ struct ZendeskErrorRequest {
     func logs() -> String {
         var sections = [metadata()]
         if shareLogs {
-            let categories = ["Green", "Lightning", "Lwk"]
-            let formattedLogs = categories.map { category in
+            let formattedLogs = LoggerCategory.allCases.map { category in
                 let title = "======= \(category) logs ======="
                 let body = logger.export(category: category).joined(separator: "\n")
                 return "\(title)\n\(body)"
@@ -148,9 +147,9 @@ class ZendeskSdk {
 
     static let maxLogBytes = 5 * 1024 * 1024 // 5 MB per log file
 
-    func uploadLogs(_ text: String, category: String = "Green") async throws -> ZDKUploadResponse {
+    func uploadLogs(_ text: String, category: LoggerCategory) async throws -> ZDKUploadResponse {
         let uploadProvider = ZDKUploadProvider()
-        let filename = "\(getCurrentShortDate())_\(category).log"
+        let filename = "\(getCurrentShortDate())_\(category.rawValue).log"
         var data = text.data(using: .utf8) ?? Data()
         if data.count > ZendeskSdk.maxLogBytes {
             data = Data(data.suffix(ZendeskSdk.maxLogBytes))
@@ -210,7 +209,7 @@ class ZendeskSdk {
         // Upload log files as attachments
         if req.shareLogs {
             var attachments: [ZDKUploadResponse] = []
-            for category in ["Green", "Lightning", "Lwk"] {
+            for category in LoggerCategory.allCases {
                 let content = logger.export(category: category).joined(separator: "\n")
                 guard !content.isEmpty else { continue }
                 let response = try await uploadLogs(content, category: category)
