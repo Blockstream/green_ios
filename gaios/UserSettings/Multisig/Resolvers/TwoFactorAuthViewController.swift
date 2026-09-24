@@ -255,7 +255,7 @@ class TwoFactorAuthViewController: KeyboardViewController {
     @IBAction func btnInfoSupport(_ sender: Any) {
         let request = ZendeskErrorRequest(
             network: .greenMainnet,
-            shareLogs: true,
+            shareLogs: false,
             screenName: "2FA"
         )
         showOpenSupportUrl(request)

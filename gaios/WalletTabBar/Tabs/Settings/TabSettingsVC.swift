@@ -150,7 +150,7 @@ extension TabSettingsVC: UITableViewDelegate, UITableViewDataSource {
         case .header, .version:
             return
         case .support:
-            coordinator.navigate(to: .contactSupport(ZendeskErrorRequest(shareLogs: true)))
+            coordinator.navigate(to: .contactSupport(ZendeskErrorRequest(shareLogs: false)))
         case .unifiedDenominationExchange:
             coordinator.navigate(to: .denominationExchange(coordinator.denominationExchangeViewModel()))
         case .logout:

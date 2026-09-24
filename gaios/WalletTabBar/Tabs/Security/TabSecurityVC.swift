@@ -193,7 +193,7 @@ class TabSecurityVC: TabViewController {
         let request = ZendeskErrorRequest(
             error: error.description().localized,
             network: .electrumMainnet,
-            shareLogs: true,
+            shareLogs: false,
             screenName: "FailedGenuineCheck")
         presentContactUsViewController(request: request)
     }

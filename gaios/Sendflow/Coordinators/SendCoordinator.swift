@@ -850,7 +850,7 @@ extension SendCoordinator: SendFailureViewModelDelegate {
                 error: error.description().localized,
                 network: draft?.subaccount?.networkId,
                 paymentHash: nil,
-                shareLogs: true,
+                shareLogs: false,
                 screenName: "FailedTransaction")
             await navigate(to: .support(request))
         }

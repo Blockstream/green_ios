@@ -602,7 +602,7 @@ extension SendTxConfirmViewController: SendFailViewControllerDelegate {
             error: error.description().localized,
             network: viewModel.network,
             paymentHash: paymentHash,
-            shareLogs: true,
+            shareLogs: false,
             screenName: "FailedTransaction")
         presentContactUsViewController(request: request)
     }

@@ -247,6 +247,6 @@ extension WalletTabBarViewController: DrawerNetworkSelectionDelegate {
 
 extension WalletTabBarViewController: DialogAboutViewControllerDelegate {
     func openContactUs() {
-        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
+        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: false))
     }
 }

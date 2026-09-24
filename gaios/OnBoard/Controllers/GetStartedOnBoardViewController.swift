@@ -193,7 +193,7 @@ extension GetStartedOnBoardViewController: DialogCountlyViewControllerDelegate {
 }
 extension GetStartedOnBoardViewController: DialogAboutViewControllerDelegate {
     func openContactUs() {
-        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
+        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: false))
     }
 }
 

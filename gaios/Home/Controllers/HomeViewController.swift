@@ -465,7 +465,7 @@ extension HomeViewController: DialogRenameViewControllerDelegate, DialogDeleteVi
 
 extension HomeViewController: DialogAboutViewControllerDelegate {
     func openContactUs() {
-        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
+        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: false))
     }
 }
 

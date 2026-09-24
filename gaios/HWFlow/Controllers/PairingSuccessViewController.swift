@@ -252,7 +252,7 @@ extension PairingSuccessViewController: GenuineCheckEndViewControllerDelegate {
         let request = ZendeskErrorRequest(
             error: error.description().localized,
             network: .electrumMainnet,
-            shareLogs: true,
+            shareLogs: false,
             screenName: "FailedGenuineCheck")
         presentContactUsViewController(request: request)
     }
@@ -260,6 +260,6 @@ extension PairingSuccessViewController: GenuineCheckEndViewControllerDelegate {
 
 extension PairingSuccessViewController: DialogAboutViewControllerDelegate {
     func openContactUs() {
-        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: true))
+        presentContactUsViewController(request: ZendeskErrorRequest(shareLogs: false))
     }
 }

@@ -80,7 +80,7 @@ class LTRedeemViewController: UIViewController {
             error: error.description().localized,
             network: viewModel.wallet?.networkId ?? .electrumMainnet,
             paymentHash: paymentHash,
-            shareLogs: true,
+            shareLogs: false,
             screenName: "EmptyLightningAccount")
         presentContactUsViewController(request: request)
     }
