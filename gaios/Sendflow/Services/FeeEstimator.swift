@@ -12,7 +12,7 @@ class FeeEstimator {
 
     init(session: SessionManager) {
         self.session = session
-        self.defaultMinFee = session.gdkNetwork.liquid ? 100 : 1000
+        self.defaultMinFee = 100
         self.feeEstimates = Array(repeating: defaultMinFee, count: 25)
     }
     var minFeeEstimate: UInt64? { feeEstimates.first }

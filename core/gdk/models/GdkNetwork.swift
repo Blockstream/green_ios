@@ -17,6 +17,7 @@ public struct GdkNetwork: Codable, Equatable, Comparable, Sendable {
         case bip21Prefix = "bip21_prefix"
         case electrumUrl = "electrum_url"
         case electrumOnionUrl = "electrum_onion_url"
+        case minFeeRate = "min_fee_rate"
     }
 
     public let name: String
@@ -32,6 +33,7 @@ public struct GdkNetwork: Codable, Equatable, Comparable, Sendable {
     public var bip21Prefix: String?
     public var electrumUrl: String?
     public var electrumOnionUrl: String?
+    public var minFeeRate: UInt64?
 
     // Get the asset used to pay transaction fees
     public func getFeeAsset() -> String {
@@ -94,7 +96,7 @@ public struct GdkNetwork: Codable, Equatable, Comparable, Sendable {
     }
 
     public var defaultFee: UInt64 {
-        liquid ? 100 : 1000
+        minFeeRate ?? 100
     }
 
     var blocksPerHour: Int {
