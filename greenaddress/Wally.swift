@@ -350,7 +350,7 @@ public class Wally {
 
     public static func descriptorParse(_ descriptor: String, network: UInt32) -> OpaquePointer? {
         var wallyDescriptor: OpaquePointer?
-        if  wally_descriptor_parse(descriptor, nil, network, WALLY_MS_IS_DESCRIPTOR, &wallyDescriptor) != WALLY_OK {
+        if  wally_descriptor_parse(descriptor, nil, network, 0, &wallyDescriptor) != WALLY_OK {
             return nil
         }
         return wallyDescriptor
